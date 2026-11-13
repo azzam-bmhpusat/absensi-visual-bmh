@@ -1,12 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 
 interface AutoScrollContainerProps {
   children: ReactNode;
   className?: string;
-  speed?: number; // pixels per second (default 25)
-  pauseMs?: number; // pause at ends (default 3000ms)
+  speed?: number; // pixels per second (default 28)
+  pauseOnHover?: boolean; // jeda saat kursor mouse di-hover
 }
 
 function subscribeReducedMotion(callback: () => void) {
@@ -28,74 +34,77 @@ function getReducedMotionServerSnapshot() {
 export function AutoScrollContainer({
   children,
   className = "",
-  speed = 25,
-  pauseMs = 3000,
+  speed = 28,
+  pauseOnHover = true,
 }: AutoScrollContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const primaryRef = useRef<HTMLDivElement>(null);
+  const cloneRef = useRef<HTMLDivElement>(null);
+
+  const [shouldLoop, setShouldLoop] = useState(false);
+  const isHoveredRef = useRef(false);
+
   const isReducedMotion = useSyncExternalStore(
     subscribeReducedMotion,
     getReducedMotionSnapshot,
     getReducedMotionServerSnapshot
   );
 
+  // Periksa apakah konten melebihi tinggi container (overflow)
   useEffect(() => {
-    if (isReducedMotion) return;
+    const checkOverflow = () => {
+      const container = containerRef.current;
+      const primary = primaryRef.current;
+      if (!container || !primary) return;
+
+      const hasOverflow = primary.offsetHeight > container.clientHeight + 4;
+      setShouldLoop(hasOverflow);
+    };
+
+    checkOverflow();
+
+    const resizeObserver = new ResizeObserver(() => {
+      checkOverflow();
+    });
+
+    if (containerRef.current) resizeObserver.observe(containerRef.current);
+    if (primaryRef.current) resizeObserver.observe(primaryRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [children]);
+
+  // Animasi Continuous Seamless Scroll (Looping Unlimited)
+  useEffect(() => {
+    if (isReducedMotion || !shouldLoop) return;
 
     const el = containerRef.current;
-    if (!el) return;
+    const primary = primaryRef.current;
+    const clone = cloneRef.current;
+    if (!el || !primary || !clone) return;
 
     let animId: number;
     let lastTime = performance.now();
-    let direction: "down" | "up" = "down";
-    let isPaused = false;
-    let pauseTimeout: NodeJS.Timeout | null = null;
 
     const tick = (now: number) => {
-      if (!el) return;
-
       const delta = (now - lastTime) / 1000;
       lastTime = now;
 
-      const maxScroll = el.scrollHeight - el.clientHeight;
+      // Jalankan animasi jika tidak sedang di-pause oleh hover kursor
+      if (!isHoveredRef.current) {
+        // Hitung jarak threshold loop dari clone offsetTop ke primary offsetTop
+        const loopThreshold = clone.offsetTop - primary.offsetTop;
 
-      // Jika konten muat dalam container (tidak ada overflow), tidak perlu auto-scroll
-      if (maxScroll <= 8) {
-        animId = requestAnimationFrame(tick);
-        return;
-      }
+        if (loopThreshold > 0) {
+          let nextScroll = el.scrollTop + speed * delta;
 
-      if (isPaused) {
-        animId = requestAnimationFrame(tick);
-        return;
-      }
+          if (nextScroll >= loopThreshold) {
+            // Seamless instant reset: kurangi dengan loopThreshold persis
+            nextScroll -= loopThreshold;
+          }
 
-      const move = speed * delta;
-
-      if (direction === "down") {
-        const nextPos = el.scrollTop + move;
-        if (nextPos >= maxScroll) {
-          el.scrollTop = maxScroll;
-          direction = "up";
-          isPaused = true;
-          pauseTimeout = setTimeout(() => {
-            isPaused = false;
-            lastTime = performance.now();
-          }, pauseMs);
-        } else {
-          el.scrollTop = nextPos;
-        }
-      } else {
-        const nextPos = el.scrollTop - move;
-        if (nextPos <= 0) {
-          el.scrollTop = 0;
-          direction = "down";
-          isPaused = true;
-          pauseTimeout = setTimeout(() => {
-            isPaused = false;
-            lastTime = performance.now();
-          }, pauseMs);
-        } else {
-          el.scrollTop = nextPos;
+          el.scrollTop = nextScroll;
         }
       }
 
@@ -106,16 +115,28 @@ export function AutoScrollContainer({
 
     return () => {
       cancelAnimationFrame(animId);
-      if (pauseTimeout) clearTimeout(pauseTimeout);
     };
-  }, [speed, pauseMs, isReducedMotion]);
+  }, [speed, isReducedMotion, shouldLoop]);
 
   return (
     <div
       ref={containerRef}
-      className={`overflow-y-auto no-scrollbar scroll-smooth ${className}`}
+      onMouseEnter={() => {
+        if (pauseOnHover) isHoveredRef.current = true;
+      }}
+      onMouseLeave={() => {
+        if (pauseOnHover) isHoveredRef.current = false;
+      }}
+      className={`overflow-y-auto no-scrollbar ${className}`}
     >
-      {children}
+      <div className="flex flex-col gap-3.5">
+        <div ref={primaryRef}>{children}</div>
+        {shouldLoop && (
+          <div ref={cloneRef} aria-hidden="true">
+            {children}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
