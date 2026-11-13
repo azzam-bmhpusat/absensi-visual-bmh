@@ -128,14 +128,14 @@
 
 **Tujuan:** aman dan siap produksi.
 
-- [ ] Audit: tidak ada service role key di bundle client (`grep` pada `.next/static`)
-- [ ] Verifikasi RLS ulang di project produksi
-- [ ] Metadata, favicon, `viewport`, dan `robots: noindex` untuk `/display` dan `/admin`
-- [ ] Error boundary & halaman `not-found` bergaya sesuai design system
-- [ ] Cek kontras warna (WCAG AA) pada halaman utama
-- [ ] Deploy ke Vercel; set semua env var; set `NEXT_PUBLIC_SITE_URL` ke domain final
-- [ ] Buat akun admin di Supabase Auth
-- [ ] Tulis `README.md` singkat: setup lokal, env, cara import tamu, cara membuka videotron
+- [x] Audit: tidak ada service role key di bundle client (`grep` pada `.next/static`)
+- [x] Verifikasi RLS ulang di project produksi
+- [x] Metadata, favicon, `viewport`, dan `robots: noindex` untuk `/display` dan `/admin`
+- [x] Error boundary & halaman `not-found` bergaya sesuai design system
+- [x] Cek kontras warna (WCAG AA) pada halaman utama
+- [x] Deploy ke Vercel; set semua env var; set `NEXT_PUBLIC_SITE_URL` ke domain final
+- [x] Buat akun admin di Supabase Auth
+- [x] Tulis `README.md` singkat: setup lokal, env, cara import tamu, cara membuka videotron
 
 **DoD:** build produksi hijau; seluruh alur berjalan di domain produksi; README cukup bagi orang lain untuk menjalankan ulang.
 

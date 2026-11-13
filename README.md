@@ -1,36 +1,193 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sistem Absensi Visual QR BMH
 
-## Getting Started
+Sistem absensi berbasis QR cepat dan visual untuk acara perkumpulan yang berlangsung **dua hari** (Hari Pertama & Hari Kedua) oleh Lembaga Amil Zakat Nasional **Baitul Maal Hidayatullah (BMH)**.
 
-First, run the development server:
+Peserta memindai satu QR statis, memilih sesi kehadiran, mencari atau mengetik nama dan perwakilan daerah, lalu kehadirannya langsung tampil secara realtime (≤ 2 detik) di layar videotron/proyektor utama tanpa refresh.
 
+---
+
+## 🚀 Fitur Utama
+
+- **Alur Peserta Cepat (`/absen`)**:
+  - Scan QR tanpa perlu install aplikasi atau registrasi akun.
+  - Kartu pemilihan sesi interaktif (*Hari Pertama / Hari Kedua*).
+  - Pencarian nama tamu undangan terdaftar (autocomplete cerdas) & pengisian otomatis daerah.
+  - Dukungan tamu baru (*walk-in*) otomatis bertanda khusus.
+  - Proteksi anti-duplikat kehadiran per sesi, pencegahan double-tap, honeypot anti-spam, dan in-memory rate limiting.
+- **Videotron Layar Penuh Realtime (`/display`)**:
+  - Tampilan tema gelap hijau BMH dioptimalkan untuk layar 1920×1080 (tanpa scrollbar terlihat).
+  - Dua kolom dinamis: **Sudah Hadir** (terbaru di atas) dan **Belum Hadir** (urut abjad daerah & nama).
+  - Counter kehadiran otomatis, persentase kehadiran, dan progress bar bergradasi.
+  - Animasi transisi (*framer-motion*), banner sambutan otomatis 5 detik saat peserta hadir.
+  - Pemulihan otomatis (*auto-reconnect*) dan refetch fallback berkala tiap 30 detik jika jaringan putus.
+  - Auto-scroll otomatis dan halus untuk daftar tamu panjang (> 40 tamu).
+- **Panel Administrasi Panitia (`/admin`)**:
+  - Login aman berbasis Supabase Auth.
+  - **Manajemen Tamu**: Tabel tamu undangan, filter daerah, pencarian nama, unduh template CSV, dan fitur **Import CSV Massal** dengan validasi pratinjau (baris valid, duplikat, invalid).
+  - **Rekapitulasi Kehadiran**: Tabel kehadiran lengkap per sesi, filter perwakilan daerah, penanda walk-in, dan **Ekspor CSV** (format waktu WIB & UTF-8 dengan BOM agar terbaca sempurna di Microsoft Excel).
+  - **Generator QR Cetak (`/admin/qr`)**: Halaman siap cetak dengan styling `@media print` untuk mencetak QR code beresolusi tinggi di lokasi registrasi.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 16 (App Router, Turbopack, React 19, TypeScript)
+- **Styling & UI**: Tailwind CSS v4, shadcn/ui, Lucide Icons, Framer Motion
+- **Database & Auth**: Supabase (PostgreSQL, Realtime Subscriptions, Row Level Security, Supabase Auth)
+- **Validasi & Utilitas**: Zod, React Hook Form, PapaParse (CSV), QRCode, Sonner (Toaster)
+- **Testing & Tooling**: Vitest, tsx, ESLint
+
+---
+
+## 📦 Prasyarat Sistem
+
+- **Node.js**: versi 18.18.0 atau lebih baru (disarankan Node.js 20 LTS)
+- **npm** (atau pnpm / yarn)
+- **Akun Supabase**: proyek PostgreSQL dengan modul Realtime aktif
+
+---
+
+## ⚙️ Panduan Setup Lokal
+
+### 1. Kloning Repositori & Instal Dependensi
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <url-repo-anda>
+cd absensi-visual-bmh
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Konfigurasi Environment Variables
+Salin file `.env.local.example` menjadi `.env.local`:
+```bash
+cp .env.local.example .env.local
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Isi variabel lingkungan berikut di `.env.local`:
+```env
+# URL & Kunci Publik Supabase (Aman di Client)
+NEXT_PUBLIC_SUPABASE_URL=https://<project-id>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi...
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Kunci Rahasia Service Role (HANYA di Server, JANGAN pernah pakai prefix NEXT_PUBLIC_)
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOi...
 
-## Learn More
+# URL Dasar Aplikasi (Dipakai untuk generate tautan QR Code)
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
-To learn more about Next.js, take a look at the following resources:
+# Nama Acara yang Ditampilkan di Header Absen & Videotron
+NEXT_PUBLIC_EVENT_NAME=Silaturahim & Rapat Koordinasi Nasional BMH
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 3. Migrasi Skema Database & Verifikasi RLS
+Jalankan file migrasi SQL di Supabase SQL Editor:
+- Lokasi skema awal: [`supabase/migrations/0001_init.sql`](file:///c:/Users/muhaz/Downloads/absensi-visual-bmh/supabase/migrations/0001_init.sql)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Untuk memastikan hak akses Row Level Security (RLS) berjalan aman:
+```bash
+npm run verify:rls
+```
 
-## Deploy on Vercel
+### 4. Buat Akun Panitia Admin Pertama
+Jalankan skrip otomatis berikut untuk membuat akun admin di Supabase Auth (email langsung terverifikasi):
+```bash
+npm run create:admin
+```
+*Atau tentukan email dan password sendiri:*
+```bash
+npx tsx scripts/create-admin.ts panitia@bmh.or.id "KataSandiKuat123!"
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 5. Jalankan Server Pengembangan
+```bash
+npm run dev
+```
+Akses aplikasi di browser:
+- Halaman Absen Peserta: [http://localhost:3000/absen](http://localhost:3000/absen)
+- Videotron Realtime: [http://localhost:3000/display?sesi=1](http://localhost:3000/display?sesi=1)
+- Panel Admin Panitia: [http://localhost:3000/admin](http://localhost:3000/admin) (Login: `/admin/login`)
+- Cetak Lembar QR: [http://localhost:3000/admin/qr](http://localhost:3000/admin/qr)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 📋 Panduan Pengoperasian Acara
+
+### A. Persiapan Sebelum Acara (Pra-Kegiatan)
+1. **Import Daftar Tamu Undangan**:
+   - Buka `/admin` dan masuk ke tab **Tamu**.
+   - Unduh template CSV atau siapkan file CSV dengan header:
+     ```csv
+     nama,perwakilan_daerah
+     Ahmad Fauzi,BMH Jawa Timur
+     Dewi Sartika,BMH Jawa Barat
+     Budi Santoso,BMH Jawa Tengah
+     ```
+   - Klik **Import CSV**, pilih file, dan periksa pratinjau. Baris duplikat akan dilewati otomatis. Klik **Simpan Tamu**.
+2. **Cetak QR Code Registrasi**:
+   - Buka `/admin/qr` pada browser komputer panitia.
+   - Tekan `Ctrl + P` (atau `Cmd + P`). Halaman sudah dioptimasi khusus untuk cetak kertas A4/A5 tanpa header/footer browser yang mengganggu.
+   - Tempel cetakan QR di meja registrasi atau standing banner.
+
+### B. Pengoperasian Videotron di Lokasi (Hari-H)
+1. Hubungkan komputer operator ke videotron/proyektor utama via kabel HDMI.
+2. Buka browser Google Chrome / Edge, lalu akses:
+   - Sesi 1: `https://<domain-anda>/display?sesi=1`
+   - Sesi 2: `https://<domain-anda>/display?sesi=2`
+3. Tekan tombol **F11** untuk beralih ke mode **Layar Penuh (Full Screen)**.
+4. Kursor mouse akan otomatis tersembunyi setelah beberapa detik tidak digerakkan.
+5. Layar akan otomatis memperbarui data secara instan saat peserta submit absen.
+
+### C. Pasca Acara (Unduh Rekapitulasi)
+1. Masuk ke `/admin` tab **Rekap**.
+2. Pilih sesi yang diinginkan (Hari Pertama / Hari Kedua).
+3. Klik tombol **Ekspor CSV**. File yang diunduh sudah menyertakan tanda *walk-in*, stempel waktu WIB, dan kompatibel langsung dengan Microsoft Excel.
+
+---
+
+## 🚢 Panduan Deployment ke Vercel
+
+### Metode 1: Menggunakan Vercel Dashboard (Rekomendasi)
+1. Push kode ke repositori GitHub / GitLab Anda.
+2. Buka [Vercel Dashboard](https://vercel.com/new) dan pilih **Import Project**.
+3. Pada bagian **Environment Variables**, tambahkan:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `NEXT_PUBLIC_SITE_URL` (Set ke domain Vercel Anda, misal: `https://absensi-bmh.vercel.app`)
+   - `NEXT_PUBLIC_EVENT_NAME` (Misal: `Silaturahim & Rapat Koordinasi Nasional BMH`)
+4. Klik **Deploy**.
+
+### Metode 2: Menggunakan Vercel CLI
+```bash
+npx vercel
+# Ikuti instruksi di terminal, lalu set env var:
+npx vercel env add NEXT_PUBLIC_SUPABASE_URL
+npx vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY
+npx vercel env add SUPABASE_SERVICE_ROLE_KEY
+npx vercel env add NEXT_PUBLIC_SITE_URL
+npx vercel env add NEXT_PUBLIC_EVENT_NAME
+# Deploy ke produksi:
+npx vercel --prod
+```
+
+---
+
+## 🔒 Audit Keamanan & Kepatuhan
+
+- **Pencegahan Kebocoran Kunci**: Skrip `npm run audit:bundle` mengaudit seluruh file kompilasi `.next/static` untuk memastikan service role key tidak pernah masuk ke bundel klien.
+- **Row Level Security**: Klien anonim dibatasi hanya memiliki hak akses `SELECT`. Seluruh penulisan absen dari peserta diproses secara aman melalui Server Action backend.
+- **Aksesibilitas (WCAG AA)**: Skema warna mengikuti standar kontras minimum 4.5:1 untuk teks biasa dan 3:1 untuk elemen grafis.
+- **Robots Noindex**: Panel admin (`/admin`) dan layar videotron (`/display`) dilindungi dengan instruksi `noindex, nofollow` agar tidak diindeks mesin pencari publik.
+
+---
+
+## 🧪 Skrip Perintah (Scripts)
+
+| Perintah | Deskripsi |
+|---|---|
+| `npm run dev` | Menjalankan local development server |
+| `npm run build` | Melakukan kompilasi build produksi Next.js |
+| `npm run lint` | Menjalankan ESLint (harus 0 error) |
+| `npm run test` | Menjalankan unit test dengan Vitest |
+| `npm run audit:bundle` | Memeriksa kebocoran service role key di bundle klien |
+| `npm run verify:rls` | Menguji kebijakan keamanan RLS Supabase |
+| `npm run create:admin` | Membuat atau mereset akun panitia admin Supabase Auth |

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Poppins } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
@@ -16,9 +16,22 @@ const poppins = Poppins({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  themeColor: "#134B40",
+  width: "device-width",
+  initialScale: 1,
+};
+
 export const metadata: Metadata = {
-  title: "Sistem Absensi Visual QR BMH",
-  description: "Sistem kehadiran visual cepat dan realtime untuk acara BMH",
+  title: {
+    default: "Sistem Absensi Visual QR BMH",
+    template: "%s | Absensi Visual BMH",
+  },
+  description: "Sistem kehadiran visual cepat dan realtime untuk acara Baitul Maal Hidayatullah (BMH)",
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({

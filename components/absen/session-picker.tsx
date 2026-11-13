@@ -37,7 +37,7 @@ export function SessionPicker({
           <Card
             key={session.id}
             onClick={() => setSelectedSession(session)}
-            className="p-6 cursor-pointer rounded-3xl border-line transition-all hover:border-brand-green hover:-translate-y-1 shadow-sm hover:shadow-md flex items-center justify-between min-h-[140px] bg-card"
+            className="group p-6 cursor-pointer rounded-3xl border-line transition-all hover:border-brand-green hover:-translate-y-1 shadow-sm hover:shadow-md flex items-center justify-between min-h-[140px] bg-card"
           >
             <div className="flex items-center gap-5">
               <div className="w-14 h-14 rounded-full bg-green-100 text-primary font-heading font-bold text-2xl flex items-center justify-center shrink-0">
@@ -56,8 +56,8 @@ export function SessionPicker({
                 </p>
               </div>
             </div>
-            <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-primary shrink-0 transition-transform group-hover:translate-x-1">
-              <ArrowRight className="w-5 h-5 text-brand-gold" />
+            <div className="w-10 h-10 rounded-full bg-secondary text-primary group-hover:bg-primary group-hover:text-white flex items-center justify-center shrink-0 transition-all group-hover:translate-x-1">
+              <ArrowRight className="w-5 h-5 text-current" />
             </div>
           </Card>
         ))}

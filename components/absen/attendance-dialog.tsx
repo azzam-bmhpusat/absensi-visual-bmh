@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
@@ -93,7 +93,9 @@ export function AttendanceDialog({
     onOpenChange(false);
   }
 
-  const selectedGuestId = form.watch("guestId");
+  const selectedGuestId = useWatch({ control: form.control, name: "guestId" });
+  const watchedNama = useWatch({ control: form.control, name: "nama" });
+  const watchedPerwakilanDaerah = useWatch({ control: form.control, name: "perwakilanDaerah" });
 
   return (
     <Dialog open={open} onOpenChange={(o) => (!o ? handleClose() : null)}>
@@ -125,7 +127,7 @@ export function AttendanceDialog({
                 </Label>
                 <NameCombobox
                   guests={guests}
-                  value={form.watch("nama")}
+                  value={watchedNama ?? ""}
                   onChange={(val) => {
                     form.setValue("nama", val, { shouldValidate: true });
                   }}
@@ -149,7 +151,7 @@ export function AttendanceDialog({
                 </Label>
                 <DaerahCombobox
                   daerahList={daerahList}
-                  value={form.watch("perwakilanDaerah")}
+                  value={watchedPerwakilanDaerah ?? ""}
                   onChange={(val) => {
                     form.setValue("perwakilanDaerah", val, { shouldValidate: true });
                   }}
