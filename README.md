@@ -191,3 +191,15 @@ npx vercel --prod
 | `npm run audit:bundle` | Memeriksa kebocoran service role key di bundle klien |
 | `npm run verify:rls` | Menguji kebijakan keamanan RLS Supabase |
 | `npm run create:admin` | Membuat atau mereset akun panitia admin Supabase Auth |
+| `npm run test:uat` | Menjalankan rangkaian simulasi UAT & uji beban (Fase 6) |
+| `npm run cleanup:test-data` | Membersihkan data absensi uji coba sebelum Hari-H acara |
+
+---
+
+## 📚 Dokumen Pendukung & Panduan Hari-H
+
+- 📘 [Panduan Teknis & Operasional Hari-H (docs/panduan-hari-h.md)](file:///c:/Users/muhaz/Downloads/absensi-visual-bmh/docs/panduan-hari-h.md): Panduan lengkap panitia registrasi, operator videotron, SOP ekspor rekap, cetak QR cadangan, dan mitigasi jaringan.
+- 📋 [Laporan Hasil UAT Resmi (docs/uat-report.md)](file:///c:/Users/muhaz/Downloads/absensi-visual-bmh/docs/uat-report.md): Berita acara pengujian penerimaan pengguna dengan 20/20 skenario uji lulus 100%.
+- 🎨 [Design System Token (design-system.md)](file:///c:/Users/muhaz/Downloads/absensi-visual-bmh/design-system.md): Spesifikasi warna, tipografi, dan komponen visual BMH.
+- 🗺️ [Roadmap Eksekusi Proyek (roadmap.md)](file:///c:/Users/muhaz/Downloads/absensi-visual-bmh/roadmap.md): Status pengerjaan Fase 0 hingga Fase 6 (selesai).
+

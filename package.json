@@ -11,7 +11,9 @@
     "test:watch": "vitest",
     "audit:bundle": "tsx scripts/audit-client-bundle.ts",
     "verify:rls": "tsx scripts/verify-rls.ts",
-    "create:admin": "tsx scripts/create-admin.ts"
+    "create:admin": "tsx scripts/create-admin.ts",
+    "test:uat": "tsx scripts/run-uat-simulation.ts",
+    "cleanup:test-data": "tsx scripts/cleanup-test-data.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

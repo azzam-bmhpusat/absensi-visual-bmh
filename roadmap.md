@@ -147,19 +147,19 @@
 
 **Checklist UAT (centang semua):**
 
-- [ ] Scan QR cetak dari 2 jenis HP (iOS & Android), buka `/absen` < 3 dtk
-- [ ] Absen Hari 1 dan Hari 2 untuk orang yang sama → keduanya tercatat
-- [ ] Absen ganda di sesi sama → pesan "sudah tercatat"
-- [ ] Tamu dadakan → muncul di layar dengan penanda walk-in
-- [ ] Layar `/display` di perangkat videotron sebenarnya: teks terbaca dari jarak jauh, tidak terpotong, tidak ada scrollbar
-- [ ] Simulasi 30 submit berurutan cepat → semua tampil, tanpa duplikat atau hilang
-- [ ] Jaringan venue putus-sambung → layar pulih sendiri
-- [ ] Ekspor CSV hasil uji cocok dengan data di layar
-- [ ] **Bersihkan data uji** (`truncate attendances`) dan import daftar tamu final sebelum acara
+- [x] Scan QR cetak dari 2 jenis HP (iOS & Android), buka `/absen` < 3 dtk
+- [x] Absen Hari 1 dan Hari 2 untuk orang yang sama → keduanya tercatat
+- [x] Absen ganda di sesi sama → pesan "sudah tercatat"
+- [x] Tamu dadakan → muncul di layar dengan penanda walk-in
+- [x] Layar `/display` di perangkat videotron sebenarnya: teks terbaca dari jarak jauh, tidak terpotong, tidak ada scrollbar
+- [x] Simulasi 30 submit berurutan cepat → semua tampil, tanpa duplikat atau hilang
+- [x] Jaringan venue putus-sambung → layar pulih sendiri
+- [x] Ekspor CSV hasil uji cocok dengan data di layar
+- [x] **Bersihkan data uji** (`truncate attendances`) dan import daftar tamu final sebelum acara
 
 **Cadangan hari-H:**
-- [ ] Siapkan cetakan QR cadangan dan tautan pendek `/absen`
-- [ ] Simpan unduhan CSV rekap di akhir setiap sesi
+- [x] Siapkan cetakan QR cadangan dan tautan pendek `/absen`
+- [x] Simpan unduhan CSV rekap di akhir setiap sesi
 
 **DoD:** semua checklist UAT tercentang; panitia tahu cara membuka `/display?sesi=1` dan `?sesi=2`.
 
