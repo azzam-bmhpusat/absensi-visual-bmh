@@ -11,7 +11,10 @@ import {
   Users,
   Info,
   Loader2,
+  Tv,
+  ExternalLink,
 } from "lucide-react";
+import Link from "next/link";
 import { toast } from "sonner";
 import { toggleSessionStatusAction } from "@/app/admin/actions";
 
@@ -163,8 +166,8 @@ export function SessionManager({
                   </div>
                 </div>
 
-                {/* Tombol Aksi Buka/Tutup */}
-                <div className="pt-2">
+                {/* Tombol Aksi Buka/Tutup & Link Display */}
+                <div className="pt-2 space-y-2">
                   <Button
                     onClick={() => handleToggle(session)}
                     disabled={isPending}
@@ -192,6 +195,17 @@ export function SessionManager({
                       </>
                     )}
                   </Button>
+
+                  <Link
+                    href={`/display?sesi=${session.id}`}
+                    target="_blank"
+                    className="inline-flex items-center justify-center gap-1.5 w-full h-9 rounded-xl text-xs font-semibold border border-line bg-secondary/30 text-ink hover:text-primary hover:border-brand-green hover:bg-white transition-all cursor-pointer"
+                    title={`Buka tampilan videotron untuk ${session.nama}`}
+                  >
+                    <Tv className="w-3.5 h-3.5 text-brand-green" />
+                    Tampilkan di Videotron
+                    <ExternalLink className="w-3 h-3 text-ink-muted/70 ml-0.5" />
+                  </Link>
                 </div>
               </CardContent>
             </Card>

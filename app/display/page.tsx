@@ -79,6 +79,8 @@ async function DisplayLoader({ searchParams }: { searchParams: Promise<{ [key: s
       <DisplayHeader
         eventName={eventName}
         sessionName={activeSession.nama}
+        sessions={sessions}
+        activeSessionId={activeSession.id}
       />
 
       <AttendanceBoard
