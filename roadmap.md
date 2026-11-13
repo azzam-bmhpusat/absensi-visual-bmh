@@ -35,15 +35,15 @@
 
 **Tujuan:** skema, RLS, dan tiga klien Supabase siap.
 
-- [ ] Simpan SQL dari PRD bagian 9 ke `supabase/migrations/0001_init.sql`
-- [ ] Jalankan migrasi di project Supabase (SQL Editor atau Supabase CLI)
-- [ ] Isi `.env.local` dengan kredensial project
-- [ ] `lib/supabase/client.ts` (browser, anon)
-- [ ] `lib/supabase/server.ts` (server, `@supabase/ssr` + cookies)
-- [ ] `lib/supabase/admin.ts` (service role, tambahkan `import 'server-only'`)
-- [ ] `lib/normalize.ts` + `lib/schemas.ts` (zod: `attendanceSchema`, `guestRowSchema`)
-- [ ] Unit test `normalize` dan skema
-- [ ] Seed data uji: 20–30 tamu dummy dengan 5–6 daerah (`supabase/seed.sql`)
+- [x] Simpan SQL dari PRD bagian 9 ke `supabase/migrations/0001_init.sql`
+- [x] Jalankan migrasi di project Supabase (SQL Editor atau Supabase CLI)
+- [x] Isi `.env.local` dengan kredensial project
+- [x] `lib/supabase/client.ts` (browser, anon)
+- [x] `lib/supabase/server.ts` (server, `@supabase/ssr` + cookies)
+- [x] `lib/supabase/admin.ts` (service role, tambahkan `import 'server-only'`)
+- [x] `lib/normalize.ts` + `lib/schemas.ts` (zod: `attendanceSchema`, `guestRowSchema`)
+- [x] Unit test `normalize` dan skema
+- [x] Seed data uji: 20–30 tamu dummy dengan 5–6 daerah (`supabase/seed.sql`)
 
 **DoD:**
 - Query `select` dengan anon key berhasil membaca `sessions`, `guests`, `attendances`.
