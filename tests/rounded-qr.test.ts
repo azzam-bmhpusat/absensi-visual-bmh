@@ -3,6 +3,8 @@ import QRCode from "qrcode";
 import {
   isFinderPattern,
   getFinderPatterns,
+  resolveQrTargetUrl,
+  OFFICIAL_ABSEN_URL,
 } from "../components/admin/rounded-qr";
 
 describe("RoundedQr Module & Finder Pattern Logic", () => {
@@ -68,7 +70,15 @@ describe("RoundedQr Module & Finder Pattern Logic", () => {
 
   it("ensures target URL is cleanly formatted without trailing slash", () => {
     const siteUrl = "https://absensi-visual-bmh.vercel.app/";
-    const targetUrl = `${siteUrl.replace(/\/$/, "")}/absen`;
+    const targetUrl = resolveQrTargetUrl(siteUrl);
     expect(targetUrl).toBe("https://absensi-visual-bmh.vercel.app/absen");
+  });
+
+  it("selalu mengarahkan localhost atau 127.0.0.1 ke URL resmi BMH Vercel", () => {
+    expect(resolveQrTargetUrl("http://localhost:3000")).toBe(OFFICIAL_ABSEN_URL);
+    expect(resolveQrTargetUrl("http://localhost:3000/")).toBe(OFFICIAL_ABSEN_URL);
+    expect(resolveQrTargetUrl("http://127.0.0.1:3000")).toBe(OFFICIAL_ABSEN_URL);
+    expect(resolveQrTargetUrl(undefined)).toBe(OFFICIAL_ABSEN_URL);
+    expect(resolveQrTargetUrl("")).toBe(OFFICIAL_ABSEN_URL);
   });
 });

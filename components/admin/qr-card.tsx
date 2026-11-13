@@ -5,16 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Printer, Download, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { RoundedQr } from "@/components/admin/rounded-qr";
+import {
+  RoundedQr,
+  resolveQrTargetUrl,
+} from "@/components/admin/rounded-qr";
 
 interface QrCardProps {
-  siteUrl: string;
+  siteUrl?: string;
   eventName?: string;
 }
 
 export function QrCard({ siteUrl, eventName }: QrCardProps) {
   const svgRef = useRef<SVGSVGElement>(null);
-  const targetUrl = `${siteUrl.replace(/\/$/, "")}/absen`;
+  const targetUrl = resolveQrTargetUrl(siteUrl);
 
   const handlePrint = () => {
     window.print();
@@ -145,7 +148,7 @@ export function QrCard({ siteUrl, eventName }: QrCardProps) {
         {/* Teks "Scan untuk absen" di bawah QR (Poppins, hijau tua #134B40) */}
         <div className="space-y-1.5 pt-1">
           <h2 className="font-heading text-lg sm:text-xl font-bold text-[#134B40] tracking-tight">
-            Scan untuk absen
+            Scan untuk registrasi
           </h2>
           <p className="text-xs font-mono font-medium text-ink-muted break-all max-w-xs">
             {targetUrl}

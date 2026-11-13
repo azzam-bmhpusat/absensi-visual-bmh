@@ -13,6 +13,19 @@ export interface RoundedQrProps {
   svgRef?: React.Ref<SVGSVGElement>;
 }
 
+export const OFFICIAL_ABSEN_URL =
+  "https://absensi-visual-bmh.vercel.app/absen";
+
+export function resolveQrTargetUrl(siteUrl?: string): string {
+  if (!siteUrl) return OFFICIAL_ABSEN_URL;
+  const trimmed = siteUrl.trim();
+  // Cegah URL localhost / 127.0.0.1 agar scan kamera HP selalu membuka URL publik resmi
+  if (trimmed.includes("localhost") || trimmed.includes("127.0.0.1")) {
+    return OFFICIAL_ABSEN_URL;
+  }
+  return `${trimmed.replace(/\/$/, "")}/absen`;
+}
+
 export function isFinderPattern(r: number, c: number, size: number): boolean {
   return (
     (r < 7 && c < 7) || // Top-Left

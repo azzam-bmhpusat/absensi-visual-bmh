@@ -1,8 +1,11 @@
 import { QrCard } from "@/components/admin/qr-card";
 
 export default function AdminQrPage() {
+  const envUrl = process.env.NEXT_PUBLIC_SITE_URL;
   const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://absensi-visual-bmh.vercel.app";
+    !envUrl || envUrl.includes("localhost") || envUrl.includes("127.0.0.1")
+      ? "https://absensi-visual-bmh.vercel.app"
+      : envUrl;
   const eventName =
     process.env.NEXT_PUBLIC_EVENT_NAME || "Silaturahim & Rapat Koordinasi Nasional BMH";
 
