@@ -4,6 +4,7 @@ import {
   deriveAttendanceData,
   getTodayWibDate,
   formatWibClock,
+  formatAttendanceDateTime,
   type SessionData,
   type GuestData,
   type AttendanceData,
@@ -129,6 +130,20 @@ describe("display-helpers", () => {
     it("menghasilkan format tanggal YYYY-MM-DD", () => {
       const dateStr = getTodayWibDate(new Date("2026-11-14T03:30:00Z"));
       expect(dateStr).toBe("2026-11-14");
+    });
+
+    it("memformat waktu kehadiran lengkap: jam hingga hari dan tanggal WIB", () => {
+      // UTC 06:45 = WIB 13:45 pada hari Jumat, 13 November 2026
+      const formatted = formatAttendanceDateTime("2026-11-13T06:45:00Z");
+      expect(formatted).toContain("13:45 WIB");
+      expect(formatted).toContain("2026");
+      expect(formatted).toContain("Jumat");
+    });
+
+    it("menangani input tanggal tidak valid atau kosong secara aman", () => {
+      expect(formatAttendanceDateTime(null)).toBe("-");
+      expect(formatAttendanceDateTime(undefined)).toBe("-");
+      expect(formatAttendanceDateTime("invalid-date")).toBe("-");
     });
   });
 });

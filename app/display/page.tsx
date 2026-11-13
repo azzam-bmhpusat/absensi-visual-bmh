@@ -27,6 +27,7 @@ async function DisplayLoader({ searchParams }: { searchParams: Promise<{ [key: s
   let sessions: SessionData[] = [
     { id: 1, slug: "hari-1", nama: "Hari Pertama" },
     { id: 2, slug: "hari-2", nama: "Hari Kedua" },
+    { id: 3, slug: "hari-3", nama: "Hari Ketiga" },
   ];
   let guests: GuestData[] = [];
   let attendances: AttendanceData[] = [];
@@ -105,10 +106,10 @@ function DisplaySkeleton() {
         </div>
       </div>
 
-      {/* Counter Skeleton */}
-      <div className="space-y-3 py-4">
-        <Skeleton className="h-16 w-64 bg-white/10" />
-        <Skeleton className="h-4 w-full rounded-full bg-white/10" />
+      {/* Counter Skeleton (Ramping) */}
+      <div className="space-y-2 py-2">
+        <Skeleton className="h-8 w-64 bg-white/10" />
+        <Skeleton className="h-2 w-full rounded-full bg-white/10" />
       </div>
 
       {/* Columns Skeleton */}

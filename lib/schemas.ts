@@ -2,8 +2,8 @@ import { z } from "zod";
 import { normalizeString } from "./normalize";
 
 export const attendanceSchema = z.object({
-  sessionId: z.union([z.literal(1), z.literal(2)], {
-    error: "Pilih sesi yang valid (Hari 1 atau Hari 2)",
+  sessionId: z.union([z.literal(1), z.literal(2), z.literal(3)], {
+    error: "Pilih sesi yang valid (Hari 1, Hari 2, atau Hari 3)",
   }),
   guestId: z
     .string()

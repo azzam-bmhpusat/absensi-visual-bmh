@@ -1,10 +1,13 @@
-import { Check } from "lucide-react";
+import { Check, Clock } from "lucide-react";
+import { RandomAvatar } from "./random-avatar";
+import { formatAttendanceDateTime } from "@/lib/display-helpers";
 
 interface GuestChipProps {
   nama: string;
   perwakilanDaerah: string;
   status: "hadir" | "belum" | "walk-in";
   isRecent?: boolean;
+  checkedInAt?: string;
 }
 
 export function GuestChip({
@@ -12,44 +15,61 @@ export function GuestChip({
   perwakilanDaerah,
   status,
   isRecent = false,
+  checkedInAt,
 }: GuestChipProps) {
   if (status === "belum") {
     return (
-      <div className="h-[72px] rounded-2xl px-6 border border-[#1F6252] bg-transparent flex flex-col justify-center min-w-0 transition-colors">
-        <span className="text-xl font-heading font-semibold text-[#A9CFC2] truncate leading-tight">
+      <div className="min-h-[76px] xl:min-h-[82px] rounded-2xl px-5 py-2 border border-[#1F6252] bg-transparent flex flex-col justify-center min-w-0 transition-colors">
+        <span className="text-lg xl:text-xl font-heading font-semibold text-[#A9CFC2] truncate leading-tight">
           {nama}
         </span>
-        <span className="text-base text-[#A9CFC2]/70 truncate leading-tight">
+        <span className="text-sm xl:text-base text-[#A9CFC2]/70 truncate leading-tight mt-0.5">
           {perwakilanDaerah}
         </span>
       </div>
     );
   }
 
+  const formattedTime = checkedInAt
+    ? formatAttendanceDateTime(checkedInAt)
+    : null;
+
   return (
     <div
-      className={`h-[72px] rounded-2xl px-6 bg-[#134B40] text-white flex items-center justify-between shadow-sm min-w-0 transition-all duration-300 ${
+      className={`min-h-[76px] xl:min-h-[82px] rounded-2xl px-4 xl:px-5 py-2.5 bg-[#134B40] text-white flex items-center justify-between shadow-sm min-w-0 transition-all duration-300 ${
         isRecent
           ? "ring-2 ring-brand-gold-soft shadow-[0_0_20px_rgba(242,208,107,0.35)] scale-[1.01]"
           : "border border-border/20"
       }`}
     >
-      <div className="flex items-center gap-3.5 min-w-0 flex-1 mr-2">
-        <div className="w-7 h-7 rounded-full bg-brand-green flex items-center justify-center shrink-0 shadow-sm">
-          <Check className="w-4 h-4 text-[#0A3A30] stroke-[3]" />
+      <div className="flex items-center gap-3 min-w-0 flex-1 mr-2">
+        {/* Avatar Random Vektor dengan Badge Centang */}
+        <div className="relative shrink-0">
+          <RandomAvatar name={nama} size={44} />
+          <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-brand-green flex items-center justify-center shadow-2xs border-2 border-[#134B40]">
+            <Check className="w-3 h-3 text-[#0A3A30] stroke-[3]" />
+          </div>
         </div>
-        <div className="truncate flex-1">
-          <div className="text-xl font-heading font-semibold truncate leading-tight text-white">
+
+        {/* Info Tamu & Waktu Kehadiran */}
+        <div className="truncate flex-1 space-y-0.5">
+          <div className="text-base xl:text-lg font-heading font-bold truncate leading-tight text-white">
             {nama}
           </div>
-          <div className="text-base text-[#A9CFC2] truncate leading-tight">
+          <div className="text-xs xl:text-sm text-[#A9CFC2] truncate leading-tight">
             {perwakilanDaerah}
           </div>
+          {formattedTime && (
+            <div className="text-[11px] xl:text-xs font-mono text-brand-gold-soft flex items-center gap-1.5 truncate leading-tight pt-0.5">
+              <Clock className="w-3 h-3 shrink-0 text-brand-gold-soft" />
+              <span className="truncate">{formattedTime}</span>
+            </div>
+          )}
         </div>
       </div>
 
       {status === "walk-in" && (
-        <span className="text-sm font-semibold px-3 py-1 rounded-full bg-brand-gold-soft text-[#0A3A30] shrink-0 shadow-sm whitespace-nowrap">
+        <span className="text-xs xl:text-sm font-semibold px-2.5 py-1 rounded-full bg-brand-gold-soft text-[#0A3A30] shrink-0 shadow-sm whitespace-nowrap">
           Tamu baru
         </span>
       )}

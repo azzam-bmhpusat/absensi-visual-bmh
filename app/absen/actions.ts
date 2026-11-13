@@ -11,6 +11,13 @@ export type SubmitAttendanceResponse =
   | { status: "already"; message: string }
   | { status: "error"; message?: string; fieldErrors?: Record<string, string[]> };
 
+function getSessionLabel(sessionId: number): string {
+  if (sessionId === 1) return "Hari Pertama";
+  if (sessionId === 2) return "Hari Kedua";
+  if (sessionId === 3) return "Hari Ketiga";
+  return `Sesi ${sessionId}`;
+}
+
 export async function submitAttendance(
   data: AttendanceInput
 ): Promise<SubmitAttendanceResponse> {
@@ -19,7 +26,7 @@ export async function submitAttendance(
     return {
       status: "ok",
       nama: data.nama ? normalizeString(data.nama) : "",
-      sesi: data.sessionId === 1 ? "Hari Pertama" : "Hari Kedua",
+      sesi: getSessionLabel(data.sessionId),
     };
   }
 
@@ -93,7 +100,21 @@ export async function submitAttendance(
     }
   }
 
-  const sesiLabel = sessionId === 1 ? "Hari Pertama" : "Hari Kedua";
+  // 4b. Verifikasi status sesi aktif
+  const { data: sessionData } = await supabase
+    .from("sessions")
+    .select("id, nama, is_active")
+    .eq("id", sessionId)
+    .maybeSingle();
+
+  if (sessionData && !sessionData.is_active) {
+    return {
+      status: "error",
+      message: `Sesi ${sessionData.nama} saat ini sedang ditutup oleh panitia.`,
+    };
+  }
+
+  const sesiLabel = sessionData?.nama || getSessionLabel(sessionId);
 
   // 5. Insert ke tabel attendances
   const { data: inserted, error } = await supabase

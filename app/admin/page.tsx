@@ -8,7 +8,11 @@ import {
   AttendanceRekapTable,
   type AttendanceItem,
 } from "@/components/admin/attendance-rekap-table";
-import { Users, ClipboardList } from "lucide-react";
+import {
+  SessionManager,
+  type AdminSessionItem,
+} from "@/components/admin/session-manager";
+import { Users, ClipboardList, CalendarClock } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 function AdminSkeleton() {
@@ -32,6 +36,14 @@ async function AdminContent() {
   const sessions = (rawSessions || []).map((s) => ({
     id: s.id,
     nama: s.nama,
+  }));
+
+  const adminSessions: AdminSessionItem[] = (rawSessions || []).map((s) => ({
+    id: s.id,
+    slug: s.slug,
+    nama: s.nama,
+    tanggal: s.tanggal,
+    is_active: s.is_active !== false,
   }));
 
   // Ambil daftar tamu undangan
@@ -65,12 +77,23 @@ async function AdminContent() {
     checked_in_at: a.checked_in_at,
   }));
 
+  // Hitung jumlah kehadiran per sesi
+  const attendancesCountBySession = (rawAttendances || []).reduce(
+    (acc, a) => {
+      acc[a.session_id] = (acc[a.session_id] || 0) + 1;
+      return acc;
+    },
+    {} as Record<number, number>
+  );
+
+  const activeSessionsCount = adminSessions.filter((s) => s.is_active).length;
+
   return (
     <Tabs defaultValue="tamu" className="space-y-4">
-      <TabsList className="bg-muted p-1 rounded-2xl h-11 border border-line">
+      <TabsList className="bg-muted p-1 rounded-2xl h-11 border border-line flex flex-wrap max-w-full">
         <TabsTrigger
           value="tamu"
-          className="rounded-xl px-5 text-xs font-semibold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-2xs transition-all flex items-center gap-2"
+          className="rounded-xl px-4 sm:px-5 text-xs font-semibold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-2xs transition-all flex items-center gap-2"
         >
           <Users className="w-3.5 h-3.5 text-brand-green" />
           Daftar Tamu Undangan
@@ -78,14 +101,26 @@ async function AdminContent() {
             {guests.length}
           </span>
         </TabsTrigger>
+
         <TabsTrigger
           value="rekap"
-          className="rounded-xl px-5 text-xs font-semibold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-2xs transition-all flex items-center gap-2"
+          className="rounded-xl px-4 sm:px-5 text-xs font-semibold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-2xs transition-all flex items-center gap-2"
         >
           <ClipboardList className="w-3.5 h-3.5 text-brand-gold-text" />
           Rekap Kehadiran
           <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] bg-gold-100 text-brand-gold-text font-bold">
             {attendances.length}
+          </span>
+        </TabsTrigger>
+
+        <TabsTrigger
+          value="sesi"
+          className="rounded-xl px-4 sm:px-5 text-xs font-semibold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-2xs transition-all flex items-center gap-2"
+        >
+          <CalendarClock className="w-3.5 h-3.5 text-primary" />
+          Kelola Sesi Acara
+          <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] bg-green-100 text-brand-green-deep font-bold">
+            {activeSessionsCount} Aktif
           </span>
         </TabsTrigger>
       </TabsList>
@@ -108,6 +143,17 @@ async function AdminContent() {
           </CardContent>
         </Card>
       </TabsContent>
+
+      <TabsContent value="sesi" className="mt-0 space-y-4">
+        <Card className="rounded-3xl border-line bg-white/95 shadow-sm">
+          <CardContent className="p-5 sm:p-6">
+            <SessionManager
+              initialSessions={adminSessions}
+              attendancesCountBySession={attendancesCountBySession}
+            />
+          </CardContent>
+        </Card>
+      </TabsContent>
     </Tabs>
   );
 }
@@ -118,13 +164,11 @@ export default function AdminPage() {
     "Silaturahim & Rapat Koordinasi Nasional BMH";
 
   return (
-    <main className="page-bg min-h-screen p-4 sm:p-6 lg:p-8">
-      <div className="max-w-6xl mx-auto space-y-6">
-        <AdminHeader eventName={eventName} />
-        <Suspense fallback={<AdminSkeleton />}>
-          <AdminContent />
-        </Suspense>
-      </div>
-    </main>
+    <div className="space-y-6">
+      <AdminHeader eventName={eventName} />
+      <Suspense fallback={<AdminSkeleton />}>
+        <AdminContent />
+      </Suspense>
+    </div>
   );
 }

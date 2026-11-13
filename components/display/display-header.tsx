@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { formatWibClock } from "@/lib/display-helpers";
+import { Maximize2, Minimize2 } from "lucide-react";
 
 interface DisplayHeaderProps {
   eventName: string;
@@ -10,6 +11,7 @@ interface DisplayHeaderProps {
 
 export function DisplayHeader({ eventName, sessionName }: DisplayHeaderProps) {
   const [clock, setClock] = useState<string>("");
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   useEffect(() => {
     const update = () => setClock(formatWibClock());
@@ -24,25 +26,73 @@ export function DisplayHeader({ eventName, sessionName }: DisplayHeaderProps) {
     };
   }, []);
 
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(Boolean(document.fullscreenElement));
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch (err) {
+      console.error("Gagal mengubah mode layar:", err);
+    }
+  };
+
   return (
-    <header className="flex items-center justify-between min-h-[90px] border-b border-border/40 pb-4">
+    <header className="flex items-center justify-between min-h-[84px] xl:min-h-[90px] border-b border-border/40 pb-3 xl:pb-4">
       <div className="flex flex-col justify-center">
-        <span className="text-sm uppercase tracking-wider font-semibold text-brand-gold-soft">
+        <span className="text-xs xl:text-sm uppercase tracking-wider font-semibold text-brand-gold-soft">
           Layar Kehadiran Realtime
         </span>
-        <h1 className="text-4xl xl:text-5xl font-heading font-bold text-white tracking-tight leading-tight">
+        <h1 className="text-3xl xl:text-5xl font-heading font-bold text-white tracking-tight leading-tight">
           {eventName}
         </h1>
       </div>
 
-      <div className="text-right flex flex-col justify-center items-end">
-        <div className="text-2xl xl:text-3xl font-heading font-bold text-brand-gold-soft">
-          {sessionName}
+      <div className="flex items-center gap-3 xl:gap-4">
+        <div className="text-right flex flex-col justify-center items-end">
+          <div className="text-xl xl:text-3xl font-heading font-bold text-brand-gold-soft leading-tight">
+            {sessionName}
+          </div>
+          <div className="text-base xl:text-xl font-mono font-medium text-white/90 flex items-center gap-2 mt-0.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-brand-green animate-pulse" />
+            <span>{clock || "--:--:-- WIB"}</span>
+          </div>
         </div>
-        <div className="text-lg xl:text-xl font-mono font-medium text-white/90 flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-brand-green animate-pulse" />
-          <span>{clock || "--:--:-- WIB"}</span>
-        </div>
+
+        {/* Tombol Maximize / Minimize Fullscreen */}
+        <button
+          onClick={toggleFullscreen}
+          type="button"
+          aria-label={
+            isFullscreen
+              ? "Kecilkan layar (Minimize)"
+              : "Maksimalkan layar (Maximize)"
+          }
+          title={
+            isFullscreen
+              ? "Kecilkan Layar (Minimize)"
+              : "Maksimalkan Layar (Maximize / Fullscreen)"
+          }
+          className="p-2.5 xl:p-3 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-white/80 hover:text-white border border-white/15 transition-all shadow-xs cursor-pointer flex items-center justify-center shrink-0 ml-1"
+        >
+          {isFullscreen ? (
+            <Minimize2 className="w-5 h-5 xl:w-6 xl:h-6 text-brand-gold-soft" />
+          ) : (
+            <Maximize2 className="w-5 h-5 xl:w-6 xl:h-6 text-brand-green" />
+          )}
+        </button>
       </div>
     </header>
   );

@@ -158,3 +158,36 @@ export function formatWibClock(date = new Date()): string {
 
   return `${timeStr.replace(/\./g, ":")} WIB`;
 }
+
+/**
+ * Format waktu kehadiran: jam, menit, WIB, hari, dan tanggal lengkap
+ * Contoh: "13:45 WIB • Jumat, 13 Nov 2026"
+ */
+export function formatAttendanceDateTime(dateInput?: string | Date | null): string {
+  if (!dateInput) return "-";
+  try {
+    const d = typeof dateInput === "string" ? new Date(dateInput) : dateInput;
+    if (isNaN(d.getTime())) return "-";
+
+    const timeStr = new Intl.DateTimeFormat("id-ID", {
+      timeZone: "Asia/Jakarta",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    })
+      .format(d)
+      .replace(/\./g, ":");
+
+    const dateStr = new Intl.DateTimeFormat("id-ID", {
+      timeZone: "Asia/Jakarta",
+      weekday: "long",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    }).format(d);
+
+    return `${timeStr} WIB • ${dateStr}`;
+  } catch {
+    return "-";
+  }
+}

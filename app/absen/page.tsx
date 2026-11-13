@@ -6,8 +6,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 async function SessionPickerLoader() {
   let sessions: SessionItem[] = [
-    { id: 1, slug: "hari-1", nama: "Hari Pertama" },
-    { id: 2, slug: "hari-2", nama: "Hari Kedua" },
+    { id: 1, slug: "hari-1", nama: "Hari Pertama", is_active: true },
+    { id: 2, slug: "hari-2", nama: "Hari Kedua", is_active: true },
+    { id: 3, slug: "hari-3", nama: "Hari Ketiga", is_active: true },
   ];
   let guests: GuestItem[] = [];
   let daerahList: string[] = [];
@@ -46,9 +47,10 @@ async function SessionPickerLoader() {
 
 function SessionPickerSkeleton() {
   return (
-    <div className="space-y-4 text-left">
-      <Skeleton className="h-[140px] w-full rounded-3xl" />
-      <Skeleton className="h-[140px] w-full rounded-3xl" />
+    <div className="space-y-3 sm:space-y-4 text-left w-full">
+      <Skeleton className="h-[96px] sm:h-[108px] w-full rounded-2xl sm:rounded-3xl" />
+      <Skeleton className="h-[96px] sm:h-[108px] w-full rounded-2xl sm:rounded-3xl" />
+      <Skeleton className="h-[96px] sm:h-[108px] w-full rounded-2xl sm:rounded-3xl" />
     </div>
   );
 }
@@ -58,26 +60,29 @@ export default function AbsenPage() {
     process.env.NEXT_PUBLIC_EVENT_NAME || "Silaturahim & Rakornas BMH";
 
   return (
-    <main className="page-bg min-h-screen flex flex-col items-center justify-center p-5 sm:p-8">
-      <div className="w-full max-w-md mx-auto text-center space-y-6">
+    <main className="page-bg min-h-screen flex flex-col justify-between p-4 sm:p-6 pb-8">
+      <div className="w-full max-w-md mx-auto text-center space-y-5 my-auto py-2">
+        {/* Header Acara (Mobile First) */}
         <div className="space-y-2">
-          <span className="inline-block text-xs font-semibold px-3 py-1 rounded-full bg-secondary text-primary border border-brand-green/20">
-            Sistem Absensi Kehadiran
+          <span className="inline-block text-[11px] font-semibold px-3 py-1 rounded-full bg-secondary text-primary border border-brand-green/20">
+            Sistem Presensi Kehadiran
           </span>
-          <h1 className="font-heading text-2xl sm:text-3xl font-bold text-primary tracking-tight">
+          <h1 className="font-heading text-xl sm:text-2xl font-bold text-primary tracking-tight leading-snug">
             {eventName}
           </h1>
-          <p className="text-sm text-ink-muted leading-relaxed">
+          <p className="text-xs sm:text-sm text-ink-muted leading-relaxed max-w-xs mx-auto">
             Silakan pilih sesi kehadiran di bawah ini untuk mencatat konfirmasi absensi Anda.
           </p>
         </div>
 
+        {/* Daftar Sesi Pilihan */}
         <Suspense fallback={<SessionPickerSkeleton />}>
           <SessionPickerLoader />
         </Suspense>
 
+        {/* Footer Identitas BMH */}
         <div className="text-center pt-2">
-          <p className="text-xs text-ink-muted/80">
+          <p className="text-[11px] text-ink-muted/80">
             Baitul Maal Hidayatullah &bull; Kehadiran Realtime
           </p>
         </div>

@@ -11,7 +11,8 @@ create table public.sessions (
 
 insert into public.sessions (id, slug, nama) values
   (1, 'hari-1', 'Hari Pertama'),
-  (2, 'hari-2', 'Hari Kedua');
+  (2, 'hari-2', 'Hari Kedua'),
+  (3, 'hari-3', 'Hari Ketiga');
 
 -- Daftar tamu undangan
 create table public.guests (

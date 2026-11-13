@@ -234,3 +234,51 @@ export async function deleteAttendanceAction(
     return { success: false, error: "Gagal menghapus catatan kehadiran." };
   }
 }
+
+/**
+ * Mengubah status buka / tutup (aktif / nonaktif) sesi presensi
+ */
+export async function toggleSessionStatusAction(
+  sessionId: number,
+  isActive: boolean
+): Promise<ActionResult<{ id: number; is_active: boolean }>> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return {
+      success: false,
+      error: "Akses ditolak. Anda harus login sebagai admin.",
+    };
+  }
+
+  try {
+    const admin = createAdminClient();
+    const { error } = await admin
+      .from("sessions")
+      .update({ is_active: isActive })
+      .eq("id", sessionId);
+
+    if (error) {
+      return {
+        success: false,
+        error: "Gagal memperbarui status sesi: " + error.message,
+      };
+    }
+
+    revalidatePath("/admin");
+    revalidatePath("/absen");
+    revalidatePath("/display");
+
+    return {
+      success: true,
+      message: `Sesi berhasil ${isActive ? "dibuka" : "ditutup"}.`,
+      data: { id: sessionId, is_active: isActive },
+    };
+  } catch (err) {
+    console.error("Error toggleSessionStatusAction:", err);
+    return { success: false, error: "Gagal memperbarui status sesi." };
+  }
+}

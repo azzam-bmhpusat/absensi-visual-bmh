@@ -22,8 +22,16 @@ describe("attendanceSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("menolak sessionId selain 1 atau 2", () => {
+  it("menerima input valid sesi 3 (Hari Ketiga)", () => {
     const result = attendanceSchema.safeParse({ ...validInput, sessionId: 3 });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.sessionId).toBe(3);
+    }
+  });
+
+  it("menolak sessionId selain 1, 2, atau 3", () => {
+    const result = attendanceSchema.safeParse({ ...validInput, sessionId: 4 });
     expect(result.success).toBe(false);
   });
 

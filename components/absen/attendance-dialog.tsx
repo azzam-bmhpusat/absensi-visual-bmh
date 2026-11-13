@@ -25,7 +25,7 @@ import { DaerahCombobox } from "./daerah-combobox";
 type DialogState = "form" | "success" | "already";
 
 interface AttendanceDialogProps {
-  sessionId: 1 | 2;
+  sessionId: number;
   sessionNama: string;
   guests: GuestItem[];
   daerahList: string[];
@@ -48,7 +48,7 @@ export function AttendanceDialog({
   const form = useForm<AttendanceInput>({
     resolver: zodResolver(attendanceSchema),
     defaultValues: {
-      sessionId,
+      sessionId: sessionId as 1 | 2 | 3,
       guestId: "",
       nama: "",
       perwakilanDaerah: "",
@@ -84,7 +84,7 @@ export function AttendanceDialog({
     setState("form");
     setResult(null);
     form.reset({
-      sessionId,
+      sessionId: sessionId as 1 | 2 | 3,
       guestId: "",
       nama: "",
       perwakilanDaerah: "",
@@ -99,7 +99,7 @@ export function AttendanceDialog({
 
   return (
     <Dialog open={open} onOpenChange={(o) => (!o ? handleClose() : null)}>
-      <DialogContent className="max-w-[440px] rounded-3xl p-6 sm:rounded-2xl border-line">
+      <DialogContent className="w-[calc(100vw-2rem)] max-w-[440px] rounded-3xl p-5 sm:p-6 border-line">
         {state === "form" && (
           <>
             <DialogHeader className="space-y-2 text-left">

@@ -235,6 +235,7 @@ export function AttendanceBoard({
                         perwakilanDaerah={item.perwakilan_daerah}
                         status={item.is_walk_in ? "walk-in" : "hadir"}
                         isRecent={recentAttendanceIds.includes(item.id)}
+                        checkedInAt={item.checked_in_at}
                       />
                     </motion.div>
                   ))}

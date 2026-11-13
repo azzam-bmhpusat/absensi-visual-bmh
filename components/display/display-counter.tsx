@@ -10,26 +10,32 @@ export function DisplayCounter({ hadir, total, percentage }: DisplayCounterProps
   const clampedPercentage = Math.min(100, Math.max(0, percentage));
 
   return (
-    <section className="py-4 space-y-3">
+    <section className="py-2 xl:py-2.5 space-y-1.5">
       <div className="flex items-baseline justify-between">
-        <div className="flex items-baseline gap-4">
-          <span className="text-xl font-semibold tracking-wider text-muted-foreground uppercase">
-            Hadir
+        <div className="flex items-baseline gap-2.5 xl:gap-3.5">
+          <span className="text-xs xl:text-sm font-semibold tracking-wider text-muted-foreground uppercase">
+            Hadir:
           </span>
-          <span className="text-7xl xl:text-8xl font-heading font-bold text-brand-gold-soft leading-none">
+          <span className="text-3xl xl:text-5xl font-heading font-bold text-brand-gold-soft leading-none">
             {hadir}
           </span>
-          <span className="text-3xl xl:text-4xl text-muted-foreground font-semibold">
-            / {total}
+          <span className="text-lg xl:text-2xl text-muted-foreground font-semibold">
+            / {total} Tamu
           </span>
         </div>
-        <div className="text-3xl xl:text-4xl font-heading font-bold text-brand-green">
-          {clampedPercentage}%
+
+        <div className="flex items-baseline gap-2">
+          <span className="text-xs xl:text-sm font-medium text-muted-foreground">
+            Tingkat Kehadiran:
+          </span>
+          <span className="text-xl xl:text-3xl font-heading font-bold text-brand-green leading-none">
+            {clampedPercentage}%
+          </span>
         </div>
       </div>
 
-      {/* Progress Bar kustom sesuai design-system (trek #134B40, gradasi green-500 -> green-300) */}
-      <div className="w-full h-4 bg-[#134B40] rounded-full overflow-hidden p-0.5 border border-[#1F6252]">
+      {/* Progress Bar Ramping (h-2) agar ruang daftar hadir lebih luas */}
+      <div className="w-full h-2 xl:h-2.5 bg-[#134B40] rounded-full overflow-hidden border border-[#1F6252]">
         <div
           className="h-full rounded-full bg-gradient-to-r from-brand-green to-[#7ADBB2] transition-all duration-500 ease-out"
           style={{ width: `${clampedPercentage}%` }}
