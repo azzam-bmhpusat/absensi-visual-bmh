@@ -1,10 +1,10 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Printer, Download, ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { Printer, Download, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
+import QRCode from "qrcode";
 import {
   RoundedQr,
   resolveQrTargetUrl,
@@ -17,7 +17,39 @@ interface QrCardProps {
 
 export function QrCard({ siteUrl, eventName }: QrCardProps) {
   const svgRef = useRef<SVGSVGElement>(null);
+  const [copied, setCopied] = useState(false);
   const targetUrl = resolveQrTargetUrl(siteUrl);
+
+  // Hitung ukuran matriks QR nyata (jangan hardcode)
+  const qrMatrixSize = useMemo(() => {
+    try {
+      const qr = QRCode.create(targetUrl, { errorCorrectionLevel: "M" });
+      return qr.modules.size;
+    } catch {
+      return 29;
+    }
+  }, [targetUrl]);
+
+  // Ekstrak hostname nyata dari targetUrl
+  const targetHostname = useMemo(() => {
+    try {
+      return new URL(targetUrl).hostname;
+    } catch {
+      return targetUrl;
+    }
+  }, [targetUrl]);
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(targetUrl);
+      setCopied(true);
+      toast.success("Tautan presensi berhasil disalin!");
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Gagal menyalin tautan:", err);
+      toast.error("Gagal menyalin tautan ke clipboard.");
+    }
+  };
 
   const handlePrint = () => {
     window.print();
@@ -58,7 +90,6 @@ export function QrCard({ siteUrl, eventName }: QrCardProps) {
       const image = new Image();
       image.onload = () => {
         const canvas = document.createElement("canvas");
-        // Ukuran high-res 1200 x 1200 agar tetap tajam saat dicetak
         canvas.width = 1200;
         canvas.height = 1200;
         const ctx = canvas.getContext("2d");
@@ -73,7 +104,7 @@ export function QrCard({ siteUrl, eventName }: QrCardProps) {
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
-          toast.success("Gambar QR Code (PNG) berhasil diunduh!");
+          toast.success("Gambar QR Code (PNG) 1200×1200px berhasil diunduh!");
         }
         URL.revokeObjectURL(blobURL);
       };
@@ -85,55 +116,66 @@ export function QrCard({ siteUrl, eventName }: QrCardProps) {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto space-y-6">
-      {/* Navigasi & Aksi (Disembunyikan saat dicetak) */}
-      <div className="flex items-center justify-between print:hidden">
-        <Link
-          href="/admin"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink-muted hover:text-primary transition-colors py-2 px-3 rounded-xl hover:bg-white"
+    <div className="w-full max-w-xl mx-auto lg:mx-0 space-y-3 lg:space-y-4">
+      {/* Toolbar Aksi Minimalis */}
+      <div className="flex flex-wrap items-center gap-2 print:hidden">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleCopyLink}
+          className="h-8 px-2.5 rounded-xl text-[11px] font-semibold border-line text-primary hover:border-brand-green bg-white shadow-2xs transition-colors"
+          title="Salin tautan halaman absen"
         >
-          <ArrowLeft className="w-4 h-4" />
-          Panel Admin
-        </Link>
+          {copied ? (
+            <>
+              <Check className="w-3 h-3 mr-1 text-brand-green" />
+              <span className="text-brand-green font-bold">Tersalin</span>
+            </>
+          ) : (
+            <>
+              <Copy className="w-3 h-3 mr-1 text-ink-muted" />
+              Salin Tautan
+            </>
+          )}
+        </Button>
 
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleDownloadSvg}
-            className="h-9 px-3 rounded-xl text-xs font-semibold border-line text-primary hover:border-brand-green"
-            title="Unduh format vektor SVG"
-          >
-            <Download className="w-3.5 h-3.5 mr-1 text-brand-gold-text" />
-            SVG
-          </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleDownloadSvg}
+          className="h-8 px-2.5 rounded-xl text-[11px] font-semibold border-line text-primary hover:border-brand-green bg-white shadow-2xs transition-colors"
+          title="Unduh format vektor SVG murni"
+        >
+          <Download className="w-3 h-3 mr-1 text-ink-muted" />
+          SVG
+        </Button>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleDownloadPng}
-            className="h-9 px-3 rounded-xl text-xs font-semibold border-line text-primary hover:border-brand-green"
-            title="Unduh format gambar PNG resolusi tinggi"
-          >
-            <Download className="w-3.5 h-3.5 mr-1 text-brand-gold-text" />
-            PNG
-          </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleDownloadPng}
+          className="h-8 px-2.5 rounded-xl text-[11px] font-semibold border-line text-primary hover:border-brand-green bg-white shadow-2xs transition-colors"
+          title="Unduh gambar PNG 1200×1200px resolusi tinggi"
+        >
+          <Download className="w-3 h-3 mr-1 text-ink-muted" />
+          PNG
+        </Button>
 
-          <Button
-            size="sm"
-            onClick={handlePrint}
-            className="h-9 px-3.5 rounded-xl text-xs font-semibold bg-primary hover:bg-brand-green-deep text-white shadow-xs"
-          >
-            <Printer className="w-3.5 h-3.5 mr-1.5 text-brand-gold-soft" />
-            Cetak
-          </Button>
-        </div>
+        <Button
+          size="sm"
+          onClick={handlePrint}
+          className="h-8 px-3 rounded-xl text-[11px] font-semibold bg-primary hover:bg-[#0A3A30] text-white shadow-xs ml-auto transition-colors"
+          title="Buka dialog cetak dokumen (Ctrl+P)"
+        >
+          <Printer className="w-3 h-3 mr-1.5 text-[#3FBF8F]" />
+          Cetak
+        </Button>
       </div>
 
-      {/* Satu Kartu Putih Sederhana (radius 24px, border 1px #DDE7E2) */}
-      <div className="bg-white border border-[#DDE7E2] rounded-[24px] p-8 sm:p-10 shadow-xs text-center flex flex-col items-center justify-center space-y-5 print:border print:border-[#DDE7E2] print:rounded-[24px] print:shadow-none print:p-6 print:m-0 print:w-full print:max-w-[12cm] print:mx-auto">
-        {/* Render SVG Rounded QR Code */}
-        <div className="w-64 h-64 sm:w-72 sm:h-72 print:w-[7.5cm] print:h-[7.5cm] flex items-center justify-center">
+      {/* Kartu QR Putih Minimalis — ukuran QR responsif viewport */}
+      <div className="bg-white border border-[#DDE7E2] rounded-[24px] p-6 lg:p-7 xl:p-8 shadow-xs text-center flex flex-col items-center justify-center space-y-4 lg:space-y-3 print:border print:border-[#DDE7E2] print:rounded-[24px] print:shadow-none print:p-8 print:m-0 print:w-full print:max-w-[12cm] print:mx-auto">
+        {/* QR Code — sizing: max 60vh on desktop to prevent overflow */}
+        <div className="w-56 h-56 sm:w-64 sm:h-64 lg:w-[min(18rem,42vh)] lg:h-[min(18rem,42vh)] xl:w-[min(20rem,46vh)] xl:h-[min(20rem,46vh)] print:w-[7.5cm] print:h-[7.5cm] flex items-center justify-center select-none">
           <RoundedQr
             svgRef={svgRef}
             value={targetUrl}
@@ -145,21 +187,38 @@ export function QrCard({ siteUrl, eventName }: QrCardProps) {
           />
         </div>
 
-        {/* Teks "Scan untuk absen" di bawah QR (Poppins, hijau tua #134B40) */}
-        <div className="space-y-1.5 pt-1">
-          <h2 className="font-heading text-lg sm:text-xl font-bold text-[#134B40] tracking-tight">
-            Scan untuk registrasi
+        {/* Teks "Scan untuk absen" */}
+        <div className="space-y-1 pt-0.5">
+          <h2 className="font-heading text-lg sm:text-xl lg:text-xl font-bold text-[#134B40] tracking-tight">
+            Scan untuk absen
           </h2>
-          <p className="text-xs font-mono font-medium text-ink-muted break-all max-w-xs">
+          <p className="text-[11px] font-mono font-medium text-ink-muted break-all max-w-sm">
             {targetUrl}
           </p>
         </div>
 
         {eventName && (
-          <div className="text-[11px] text-ink-muted/80 tracking-wide font-medium pt-2 border-t border-line/60 w-full max-w-xs">
+          <div className="text-[10px] text-ink-muted/80 tracking-wide font-medium pt-2 border-t border-line/60 w-full max-w-sm">
             {eventName}
           </div>
         )}
+      </div>
+
+      {/* Baris Spesifikasi (Micro-badges Faktual) */}
+      <div
+        className="flex flex-wrap items-center justify-center lg:justify-start gap-1.5 print:hidden"
+        aria-label="Spesifikasi teknis QR code"
+      >
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md border border-line bg-white/70 text-ink-muted text-[10px] font-mono shadow-2xs">
+          <span className="w-1.5 h-1.5 rounded-full bg-brand-green" />
+          ECC: M
+        </span>
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md border border-line bg-white/70 text-ink-muted text-[10px] font-mono shadow-2xs">
+          Grid: {qrMatrixSize}×{qrMatrixSize}
+        </span>
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md border border-line bg-white/70 text-ink-muted text-[10px] font-mono shadow-2xs truncate max-w-[200px]">
+          {targetHostname}
+        </span>
       </div>
     </div>
   );

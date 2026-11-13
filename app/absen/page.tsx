@@ -6,9 +6,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 async function SessionPickerLoader() {
   let sessions: SessionItem[] = [
-    { id: 1, slug: "hari-1", nama: "Hari Pertama", is_active: true },
-    { id: 2, slug: "hari-2", nama: "Hari Kedua", is_active: true },
-    { id: 3, slug: "hari-3", nama: "Hari Ketiga", is_active: true },
+    { id: 1, slug: "hari-1-pagi", nama: "Absen Masuk Pagi", hari: 1, is_active: true },
+    { id: 2, slug: "hari-1-isoma", nama: "Masuk Setelah Isoma", hari: 1, is_active: true },
+    { id: 3, slug: "hari-1-malam", nama: "Masuk Setelah Makan Malam", hari: 1, is_active: true },
+    { id: 4, slug: "hari-2-pagi", nama: "Absen Masuk Pagi", hari: 2, is_active: true },
+    { id: 5, slug: "hari-2-isoma", nama: "Masuk Setelah Isoma", hari: 2, is_active: true },
+    { id: 6, slug: "hari-2-malam", nama: "Masuk Setelah Makan Malam", hari: 2, is_active: true },
+    { id: 7, slug: "hari-3-pagi", nama: "Absen Masuk Pagi", hari: 3, is_active: true },
+    { id: 8, slug: "hari-3-isoma", nama: "Masuk Setelah Isoma", hari: 3, is_active: true },
+    { id: 9, slug: "hari-3-malam", nama: "Masuk Setelah Makan Malam", hari: 3, is_active: true },
   ];
   let guests: GuestItem[] = [];
   let daerahList: string[] = [];
@@ -16,7 +22,7 @@ async function SessionPickerLoader() {
   try {
     const supabase = createPublicServerClient();
     const [sessRes, guestsRes] = await Promise.all([
-      supabase.from("sessions").select("id, slug, nama, tanggal, is_active").order("id"),
+      supabase.from("sessions").select("id, slug, nama, tanggal, hari, is_active").order("id"),
       supabase.from("guests").select("id, nama, perwakilan_daerah").order("nama"),
     ]);
 
@@ -57,7 +63,7 @@ function SessionPickerSkeleton() {
 
 export default function AbsenPage() {
   const eventName =
-    process.env.NEXT_PUBLIC_EVENT_NAME || "Silaturahim & Rakornas BMH";
+    process.env.NEXT_PUBLIC_EVENT_NAME || "Silaturahim & Rapat Kerja Nasional BMH";
 
   return (
     <main className="page-bg min-h-screen flex flex-col justify-between p-4 sm:p-6 pb-8">

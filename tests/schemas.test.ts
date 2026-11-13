@@ -22,17 +22,21 @@ describe("attendanceSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("menerima input valid sesi 3 (Hari Ketiga)", () => {
-    const result = attendanceSchema.safeParse({ ...validInput, sessionId: 3 });
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.sessionId).toBe(3);
+  it("menerima input valid sesi 3 hingga 9", () => {
+    const result3 = attendanceSchema.safeParse({ ...validInput, sessionId: 3 });
+    expect(result3.success).toBe(true);
+    const result9 = attendanceSchema.safeParse({ ...validInput, sessionId: 9 });
+    expect(result9.success).toBe(true);
+    if (result9.success) {
+      expect(result9.data.sessionId).toBe(9);
     }
   });
 
-  it("menolak sessionId selain 1, 2, atau 3", () => {
-    const result = attendanceSchema.safeParse({ ...validInput, sessionId: 4 });
-    expect(result.success).toBe(false);
+  it("menolak sessionId di luar rentang 1-9", () => {
+    const result0 = attendanceSchema.safeParse({ ...validInput, sessionId: 0 });
+    expect(result0.success).toBe(false);
+    const result10 = attendanceSchema.safeParse({ ...validInput, sessionId: 10 });
+    expect(result10.success).toBe(false);
   });
 
   it("trim dan kompres spasi ganda pada nama", () => {

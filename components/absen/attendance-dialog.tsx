@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -44,11 +45,21 @@ export function AttendanceDialog({
   const [state, setState] = useState<DialogState>("form");
   const [result, setResult] = useState<SubmitAttendanceResponse | null>(null);
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (state === "success") {
+      const timer = setTimeout(() => {
+        router.replace("/absen/selesai");
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [state, router]);
 
   const form = useForm<AttendanceInput>({
     resolver: zodResolver(attendanceSchema),
     defaultValues: {
-      sessionId: sessionId as 1 | 2 | 3,
+      sessionId: sessionId,
       guestId: "",
       nama: "",
       perwakilanDaerah: "",
@@ -84,7 +95,7 @@ export function AttendanceDialog({
     setState("form");
     setResult(null);
     form.reset({
-      sessionId: sessionId as 1 | 2 | 3,
+      sessionId: sessionId,
       guestId: "",
       nama: "",
       perwakilanDaerah: "",
@@ -225,13 +236,10 @@ export function AttendanceDialog({
                 Kehadiran Anda telah berhasil tercatat di {result.sesi}.
               </p>
             </div>
-            <Button
-              variant="secondary"
-              onClick={handleClose}
-              className="rounded-xl h-11 px-8 text-primary font-semibold hover:bg-secondary/80 border border-brand-green/20 cursor-pointer"
-            >
-              Tutup
-            </Button>
+            <div className="pt-2 flex items-center justify-center gap-2 text-xs text-ink-muted">
+              <Loader2 className="w-4 h-4 animate-spin text-brand-green" />
+              <span>Mengalihkan ke halaman selesai...</span>
+            </div>
           </div>
         )}
 

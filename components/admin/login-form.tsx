@@ -20,7 +20,7 @@ export function AdminLoginForm() {
   useEffect(() => {
     if (state?.success) {
       toast.success("Login berhasil! Mengalihkan ke panel admin...");
-      router.push("/admin");
+      router.push("/dashboard");
       router.refresh();
     }
   }, [state, router]);

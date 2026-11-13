@@ -38,8 +38,26 @@ export async function updateSession(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  // Proteksi rute /admin/* kecuali /admin/login
-  if (pathname.startsWith("/admin") && !pathname.startsWith("/admin/login")) {
+  // Daftar rute admin yang wajib login
+  const protectedAdminPaths = [
+    "/dashboard",
+    "/guest",
+    "/rekap-kehadiran",
+    "/kelola-sesi-acara",
+    "/admin",
+  ];
+
+  const isProtectedPath = protectedAdminPaths.some((p) => pathname.startsWith(p));
+
+  // Redirect /admin langsung ke /dashboard jika sudah atau belum login
+  if (pathname === "/admin" || pathname === "/admin/") {
+    const dashboardUrl = request.nextUrl.clone();
+    dashboardUrl.pathname = "/dashboard";
+    return NextResponse.redirect(dashboardUrl);
+  }
+
+  // Proteksi rute admin kecuali halaman login /admin/login
+  if (isProtectedPath && !pathname.startsWith("/admin/login")) {
     if (!user) {
       const loginUrl = request.nextUrl.clone();
       loginUrl.pathname = "/admin/login";
@@ -47,11 +65,11 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
-  // Jika sudah terautentikasi dan membuka /admin/login, alihkan ke /admin
+  // Jika sudah terautentikasi dan membuka /admin/login, alihkan ke /dashboard
   if (pathname.startsWith("/admin/login") && user) {
-    const adminUrl = request.nextUrl.clone();
-    adminUrl.pathname = "/admin";
-    return NextResponse.redirect(adminUrl);
+    const dashboardUrl = request.nextUrl.clone();
+    dashboardUrl.pathname = "/dashboard";
+    return NextResponse.redirect(dashboardUrl);
   }
 
   return response;

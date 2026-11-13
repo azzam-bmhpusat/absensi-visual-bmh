@@ -8,8 +8,12 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Cocokkan semua path request kecuali untuk file statis Next.js, gambar, favicon
+     * Cocokkan semua path request admin dan dashboard
      */
     "/admin/:path*",
+    "/dashboard/:path*",
+    "/guest/:path*",
+    "/rekap-kehadiran/:path*",
+    "/kelola-sesi-acara/:path*",
   ],
 };

@@ -194,6 +194,132 @@ export async function deleteGuestAction(
 }
 
 /**
+ * Menambahkan 1 tamu baru secara manual dari form admin
+ */
+export async function addGuestAction(
+  data: GuestRowInput
+): Promise<ActionResult<{ id: string }>> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return {
+      success: false,
+      error: "Akses ditolak. Anda harus login sebagai admin.",
+    };
+  }
+
+  const parse = guestRowSchema.safeParse(data);
+  if (!parse.success) {
+    return {
+      success: false,
+      error: "Format input nama atau perwakilan daerah tidak valid.",
+    };
+  }
+
+  try {
+    const admin = createAdminClient();
+    const { data: inserted, error } = await admin
+      .from("guests")
+      .insert({
+        nama: parse.data.nama,
+        perwakilan_daerah: parse.data.perwakilan_daerah,
+      })
+      .select("id")
+      .maybeSingle();
+
+    if (error) {
+      if (error.code === "23505") {
+        return {
+          success: false,
+          error: "Tamu dengan nama dan daerah ini sudah terdaftar.",
+        };
+      }
+      return {
+        success: false,
+        error: "Gagal menambahkan tamu: " + error.message,
+      };
+    }
+
+    revalidatePath("/admin");
+    revalidatePath("/absen");
+    revalidatePath("/display");
+
+    return {
+      success: true,
+      message: "Tamu berhasil ditambahkan.",
+      data: { id: inserted?.id || "" },
+    };
+  } catch (err) {
+    console.error("Error addGuestAction:", err);
+    return { success: false, error: "Terjadi kesalahan saat menambahkan tamu." };
+  }
+}
+
+/**
+ * Memperbarui data tamu (nama / perwakilan daerah)
+ */
+export async function updateGuestAction(
+  guestId: string,
+  data: GuestRowInput
+): Promise<ActionResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return {
+      success: false,
+      error: "Akses ditolak. Anda harus login sebagai admin.",
+    };
+  }
+
+  const parse = guestRowSchema.safeParse(data);
+  if (!parse.success) {
+    return {
+      success: false,
+      error: "Format input nama atau perwakilan daerah tidak valid.",
+    };
+  }
+
+  try {
+    const admin = createAdminClient();
+    const { error } = await admin
+      .from("guests")
+      .update({
+        nama: parse.data.nama,
+        perwakilan_daerah: parse.data.perwakilan_daerah,
+      })
+      .eq("id", guestId);
+
+    if (error) {
+      if (error.code === "23505") {
+        return {
+          success: false,
+          error: "Tamu lain dengan nama dan daerah ini sudah terdaftar.",
+        };
+      }
+      return {
+        success: false,
+        error: "Gagal memperbarui tamu: " + error.message,
+      };
+    }
+
+    revalidatePath("/admin");
+    revalidatePath("/absen");
+    revalidatePath("/display");
+
+    return { success: true, message: "Data tamu berhasil diperbarui." };
+  } catch (err) {
+    console.error("Error updateGuestAction:", err);
+    return { success: false, error: "Gagal memperbarui data tamu." };
+  }
+}
+
+/**
  * Menghapus catatan absensi (FR-18)
  */
 export async function deleteAttendanceAction(

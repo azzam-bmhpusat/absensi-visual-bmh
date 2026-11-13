@@ -20,14 +20,20 @@ async function DisplayLoader({ searchParams }: { searchParams: Promise<{ [key: s
 
   const eventName =
     process.env.NEXT_PUBLIC_EVENT_NAME ||
-    "Silaturahim & Rapat Koordinasi Nasional BMH";
+    "Silaturahim & Rapat Kerja Nasional BMH";
 
   const supabase = createPublicServerClient();
 
   let sessions: SessionData[] = [
-    { id: 1, slug: "hari-1", nama: "Hari Pertama" },
-    { id: 2, slug: "hari-2", nama: "Hari Kedua" },
-    { id: 3, slug: "hari-3", nama: "Hari Ketiga" },
+    { id: 1, slug: "hari-1-pagi", nama: "Absen Masuk Pagi", hari: 1 },
+    { id: 2, slug: "hari-1-isoma", nama: "Masuk Setelah Isoma", hari: 1 },
+    { id: 3, slug: "hari-1-malam", nama: "Masuk Setelah Makan Malam", hari: 1 },
+    { id: 4, slug: "hari-2-pagi", nama: "Absen Masuk Pagi", hari: 2 },
+    { id: 5, slug: "hari-2-isoma", nama: "Masuk Setelah Isoma", hari: 2 },
+    { id: 6, slug: "hari-2-malam", nama: "Masuk Setelah Makan Malam", hari: 2 },
+    { id: 7, slug: "hari-3-pagi", nama: "Absen Masuk Pagi", hari: 3 },
+    { id: 8, slug: "hari-3-isoma", nama: "Masuk Setelah Isoma", hari: 3 },
+    { id: 9, slug: "hari-3-malam", nama: "Masuk Setelah Makan Malam", hari: 3 },
   ];
   let guests: GuestData[] = [];
   let attendances: AttendanceData[] = [];
@@ -36,7 +42,7 @@ async function DisplayLoader({ searchParams }: { searchParams: Promise<{ [key: s
     const [sessRes, guestsRes] = await Promise.all([
       supabase
         .from("sessions")
-        .select("id, slug, nama, tanggal, is_active")
+        .select("id, slug, nama, tanggal, hari, is_active")
         .order("id", { ascending: true }),
       supabase
         .from("guests")
@@ -79,8 +85,6 @@ async function DisplayLoader({ searchParams }: { searchParams: Promise<{ [key: s
       <DisplayHeader
         eventName={eventName}
         sessionName={activeSession.nama}
-        sessions={sessions}
-        activeSessionId={activeSession.id}
       />
 
       <AttendanceBoard

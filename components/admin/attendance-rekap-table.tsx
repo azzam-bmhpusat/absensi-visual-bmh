@@ -7,7 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -38,6 +41,8 @@ import {
   MapPin,
   Calendar,
   Loader2,
+  Award,
+  AlertCircle,
 } from "lucide-react";
 import {
   exportAttendanceToCsv,
@@ -68,6 +73,7 @@ export function AttendanceRekapTable({
   sessions,
 }: AttendanceRekapTableProps) {
   const router = useRouter();
+  const [selectedDay, setSelectedDay] = useState<string>("all");
   const [selectedSessionId, setSelectedSessionId] = useState<string>("all");
   const [selectedDaerah, setSelectedDaerah] = useState<string>("all");
   const [search, setSearch] = useState("");
@@ -83,15 +89,77 @@ export function AttendanceRekapTable({
     return Array.from(set).sort((a, b) => a.localeCompare(b, "id"));
   }, [attendances]);
 
-  // Sesi map untuk lookup cepat nama sesi
-  const sessionNameMap = useMemo(() => {
-    return new Map<number, string>(sessions.map((s) => [s.id, s.nama]));
+  // Sesi map untuk lookup cepat nama sesi dan hari
+  const sessionInfoMap = useMemo(() => {
+    return new Map<number, { nama: string; hari: number }>(
+      sessions.map((s) => [
+        s.id,
+        {
+          nama: s.nama,
+          hari: s.hari ?? (s.id <= 3 ? 1 : s.id <= 6 ? 2 : 3),
+        },
+      ])
+    );
   }, [sessions]);
+
+  // Hitung peringkat (rank) per sesi:
+  // Urutkan per sesi dari yang tercepat (checked_in_at ascending).
+  // 3 orang pertama dapat label "first" (🏅 3 Pertama).
+  // 5 orang terakhir dapat label "last" (⏰ 5 Terakhir) - hanya jika belum masuk 3 pertama.
+  const rankByAttendanceId = useMemo(() => {
+    const result = new Map<string, "first" | "last">();
+
+    // Kelompokkan kehadiran per session_id
+    const grouped = new Map<number, AttendanceItem[]>();
+    attendances.forEach((a) => {
+      const list = grouped.get(a.session_id) || [];
+      list.push(a);
+      grouped.set(a.session_id, list);
+    });
+
+    grouped.forEach((sessionItems) => {
+      // Urutkan dari yang pertama kali absen (earliest first)
+      const sorted = [...sessionItems].sort(
+        (a, b) =>
+          new Date(a.checked_in_at).getTime() -
+          new Date(b.checked_in_at).getTime()
+      );
+
+      const totalInSession = sorted.length;
+
+      sorted.forEach((item, index) => {
+        if (index < 3) {
+          result.set(item.id, "first");
+        } else if (index >= totalInSession - 5) {
+          result.set(item.id, "last");
+        }
+      });
+    });
+
+    return result;
+  }, [attendances]);
+
+  // Sesi yang tersedia di dropdown sesi sesuai filter hari yang dipilih
+  const availableSessions = useMemo(() => {
+    if (selectedDay === "all") return sessions;
+    const targetDay = Number(selectedDay);
+    return sessions.filter(
+      (s) => (s.hari ?? (s.id <= 3 ? 1 : s.id <= 6 ? 2 : 3)) === targetDay
+    );
+  }, [sessions, selectedDay]);
 
   // Filter attendances
   const filteredAttendances = useMemo(() => {
     return attendances.filter((item) => {
-      // Filter sesi
+      const info = sessionInfoMap.get(item.session_id);
+      const sessionDay = info?.hari ?? (item.session_id <= 3 ? 1 : item.session_id <= 6 ? 2 : 3);
+
+      // Filter hari
+      if (selectedDay !== "all") {
+        if (sessionDay !== Number(selectedDay)) return false;
+      }
+
+      // Filter sesi spesifik
       if (selectedSessionId !== "all") {
         if (item.session_id !== Number(selectedSessionId)) return false;
       }
@@ -111,7 +179,7 @@ export function AttendanceRekapTable({
 
       return true;
     });
-  }, [attendances, selectedSessionId, selectedDaerah, search]);
+  }, [attendances, selectedDay, selectedSessionId, selectedDaerah, search, sessionInfoMap]);
 
   // Metrik statistik
   const metrics = useMemo(() => {
@@ -213,25 +281,119 @@ export function AttendanceRekapTable({
       {/* Kontrol Filter & Ekspor */}
       <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-line shadow-2xs">
         <div className="flex flex-wrap items-center gap-2.5 flex-1">
-          {/* Filter Sesi */}
+          {/* Filter Hari */}
           <div className="w-44">
+            <Select
+              value={selectedDay}
+              onValueChange={(val) => {
+                setSelectedDay(val ?? "all");
+                setSelectedSessionId("all");
+              }}
+            >
+              <SelectTrigger className="h-9 rounded-xl border-line text-xs">
+                <Calendar className="w-3.5 h-3.5 mr-1.5 text-brand-green" />
+                <SelectValue placeholder="Semua Hari" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl">
+                <SelectItem value="all" className="text-xs">
+                  Semua Hari
+                </SelectItem>
+                <SelectItem value="1" className="text-xs">
+                  Hari Pertama
+                </SelectItem>
+                <SelectItem value="2" className="text-xs">
+                  Hari Kedua
+                </SelectItem>
+                <SelectItem value="3" className="text-xs">
+                  Hari Ketiga
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Filter Sesi */}
+          <div className="w-64">
             <Select
               value={selectedSessionId}
               onValueChange={(val) => setSelectedSessionId(val ?? "all")}
             >
               <SelectTrigger className="h-9 rounded-xl border-line text-xs">
-                <Calendar className="w-3.5 h-3.5 mr-1.5 text-brand-green" />
-                <SelectValue placeholder="Pilih Sesi" />
+                <Clock className="w-3.5 h-3.5 mr-1.5 text-brand-gold-text" />
+                <SelectValue placeholder="Pilih Sesi Acara" />
               </SelectTrigger>
-              <SelectContent className="rounded-xl">
-                <SelectItem value="all" className="text-xs">
-                  Semua Sesi
-                </SelectItem>
-                {sessions.map((s) => (
-                  <SelectItem key={s.id} value={String(s.id)} className="text-xs">
-                    {s.nama}
-                  </SelectItem>
-                ))}
+              <SelectContent className="rounded-xl max-h-72">
+                {selectedDay === "all" ? (
+                  <>
+                    <SelectItem value="all" className="text-xs font-medium">
+                      Semua Sesi (9 Sesi)
+                    </SelectItem>
+                    <SelectSeparator className="my-1" />
+
+                    {[1, 2, 3].map((dayNum) => {
+                      const dayTitle =
+                        dayNum === 1
+                          ? "Hari Pertama"
+                          : dayNum === 2
+                          ? "Hari Kedua"
+                          : "Hari Ketiga";
+                      const daySessions = sessions.filter(
+                        (s) => (s.hari ?? (s.id <= 3 ? 1 : s.id <= 6 ? 2 : 3)) === dayNum
+                      );
+
+                      return (
+                        <SelectGroup key={`group-day-${dayNum}`}>
+                          <SelectLabel className="text-[11px] font-bold text-primary px-2 py-1">
+                            {dayTitle}
+                          </SelectLabel>
+                          {daySessions.map((s) => {
+                            const localOrder = ((s.id - 1) % 3) + 1;
+                            return (
+                              <SelectItem
+                                key={s.id}
+                                value={String(s.id)}
+                                className="text-xs pl-4"
+                              >
+                                {`Sesi ${localOrder}: ${s.nama}`}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectGroup>
+                      );
+                    })}
+                  </>
+                ) : (
+                  <>
+                    <SelectItem value="all" className="text-xs font-semibold">
+                      {selectedDay === "1"
+                        ? "Semua Sesi Hari Pertama"
+                        : selectedDay === "2"
+                        ? "Semua Sesi Hari Kedua"
+                        : "Semua Sesi Hari Ketiga"}
+                    </SelectItem>
+                    <SelectSeparator className="my-1" />
+                    <SelectGroup>
+                      <SelectLabel className="text-[11px] font-bold text-primary px-2 py-1">
+                        {selectedDay === "1"
+                          ? "Hari Pertama:"
+                          : selectedDay === "2"
+                          ? "Hari Kedua:"
+                          : "Hari Ketiga:"}
+                      </SelectLabel>
+                      {availableSessions.map((s) => {
+                        const localOrder = ((s.id - 1) % 3) + 1;
+                        return (
+                          <SelectItem
+                            key={s.id}
+                            value={String(s.id)}
+                            className="text-xs pl-3"
+                          >
+                            {`Sesi ${localOrder}: ${s.nama}`}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectGroup>
+                  </>
+                )}
               </SelectContent>
             </Select>
           </div>
@@ -290,11 +452,14 @@ export function AttendanceRekapTable({
               <TableHead className="w-12 text-center text-xs font-bold text-primary">
                 No
               </TableHead>
-              <TableHead className="w-44 text-xs font-bold text-primary">
+              <TableHead className="w-40 text-xs font-bold text-primary">
                 Waktu Presensi (WIB)
               </TableHead>
-              <TableHead className="w-32 text-xs font-bold text-primary">
-                Sesi
+              <TableHead className="w-20 text-center text-xs font-bold text-primary">
+                Hari
+              </TableHead>
+              <TableHead className="w-36 text-xs font-bold text-primary">
+                Sesi Acara
               </TableHead>
               <TableHead className="text-xs font-bold text-primary">
                 Nama Tamu
@@ -302,10 +467,13 @@ export function AttendanceRekapTable({
               <TableHead className="text-xs font-bold text-primary">
                 Perwakilan Daerah
               </TableHead>
-              <TableHead className="w-36 text-center text-xs font-bold text-primary">
+              <TableHead className="w-28 text-center text-xs font-bold text-primary">
                 Status
               </TableHead>
-              <TableHead className="w-16 text-center text-xs font-bold text-primary">
+              <TableHead className="w-28 text-center text-xs font-bold text-primary">
+                Peringkat
+              </TableHead>
+              <TableHead className="w-14 text-center text-xs font-bold text-primary">
                 Aksi
               </TableHead>
             </TableRow>
@@ -314,7 +482,7 @@ export function AttendanceRekapTable({
             {filteredAttendances.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={9}
                   className="h-36 text-center text-xs text-ink-muted py-8"
                 >
                   <Clock className="w-8 h-8 text-ink-muted/40 mx-auto mb-2" />
@@ -323,9 +491,13 @@ export function AttendanceRekapTable({
               </TableRow>
             ) : (
               filteredAttendances.map((item, idx) => {
+                const sessionInfo = sessionInfoMap.get(item.session_id);
                 const sessionName =
-                  sessionNameMap.get(item.session_id) || `Sesi ${item.session_id}`;
+                  sessionInfo?.nama || `Sesi ${item.session_id}`;
+                const sessionDay =
+                  sessionInfo?.hari ?? (item.session_id <= 3 ? 1 : item.session_id <= 6 ? 2 : 3);
                 const wibTime = formatToWibDateTime(item.checked_in_at);
+                const rank = rankByAttendanceId.get(item.id);
 
                 return (
                   <TableRow
@@ -335,8 +507,16 @@ export function AttendanceRekapTable({
                     <TableCell className="text-center text-xs text-ink-muted font-medium">
                       {idx + 1}
                     </TableCell>
-                    <TableCell className="text-xs text-ink-muted font-mono">
+                    <TableCell className="text-xs text-ink-muted font-mono whitespace-nowrap">
                       {wibTime}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] font-semibold border-line bg-muted/60"
+                      >
+                        Hari {sessionDay}
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-xs font-medium text-primary">
                       {sessionName}
@@ -349,13 +529,28 @@ export function AttendanceRekapTable({
                     </TableCell>
                     <TableCell className="text-center">
                       {item.is_walk_in ? (
-                        <Badge className="bg-gold-100 text-brand-gold-text border-gold-300 text-[11px] font-semibold hover:bg-gold-100">
+                        <Badge className="bg-gold-100 text-brand-gold-text border-gold-300 text-[10px] font-semibold hover:bg-gold-100">
                           Tamu Baru
                         </Badge>
                       ) : (
-                        <Badge className="bg-green-100 text-brand-green-deep border-green-300 text-[11px] font-semibold hover:bg-green-100">
+                        <Badge className="bg-green-100 text-brand-green-deep border-green-300 text-[10px] font-semibold hover:bg-green-100">
                           Terdaftar
                         </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {rank === "first" ? (
+                        <Badge className="bg-amber-100 text-amber-900 border-amber-300 text-[10px] font-bold hover:bg-amber-100 inline-flex items-center gap-1">
+                          <Award className="w-3 h-3 text-amber-600" />
+                          3 Pertama
+                        </Badge>
+                      ) : rank === "last" ? (
+                        <Badge className="bg-rose-100 text-rose-800 border-rose-300 text-[10px] font-bold hover:bg-rose-100 inline-flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3 text-rose-600" />
+                          5 Terakhir
+                        </Badge>
+                      ) : (
+                        <span className="text-[11px] text-ink-muted/50">-</span>
                       )}
                     </TableCell>
                     <TableCell className="text-center">
@@ -395,7 +590,7 @@ export function AttendanceRekapTable({
               </strong>{" "}
               di sesi{" "}
               <strong className="text-primary font-semibold">
-                {sessionNameMap.get(selectedDelete?.session_id || 0) ||
+                {sessionInfoMap.get(selectedDelete?.session_id || 0)?.nama ||
                   `Sesi ${selectedDelete?.session_id}`}
               </strong>
               ? Peserta ini akan dapat melakukan presensi ulang jika diperlukan.

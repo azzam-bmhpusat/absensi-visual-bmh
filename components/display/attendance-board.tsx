@@ -14,6 +14,7 @@ import { WelcomeBanner, type WelcomeItem } from "./welcome-banner";
 import { AutoScrollContainer } from "./auto-scroll-container";
 import { AnimatePresence, motion } from "motion/react";
 import { Wifi, WifiOff } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface AttendanceBoardProps {
   initialSessions: SessionData[];
@@ -23,10 +24,12 @@ interface AttendanceBoardProps {
 }
 
 export function AttendanceBoard({
+  initialSessions = [],
   activeSession,
   initialGuests,
   initialAttendances,
 }: AttendanceBoardProps) {
+  const router = useRouter();
   const [guests, setGuests] = useState<GuestData[]>(initialGuests);
   const [attendances, setAttendances] =
     useState<AttendanceData[]>(initialAttendances);
@@ -196,6 +199,41 @@ export function AttendanceBoard({
 
       {/* Banner Sambutan 5 Detik */}
       <WelcomeBanner queue={welcomeQueue} onDismiss={handleDismissWelcome} />
+
+      {/* Navigasi 9 Sesi Acara Berada di Tengah di Atas Kolom Sudah & Belum Hadir */}
+      {initialSessions && initialSessions.length > 1 && (
+        <div className="flex items-center justify-center my-2">
+          <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-black/35 border border-white/10 shadow-lg max-w-full overflow-x-auto">
+            {initialSessions.map((s) => {
+              const isCurrent = s.id === activeSession.id;
+              const h = s.hari ?? (s.id <= 3 ? 1 : s.id <= 6 ? 2 : 3);
+              const shortName = s.nama.includes("Pagi")
+                ? "Pagi"
+                : s.nama.includes("Isoma")
+                ? "Isoma"
+                : s.nama.includes("Malam")
+                ? "Malam"
+                : s.nama;
+
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => router.push(`/display?sesi=${s.id}`)}
+                  type="button"
+                  className={`px-3 py-1.5 rounded-xl text-xs xl:text-sm font-heading font-semibold transition-all cursor-pointer select-none whitespace-nowrap ${
+                    isCurrent
+                      ? "bg-brand-gold-soft text-[#0A3A30] shadow-md scale-100 font-bold"
+                      : "text-white/70 hover:text-white hover:bg-white/10"
+                  }`}
+                  title={`Hari ${h}: ${s.nama}`}
+                >
+                  {`H${h}: ${shortName}`}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Dua Kolom 50/50: Sudah Hadir & Belum Hadir */}
       <div className="grid grid-cols-2 gap-8 flex-1 min-h-0 overflow-hidden my-2">

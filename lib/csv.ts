@@ -162,6 +162,7 @@ export interface AttendanceExportItem {
 export interface SessionInfo {
   id: number;
   nama: string;
+  hari?: number;
 }
 
 /**

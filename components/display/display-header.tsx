@@ -1,24 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { formatWibClock, type SessionData } from "@/lib/display-helpers";
+import { formatWibClock } from "@/lib/display-helpers";
 import { Maximize2, Minimize2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 interface DisplayHeaderProps {
   eventName: string;
   sessionName: string;
-  sessions?: SessionData[];
-  activeSessionId?: number;
 }
 
 export function DisplayHeader({
   eventName,
   sessionName,
-  sessions = [],
-  activeSessionId,
 }: DisplayHeaderProps) {
-  const router = useRouter();
   const [clock, setClock] = useState<string>("");
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
@@ -58,10 +52,6 @@ export function DisplayHeader({
     }
   };
 
-  const handleSelectSession = (sessionId: number) => {
-    router.push(`/display?sesi=${sessionId}`);
-  };
-
   return (
     <header className="flex items-center justify-between min-h-[84px] xl:min-h-[90px] border-b border-border/40 pb-3 xl:pb-4 gap-4 flex-wrap">
       {/* Kolom Kiri: Judul Acara & Subjudul */}
@@ -73,30 +63,6 @@ export function DisplayHeader({
           {eventName}
         </h1>
       </div>
-
-      {/* Kolom Tengah: Session Switcher Pills (Hari 1, Hari 2, Hari 3) */}
-      {sessions && sessions.length > 1 && (
-        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-black/20 border border-white/10 shadow-xs">
-          {sessions.map((s) => {
-            const isCurrent = s.id === activeSessionId;
-            return (
-              <button
-                key={s.id}
-                onClick={() => handleSelectSession(s.id)}
-                type="button"
-                className={`px-3 py-1.5 rounded-xl text-xs xl:text-sm font-heading font-semibold transition-all cursor-pointer select-none ${
-                  isCurrent
-                    ? "bg-brand-gold-soft text-[#0A3A30] shadow-2xs scale-100"
-                    : "text-white/70 hover:text-white hover:bg-white/10"
-                }`}
-                title={`Beralih ke ${s.nama}`}
-              >
-                {s.nama}
-              </button>
-            );
-          })}
-        </div>
-      )}
 
       {/* Kolom Kanan: Sesi Aktif, Jam Digital WIB, dan Tombol Fullscreen */}
       <div className="flex items-center gap-3 xl:gap-4 ml-auto">

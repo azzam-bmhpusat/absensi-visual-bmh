@@ -2,6 +2,7 @@ export interface SessionData {
   id: number;
   slug: string;
   nama: string;
+  hari?: number;
   tanggal?: string | null;
   is_active?: boolean;
 }

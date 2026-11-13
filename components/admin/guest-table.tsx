@@ -26,8 +26,11 @@ import {
   Users,
   MapPin,
   Loader2,
+  UserPlus,
+  Pencil,
 } from "lucide-react";
 import { CsvImportDialog } from "./csv-import-dialog";
+import { GuestFormDialog } from "./guest-form-dialog";
 import { generateGuestCsvTemplate, type ExistingGuestLookup } from "@/lib/csv";
 import { deleteGuestAction } from "@/app/admin/actions";
 import { toast } from "sonner";
@@ -48,6 +51,8 @@ export function GuestTable({ initialGuests }: GuestTableProps) {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [selectedDeleteGuest, setSelectedDeleteGuest] = useState<GuestItem | null>(null);
+  const [editingGuest, setEditingGuest] = useState<GuestItem | null>(null);
+  const [isAddOpen, setIsAddOpen] = useState(false);
   const [isDeleting, startDeleteTransition] = useTransition();
 
   const existingLookup: ExistingGuestLookup[] = useMemo(() => {
@@ -110,14 +115,22 @@ export function GuestTable({ initialGuests }: GuestTableProps) {
           />
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+          <Button
+            onClick={() => setIsAddOpen(true)}
+            className="h-10 px-3.5 rounded-xl bg-primary hover:bg-brand-green-deep text-white text-xs font-semibold shadow-xs"
+          >
+            <UserPlus className="w-4 h-4 mr-1.5 text-brand-gold-soft" />
+            Tambah Tamu
+          </Button>
+
           <Button
             variant="outline"
             onClick={handleDownloadTemplate}
             className="h-10 px-3.5 rounded-xl border-line text-primary hover:border-brand-green text-xs font-semibold shadow-2xs"
           >
             <Download className="w-4 h-4 mr-1.5 text-brand-gold-text" />
-            Unduh Template CSV
+            Template CSV
           </Button>
 
           <CsvImportDialog
@@ -156,7 +169,7 @@ export function GuestTable({ initialGuests }: GuestTableProps) {
               <TableHead className="text-xs font-bold text-primary">
                 Perwakilan Daerah
               </TableHead>
-              <TableHead className="w-20 text-center text-xs font-bold text-primary">
+              <TableHead className="w-24 text-center text-xs font-bold text-primary">
                 Aksi
               </TableHead>
             </TableRow>
@@ -193,15 +206,26 @@ export function GuestTable({ initialGuests }: GuestTableProps) {
                     </span>
                   </TableCell>
                   <TableCell className="text-center">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setSelectedDeleteGuest(guest)}
-                      className="w-8 h-8 text-ink-muted hover:text-danger hover:bg-red-50 rounded-lg transition-colors"
-                      title="Hapus data tamu"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
+                    <div className="flex items-center justify-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setEditingGuest(guest)}
+                        className="w-8 h-8 text-ink-muted hover:text-primary hover:bg-secondary rounded-lg transition-colors"
+                        title="Edit data tamu"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setSelectedDeleteGuest(guest)}
+                        className="w-8 h-8 text-ink-muted hover:text-danger hover:bg-red-50 rounded-lg transition-colors"
+                        title="Hapus data tamu"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
@@ -257,6 +281,18 @@ export function GuestTable({ initialGuests }: GuestTableProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {/* Dialog Form Tambah / Edit Tamu */}
+      <GuestFormDialog
+        open={isAddOpen || Boolean(editingGuest)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setIsAddOpen(false);
+            setEditingGuest(null);
+          }
+        }}
+        guest={editingGuest}
+        onSuccess={() => router.refresh()}
+      />
     </div>
   );
 }

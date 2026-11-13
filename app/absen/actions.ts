@@ -12,9 +12,17 @@ export type SubmitAttendanceResponse =
   | { status: "error"; message?: string; fieldErrors?: Record<string, string[]> };
 
 function getSessionLabel(sessionId: number): string {
-  if (sessionId === 1) return "Hari Pertama";
-  if (sessionId === 2) return "Hari Kedua";
-  if (sessionId === 3) return "Hari Ketiga";
+  const hariNames = ["Hari Pertama", "Hari Kedua", "Hari Ketiga"];
+  const sesiNames = [
+    "Absen Masuk Pagi",
+    "Masuk Setelah Isoma",
+    "Masuk Setelah Makan Malam",
+  ];
+  const hariIdx = Math.floor((sessionId - 1) / 3);
+  const sesiIdx = (sessionId - 1) % 3;
+  if (hariIdx >= 0 && hariIdx < 3 && sesiIdx >= 0 && sesiIdx < 3) {
+    return `${hariNames[hariIdx]} - ${sesiNames[sesiIdx]}`;
+  }
   return `Sesi ${sessionId}`;
 }
 
