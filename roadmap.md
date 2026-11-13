@@ -56,17 +56,17 @@
 
 **Tujuan:** peserta bisa absen end-to-end.
 
-- [ ] `app/page.tsx`: redirect ke `/absen`
-- [ ] `session-picker.tsx`: dua kartu besar (Hari Pertama / Hari Kedua) sesuai design system
-- [ ] `attendance-dialog.tsx`: shadcn Dialog + react-hook-form + zod
-- [ ] `name-combobox.tsx`: Command + Popover; sumber data `guests`; boleh ketik bebas (walk-in); pilih tamu → isi daerah otomatis
-- [ ] Field Perwakilan Daerah dengan saran dari daftar daerah unik
-- [ ] Honeypot field `website` (tersembunyi dari user, `tabIndex=-1`, `autoComplete="off"`)
-- [ ] `lib/rate-limit.ts` (in-memory, 10/menit/IP)
-- [ ] `app/absen/actions.ts`: `submitAttendance` sesuai PRD bagian 10
-- [ ] State dialog: *form → pending → sukses* dan *already* (nada ramah, bukan error)
-- [ ] Toast/pesan error inline berbahasa Indonesia
-- [ ] Uji di viewport 360×640
+- [x] `app/page.tsx`: redirect ke `/absen`
+- [x] `session-picker.tsx`: dua kartu besar (Hari Pertama / Hari Kedua) sesuai design system
+- [x] `attendance-dialog.tsx`: shadcn Dialog + react-hook-form + zod
+- [x] `name-combobox.tsx`: Command + Popover; sumber data `guests`; boleh ketik bebas (walk-in); pilih tamu → isi daerah otomatis
+- [x] Field Perwakilan Daerah dengan saran dari daftar daerah unik
+- [x] Honeypot field `website` (tersembunyi dari user, `tabIndex=-1`, `autoComplete="off"`)
+- [x] `lib/rate-limit.ts` (in-memory, 10/menit/IP)
+- [x] `app/absen/actions.ts`: `submitAttendance` sesuai PRD bagian 10
+- [x] State dialog: *form → pending → sukses* dan *already* (nada ramah, bukan error)
+- [x] Toast/pesan error inline berbahasa Indonesia
+- [x] Uji di viewport 360×640
 
 **DoD:**
 - Absen tamu terdaftar → baris baru di `attendances` dengan `guest_id` terisi.
@@ -81,20 +81,20 @@
 
 **Tujuan:** layar realtime siap tayang.
 
-- [ ] `app/display/page.tsx`: baca `?sesi=`; fallback sesuai tanggal WIB lalu sesi 1; ambil data awal di server
-- [ ] `attendance-board.tsx` (client): state `guests`, `attendances`; derivasi `hadir`, `belumHadir`, `total`
-- [ ] Subscribe Realtime (INSERT, filter `session_id`); cleanup saat unmount
-- [ ] Fallback refetch penuh tiap 30 dtk
-- [ ] Indikator koneksi kecil ("Terhubung" / "Menyambung ulang…")
-- [ ] Header: nama acara, sesi, jam WIB
-- [ ] Counter + progress bar (`Hadir / Total`)
-- [ ] Dua kolom: **Sudah Hadir** (terbaru di atas) dan **Belum Hadir** (urut daerah → nama)
-- [ ] `guest-chip.tsx`: chip nama + daerah; varian hadir, belum hadir, walk-in
-- [ ] Animasi masuk nama baru dan keluar dari "Belum Hadir" (`motion` layout animation)
-- [ ] `welcome-banner.tsx`: sambutan 5 dtk dengan antrean
-- [ ] Auto-scroll pelan untuk kolom yang overflow (berhenti jika muat)
-- [ ] Tema gelap hijau tua penuh layar (lihat design system), optimasi 1920×1080
-- [ ] Sembunyikan kursor setelah idle; tanpa scrollbar terlihat
+- [x] `app/display/page.tsx`: baca `?sesi=`; fallback sesuai tanggal WIB lalu sesi 1; ambil data awal di server
+- [x] `attendance-board.tsx` (client): state `guests`, `attendances`; derivasi `hadir`, `belumHadir`, `total`
+- [x] Subscribe Realtime (INSERT, filter `session_id`); cleanup saat unmount
+- [x] Fallback refetch penuh tiap 30 dtk
+- [x] Indikator koneksi kecil ("Terhubung" / "Menyambung ulang…")
+- [x] Header: nama acara, sesi, jam WIB
+- [x] Counter + progress bar (`Hadir / Total`)
+- [x] Dua kolom: **Sudah Hadir** (terbaru di atas) dan **Belum Hadir** (urut daerah → nama)
+- [x] `guest-chip.tsx`: chip nama + daerah; varian hadir, belum hadir, walk-in
+- [x] Animasi masuk nama baru dan keluar dari "Belum Hadir" (`motion` layout animation)
+- [x] `welcome-banner.tsx`: sambutan 5 dtk dengan antrean
+- [x] Auto-scroll pelan untuk kolom yang overflow (berhenti jika muat)
+- [x] Tema gelap hijau tua penuh layar (lihat design system), optimasi 1920×1080
+- [x] Sembunyikan kursor setelah idle; tanpa scrollbar terlihat
 
 **DoD:**
 - Dengan `/display?sesi=1` terbuka, absen dari `/absen` membuat nama muncul ≤ 2 dtk tanpa refresh.

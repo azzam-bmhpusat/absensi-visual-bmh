@@ -1,55 +1,137 @@
+import { Suspense } from "react";
+import { createPublicServerClient } from "@/lib/supabase/server";
+import { DisplayHeader } from "@/components/display/display-header";
 import { AttendanceBoard } from "@/components/display/attendance-board";
-import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  resolveActiveSession,
+  type SessionData,
+  type GuestData,
+  type AttendanceData,
+} from "@/lib/display-helpers";
 
-export default function DisplayPage() {
-  const eventName = process.env.NEXT_PUBLIC_EVENT_NAME || "Silaturahim & Rapat Koordinasi Nasional BMH";
+interface DisplayPageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+async function DisplayLoader({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const resolvedParams = await searchParams;
+  const querySesi = resolvedParams?.sesi;
+
+  const eventName =
+    process.env.NEXT_PUBLIC_EVENT_NAME ||
+    "Silaturahim & Rapat Koordinasi Nasional BMH";
+
+  const supabase = createPublicServerClient();
+
+  let sessions: SessionData[] = [
+    { id: 1, slug: "hari-1", nama: "Hari Pertama" },
+    { id: 2, slug: "hari-2", nama: "Hari Kedua" },
+  ];
+  let guests: GuestData[] = [];
+  let attendances: AttendanceData[] = [];
+
+  try {
+    const [sessRes, guestsRes] = await Promise.all([
+      supabase
+        .from("sessions")
+        .select("id, slug, nama, tanggal, is_active")
+        .order("id", { ascending: true }),
+      supabase
+        .from("guests")
+        .select("id, nama, perwakilan_daerah")
+        .order("perwakilan_daerah", { ascending: true })
+        .order("nama", { ascending: true }),
+    ]);
+
+    if (sessRes.data && sessRes.data.length > 0) {
+      sessions = sessRes.data;
+    }
+    if (guestsRes.data && guestsRes.data.length > 0) {
+      guests = guestsRes.data;
+    }
+  } catch (err) {
+    console.error("Gagal memuat sesi atau tamu awal:", err);
+  }
+
+  // Tentukan sesi aktif (baca ?sesi= -> fallback tanggal WIB -> default sesi 1)
+  const activeSession = resolveActiveSession(sessions, querySesi);
+
+  try {
+    const { data: rawAttendances } = await supabase
+      .from("attendances")
+      .select(
+        "id, session_id, guest_id, nama, perwakilan_daerah, is_walk_in, checked_in_at"
+      )
+      .eq("session_id", activeSession.id)
+      .order("checked_in_at", { ascending: false });
+
+    if (rawAttendances) {
+      attendances = rawAttendances;
+    }
+  } catch (err) {
+    console.error("Gagal memuat absensi sesi aktif:", err);
+  }
 
   return (
-    <main className="display-theme w-screen h-screen overflow-hidden bg-background text-foreground p-12 flex flex-col justify-between">
-      {/* Header */}
-      <header className="flex items-center justify-between h-24 border-b border-border/40 pb-4">
-        <div>
-          <span className="text-xs uppercase tracking-wider font-semibold text-brand-gold-soft">
-            Layar Kehadiran Realtime
-          </span>
-          <h1 className="text-4xl font-heading font-bold text-white tracking-tight">
-            {eventName}
-          </h1>
-        </div>
-        <div className="text-right">
-          <div className="text-2xl font-heading font-semibold text-brand-gold-soft">
-            Hari Pertama
-          </div>
-          <div className="text-sm text-muted-foreground">WIB (Asia/Jakarta)</div>
-        </div>
-      </header>
+    <div className="flex-1 flex flex-col justify-between min-h-0">
+      <DisplayHeader
+        eventName={eventName}
+        sessionName={activeSession.nama}
+      />
 
-      {/* Counter & Progress */}
-      <section className="py-6 space-y-3">
-        <div className="flex items-baseline justify-between">
-          <div className="flex items-baseline gap-3">
-            <span className="text-sm font-semibold tracking-wider text-muted-foreground uppercase">
-              Hadir
-            </span>
-            <span className="text-7xl font-heading font-bold text-brand-gold-soft">2</span>
-            <span className="text-3xl text-muted-foreground font-semibold">/ 3</span>
-          </div>
-          <div className="text-2xl font-bold text-brand-green">67%</div>
-        </div>
-        <Progress value={67} className="h-4 bg-secondary [&>div]:bg-brand-green" />
-      </section>
+      <AttendanceBoard
+        initialSessions={sessions}
+        activeSession={activeSession}
+        initialGuests={guests}
+        initialAttendances={attendances}
+      />
+    </div>
+  );
+}
 
-      {/* Board */}
-      <AttendanceBoard />
-
-      {/* Footer */}
-      <footer className="h-12 flex items-center justify-between text-sm text-muted-foreground border-t border-border/40 pt-4">
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-brand-green animate-pulse" />
-          <span>Terhubung ke sistem</span>
+function DisplaySkeleton() {
+  return (
+    <div className="flex-1 flex flex-col justify-between min-h-0 space-y-6">
+      {/* Header Skeleton */}
+      <div className="flex items-center justify-between min-h-[90px] border-b border-border/40 pb-4">
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-40 bg-white/10" />
+          <Skeleton className="h-10 w-96 bg-white/10" />
         </div>
-        <div>Scan QR di lokasi untuk mencatat kehadiran</div>
-      </footer>
+        <div className="space-y-2 text-right flex flex-col items-end">
+          <Skeleton className="h-8 w-44 bg-white/10" />
+          <Skeleton className="h-5 w-32 bg-white/10" />
+        </div>
+      </div>
+
+      {/* Counter Skeleton */}
+      <div className="space-y-3 py-4">
+        <Skeleton className="h-16 w-64 bg-white/10" />
+        <Skeleton className="h-4 w-full rounded-full bg-white/10" />
+      </div>
+
+      {/* Columns Skeleton */}
+      <div className="grid grid-cols-2 gap-8 flex-1 min-h-0">
+        <Skeleton className="h-full rounded-2xl bg-white/5 border border-white/10" />
+        <Skeleton className="h-full rounded-2xl bg-white/5 border border-white/10" />
+      </div>
+
+      {/* Footer Skeleton */}
+      <div className="h-10 flex items-center justify-between border-t border-border/40 pt-3">
+        <Skeleton className="h-5 w-40 bg-white/10" />
+        <Skeleton className="h-5 w-60 bg-white/10" />
+      </div>
+    </div>
+  );
+}
+
+export default function DisplayPage({ searchParams }: DisplayPageProps) {
+  return (
+    <main className="display-theme display-bg w-screen h-screen overflow-hidden text-foreground p-6 xl:p-10 flex flex-col justify-between select-none">
+      <Suspense fallback={<DisplaySkeleton />}>
+        <DisplayLoader searchParams={searchParams} />
+      </Suspense>
     </main>
   );
 }
