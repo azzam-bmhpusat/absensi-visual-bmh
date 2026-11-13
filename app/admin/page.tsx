@@ -1,70 +1,129 @@
+import { Suspense } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Link from "next/link";
-import { QrCode } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { createPublicServerClient } from "@/lib/supabase/server";
+import { AdminHeader } from "@/components/admin/admin-header";
+import { GuestTable, type GuestItem } from "@/components/admin/guest-table";
+import {
+  AttendanceRekapTable,
+  type AttendanceItem,
+} from "@/components/admin/attendance-rekap-table";
+import { Users, ClipboardList } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+function AdminSkeleton() {
+  return (
+    <div className="space-y-4">
+      <Skeleton className="h-12 w-80 rounded-2xl" />
+      <Skeleton className="h-96 w-full rounded-3xl" />
+    </div>
+  );
+}
+
+async function AdminContent() {
+  const supabase = createPublicServerClient();
+
+  // Ambil data sesi
+  const { data: rawSessions } = await supabase
+    .from("sessions")
+    .select("id, slug, nama, tanggal, is_active")
+    .order("id", { ascending: true });
+
+  const sessions = (rawSessions || []).map((s) => ({
+    id: s.id,
+    nama: s.nama,
+  }));
+
+  // Ambil daftar tamu undangan
+  const { data: rawGuests } = await supabase
+    .from("guests")
+    .select("id, nama, perwakilan_daerah, created_at")
+    .order("created_at", { ascending: false });
+
+  const guests: GuestItem[] = (rawGuests || []).map((g) => ({
+    id: g.id,
+    nama: g.nama,
+    perwakilan_daerah: g.perwakilan_daerah,
+    created_at: g.created_at,
+  }));
+
+  // Ambil data kehadiran presensi
+  const { data: rawAttendances } = await supabase
+    .from("attendances")
+    .select(
+      "id, session_id, guest_id, nama, perwakilan_daerah, is_walk_in, checked_in_at"
+    )
+    .order("checked_in_at", { ascending: false });
+
+  const attendances: AttendanceItem[] = (rawAttendances || []).map((a) => ({
+    id: a.id,
+    session_id: a.session_id,
+    guest_id: a.guest_id,
+    nama: a.nama,
+    perwakilan_daerah: a.perwakilan_daerah,
+    is_walk_in: a.is_walk_in,
+    checked_in_at: a.checked_in_at,
+  }));
+
+  return (
+    <Tabs defaultValue="tamu" className="space-y-4">
+      <TabsList className="bg-muted p-1 rounded-2xl h-11 border border-line">
+        <TabsTrigger
+          value="tamu"
+          className="rounded-xl px-5 text-xs font-semibold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-2xs transition-all flex items-center gap-2"
+        >
+          <Users className="w-3.5 h-3.5 text-brand-green" />
+          Daftar Tamu Undangan
+          <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] bg-secondary text-primary font-bold">
+            {guests.length}
+          </span>
+        </TabsTrigger>
+        <TabsTrigger
+          value="rekap"
+          className="rounded-xl px-5 text-xs font-semibold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-2xs transition-all flex items-center gap-2"
+        >
+          <ClipboardList className="w-3.5 h-3.5 text-brand-gold-text" />
+          Rekap Kehadiran
+          <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] bg-gold-100 text-brand-gold-text font-bold">
+            {attendances.length}
+          </span>
+        </TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="tamu" className="mt-0 space-y-4">
+        <Card className="rounded-3xl border-line bg-white/95 shadow-sm">
+          <CardContent className="p-5 sm:p-6">
+            <GuestTable initialGuests={guests} />
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      <TabsContent value="rekap" className="mt-0 space-y-4">
+        <Card className="rounded-3xl border-line bg-white/95 shadow-sm">
+          <CardContent className="p-5 sm:p-6">
+            <AttendanceRekapTable
+              attendances={attendances}
+              sessions={sessions}
+            />
+          </CardContent>
+        </Card>
+      </TabsContent>
+    </Tabs>
+  );
+}
 
 export default function AdminPage() {
+  const eventName =
+    process.env.NEXT_PUBLIC_EVENT_NAME ||
+    "Silaturahim & Rapat Koordinasi Nasional BMH";
+
   return (
-    <main className="page-bg min-h-screen p-8">
-      <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="font-heading text-2xl font-bold text-primary">
-              Panel Pengelolaan Kehadiran
-            </h1>
-            <p className="text-sm text-ink-muted">
-              Monitoring, rekap kehadiran, dan administrasi daftar tamu
-            </p>
-          </div>
-          <Link
-            href="/admin/qr"
-            className="inline-flex items-center gap-2 text-sm font-medium px-4 py-2.5 rounded-xl bg-secondary text-primary border border-line hover:border-brand-green transition-all"
-          >
-            <QrCode className="w-4 h-4 text-brand-gold-text" />
-            Cetak QR Absen
-          </Link>
-        </div>
-
-        <Tabs defaultValue="tamu" className="space-y-4">
-          <TabsList className="bg-muted p-1 rounded-xl">
-            <TabsTrigger value="tamu" className="rounded-lg">
-              Daftar Tamu
-            </TabsTrigger>
-            <TabsTrigger value="rekap" className="rounded-lg">
-              Rekap Kehadiran
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="tamu">
-            <Card className="rounded-2xl border-line">
-              <CardHeader>
-                <CardTitle className="font-heading text-lg text-primary">
-                  Data Tamu Undangan
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-ink-muted">
-                  Fitur import CSV tamu undangan akan diimplementasikan pada Fase 4.
-                </p>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="rekap">
-            <Card className="rounded-2xl border-line">
-              <CardHeader>
-                <CardTitle className="font-heading text-lg text-primary">
-                  Rekap Kehadiran Acara
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-ink-muted">
-                  Tabel absensi per sesi dan tombol ekspor CSV (WIB) akan diimplementasikan pada Fase 4.
-                </p>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+    <main className="page-bg min-h-screen p-4 sm:p-6 lg:p-8">
+      <div className="max-w-6xl mx-auto space-y-6">
+        <AdminHeader eventName={eventName} />
+        <Suspense fallback={<AdminSkeleton />}>
+          <AdminContent />
+        </Suspense>
       </div>
     </main>
   );

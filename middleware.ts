@@ -1,17 +1,15 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { type NextRequest } from "next/server";
+import { updateSession } from "@/lib/supabase/middleware";
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  // Placeholder middleware: Fase 4 akan mengaktifkan proteksi auth penuh
-  if (pathname.startsWith("/admin") && !pathname.startsWith("/admin/login")) {
-    // Akan dicek auth token Supabase di Fase 4
-    return NextResponse.next();
-  }
-
-  return NextResponse.next();
+export async function middleware(request: NextRequest) {
+  return await updateSession(request);
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: [
+    /*
+     * Cocokkan semua path request kecuali untuk file statis Next.js, gambar, favicon
+     */
+    "/admin/:path*",
+  ],
 };

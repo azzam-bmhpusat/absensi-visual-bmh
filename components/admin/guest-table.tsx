@@ -1,0 +1,262 @@
+"use client";
+
+import { useState, useMemo, useTransition } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Search,
+  Download,
+  Trash2,
+  Users,
+  MapPin,
+  Loader2,
+} from "lucide-react";
+import { CsvImportDialog } from "./csv-import-dialog";
+import { generateGuestCsvTemplate, type ExistingGuestLookup } from "@/lib/csv";
+import { deleteGuestAction } from "@/app/admin/actions";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+
+export interface GuestItem {
+  id: string;
+  nama: string;
+  perwakilan_daerah: string;
+  created_at?: string;
+}
+
+interface GuestTableProps {
+  initialGuests: GuestItem[];
+}
+
+export function GuestTable({ initialGuests }: GuestTableProps) {
+  const router = useRouter();
+  const [search, setSearch] = useState("");
+  const [selectedDeleteGuest, setSelectedDeleteGuest] = useState<GuestItem | null>(null);
+  const [isDeleting, startDeleteTransition] = useTransition();
+
+  const existingLookup: ExistingGuestLookup[] = useMemo(() => {
+    return initialGuests.map((g) => ({
+      nama: g.nama,
+      perwakilan_daerah: g.perwakilan_daerah,
+    }));
+  }, [initialGuests]);
+
+  const filteredGuests = useMemo(() => {
+    if (!search.trim()) return initialGuests;
+    const q = search.toLowerCase();
+    return initialGuests.filter(
+      (g) =>
+        g.nama.toLowerCase().includes(q) ||
+        g.perwakilan_daerah.toLowerCase().includes(q)
+    );
+  }, [initialGuests, search]);
+
+  const handleDownloadTemplate = () => {
+    const csvContent = generateGuestCsvTemplate();
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "template-tamu-undangan-bmh.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast.success("Template CSV berhasil diunduh!");
+  };
+
+  const handleConfirmDelete = () => {
+    if (!selectedDeleteGuest) return;
+
+    startDeleteTransition(async () => {
+      const res = await deleteGuestAction(selectedDeleteGuest.id);
+      if (res.success) {
+        toast.success(`Data tamu "${selectedDeleteGuest.nama}" berhasil dihapus.`);
+        setSelectedDeleteGuest(null);
+        router.refresh();
+      } else {
+        toast.error(res.error || "Gagal menghapus data tamu.");
+      }
+    });
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Baris Kontrol: Pencarian & Tombol Aksi */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Cari nama tamu atau daerah..."
+            className="pl-9 h-10 rounded-xl border-line text-xs focus-visible:ring-brand-green"
+          />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={handleDownloadTemplate}
+            className="h-10 px-3.5 rounded-xl border-line text-primary hover:border-brand-green text-xs font-semibold shadow-2xs"
+          >
+            <Download className="w-4 h-4 mr-1.5 text-brand-gold-text" />
+            Unduh Template CSV
+          </Button>
+
+          <CsvImportDialog
+            existingGuests={existingLookup}
+            onImportSuccess={() => router.refresh()}
+          />
+        </div>
+      </div>
+
+      {/* Baris Informasi Jumlah */}
+      <div className="flex items-center justify-between text-xs text-ink-muted">
+        <div className="flex items-center gap-1.5">
+          <Users className="w-3.5 h-3.5 text-brand-green" />
+          <span>
+            Total: <strong>{initialGuests.length}</strong> tamu terdaftar
+          </span>
+          {search && (
+            <span>
+              (menampilkan <strong>{filteredGuests.length}</strong> hasil)
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Tabel Data Tamu */}
+      <div className="border border-line rounded-2xl overflow-hidden bg-white shadow-2xs">
+        <Table>
+          <TableHeader className="bg-muted">
+            <TableRow className="border-line hover:bg-muted">
+              <TableHead className="w-14 text-center text-xs font-bold text-primary">
+                No
+              </TableHead>
+              <TableHead className="text-xs font-bold text-primary">
+                Nama Tamu Undangan
+              </TableHead>
+              <TableHead className="text-xs font-bold text-primary">
+                Perwakilan Daerah
+              </TableHead>
+              <TableHead className="w-20 text-center text-xs font-bold text-primary">
+                Aksi
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredGuests.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={4}
+                  className="h-36 text-center text-xs text-ink-muted py-8"
+                >
+                  <Users className="w-8 h-8 text-ink-muted/40 mx-auto mb-2" />
+                  {search
+                    ? "Tidak ada tamu yang cocok dengan kata kunci pencarian."
+                    : "Belum ada daftar tamu undangan yang diimpor. Gunakan tombol 'Import CSV Tamu'."}
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredGuests.map((guest, idx) => (
+                <TableRow
+                  key={guest.id}
+                  className="border-line hover:bg-surface/60 transition-colors"
+                >
+                  <TableCell className="text-center text-xs text-ink-muted font-medium">
+                    {idx + 1}
+                  </TableCell>
+                  <TableCell className="text-xs font-semibold text-primary">
+                    {guest.nama}
+                  </TableCell>
+                  <TableCell className="text-xs text-ink-muted">
+                    <span className="inline-flex items-center gap-1">
+                      <MapPin className="w-3 h-3 text-brand-gold-text" />
+                      {guest.perwakilan_daerah}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setSelectedDeleteGuest(guest)}
+                      className="w-8 h-8 text-ink-muted hover:text-danger hover:bg-red-50 rounded-lg transition-colors"
+                      title="Hapus data tamu"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Dialog Konfirmasi Hapus Tamu */}
+      <Dialog
+        open={Boolean(selectedDeleteGuest)}
+        onOpenChange={(open) => !open && setSelectedDeleteGuest(null)}
+      >
+        <DialogContent className="max-w-md p-6 rounded-3xl">
+          <DialogHeader>
+            <DialogTitle className="font-heading text-lg font-bold text-danger flex items-center gap-2">
+              <Trash2 className="w-5 h-5 text-danger" />
+              Hapus Data Tamu Undangan?
+            </DialogTitle>
+            <DialogDescription className="text-xs text-ink-muted leading-relaxed">
+              Apakah Anda yakin ingin menghapus{" "}
+              <strong className="text-primary font-semibold">
+                {selectedDeleteGuest?.nama}
+              </strong>{" "}
+              ({selectedDeleteGuest?.perwakilan_daerah}) dari daftar tamu? Data
+              kehadiran yang telah tercatat tidak akan terhapus.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-4 flex items-center justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setSelectedDeleteGuest(null)}
+              disabled={isDeleting}
+              className="rounded-xl border-line text-xs"
+            >
+              Batal
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+              className="rounded-xl bg-danger hover:bg-red-700 text-white text-xs font-semibold"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                  Menghapus...
+                </>
+              ) : (
+                "Hapus Tamu"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}

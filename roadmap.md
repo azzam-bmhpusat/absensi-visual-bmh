@@ -108,13 +108,13 @@
 
 **Tujuan:** panitia bisa menyiapkan dan memantau acara.
 
-- [ ] `middleware.ts`: proteksi `/admin/*` kecuali `/admin/login`
-- [ ] `/admin/login`: form email/password (Supabase Auth)
-- [ ] `/admin` tab **Tamu**: tabel tamu + tombol **Import CSV** (papaparse → pratinjau valid/duplikat/invalid → simpan batch)
-- [ ] Sediakan tombol unduh template CSV (`nama,perwakilan_daerah`)
-- [ ] `/admin` tab **Rekap**: tabel `attendances` per sesi, filter daerah, ekspor CSV (waktu WIB)
-- [ ] `/admin/qr`: QR ke `${NEXT_PUBLIC_SITE_URL}/absen` + teks "Scan untuk absen" + gaya cetak (`@media print`)
-- [ ] (P2, opsional) hapus entri absensi
+- [x] `middleware.ts`: proteksi `/admin/*` kecuali `/admin/login`
+- [x] `/admin/login`: form email/password (Supabase Auth)
+- [x] `/admin` tab **Tamu**: tabel tamu + tombol **Import CSV** (papaparse → pratinjau valid/duplikat/invalid → simpan batch)
+- [x] Sediakan tombol unduh template CSV (`nama,perwakilan_daerah`)
+- [x] `/admin` tab **Rekap**: tabel `attendances` per sesi, filter daerah, ekspor CSV (waktu WIB)
+- [x] `/admin/qr`: QR ke `${NEXT_PUBLIC_SITE_URL}/absen` + teks "Scan untuk absen" + gaya cetak (`@media print`)
+- [x] (P2, opsional) hapus entri absensi
 
 **DoD:**
 - Akses `/admin` tanpa login → diarahkan ke `/admin/login`.
