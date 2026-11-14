@@ -1,8 +1,5 @@
 import { Suspense } from "react";
 import { createPublicServerClient } from "@/lib/supabase/server";
-import { AdminHeader } from "@/components/admin/admin-header";
-import { AdminNavBar } from "@/components/admin/admin-nav-bar";
-import AdminSharedLayout from "@/components/admin/admin-layout-shell";
 import {
   SessionManager,
   type AdminSessionItem,
@@ -22,13 +19,12 @@ function SesiSkeleton() {
 async function SesiContent() {
   const supabase = createPublicServerClient();
 
-  const [sessRes, attendancesRes, guestsRes] = await Promise.all([
+  const [sessRes, attendancesRes] = await Promise.all([
     supabase
       .from("sessions")
       .select("id, slug, nama, tanggal, hari, is_active")
       .order("id", { ascending: true }),
     supabase.from("attendances").select("id, session_id"),
-    supabase.from("guests").select("id"),
   ]);
 
   const rawSessions = sessRes.data || [];
@@ -51,41 +47,22 @@ async function SesiContent() {
     {} as Record<number, number>
   );
 
-  const totalGuests = (guestsRes.data || []).length;
-  const totalAttendances = rawAttendances.length;
-  const activeSessionsCount = adminSessions.filter((s) => s.is_active).length;
-
   return (
-    <div className="space-y-6">
-      <AdminNavBar
-        guestsCount={totalGuests}
-        attendancesCount={totalAttendances}
-        activeSessionsCount={activeSessionsCount}
-      />
-
-      <Card className="rounded-3xl border-line bg-white/95 shadow-sm">
-        <CardContent className="p-5 sm:p-6">
-          <SessionManager
-            initialSessions={adminSessions}
-            attendancesCountBySession={attendancesCountBySession}
-          />
-        </CardContent>
-      </Card>
-    </div>
+    <Card className="rounded-3xl border-line bg-white/95 shadow-sm">
+      <CardContent className="p-5 sm:p-6">
+        <SessionManager
+          initialSessions={adminSessions}
+          attendancesCountBySession={attendancesCountBySession}
+        />
+      </CardContent>
+    </Card>
   );
 }
 
 export default function KelolaSesiAcaraPage() {
-  const eventName =
-    process.env.NEXT_PUBLIC_EVENT_NAME ||
-    "Silaturahim & Rapat Kerja Nasional BMH";
-
   return (
-    <AdminSharedLayout>
-      <AdminHeader eventName={eventName} />
-      <Suspense fallback={<SesiSkeleton />}>
-        <SesiContent />
-      </Suspense>
-    </AdminSharedLayout>
+    <Suspense fallback={<SesiSkeleton />}>
+      <SesiContent />
+    </Suspense>
   );
 }

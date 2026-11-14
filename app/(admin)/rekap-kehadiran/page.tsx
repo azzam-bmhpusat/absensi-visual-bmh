@@ -1,8 +1,5 @@
 import { Suspense } from "react";
 import { createPublicServerClient } from "@/lib/supabase/server";
-import { AdminHeader } from "@/components/admin/admin-header";
-import { AdminNavBar } from "@/components/admin/admin-nav-bar";
-import AdminSharedLayout from "@/components/admin/admin-layout-shell";
 import {
   AttendanceRekapTable,
   type AttendanceItem,
@@ -22,7 +19,7 @@ function RekapSkeleton() {
 async function RekapContent() {
   const supabase = createPublicServerClient();
 
-  const [sessRes, attendancesRes, guestsRes] = await Promise.all([
+  const [sessRes, attendancesRes] = await Promise.all([
     supabase
       .from("sessions")
       .select("id, slug, nama, tanggal, hari, is_active")
@@ -33,7 +30,6 @@ async function RekapContent() {
         "id, session_id, guest_id, nama, perwakilan_daerah, is_walk_in, checked_in_at"
       )
       .order("checked_in_at", { ascending: false }),
-    supabase.from("guests").select("id"),
   ]);
 
   const rawSessions = sessRes.data || [];
@@ -55,43 +51,19 @@ async function RekapContent() {
     checked_in_at: a.checked_in_at,
   }));
 
-  const totalGuests = (guestsRes.data || []).length;
-  const totalAttendances = attendances.length;
-  const activeSessionsCount = rawSessions.filter(
-    (s) => s.is_active !== false
-  ).length;
-
   return (
-    <div className="space-y-6">
-      <AdminNavBar
-        guestsCount={totalGuests}
-        attendancesCount={totalAttendances}
-        activeSessionsCount={activeSessionsCount}
-      />
-
-      <Card className="rounded-3xl border-line bg-white/95 shadow-sm">
-        <CardContent className="p-5 sm:p-6">
-          <AttendanceRekapTable
-            attendances={attendances}
-            sessions={sessions}
-          />
-        </CardContent>
-      </Card>
-    </div>
+    <Card className="rounded-3xl border-line bg-white/95 shadow-sm">
+      <CardContent className="p-5 sm:p-6">
+        <AttendanceRekapTable attendances={attendances} sessions={sessions} />
+      </CardContent>
+    </Card>
   );
 }
 
 export default function RekapKehadiranPage() {
-  const eventName =
-    process.env.NEXT_PUBLIC_EVENT_NAME ||
-    "Silaturahim & Rapat Kerja Nasional BMH";
-
   return (
-    <AdminSharedLayout>
-      <AdminHeader eventName={eventName} />
-      <Suspense fallback={<RekapSkeleton />}>
-        <RekapContent />
-      </Suspense>
-    </AdminSharedLayout>
+    <Suspense fallback={<RekapSkeleton />}>
+      <RekapContent />
+    </Suspense>
   );
 }

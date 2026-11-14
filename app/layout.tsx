@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Poppins } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
 
 const inter = Inter({
@@ -40,10 +41,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${inter.variable} ${poppins.variable} antialiased`}>
-      <body className="min-h-screen font-sans bg-background text-foreground flex flex-col">
-        {children}
-        <Toaster position="top-center" richColors />
+    <html lang="id" className={`${inter.variable} ${poppins.variable} antialiased`} suppressHydrationWarning>
+      <body className="min-h-screen font-sans bg-background text-foreground flex flex-col" suppressHydrationWarning>
+        <TooltipProvider>
+          {children}
+          <Toaster position="top-center" richColors />
+        </TooltipProvider>
       </body>
     </html>
   );
