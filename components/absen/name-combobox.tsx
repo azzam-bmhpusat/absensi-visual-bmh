@@ -12,11 +12,15 @@ import {
 } from "@/components/ui/command";
 import { UserPlus, ChevronsUpDown, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { formatGuestAffiliation } from "@/lib/display-helpers";
 
 export interface GuestItem {
   id: string;
   nama: string;
   perwakilan_daerah: string;
+  jabatan?: string | null;
+  departemen?: string | null;
+  kategori?: string | null;
 }
 
 interface NameComboboxProps {
@@ -109,7 +113,7 @@ export function NameCombobox({
                         {guest.nama}
                       </span>
                       <span className="text-xs text-ink-muted">
-                        {guest.perwakilan_daerah}
+                        {formatGuestAffiliation(guest)}
                       </span>
                     </div>
                     {isSelected && (

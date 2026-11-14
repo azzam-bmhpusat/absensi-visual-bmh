@@ -28,12 +28,12 @@ export interface ExistingGuestLookup {
  */
 export function generateGuestCsvTemplate(): string {
   const bom = "\uFEFF";
-  const header = "nama,perwakilan_daerah";
+  const header = "nama,perwakilan_daerah,jabatan,departemen";
   const samples = [
-    "Ahmad Dahlan,DKI Jakarta",
-    "Muhammad Hasyim,Jawa Timur",
-    "Abdul Karim Amrullah,Sumatera Barat",
-    "Sultan Hasanuddin,Sulawesi Selatan",
+    "Fulan,Pusat,Ketua Departemen,IT",
+    "Budi Santoso,BMH Jawa Timur,Ketua Daerah,",
+    "Ahmad Dahlan,DKI Jakarta,,",
+    "Muhammad Hasyim,Jawa Timur,,",
   ];
 
   return `${bom}${header}\r\n${samples.join("\r\n")}\r\n`;
@@ -54,6 +54,17 @@ function normalizeHeaderName(header: string): string {
     cleaned === "cabang"
   ) {
     return "perwakilan_daerah";
+  }
+  if (cleaned === "jabatan" || cleaned === "posisi" || cleaned === "role") {
+    return "jabatan";
+  }
+  if (
+    cleaned === "departemen" ||
+    cleaned === "dept" ||
+    cleaned === "divisi" ||
+    cleaned === "unit"
+  ) {
+    return "departemen";
   }
   return cleaned;
 }
@@ -100,9 +111,21 @@ export function parseAndValidateGuestCsv(
       continue;
     }
 
+    const rawJabatan = typeof rawRow.jabatan === "string" ? rawRow.jabatan.trim() : undefined;
+    const rawDept = typeof rawRow.departemen === "string" ? rawRow.departemen.trim() : undefined;
+    const rawDaerah = typeof rawRow.perwakilan_daerah === "string" ? rawRow.perwakilan_daerah.trim() : "";
+
+    let kat = "daerah";
+    if (rawDept || (rawJabatan && rawJabatan.toLowerCase().includes("departemen"))) {
+      kat = "departemen";
+    }
+
     const parseResult = guestRowSchema.safeParse({
       nama: rawRow.nama,
-      perwakilan_daerah: rawRow.perwakilan_daerah,
+      perwakilan_daerah: rawDaerah || (rawDept ? `Departemen ${rawDept}` : ""),
+      jabatan: rawJabatan || undefined,
+      departemen: rawDept || undefined,
+      kategori: kat,
     });
 
     if (!parseResult.success) {
@@ -138,7 +161,7 @@ export function parseAndValidateGuestCsv(
     }
 
     seenInFileKeys.add(lookupKey);
-    validRows.push({ nama, perwakilan_daerah });
+    validRows.push(parseResult.data);
   }
 
   return {
@@ -155,6 +178,9 @@ export interface AttendanceExportItem {
   session_id: number;
   nama: string;
   perwakilan_daerah: string;
+  jabatan?: string | null;
+  departemen?: string | null;
+  kategori?: string | null;
   is_walk_in: boolean;
   checked_in_at: string;
 }
@@ -219,7 +245,8 @@ export function exportAttendanceToCsv(
     "Waktu Presensi (WIB)",
     "Sesi",
     "Nama Tamu",
-    "Perwakilan Daerah",
+    "Perwakilan Daerah / Asal",
+    "Jabatan / Departemen",
     "Status Kehadiran",
   ];
 
@@ -228,6 +255,10 @@ export function exportAttendanceToCsv(
       sessionMap.get(item.session_id) || `Sesi ${item.session_id}`;
     const wibTime = formatToWibDateTime(item.checked_in_at);
     const status = item.is_walk_in ? "Tamu Baru (Walk-in)" : "Undangan Terdaftar";
+    const affiliationRole =
+      item.jabatan || item.departemen
+        ? `${item.jabatan ?? ""}${item.departemen ? `: ${item.departemen}` : ""}`.trim()
+        : "-";
 
     return [
       escapeCsvCell(index + 1),
@@ -235,6 +266,7 @@ export function exportAttendanceToCsv(
       escapeCsvCell(sessionName),
       escapeCsvCell(item.nama),
       escapeCsvCell(item.perwakilan_daerah),
+      escapeCsvCell(affiliationRole),
       escapeCsvCell(status),
     ].join(",");
   });

@@ -8,6 +8,7 @@ import {
   type AttendanceData,
   type SessionData,
 } from "@/lib/display-helpers";
+import { DisplayHeader } from "./display-header";
 import { DisplayCounter } from "./display-counter";
 import { GuestChip } from "./guest-chip";
 import { WelcomeBanner, type WelcomeItem } from "./welcome-banner";
@@ -17,6 +18,7 @@ import { Wifi, WifiOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface AttendanceBoardProps {
+  eventName?: string;
   initialSessions: SessionData[];
   activeSession: SessionData;
   initialGuests: GuestData[];
@@ -24,12 +26,14 @@ interface AttendanceBoardProps {
 }
 
 export function AttendanceBoard({
+  eventName = "Silaturahim & Rapat Kerja Nasional BMH",
   initialSessions = [],
   activeSession,
   initialGuests,
   initialAttendances,
 }: AttendanceBoardProps) {
   const router = useRouter();
+  const [currentSession, setCurrentSession] = useState<SessionData>(activeSession);
   const [guests, setGuests] = useState<GuestData[]>(initialGuests);
   const [attendances, setAttendances] =
     useState<AttendanceData[]>(initialAttendances);
@@ -41,6 +45,19 @@ export function AttendanceBoard({
   const [isIdle, setIsIdle] = useState(false);
 
   const supabase = useMemo(() => createClient(), []);
+
+  // Sinkronisasi state ketika prop dari server component berubah
+  useEffect(() => {
+    setCurrentSession(activeSession);
+  }, [activeSession]);
+
+  useEffect(() => {
+    setGuests(initialGuests);
+  }, [initialGuests]);
+
+  useEffect(() => {
+    setAttendances(initialAttendances);
+  }, [initialAttendances]);
 
   // 1. Sembunyikan kursor mouse saat idle (3 detik)
   useEffect(() => {
@@ -90,6 +107,9 @@ export function AttendanceBoard({
         id: newRow.id,
         nama: newRow.nama,
         daerah: newRow.perwakilan_daerah,
+        jabatan: newRow.jabatan,
+        departemen: newRow.departemen,
+        kategori: newRow.kategori,
       },
     ]);
   }, []);
@@ -103,14 +123,14 @@ export function AttendanceBoard({
     window.addEventListener("offline", handleOffline);
 
     const channel = supabase
-      .channel(`attendances-display:${activeSession.id}`)
+      .channel(`attendances-display:${currentSession.id}`)
       .on(
         "postgres_changes",
         {
           event: "INSERT",
           schema: "public",
           table: "attendances",
-          filter: `session_id=eq.${activeSession.id}`,
+          filter: `session_id=eq.${currentSession.id}`,
         },
         (payload) => {
           if (payload.new) {
@@ -135,41 +155,89 @@ export function AttendanceBoard({
       window.removeEventListener("offline", handleOffline);
       supabase.removeChannel(channel);
     };
-  }, [activeSession.id, handleNewAttendance, supabase]);
+  }, [currentSession.id, handleNewAttendance, supabase]);
 
-  // 5. Fallback refetch berkala setiap 30 detik untuk ketahanan jaringan
+  // 5. Load data sesi segera saat currentSession.id berubah + polling berkala 30 detik
   useEffect(() => {
-    const interval = setInterval(async () => {
-      try {
-        const { data: latestAttendances, error: attError } = await supabase
-          .from("attendances")
-          .select("*")
-          .eq("session_id", activeSession.id)
-          .order("checked_in_at", { ascending: false });
+    let isCancelled = false;
 
-        if (!attError && latestAttendances) {
-          setAttendances(latestAttendances as AttendanceData[]);
+    const loadSessionData = async () => {
+      try {
+        const [attRes, guestsRes] = await Promise.all([
+          supabase
+            .from("attendances")
+            .select(
+              "id, session_id, guest_id, nama, perwakilan_daerah, jabatan, departemen, kategori, is_walk_in, checked_in_at"
+            )
+            .eq("session_id", currentSession.id)
+            .order("checked_in_at", { ascending: false }),
+          supabase
+            .from("guests")
+            .select("id, nama, perwakilan_daerah, jabatan, departemen, kategori")
+            .order("perwakilan_daerah", { ascending: true })
+            .order("nama", { ascending: true }),
+        ]);
+
+        if (isCancelled) return;
+
+        if (!attRes.error && attRes.data) {
+          setAttendances(attRes.data as AttendanceData[]);
           setConnectionStatus("connected");
         }
 
-        const { data: latestGuests, error: guestError } = await supabase
-          .from("guests")
-          .select("id, nama, perwakilan_daerah")
-          .order("perwakilan_daerah", { ascending: true })
-          .order("nama", { ascending: true });
-
-        if (!guestError && latestGuests) {
-          setGuests(latestGuests as GuestData[]);
+        if (!guestsRes.error && guestsRes.data) {
+          setGuests(guestsRes.data as GuestData[]);
         }
       } catch {
-        setConnectionStatus("reconnecting");
+        if (!isCancelled) {
+          setConnectionStatus("reconnecting");
+        }
       }
-    }, 30000);
+    };
 
-    return () => clearInterval(interval);
-  }, [activeSession.id, supabase]);
+    // Panggil SEGERA begitu currentSession.id berubah
+    loadSessionData();
 
-  // 6. Derivasi data kehadiran
+    const interval = setInterval(loadSessionData, 30000);
+
+    return () => {
+      isCancelled = true;
+      clearInterval(interval);
+    };
+  }, [currentSession.id, supabase]);
+
+  // 6. Handler klik sesi instan (update state & fetch langsung tanpa tunggu reload)
+  const handleSelectSession = async (session: SessionData) => {
+    if (session.id === currentSession.id) return;
+
+    // 1. Update sesi seketika (optimistic UI)
+    setCurrentSession(session);
+    setRecentAttendanceIds([]);
+    setWelcomeQueue([]);
+
+    // 2. Fetch data kehadiran sesi terpilih seketika dari Supabase client
+    try {
+      const { data, error } = await supabase
+        .from("attendances")
+        .select(
+          "id, session_id, guest_id, nama, perwakilan_daerah, jabatan, departemen, kategori, is_walk_in, checked_in_at"
+        )
+        .eq("session_id", session.id)
+        .order("checked_in_at", { ascending: false });
+
+      if (!error && data) {
+        setAttendances(data as AttendanceData[]);
+        setConnectionStatus("connected");
+      }
+    } catch (err) {
+      console.error("Gagal memuat absensi sesi:", err);
+    }
+
+    // 3. Update URL browser secara halus tanpa reload halaman penuh
+    router.push(`/display?sesi=${session.id}`, { scroll: false });
+  };
+
+  // 7. Derivasi data kehadiran
   const {
     hadir,
     belumHadir,
@@ -178,18 +246,22 @@ export function AttendanceBoard({
     hadirCount,
     percentage,
   } = useMemo(
-    () => deriveAttendanceData(guests, attendances, activeSession.id),
-    [guests, attendances, activeSession.id]
+    () => deriveAttendanceData(guests, attendances, currentSession.id),
+    [guests, attendances, currentSession.id]
   );
-
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
 
   return (
     <div
-      className={`flex-1 flex flex-col min-h-0 overflow-hidden ${
+      className={`flex-1 flex flex-col justify-between min-h-0 overflow-hidden ${
         isIdle ? "cursor-none" : ""
       }`}
     >
+      {/* Header Display */}
+      <DisplayHeader
+        eventName={eventName}
+        sessionName={currentSession.nama}
+      />
+
       {/* Counter & Progress */}
       <DisplayCounter
         hadir={hadirCount}
@@ -199,41 +271,6 @@ export function AttendanceBoard({
 
       {/* Banner Sambutan 5 Detik */}
       <WelcomeBanner queue={welcomeQueue} onDismiss={handleDismissWelcome} />
-
-      {/* Navigasi 9 Sesi Acara Berada di Tengah di Atas Kolom Sudah & Belum Hadir */}
-      {initialSessions && initialSessions.length > 1 && (
-        <div className="flex items-center justify-center my-2">
-          <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-black/35 border border-white/10 shadow-lg max-w-full overflow-x-auto">
-            {initialSessions.map((s) => {
-              const isCurrent = s.id === activeSession.id;
-              const h = s.hari ?? (s.id <= 3 ? 1 : s.id <= 6 ? 2 : 3);
-              const shortName = s.nama.includes("Pagi")
-                ? "Pagi"
-                : s.nama.includes("Isoma")
-                ? "Isoma"
-                : s.nama.includes("Malam")
-                ? "Malam"
-                : s.nama;
-
-              return (
-                <button
-                  key={s.id}
-                  onClick={() => router.push(`/display?sesi=${s.id}`)}
-                  type="button"
-                  className={`px-3 py-1.5 rounded-xl text-xs xl:text-sm font-heading font-semibold transition-all cursor-pointer select-none whitespace-nowrap ${
-                    isCurrent
-                      ? "bg-brand-gold-soft text-[#0A3A30] shadow-md scale-100 font-bold"
-                      : "text-white/70 hover:text-white hover:bg-white/10"
-                  }`}
-                  title={`Hari ${h}: ${s.nama}`}
-                >
-                  {`H${h}: ${shortName}`}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
 
       {/* Dua Kolom 50/50: Sudah Hadir & Belum Hadir */}
       <div className="grid grid-cols-2 gap-8 flex-1 min-h-0 overflow-hidden my-2">
@@ -271,6 +308,9 @@ export function AttendanceBoard({
                       <GuestChip
                         nama={item.nama}
                         perwakilanDaerah={item.perwakilan_daerah}
+                        jabatan={item.jabatan}
+                        departemen={item.departemen}
+                        kategori={item.kategori}
                         status={item.is_walk_in ? "walk-in" : "hadir"}
                         isRecent={recentAttendanceIds.includes(item.id)}
                         checkedInAt={item.checked_in_at}
@@ -326,6 +366,9 @@ export function AttendanceBoard({
                             <GuestChip
                               nama={guest.nama}
                               perwakilanDaerah={guest.perwakilan_daerah}
+                              jabatan={guest.jabatan}
+                              departemen={guest.departemen}
+                              kategori={guest.kategori}
                               status="belum"
                             />
                           </motion.div>
@@ -349,6 +392,9 @@ export function AttendanceBoard({
                       <GuestChip
                         nama={guest.nama}
                         perwakilanDaerah={guest.perwakilan_daerah}
+                        jabatan={guest.jabatan}
+                        departemen={guest.departemen}
+                        kategori={guest.kategori}
                         status="belum"
                       />
                     </motion.div>
@@ -361,8 +407,8 @@ export function AttendanceBoard({
       </div>
 
       {/* Footer */}
-      <footer className="h-10 flex items-center justify-between text-base text-muted-foreground border-t border-border/40 pt-3">
-        <div className="flex items-center gap-2.5">
+      <footer className="min-h-[52px] xl:min-h-[56px] flex items-center justify-between px-2 xl:px-4 text-sm xl:text-base text-muted-foreground border-t border-border/40 pt-2 pb-1 gap-2 xl:gap-4 shrink-0">
+        <div className="flex items-center gap-2.5 shrink-0 min-w-0">
           {connectionStatus === "connected" ? (
             <>
               <span className="w-3 h-3 rounded-full bg-brand-green animate-pulse shadow-[0_0_10px_#3FBF8F]" />
@@ -378,10 +424,45 @@ export function AttendanceBoard({
           )}
         </div>
 
-        <div className="text-white/70">
-          Scan QR untuk absen:{" "}
-          <span className="text-brand-gold-soft font-semibold font-mono">
-            {siteUrl ? `${siteUrl}/absen` : "/absen"}
+        {/* Navigasi 9 Sesi Acara Berada di Bagian Tengah Footer */}
+        {initialSessions && initialSessions.length > 1 && (
+          <nav aria-label="Navigasi Sesi Acara" className="flex items-center justify-center flex-1 max-w-full min-w-0 px-2">
+            <div className="flex items-center gap-1 xl:gap-1.5 p-1 rounded-xl xl:rounded-2xl bg-black/35 border border-white/10 shadow-lg max-w-full overflow-x-auto scrollbar-none">
+              {initialSessions.map((s) => {
+                const isCurrent = s.id === currentSession.id;
+                const h = s.hari ?? (s.id <= 3 ? 1 : s.id <= 6 ? 2 : 3);
+                const shortName = s.nama.includes("Pagi")
+                  ? "Pagi"
+                  : s.nama.includes("Isoma")
+                    ? "Isoma"
+                    : s.nama.includes("Malam")
+                      ? "Malam"
+                      : s.nama;
+
+                return (
+                  <button
+                    key={s.id}
+                    onClick={() => handleSelectSession(s)}
+                    type="button"
+                    className={`px-2.5 xl:px-3 py-1 xl:py-1.5 rounded-lg xl:rounded-xl text-[11px] xl:text-xs font-heading font-semibold transition-all cursor-pointer select-none whitespace-nowrap ${
+                      isCurrent
+                        ? "bg-brand-gold-soft text-[#0A3A30] shadow-md scale-100 font-bold"
+                        : "text-white/70 hover:text-white hover:bg-white/10"
+                    }`}
+                    title={`Hari ${h}: ${s.nama}`}
+                  >
+                    {`H${h}: ${shortName}`}
+                  </button>
+                );
+              })}
+            </div>
+          </nav>
+        )}
+
+        <div className="text-white/70 text-right shrink-0 whitespace-nowrap">
+          Scan QR untuk absen{" "}
+          <span className="text-brand-gold-soft font-semibold">
+            di pintu masuk
           </span>
         </div>
       </footer>

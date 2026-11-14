@@ -1,7 +1,7 @@
 # Panduan Teknis & Operasional Hari-H
 ## Sistem Absensi Visual QR — Baitul Maal Hidayatullah (BMH)
 
-Dokumen ini adalah panduan praktis bagi tim panitia registrasi, operator videotron/multimedia, dan administrator teknis pada pelaksanaan acara Silaturahim & Rapat Koordinasi BMH (Acara 2 Hari).
+Dokumen ini adalah panduan praktis bagi tim panitia registrasi, operator videotron/multimedia, dan administrator teknis pada pelaksanaan acara Silaturahim & Rapat Kerja BMH (Acara 2 Hari).
 
 ---
 

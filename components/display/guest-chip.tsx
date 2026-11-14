@@ -1,10 +1,13 @@
 import { Check, Clock } from "lucide-react";
 import { RandomAvatar } from "./random-avatar";
-import { formatAttendanceDateTime } from "@/lib/display-helpers";
+import { formatAttendanceDateTime, formatGuestAffiliation } from "@/lib/display-helpers";
 
 interface GuestChipProps {
   nama: string;
   perwakilanDaerah: string;
+  jabatan?: string | null;
+  departemen?: string | null;
+  kategori?: string | null;
   status: "hadir" | "belum" | "walk-in";
   isRecent?: boolean;
   checkedInAt?: string;
@@ -13,10 +16,20 @@ interface GuestChipProps {
 export function GuestChip({
   nama,
   perwakilanDaerah,
+  jabatan,
+  departemen,
+  kategori,
   status,
   isRecent = false,
   checkedInAt,
 }: GuestChipProps) {
+  const affiliationLabel = formatGuestAffiliation({
+    perwakilan_daerah: perwakilanDaerah,
+    jabatan,
+    departemen,
+    kategori,
+  });
+
   if (status === "belum") {
     return (
       <div className="min-h-[76px] xl:min-h-[82px] rounded-2xl px-5 py-2 border border-[#1F6252] bg-transparent flex flex-col justify-center min-w-0 transition-colors">
@@ -24,7 +37,7 @@ export function GuestChip({
           {nama}
         </span>
         <span className="text-sm xl:text-base text-[#A9CFC2]/70 truncate leading-tight mt-0.5">
-          {perwakilanDaerah}
+          {affiliationLabel}
         </span>
       </div>
     );
@@ -57,7 +70,7 @@ export function GuestChip({
             {nama}
           </div>
           <div className="text-xs xl:text-sm text-[#A9CFC2] truncate leading-tight">
-            {perwakilanDaerah}
+            {affiliationLabel}
           </div>
           {formattedTime && (
             <div className="text-[11px] xl:text-xs font-mono text-brand-gold-soft flex items-center gap-1.5 truncate leading-tight pt-0.5">

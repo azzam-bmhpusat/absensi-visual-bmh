@@ -22,11 +22,11 @@ describe("CSV Utilities", () => {
       const result = parseAndValidateGuestCsv(csv);
 
       expect(result.validRows).toHaveLength(2);
-      expect(result.validRows[0]).toEqual({
+      expect(result.validRows[0]).toMatchObject({
         nama: "Budi Santoso",
         perwakilan_daerah: "Surabaya",
       });
-      expect(result.validRows[1]).toEqual({
+      expect(result.validRows[1]).toMatchObject({
         nama: "Dewi Sartika",
         perwakilan_daerah: "Bandung",
       });
@@ -34,12 +34,32 @@ describe("CSV Utilities", () => {
       expect(result.invalidRows).toHaveLength(0);
     });
 
+    it("berhasil memparsing baris dengan jabatan dan departemen (Ketua Departemen: IT)", () => {
+      const csv = `nama,perwakilan_daerah,jabatan,departemen\nFulan,Pusat,Ketua Departemen,IT\nBudi,BMH Jawa Timur,Ketua Daerah,`;
+      const result = parseAndValidateGuestCsv(csv);
+
+      expect(result.validRows).toHaveLength(2);
+      expect(result.validRows[0]).toMatchObject({
+        nama: "Fulan",
+        perwakilan_daerah: "Pusat",
+        jabatan: "Ketua Departemen",
+        departemen: "IT",
+        kategori: "departemen",
+      });
+      expect(result.validRows[1]).toMatchObject({
+        nama: "Budi",
+        perwakilan_daerah: "BMH Jawa Timur",
+        jabatan: "Ketua Daerah",
+        kategori: "daerah",
+      });
+    });
+
     it("menangani variasi penulisan header dan spasi", () => {
       const csv = ` Nama Tamu , Daerah \n   Ahmad Fulan   ,   DKI Jakarta   `;
       const result = parseAndValidateGuestCsv(csv);
 
       expect(result.validRows).toHaveLength(1);
-      expect(result.validRows[0]).toEqual({
+      expect(result.validRows[0]).toMatchObject({
         nama: "Ahmad Fulan",
         perwakilan_daerah: "DKI Jakarta",
       });
@@ -119,7 +139,7 @@ Valid Name,Valid Area`;
       const csv = exportAttendanceToCsv(attendances, sessions);
 
       expect(csv.startsWith("\uFEFF")).toBe(true);
-      expect(csv).toContain("No,Waktu Presensi (WIB),Sesi,Nama Tamu,Perwakilan Daerah,Status Kehadiran");
+      expect(csv).toContain("No,Waktu Presensi (WIB),Sesi,Nama Tamu,Perwakilan Daerah / Asal,Jabatan / Departemen,Status Kehadiran");
       // Cek quoting koma pada nama
       expect(csv).toContain('"Budi Santoso, Ir."');
       expect(csv).toContain("Hari Pertama");
@@ -127,6 +147,24 @@ Valid Name,Valid Area`;
       expect(csv).toContain("Tamu Baru (Walk-in)");
       expect(csv).toContain("10:30:00 WIB");
       expect(csv).toContain("14:15:00 WIB");
+    });
+
+    it("mengekspor jabatan dan departemen tamu ke dalam CSV dengan benar", () => {
+      const attendances = [
+        {
+          id: "3",
+          session_id: 1,
+          nama: "Fulan",
+          perwakilan_daerah: "Pusat",
+          jabatan: "Ketua Departemen",
+          departemen: "IT",
+          is_walk_in: false,
+          checked_in_at: "2026-11-13T03:30:00.000Z",
+        },
+      ];
+      const csv = exportAttendanceToCsv(attendances);
+      expect(csv).toContain("Ketua Departemen: IT");
+      expect(csv).toContain("Fulan");
     });
   });
 

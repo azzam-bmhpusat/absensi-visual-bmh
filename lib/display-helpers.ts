@@ -11,6 +11,9 @@ export interface GuestData {
   id: string;
   nama: string;
   perwakilan_daerah: string;
+  jabatan?: string | null;
+  departemen?: string | null;
+  kategori?: string | null;
   created_at?: string;
 }
 
@@ -20,8 +23,49 @@ export interface AttendanceData {
   guest_id?: string | null;
   nama: string;
   perwakilan_daerah: string;
+  jabatan?: string | null;
+  departemen?: string | null;
+  kategori?: string | null;
   is_walk_in: boolean;
   checked_in_at: string;
+}
+
+export interface GuestAffiliationProps {
+  perwakilan_daerah?: string | null;
+  jabatan?: string | null;
+  departemen?: string | null;
+  kategori?: string | null;
+}
+
+/**
+ * Format label afiliasi/jabatan tamu untuk tampilan videotron, dialog, dan combobox
+ * Contoh output:
+ * - "Ketua Departemen: IT" (jika jabatan + departemen)
+ * - "Ketua Daerah — BMH Jawa Timur" (jika jabatan + daerah)
+ * - "BMH Jawa Timur" (jika hanya daerah)
+ */
+export function formatGuestAffiliation(guest: GuestAffiliationProps): string {
+  const jabatan = guest.jabatan?.trim();
+  const departemen = guest.departemen?.trim();
+  const daerah = guest.perwakilan_daerah?.trim();
+
+  if (jabatan && departemen) {
+    return `${jabatan}: ${departemen}`;
+  }
+
+  if (jabatan && daerah && daerah.toLowerCase() !== "pusat") {
+    return `${jabatan} — ${daerah}`;
+  }
+
+  if (jabatan) {
+    return jabatan;
+  }
+
+  if (departemen) {
+    return `Departemen ${departemen}`;
+  }
+
+  return daerah || "Tamu Undangan";
 }
 
 /**

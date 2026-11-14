@@ -63,6 +63,9 @@ export async function submitAttendance(
   let guestId: string | null = parsed.data.guestId ?? null;
   let finalNama = nama;
   let finalDaerah = perwakilanDaerah;
+  let finalJabatan: string | null = parsed.data.jabatan ?? null;
+  let finalDepartemen: string | null = parsed.data.departemen ?? null;
+  let finalKategori: string = parsed.data.kategori ?? "daerah";
   let isWalkIn = false;
 
   const supabase = createAdminClient();
@@ -71,13 +74,16 @@ export async function submitAttendance(
   if (guestId) {
     const { data: guest } = await supabase
       .from("guests")
-      .select("id, nama, perwakilan_daerah")
+      .select("id, nama, perwakilan_daerah, jabatan, departemen, kategori")
       .eq("id", guestId)
       .maybeSingle();
 
     if (guest) {
       finalNama = guest.nama;
       finalDaerah = guest.perwakilan_daerah;
+      finalJabatan = guest.jabatan ?? finalJabatan;
+      finalDepartemen = guest.departemen ?? finalDepartemen;
+      finalKategori = guest.kategori ?? finalKategori;
     } else {
       guestId = null;
     }
@@ -90,7 +96,7 @@ export async function submitAttendance(
 
     const { data: matchedGuests } = await supabase
       .from("guests")
-      .select("id, nama, perwakilan_daerah");
+      .select("id, nama, perwakilan_daerah, jabatan, departemen, kategori");
 
     const matched = (matchedGuests || []).find(
       (g) =>
@@ -102,6 +108,9 @@ export async function submitAttendance(
       guestId = matched.id;
       finalNama = matched.nama;
       finalDaerah = matched.perwakilan_daerah;
+      finalJabatan = matched.jabatan ?? finalJabatan;
+      finalDepartemen = matched.departemen ?? finalDepartemen;
+      finalKategori = matched.kategori ?? finalKategori;
       isWalkIn = false;
     } else {
       isWalkIn = true;
@@ -132,6 +141,9 @@ export async function submitAttendance(
       guest_id: guestId,
       nama: finalNama,
       perwakilan_daerah: finalDaerah,
+      jabatan: finalJabatan,
+      departemen: finalDepartemen,
+      kategori: finalKategori,
       is_walk_in: isWalkIn,
     })
     .select("id")

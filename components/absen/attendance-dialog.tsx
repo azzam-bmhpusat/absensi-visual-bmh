@@ -86,8 +86,14 @@ export function AttendanceDialog({
       form.setValue("perwakilanDaerah", guest.perwakilan_daerah, {
         shouldValidate: true,
       });
+      form.setValue("jabatan", guest.jabatan ?? undefined);
+      form.setValue("departemen", guest.departemen ?? undefined);
+      form.setValue("kategori", guest.kategori ?? "daerah");
     } else {
       form.setValue("guestId", "");
+      form.setValue("jabatan", undefined);
+      form.setValue("departemen", undefined);
+      form.setValue("kategori", "daerah");
     }
   }
 
@@ -99,6 +105,9 @@ export function AttendanceDialog({
       guestId: "",
       nama: "",
       perwakilanDaerah: "",
+      jabatan: undefined,
+      departemen: undefined,
+      kategori: "daerah",
       website: "",
     });
     onOpenChange(false);
@@ -107,6 +116,8 @@ export function AttendanceDialog({
   const selectedGuestId = useWatch({ control: form.control, name: "guestId" });
   const watchedNama = useWatch({ control: form.control, name: "nama" });
   const watchedPerwakilanDaerah = useWatch({ control: form.control, name: "perwakilanDaerah" });
+  const watchedJabatan = useWatch({ control: form.control, name: "jabatan" });
+  const watchedDepartemen = useWatch({ control: form.control, name: "departemen" });
 
   return (
     <Dialog open={open} onOpenChange={(o) => (!o ? handleClose() : null)}>
@@ -152,14 +163,22 @@ export function AttendanceDialog({
                 )}
               </div>
 
-              {/* Field Perwakilan Daerah */}
+              {/* Field Perwakilan Daerah / Afiliasi */}
               <div className="space-y-1.5">
-                <Label
-                  htmlFor="perwakilanDaerah"
-                  className="text-sm font-medium text-foreground"
-                >
-                  Perwakilan Daerah <span className="text-danger">*</span>
-                </Label>
+                <div className="flex items-center justify-between">
+                  <Label
+                    htmlFor="perwakilanDaerah"
+                    className="text-sm font-medium text-foreground"
+                  >
+                    Perwakilan Daerah / Asal <span className="text-danger">*</span>
+                  </Label>
+                  {(watchedJabatan || watchedDepartemen) && (
+                    <span className="text-[11px] font-semibold text-brand-gold-text bg-gold-50 px-2 py-0.5 rounded-full border border-brand-gold-soft">
+                      {watchedJabatan}
+                      {watchedDepartemen ? `: ${watchedDepartemen}` : ""}
+                    </span>
+                  )}
+                </div>
                 <DaerahCombobox
                   daerahList={daerahList}
                   value={watchedPerwakilanDaerah ?? ""}
@@ -170,7 +189,9 @@ export function AttendanceDialog({
                 />
                 {selectedGuestId && (
                   <p className="text-[11px] text-ink-muted">
-                    Terisi otomatis dari database tamu terdaftar.
+                    {watchedJabatan
+                      ? `Terverifikasi sebagai ${watchedJabatan}${watchedDepartemen ? `: ${watchedDepartemen}` : ""}`
+                      : "Terisi otomatis dari database tamu terdaftar."}
                   </p>
                 )}
                 {form.formState.errors.perwakilanDaerah && (

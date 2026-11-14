@@ -18,7 +18,7 @@ async function GuestContent() {
 
   const guestsRes = await supabase
     .from("guests")
-    .select("id, nama, perwakilan_daerah, created_at")
+    .select("id, nama, perwakilan_daerah, jabatan, departemen, kategori, created_at")
     .order("created_at", { ascending: false });
 
   const rawGuests = guestsRes.data || [];
@@ -26,6 +26,9 @@ async function GuestContent() {
     id: g.id,
     nama: g.nama,
     perwakilan_daerah: g.perwakilan_daerah,
+    jabatan: g.jabatan,
+    departemen: g.departemen,
+    kategori: g.kategori,
     created_at: g.created_at,
   }));
 

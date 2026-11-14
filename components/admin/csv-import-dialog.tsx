@@ -122,7 +122,7 @@ export function CsvImportDialog({
           </DialogTitle>
           <DialogDescription className="text-xs text-ink-muted">
             Unggah file CSV dengan kolom header <strong>nama</strong> dan{" "}
-            <strong>perwakilan_daerah</strong>. Duplikat akan dilewati otomatis.
+            <strong>perwakilan_daerah</strong> (opsional: <strong>jabatan</strong>, <strong>departemen</strong>). Duplikat akan dilewati otomatis.
           </DialogDescription>
         </DialogHeader>
 
@@ -235,12 +235,23 @@ export function CsvImportDialog({
                         <span className="font-semibold text-primary">
                           {row.nama}
                         </span>
-                        <Badge
-                          variant="outline"
-                          className="bg-white text-[11px] border-line font-normal"
-                        >
-                          {row.perwakilan_daerah}
-                        </Badge>
+                        <div className="flex items-center gap-1.5">
+                          <Badge
+                            variant="outline"
+                            className="bg-white text-[11px] border-line font-normal"
+                          >
+                            {row.perwakilan_daerah}
+                          </Badge>
+                          {(row.jabatan || row.departemen) && (
+                            <Badge
+                              variant="outline"
+                              className="bg-emerald-50 text-[10px] text-brand-green border-emerald-200 font-medium"
+                            >
+                              {row.jabatan}
+                              {row.departemen ? `: ${row.departemen}` : ""}
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>

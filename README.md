@@ -75,7 +75,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOi...
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
 # Nama Acara yang Ditampilkan di Header Absen & Videotron
-NEXT_PUBLIC_EVENT_NAME=Silaturahim & Rapat Koordinasi Nasional BMH
+NEXT_PUBLIC_EVENT_NAME=Silaturahim & Rapat Kerja Nasional BMH
 ```
 
 ### 3. Migrasi Skema Database & Verifikasi RLS
@@ -153,7 +153,7 @@ Akses aplikasi di browser:
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY`
    - `NEXT_PUBLIC_SITE_URL` (Set ke domain Vercel Anda, misal: `https://absensi-bmh.vercel.app`)
-   - `NEXT_PUBLIC_EVENT_NAME` (Misal: `Silaturahim & Rapat Koordinasi Nasional BMH`)
+   - `NEXT_PUBLIC_EVENT_NAME` (Misal: `Silaturahim & Rapat Kerja Nasional BMH`)
 4. Klik **Deploy**.
 
 ### Metode 2: Menggunakan Vercel CLI

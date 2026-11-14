@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import { createPublicServerClient } from "@/lib/supabase/server";
-import { DisplayHeader } from "@/components/display/display-header";
 import { AttendanceBoard } from "@/components/display/attendance-board";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -46,7 +45,7 @@ async function DisplayLoader({ searchParams }: { searchParams: Promise<{ [key: s
         .order("id", { ascending: true }),
       supabase
         .from("guests")
-        .select("id, nama, perwakilan_daerah")
+        .select("id, nama, perwakilan_daerah, jabatan, departemen, kategori")
         .order("perwakilan_daerah", { ascending: true })
         .order("nama", { ascending: true }),
     ]);
@@ -68,7 +67,7 @@ async function DisplayLoader({ searchParams }: { searchParams: Promise<{ [key: s
     const { data: rawAttendances } = await supabase
       .from("attendances")
       .select(
-        "id, session_id, guest_id, nama, perwakilan_daerah, is_walk_in, checked_in_at"
+        "id, session_id, guest_id, nama, perwakilan_daerah, jabatan, departemen, kategori, is_walk_in, checked_in_at"
       )
       .eq("session_id", activeSession.id)
       .order("checked_in_at", { ascending: false });
@@ -82,12 +81,8 @@ async function DisplayLoader({ searchParams }: { searchParams: Promise<{ [key: s
 
   return (
     <div className="flex-1 flex flex-col justify-between min-h-0">
-      <DisplayHeader
-        eventName={eventName}
-        sessionName={activeSession.nama}
-      />
-
       <AttendanceBoard
+        eventName={eventName}
         initialSessions={sessions}
         activeSession={activeSession}
         initialGuests={guests}
@@ -125,9 +120,10 @@ function DisplaySkeleton() {
       </div>
 
       {/* Footer Skeleton */}
-      <div className="h-10 flex items-center justify-between border-t border-border/40 pt-3">
-        <Skeleton className="h-5 w-40 bg-white/10" />
-        <Skeleton className="h-5 w-60 bg-white/10" />
+      <div className="min-h-[52px] xl:min-h-[56px] flex items-center justify-between border-t border-border/40 pt-2 pb-1 gap-2 xl:gap-4 shrink-0">
+        <Skeleton className="h-5 w-36 bg-white/10 shrink-0" />
+        <Skeleton className="h-7 w-80 max-w-md rounded-xl bg-white/10" />
+        <Skeleton className="h-5 w-48 bg-white/10 shrink-0" />
       </div>
     </div>
   );

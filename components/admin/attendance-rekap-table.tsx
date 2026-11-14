@@ -59,6 +59,9 @@ export interface AttendanceItem {
   guest_id?: string | null;
   nama: string;
   perwakilan_daerah: string;
+  jabatan?: string | null;
+  departemen?: string | null;
+  kategori?: string | null;
   is_walk_in: boolean;
   checked_in_at: string;
 }
@@ -169,12 +172,14 @@ export function AttendanceRekapTable({
         if (item.perwakilan_daerah !== selectedDaerah) return false;
       }
 
-      // Filter pencarian nama / daerah
+      // Filter pencarian nama / daerah / jabatan / departemen
       if (search.trim()) {
         const q = search.toLowerCase();
         const matchNama = item.nama.toLowerCase().includes(q);
         const matchDaerah = item.perwakilan_daerah.toLowerCase().includes(q);
-        if (!matchNama && !matchDaerah) return false;
+        const matchJabatan = item.jabatan?.toLowerCase().includes(q);
+        const matchDept = item.departemen?.toLowerCase().includes(q);
+        if (!matchNama && !matchDaerah && !matchJabatan && !matchDept) return false;
       }
 
       return true;
@@ -465,7 +470,10 @@ export function AttendanceRekapTable({
                 Nama Tamu
               </TableHead>
               <TableHead className="text-xs font-bold text-primary">
-                Perwakilan Daerah
+                Perwakilan / Asal
+              </TableHead>
+              <TableHead className="text-xs font-bold text-primary">
+                Jabatan / Departemen
               </TableHead>
               <TableHead className="w-28 text-center text-xs font-bold text-primary">
                 Status
@@ -482,7 +490,7 @@ export function AttendanceRekapTable({
             {filteredAttendances.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={9}
+                  colSpan={10}
                   className="h-36 text-center text-xs text-ink-muted py-8"
                 >
                   <Clock className="w-8 h-8 text-ink-muted/40 mx-auto mb-2" />
@@ -526,6 +534,16 @@ export function AttendanceRekapTable({
                     </TableCell>
                     <TableCell className="text-xs text-ink-muted">
                       {item.perwakilan_daerah}
+                    </TableCell>
+                    <TableCell className="text-xs text-ink-muted">
+                      {item.jabatan || item.departemen ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-brand-green border border-emerald-200">
+                          {item.jabatan}
+                          {item.departemen ? `: ${item.departemen}` : ""}
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-ink-muted/60">-</span>
+                      )}
                     </TableCell>
                     <TableCell className="text-center">
                       {item.is_walk_in ? (

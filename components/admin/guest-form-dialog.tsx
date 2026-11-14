@@ -41,6 +41,9 @@ export function GuestFormDialog({
     defaultValues: {
       nama: "",
       perwakilan_daerah: "",
+      jabatan: "",
+      departemen: "",
+      kategori: "daerah",
     },
   });
 
@@ -50,11 +53,17 @@ export function GuestFormDialog({
         form.reset({
           nama: guest.nama,
           perwakilan_daerah: guest.perwakilan_daerah,
+          jabatan: guest.jabatan ?? "",
+          departemen: guest.departemen ?? "",
+          kategori: guest.kategori ?? "daerah",
         });
       } else {
         form.reset({
           nama: "",
           perwakilan_daerah: "",
+          jabatan: "",
+          departemen: "",
+          kategori: "daerah",
         });
       }
     }
@@ -128,12 +137,12 @@ export function GuestFormDialog({
 
           <div className="space-y-1.5">
             <Label htmlFor="daerah-guest" className="text-xs font-semibold text-primary">
-              Perwakilan Daerah / Wilayah <span className="text-danger">*</span>
+              Perwakilan Daerah / Asal <span className="text-danger">*</span>
             </Label>
             <Input
               id="daerah-guest"
               {...form.register("perwakilan_daerah")}
-              placeholder="Contoh: Jawa Timur atau DKI Jakarta"
+              placeholder="Contoh: Jawa Timur, DKI Jakarta, atau Pusat"
               className="h-10 rounded-xl border-line text-xs focus-visible:ring-brand-green"
               disabled={isPending}
             />
@@ -142,6 +151,34 @@ export function GuestFormDialog({
                 {form.formState.errors.perwakilan_daerah.message}
               </p>
             )}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="jabatan-guest" className="text-xs font-semibold text-primary">
+                Jabatan / Peran <span className="text-ink-muted text-[10px] font-normal">(Opsional)</span>
+              </Label>
+              <Input
+                id="jabatan-guest"
+                {...form.register("jabatan")}
+                placeholder="Contoh: Ketua Departemen / Ketua Daerah"
+                className="h-10 rounded-xl border-line text-xs focus-visible:ring-brand-green"
+                disabled={isPending}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="departemen-guest" className="text-xs font-semibold text-primary">
+                Departemen <span className="text-ink-muted text-[10px] font-normal">(Opsional)</span>
+              </Label>
+              <Input
+                id="departemen-guest"
+                {...form.register("departemen")}
+                placeholder="Contoh: IT / Fundraising"
+                className="h-10 rounded-xl border-line text-xs focus-visible:ring-brand-green"
+                disabled={isPending}
+              />
+            </div>
           </div>
 
           <DialogFooter className="mt-4 pt-2 flex items-center justify-end gap-2">

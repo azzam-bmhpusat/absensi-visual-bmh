@@ -2,11 +2,15 @@
 
 import { useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import { formatGuestAffiliation } from "@/lib/display-helpers";
 
 export interface WelcomeItem {
   id: string;
   nama: string;
   daerah: string;
+  jabatan?: string | null;
+  departemen?: string | null;
+  kategori?: string | null;
 }
 
 interface WelcomeBannerProps {
@@ -27,6 +31,15 @@ export function WelcomeBanner({ queue, onDismiss }: WelcomeBannerProps) {
     return () => clearTimeout(timer);
   }, [currentItem, onDismiss]);
 
+  const affiliationLabel = currentItem
+    ? formatGuestAffiliation({
+        perwakilan_daerah: currentItem.daerah,
+        jabatan: currentItem.jabatan,
+        departemen: currentItem.departemen,
+        kategori: currentItem.kategori,
+      })
+    : "";
+
   return (
     <div className="relative min-h-[76px] w-full flex items-center justify-center my-1 z-20">
       <AnimatePresence mode="wait">
@@ -44,7 +57,7 @@ export function WelcomeBanner({ queue, onDismiss }: WelcomeBannerProps) {
               {currentItem.nama}
             </span>
             <span className="text-xl xl:text-2xl font-semibold opacity-90">
-              — {currentItem.daerah}
+              — {affiliationLabel}
             </span>
           </motion.div>
         )}

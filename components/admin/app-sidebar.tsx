@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useTransition } from "react";
 import { logoutAdmin } from "@/app/admin/actions";
@@ -25,7 +26,6 @@ import {
   SidebarMenuBadge,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarSeparator,
 } from "@/components/ui/sidebar";
 
 interface AppSidebarProps {
@@ -94,23 +94,28 @@ export function AppSidebar({
 
   return (
     <Sidebar collapsible="icon" variant="sidebar">
-      <SidebarHeader>
-        <div className="flex items-center gap-2.5 px-1 py-1 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary font-heading text-sm font-bold text-primary-foreground group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:rounded-lg group-data-[collapsible=icon]:text-xs">
-            BMH
+      <SidebarHeader className="h-16 justify-center border-b border-sidebar-border p-2">
+        <div className="flex items-center gap-2.5 px-1 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 transition-all duration-200 ease-linear">
+          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white p-1 border border-line shadow-2xs transition-all duration-200 ease-linear group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:rounded-lg">
+            <Image
+              src="/logo.png"
+              alt="Logo BMH"
+              width={36}
+              height={36}
+              className="h-full w-full object-contain"
+              priority
+            />
           </div>
-          <div className="flex flex-col leading-tight group-data-[collapsible=icon]:hidden">
-            <span className="font-heading text-sm font-bold text-primary">
+          <div className="flex flex-col leading-tight overflow-hidden transition-[opacity,max-width] duration-200 ease-linear max-w-48 opacity-100 group-data-[collapsible=icon]:max-w-0 group-data-[collapsible=icon]:opacity-0">
+            <span className="font-heading text-sm font-bold text-primary whitespace-nowrap">
               Absensi Visual
             </span>
-            <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-ink-muted">
+            <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-ink-muted whitespace-nowrap">
               Panel Administrasi
             </span>
           </div>
         </div>
       </SidebarHeader>
-
-      <SidebarSeparator />
 
       <SidebarContent>
         <SidebarGroup>
@@ -187,9 +192,9 @@ export function AppSidebar({
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="group-data-[collapsible=icon]:hidden">
+      <SidebarFooter className="overflow-hidden transition-[opacity,max-height,padding] duration-200 ease-linear max-h-96 opacity-100 group-data-[collapsible=icon]:max-h-0 group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:p-0">
         {/* Card promo ala desain (pengganti AdminHeader) */}
-        <div className="group-data-[collapsible=icon]:hidden">
+        <div>
           <div className="rounded-2xl bg-gradient-to-b from-primary to-brand-green-night p-4 text-primary-foreground">
             <div className="mb-2.5 flex h-8 w-8 items-center justify-center rounded-lg bg-white/20">
               <QrCode className="h-4 w-4 text-brand-gold-soft" />

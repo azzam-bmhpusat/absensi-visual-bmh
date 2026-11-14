@@ -30,6 +30,17 @@ export const attendanceSchema = z.object({
         .min(2, "Perwakilan daerah minimal 2 karakter")
         .max(100, "Perwakilan daerah maksimal 100 karakter")
     ),
+  jabatan: z
+    .string()
+    .optional()
+    .transform((val) => (val ? normalizeString(val) : undefined))
+    .pipe(z.string().max(100, "Jabatan maksimal 100 karakter").optional()),
+  departemen: z
+    .string()
+    .optional()
+    .transform((val) => (val ? normalizeString(val) : undefined))
+    .pipe(z.string().max(100, "Departemen maksimal 100 karakter").optional()),
+  kategori: z.string().optional(),
   website: z.string().optional(),
 });
 
@@ -54,6 +65,17 @@ export const guestRowSchema = z.object({
         .min(2, "Perwakilan daerah minimal 2 karakter")
         .max(100, "Perwakilan daerah maksimal 100 karakter")
     ),
+  jabatan: z
+    .string()
+    .optional()
+    .transform((val) => (val ? normalizeString(val) : undefined))
+    .pipe(z.string().max(100, "Jabatan maksimal 100 karakter").optional()),
+  departemen: z
+    .string()
+    .optional()
+    .transform((val) => (val ? normalizeString(val) : undefined))
+    .pipe(z.string().max(100, "Departemen maksimal 100 karakter").optional()),
+  kategori: z.string().optional(),
 });
 
 export type AttendanceInput = z.infer<typeof attendanceSchema>;

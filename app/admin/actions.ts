@@ -82,7 +82,7 @@ export async function importGuestsAction(
   }
 
   // Validasi ulang setiap baris di sisi server
-  const sanitizedRows: { nama: string; perwakilan_daerah: string }[] = [];
+  const sanitizedRows: GuestRowInput[] = [];
   for (const row of rows) {
     const parse = guestRowSchema.safeParse(row);
     if (parse.success) {
@@ -226,6 +226,9 @@ export async function addGuestAction(
       .insert({
         nama: parse.data.nama,
         perwakilan_daerah: parse.data.perwakilan_daerah,
+        jabatan: parse.data.jabatan || null,
+        departemen: parse.data.departemen || null,
+        kategori: parse.data.kategori || "daerah",
       })
       .select("id")
       .maybeSingle();
@@ -292,6 +295,9 @@ export async function updateGuestAction(
       .update({
         nama: parse.data.nama,
         perwakilan_daerah: parse.data.perwakilan_daerah,
+        jabatan: parse.data.jabatan || null,
+        departemen: parse.data.departemen || null,
+        kategori: parse.data.kategori || "daerah",
       })
       .eq("id", guestId);
 

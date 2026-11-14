@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { formatWibClock } from "@/lib/display-helpers";
 import { Maximize2, Minimize2 } from "lucide-react";
 
@@ -54,14 +55,26 @@ export function DisplayHeader({
 
   return (
     <header className="flex items-center justify-between min-h-[84px] xl:min-h-[90px] border-b border-border/40 pb-3 xl:pb-4 gap-4 flex-wrap">
-      {/* Kolom Kiri: Judul Acara & Subjudul */}
-      <div className="flex flex-col justify-center">
-        <span className="text-xs xl:text-sm uppercase tracking-wider font-semibold text-brand-gold-soft">
-          Layar Kehadiran Realtime
-        </span>
-        <h1 className="text-2xl sm:text-3xl xl:text-4xl font-heading font-bold text-white tracking-tight leading-tight">
-          {eventName}
-        </h1>
+      {/* Kolom Kiri: Logo BMH + Judul Acara & Subjudul */}
+      <div className="flex items-center gap-3.5 sm:gap-4">
+        <div className="relative w-12 h-12 sm:w-14 sm:h-14 xl:w-16 xl:h-16 shrink-0 rounded-2xl bg-white/10 p-1.5 border border-white/15 flex items-center justify-center shadow-xs backdrop-blur-xs">
+          <Image
+            src="/logo.png"
+            alt="Logo BMH"
+            width={64}
+            height={64}
+            className="w-full h-full object-contain drop-shadow-sm"
+            priority
+          />
+        </div>
+        <div className="flex flex-col justify-center">
+          <span className="text-xs xl:text-sm uppercase tracking-wider font-semibold text-brand-gold-soft">
+            Layar Kehadiran Realtime
+          </span>
+          <h1 className="text-2xl sm:text-3xl xl:text-4xl font-heading font-bold text-white tracking-tight leading-tight">
+            {eventName}
+          </h1>
+        </div>
       </div>
 
       {/* Kolom Kanan: Sesi Aktif, Jam Digital WIB, dan Tombol Fullscreen */}
