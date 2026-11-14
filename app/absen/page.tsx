@@ -63,7 +63,7 @@ function SessionPickerSkeleton() {
 
 export default function AbsenPage() {
   const eventName =
-    process.env.NEXT_PUBLIC_EVENT_NAME || "Silaturahim & Rapat Kerja Nasional BMH";
+    process.env.NEXT_PUBLIC_EVENT_NAME || "Silaturahim & Rapat Kerja Nasional BMH 2026";
 
   return (
     <main className="page-bg min-h-screen flex flex-col justify-between p-4 sm:p-6 pb-8">

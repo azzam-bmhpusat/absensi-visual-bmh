@@ -26,7 +26,7 @@ interface AttendanceBoardProps {
 }
 
 export function AttendanceBoard({
-  eventName = "Silaturahim & Rapat Kerja Nasional BMH",
+  eventName = "Silaturahim & Rapat Kerja Nasional BMH 2026",
   initialSessions = [],
   activeSession,
   initialGuests,
@@ -252,9 +252,8 @@ export function AttendanceBoard({
 
   return (
     <div
-      className={`flex-1 flex flex-col justify-between min-h-0 overflow-hidden ${
-        isIdle ? "cursor-none" : ""
-      }`}
+      className={`flex-1 flex flex-col justify-between min-h-0 overflow-hidden ${isIdle ? "cursor-none" : ""
+        }`}
     >
       {/* Header Display */}
       <DisplayHeader
@@ -444,11 +443,10 @@ export function AttendanceBoard({
                     key={s.id}
                     onClick={() => handleSelectSession(s)}
                     type="button"
-                    className={`px-2.5 xl:px-3 py-1 xl:py-1.5 rounded-lg xl:rounded-xl text-[11px] xl:text-xs font-heading font-semibold transition-all cursor-pointer select-none whitespace-nowrap ${
-                      isCurrent
+                    className={`px-2.5 xl:px-3 py-1 xl:py-1.5 rounded-lg xl:rounded-xl text-[11px] xl:text-xs font-heading font-semibold transition-all cursor-pointer select-none whitespace-nowrap ${isCurrent
                         ? "bg-brand-gold-soft text-[#0A3A30] shadow-md scale-100 font-bold"
                         : "text-white/70 hover:text-white hover:bg-white/10"
-                    }`}
+                      }`}
                     title={`Hari ${h}: ${s.nama}`}
                   >
                     {`H${h}: ${shortName}`}
