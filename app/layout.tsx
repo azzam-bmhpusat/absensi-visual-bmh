@@ -41,7 +41,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${inter.variable} ${poppins.variable} antialiased`} suppressHydrationWarning>
+    <html lang="id" className={`${inter.variable} ${poppins.variable} antialiased scroll-smooth`} suppressHydrationWarning>
       <body className="min-h-screen font-sans bg-background text-foreground flex flex-col" suppressHydrationWarning>
         <TooltipProvider>
           {children}

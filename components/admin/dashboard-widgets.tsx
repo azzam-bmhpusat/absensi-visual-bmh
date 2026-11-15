@@ -46,10 +46,6 @@ function buildBarChartData(
     const localOrder = ((s.id - 1) % 3) + 1;
     const count = attendancesCountBySession[s.id] || 0;
 
-    let shortTitle = "Pagi";
-    if (localOrder === 2) shortTitle = "Isoma";
-    if (localOrder === 3) shortTitle = "Malam";
-
     return {
       id: s.id,
       nama: s.nama,

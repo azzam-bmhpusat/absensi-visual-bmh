@@ -46,18 +46,24 @@ export function AttendanceBoard({
 
   const supabase = useMemo(() => createClient(), []);
 
-  // Sinkronisasi state ketika prop dari server component berubah
-  useEffect(() => {
+  // Sinkronisasi state ketika prop dari server component berubah (React recommended pattern)
+  const [prevActiveSession, setPrevActiveSession] = useState(activeSession);
+  if (activeSession !== prevActiveSession) {
+    setPrevActiveSession(activeSession);
     setCurrentSession(activeSession);
-  }, [activeSession]);
+  }
 
-  useEffect(() => {
+  const [prevGuests, setPrevGuests] = useState(initialGuests);
+  if (initialGuests !== prevGuests) {
+    setPrevGuests(initialGuests);
     setGuests(initialGuests);
-  }, [initialGuests]);
+  }
 
-  useEffect(() => {
+  const [prevAttendances, setPrevAttendances] = useState(initialAttendances);
+  if (initialAttendances !== prevAttendances) {
+    setPrevAttendances(initialAttendances);
     setAttendances(initialAttendances);
-  }, [initialAttendances]);
+  }
 
   // 1. Sembunyikan kursor mouse saat idle (3 detik)
   useEffect(() => {

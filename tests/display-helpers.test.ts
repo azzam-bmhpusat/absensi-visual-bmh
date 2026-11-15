@@ -151,28 +151,25 @@ describe("display-helpers", () => {
   describe("formatGuestAffiliation", () => {
     it("memformat Ketua Departemen dengan Departemen IT", () => {
       const label = formatGuestAffiliation({
-        nama: "Fulan",
         jabatan: "Ketua Departemen",
         departemen: "IT",
         perwakilan_daerah: "Pusat",
-      } as any);
+      });
       expect(label).toBe("Ketua Departemen: IT");
     });
 
     it("memformat Ketua Daerah dengan BMH Jawa Timur", () => {
       const label = formatGuestAffiliation({
-        nama: "Ahmad Fauzi",
         jabatan: "Ketua Daerah",
         perwakilan_daerah: "BMH Jawa Timur",
-      } as any);
+      });
       expect(label).toBe("Ketua Daerah — BMH Jawa Timur");
     });
 
     it("memformat delegasi perwakilan daerah biasa", () => {
       const label = formatGuestAffiliation({
-        nama: "Siti Khadijah",
         perwakilan_daerah: "BMH Jawa Barat",
-      } as any);
+      });
       expect(label).toBe("BMH Jawa Barat");
     });
 
