@@ -100,9 +100,9 @@ describe("Fase 1 — Konten Bertipe (PRD Rakernas BMH)", () => {
       expect(EVENT_INFO.theme).toBe("Tema Acara");
     });
 
-    it("tautan panitia di footer tetap mengarah ke situs DPW Hidayatullah Jateng", () => {
+    it("tautan awal panitia mengikuti konten proyek terbaru", () => {
       expect(FOOTER_DATA.committee.label).toBe("Panitia Rakernas");
-      expect(FOOTER_DATA.committee.url).toBe("https://hidayatullahjateng.or.id/");
+      expect(FOOTER_DATA.committee.url).toBe("https://wa.me/6289517795206");
     });
 
   });

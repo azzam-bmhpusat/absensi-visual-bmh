@@ -1,21 +1,24 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import fs from "fs";
 import path from "path";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { HeroSection } from "../components/rakernas/hero";
-import { metadata } from "../app/page";
+import { generateMetadata } from "../app/page";
+import { DEFAULT_EVENT_SETTINGS } from "@/lib/event-settings";
+vi.mock("@/lib/event-settings-server", () => ({ getEventSettings: async () => DEFAULT_EVENT_SETTINGS }));
 import { SITE_METADATA, NAV_ITEMS, EVENT_INFO } from "../content/rakernas";
 
 describe("Fase 2 — Kerangka, Header, Hero (PRD Rakernas BMH)", () => {
   describe("Metadata Halaman (FR-13)", () => {
-    it("menetapkan title mutlak 'Rakernas BMH' tanpa kata 'Hidayatullah'", () => {
+    it("menetapkan title mutlak 'Rakernas BMH' tanpa kata 'Hidayatullah'", async () => {
+      const metadata = await generateMetadata();
       expect(metadata.title).toEqual({ absolute: SITE_METADATA.title });
       expect(SITE_METADATA.title).toBe("Rakernas BMH");
     });
 
-    it("menetapkan description sesuai dengan tanggal dan lokasi acara", () => {
-      expect(metadata.description).toBe(SITE_METADATA.description);
+    it("menetapkan description sesuai dengan tanggal dan lokasi acara", async () => {
+      const metadata = await generateMetadata();
       expect(metadata.description).toContain("01–03 Desember 2026");
       expect(metadata.description).toContain("Hotel Luminor");
     });
@@ -34,7 +37,7 @@ describe("Fase 2 — Kerangka, Header, Hero (PRD Rakernas BMH)", () => {
 
     it("menerapkan ritme latar per bagian sesuai PRD B.5", () => {
       // S1 Hero berdiri sendiri; tema gelap dibatasi pada S2 Countdown.
-      expect(pageContent).toMatch(/<HeroSection\s*\/>\s*\{\/\*[^}]*\*\/\}\s*<section\s+id="countdown"/);
+      expect(pageContent).toMatch(/<HeroSection\s+settings={settings}\s*\/>\s*\{\/\*[^}]*\*\/\}\s*<section\s+id="countdown"/);
       expect(pageContent).toMatch(/id="countdown"[^>]*display-theme display-bg/);
       // S3 Rundown
       expect(pageContent).toContain("page-bg");

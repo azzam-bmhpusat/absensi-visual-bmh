@@ -44,6 +44,7 @@ export async function updateSession(request: NextRequest) {
     "/guest",
     "/rekap-kehadiran",
     "/kelola-sesi-acara",
+    "/pengaturan",
     "/admin",
   ];
 

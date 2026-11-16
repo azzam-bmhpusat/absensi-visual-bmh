@@ -1,7 +1,8 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import { EVENT_INFO } from "@/content/rakernas";
+import { formatEventOpening, getEventStatus } from "@/lib/event-settings";
 import { getTimeLeft, type TimeLeft } from "@/lib/rakernas-helpers";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -34,20 +35,25 @@ const INITIAL_TIME_LEFT: TimeLeft = {
 
 interface CountdownSectionProps {
   target?: string;
+  endsAt?: string | null;
 }
 
 export function CountdownSection({
   target = EVENT_INFO.countdownTarget,
-}: CountdownSectionProps) {
-  // Gunakan useSyncExternalStore untuk update setiap detik tanpa pemanggilan Date.now() saat prerender/SSR
-  const now = useSyncExternalStore(
-    (callback) => {
-      const interval = setInterval(callback, 1000);
-      return () => clearInterval(interval);
-    },
-    () => Date.now(),
-    () => null
-  );
+  endsAt = null,
+}: CountdownSectionProps = {}) {
+  const [now, setNow] = useState<number | null>(null);
+
+  useEffect(() => {
+    const initialTick = setTimeout(() => setNow(Date.now()), 0);
+    const interval = setInterval(() => {
+      setNow(Date.now());
+    }, 1000);
+    return () => {
+      clearTimeout(initialTick);
+      clearInterval(interval);
+    };
+  }, []);
 
   const isMounted = now !== null;
   const timeLeft = isMounted ? getTimeLeft(target, now) : INITIAL_TIME_LEFT;
@@ -59,7 +65,7 @@ export function CountdownSection({
           Hitung Mundur Acara
         </h2>
         <p className="mt-2 text-xs md:text-sm text-muted-foreground">
-          Menuju pembukaan {EVENT_INFO.title} &bull; 01 Desember 2026, 10.00 WIB
+          Menuju pembukaan {EVENT_INFO.title} &bull; {formatEventOpening(target)}
         </p>
 
         <div
@@ -90,7 +96,7 @@ export function CountdownSection({
 
         {isMounted && timeLeft.isExpired && (
           <p className="mt-4 text-xs md:text-sm font-medium text-brand-green">
-            Acara sedang berlangsung atau telah dimulai!
+            {getEventStatus({ startsAt: target, endsAt }, now!) === "finished" ? "Acara telah selesai." : "Acara sedang berlangsung atau telah dimulai!"}
           </p>
         )}
       </div>

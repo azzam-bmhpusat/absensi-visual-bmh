@@ -190,9 +190,8 @@ describe("Fase 3 — Hitung Mundur & Rundown (PRD Rakernas BMH)", () => {
 
     it("memiliki 3 tab: Hari 1, Hari 2, Hari 3 dalam grid-cols-3", () => {
       expect(rundownContent).toContain("grid-cols-3");
-      expect(rundownContent).toContain('"Hari 1"');
-      expect(rundownContent).toContain('"Hari 2"');
-      expect(rundownContent).toContain('"Hari 3"');
+      expect(rundownContent).toContain("getEventDays(startsAt)");
+      expect(rundownContent).toContain("`Hari ${index + 1}`");
     });
 
     it("menggunakan Badge variant='secondary' dengan tabular-nums untuk jam", () => {
@@ -221,13 +220,13 @@ describe("Fase 3 — Hitung Mundur & Rundown (PRD Rakernas BMH)", () => {
     it("mengimpor dan merender CountdownSection di dalam wadah gelap S1 & S2", () => {
       expect(pageContent).toContain("CountdownSection");
       expect(pageContent).toMatch(
-        /display-theme display-bg[\s\S]*?<CountdownSection \/>/
+        /display-theme display-bg[\s\S]*?<CountdownSection target={settings.startsAt} endsAt={settings.endsAt} \/>/
       );
     });
 
     it("mengimpor dan merender RundownSection di bagian S3", () => {
       expect(pageContent).toContain("RundownSection");
-      expect(pageContent).toMatch(/<RundownSection \/>/);
+      expect(pageContent).toMatch(/<RundownSection startsAt={settings.startsAt} \/>/);
     });
   });
 

@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { cn } from "cn";
 import { Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +15,17 @@ import {
 import { EVENT_INFO, NAV_ITEMS } from "@/content/rakernas";
 
 export function SiteHeader() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const closeMobileMenu = () => {
+      if (desktop.matches) setMenuOpen(false);
+    };
+    desktop.addEventListener("change", closeMobileMenu);
+    return () => desktop.removeEventListener("change", closeMobileMenu);
+  }, []);
+
   const handleNavClick = (href: string) => {
     if (href.startsWith("#")) {
       const targetId = href.replace("#", "");
@@ -25,11 +38,11 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background/90 backdrop-blur border-b border-line">
-      <div className="mx-auto flex h-16 w-full max-w-screen-xl items-center justify-between px-5 md:px-8">
+      <div className="mx-auto flex h-16 w-full max-w-screen-xl items-center justify-between gap-4 px-5 md:px-8">
         {/* Logo Kiri (Tautan ke /) */}
         <Link
           href="/"
-          className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md"
+          className="flex shrink-0 items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md"
           aria-label={EVENT_INFO.name}
         >
           <Image
@@ -42,14 +55,35 @@ export function SiteHeader() {
           />
         </Link>
 
-        {/* Menu Navigasi Kanan (Dropdown shadcn) */}
-        <DropdownMenu>
+        {/* Navigasi langsung pada laptop dan desktop */}
+        <nav aria-label="Navigasi utama" className="hidden items-center gap-1 lg:flex">
+          {NAV_ITEMS.map((item) => (
+            <a
+              key={item.href}
+              href={item.href}
+              className={cn(
+                buttonVariants({ variant: "ghost" }),
+                "h-11 px-3 text-sm text-ink hover:bg-secondary hover:text-primary",
+              )}
+              onClick={(event) => {
+                if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
+                event.preventDefault();
+                handleNavClick(item.href);
+              }}
+            >
+              {item.label}
+            </a>
+          ))}
+        </nav>
+
+        {/* Hamburger untuk HP dan tablet */}
+        <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
           <DropdownMenuTrigger
             render={
               <Button
                 variant="ghost"
                 size="icon"
-                className="size-11 rounded-lg text-ink hover:text-primary hover:bg-secondary focus-visible:ring-ring"
+                className="size-11 rounded-lg text-ink hover:text-primary hover:bg-secondary focus-visible:ring-ring lg:hidden"
                 aria-label="Buka menu navigasi"
               />
             }
@@ -58,7 +92,7 @@ export function SiteHeader() {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-56 rounded-xl border border-line bg-popover p-1.5 shadow-lg"
+            className="w-56 rounded-xl border border-line bg-popover p-1.5 shadow-lg lg:hidden"
           >
             {NAV_ITEMS.map((item) => (
               <DropdownMenuItem

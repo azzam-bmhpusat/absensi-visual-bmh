@@ -163,7 +163,7 @@ describe("Fase 6 — QA & Penyelesaian: Landing Page Rakernas BMH", () => {
       expect(FOOTER_DATA.logoAlt).toBe("Logo Rakernas BMH 2027");
       expect(FOOTER_DATA.text).toBe("01-03 Desember 2026 | Hotel Luminor Kota Jakarta Barat @2026");
       expect(FOOTER_DATA.committee.label).toBe("Panitia Rakernas");
-      expect(FOOTER_DATA.committee.url).toBe("https://hidayatullahjateng.or.id/");
+      expect(FOOTER_DATA.committee.url).toBe("https://wa.me/6289517795206");
     });
 
     it("Navigasi header memuat 5 anchor section sesuai PRD", () => {
@@ -187,7 +187,7 @@ describe("Fase 6 — QA & Penyelesaian: Landing Page Rakernas BMH", () => {
     });
 
     it("Tautan panitia tetap dipertahankan", () => {
-      expect(FOOTER_DATA.committee.url).toContain("hidayatullahjateng.or.id");
+      expect(FOOTER_DATA.committee.url).toContain("wa.me/");
     });
   });
 

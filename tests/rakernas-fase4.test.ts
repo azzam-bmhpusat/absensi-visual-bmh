@@ -79,7 +79,7 @@ describe("Fase 4 — Dress Code & Lokasi (PRD Rakernas BMH)", () => {
     });
 
     it("mengganti banner placeholder dengan peta pada koordinat hotel resmi", () => {
-      expect(locationContent).toContain("<LocationMap />");
+      expect(locationContent).toContain("<LocationMap location={settings} />");
       expect(locationContent).not.toContain("LOCATION_DATA.banner.src");
       expect(LOCATION_DATA.map.coordinates).toEqual([106.823191, -6.148531]);
       expect(LOCATION_DATA.map.zoom).toBe(16);
@@ -87,15 +87,15 @@ describe("Fase 4 — Dress Code & Lokasi (PRD Rakernas BMH)", () => {
     });
 
     it("menampilkan nama hotel dan alamat lengkap dari LOCATION_DATA", () => {
-      expect(locationContent).toContain("LOCATION_DATA.hotel");
-      expect(locationContent).toContain("LOCATION_DATA.address");
+      expect(locationContent).toContain("settings.venueName");
+      expect(locationContent).toContain("settings.venueAddress");
       expect(LOCATION_DATA.hotel).toBe(EVENT_INFO.hotel);
       expect(LOCATION_DATA.address).toBe(EVENT_INFO.address);
     });
 
     it("memiliki tombol aksi Google Map dengan tautan eksternal yang benar dan tab baru", () => {
-      expect(locationContent).toContain("LOCATION_DATA.mapsUrl");
-      expect(locationContent).toContain("LOCATION_DATA.mapsButtonLabel");
+      expect(locationContent).toContain("settings.mapsUrl");
+      expect(locationContent).toContain("Google Maps {settings.venueName}");
       expect(locationContent).toContain('target="_blank"');
       expect(locationContent).toContain('rel="noopener noreferrer"');
       expect(LOCATION_DATA.mapsUrl).toBe("https://maps.app.goo.gl/d4RQdTwK9jbx4qZD8");
@@ -152,7 +152,7 @@ describe("Fase 4 — Dress Code & Lokasi (PRD Rakernas BMH)", () => {
     it("merender LocationSection di dalam section #lokasi dengan background bg-background", () => {
       expect(pageContent).toContain('import { LocationSection }');
       expect(pageContent).toMatch(
-        /<section[^>]*id="lokasi"[^>]*className="[^"]*bg-background[^"]*"[^>]*>[\s\S]*?<LocationSection \/>[\s\S]*?<\/section>/
+        /<section[^>]*id="lokasi"[^>]*className="[^"]*bg-background[^"]*"[^>]*>[\s\S]*?<LocationSection settings={settings} \/>[\s\S]*?<\/section>/
       );
     });
   });

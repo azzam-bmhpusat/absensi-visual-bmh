@@ -1,10 +1,10 @@
 import { ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
 import { EVENT_INFO } from "@/content/rakernas";
+import { DEFAULT_EVENT_SETTINGS, formatEventDateRange, type EventSettings } from "@/lib/event-settings";
 import styles from "./hero.module.css";
 
-export function HeroSection() {
+export function HeroSection({ settings = DEFAULT_EVENT_SETTINGS }: { settings?: EventSettings } = {}) {
   const titleParts = EVENT_INFO.title.match(/^(.*)\s+(\S+)\s+(\d{4})$/);
-  const dateDays = EVENT_INFO.dateDays.replace(/\s*-\s*/, "–");
 
   return (
     <section className={styles.hero} aria-labelledby="hero-title">
@@ -35,7 +35,7 @@ export function HeroSection() {
             <div>
               <p className={styles.label}>Tanggal acara</p>
               <p className={styles.value}>
-                {dateDays} {EVENT_INFO.dateMonthYear}
+                {formatEventDateRange(settings.startsAt)}
               </p>
             </div>
           </div>
@@ -45,17 +45,17 @@ export function HeroSection() {
             </span>
             <div>
               <p className={styles.label}>Lokasi acara</p>
-              <p className={styles.value}>{EVENT_INFO.hotel}</p>
+              <p className={styles.value}>{settings.venueName}</p>
             </div>
           </div>
         </div>
 
         <a
           className={styles.button}
-          href={EVENT_INFO.mapsUrl}
+          href={settings.mapsUrl}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={`Lihat lokasi ${EVENT_INFO.hotel} di Google Maps (tab baru)`}
+          aria-label={`Lihat lokasi ${settings.venueName} di Google Maps (tab baru)`}
         >
           Lihat lokasi acara
           <ArrowUpRight aria-hidden="true" />

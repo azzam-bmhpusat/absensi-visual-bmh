@@ -4,6 +4,7 @@ import { useState, useMemo, useTransition } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -70,6 +71,23 @@ interface AttendanceRekapTableProps {
   attendances: AttendanceItem[];
   sessions: SessionInfo[];
 }
+
+const dayFilterItems = [
+  { value: "all", label: "Semua Hari" },
+  { value: "1", label: "Hari Pertama" },
+  { value: "2", label: "Hari Kedua" },
+  { value: "3", label: "Hari Ketiga" },
+];
+
+const filterTriggerClassName = "w-full min-w-0 gap-2 rounded-xl border-line text-base lg:text-sm data-[size=default]:h-11 *:data-[slot=select-value]:min-w-0 *:data-[slot=select-value]:block";
+
+const filterContentProps = {
+  side: "bottom",
+  align: "start",
+  sideOffset: 4,
+  alignItemWithTrigger: false,
+  collisionAvoidance: { side: "none", align: "none", fallbackAxisSide: "none" },
+} as const;
 
 export function AttendanceRekapTable({
   attendances,
@@ -150,6 +168,22 @@ export function AttendanceRekapTable({
       (s) => (s.hari ?? (s.id <= 3 ? 1 : s.id <= 6 ? 2 : 3)) === targetDay
     );
   }, [sessions, selectedDay]);
+
+  const selectedDayLabel = dayFilterItems.find((item) => item.value === selectedDay)?.label ?? "Semua Hari";
+  const allSessionsLabel = selectedDay === "all" ? "Semua Sesi" : `Semua Sesi ${selectedDayLabel}`;
+  const sessionFilterItems = [
+    { value: "all", label: allSessionsLabel },
+    ...availableSessions.map((session) => ({
+      value: String(session.id),
+      label: `Sesi ${((session.id - 1) % 3) + 1}: ${session.nama}`,
+    })),
+  ];
+  const daerahFilterItems = [
+    { value: "all", label: "Semua Daerah" },
+    ...uniqueDaerahList.map((daerah) => ({ value: daerah, label: daerah })),
+  ];
+  const selectedSessionLabel = sessionFilterItems.find((item) => item.value === selectedSessionId)?.label ?? allSessionsLabel;
+  const selectedDaerahLabel = daerahFilterItems.find((item) => item.value === selectedDaerah)?.label ?? "Semua Daerah";
 
   // Filter attendances
   const filteredAttendances = useMemo(() => {
@@ -284,22 +318,24 @@ export function AttendanceRekapTable({
       </div>
 
       {/* Kontrol Filter & Ekspor */}
-      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-line shadow-2xs">
-        <div className="flex flex-wrap items-center gap-2.5 flex-1">
+      <div role="group" aria-label="Filter rekap kehadiran" className="space-y-4 bg-white p-4 rounded-2xl border border-line shadow-2xs">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)_minmax(0,1fr)]">
           {/* Filter Hari */}
-          <div className="w-44">
+          <div className="min-w-0 space-y-2">
+            <Label htmlFor="rekap-filter-hari" className="text-sm text-ink">Hari</Label>
             <Select
+              items={dayFilterItems}
               value={selectedDay}
               onValueChange={(val) => {
                 setSelectedDay(val ?? "all");
                 setSelectedSessionId("all");
               }}
             >
-              <SelectTrigger className="h-9 rounded-xl border-line text-xs">
-                <Calendar className="w-3.5 h-3.5 mr-1.5 text-brand-green" />
-                <SelectValue placeholder="Semua Hari" />
+              <SelectTrigger id="rekap-filter-hari" title={selectedDayLabel} className={filterTriggerClassName}>
+                <Calendar className="size-4 text-brand-green" aria-hidden="true" />
+                <SelectValue className="truncate" placeholder="Semua Hari" />
               </SelectTrigger>
-              <SelectContent className="rounded-xl">
+              <SelectContent {...filterContentProps} className="w-(--anchor-width) min-w-0 rounded-xl max-h-[min(16rem,var(--available-height))]">
                 <SelectItem value="all" className="text-xs">
                   Semua Hari
                 </SelectItem>
@@ -317,20 +353,22 @@ export function AttendanceRekapTable({
           </div>
 
           {/* Filter Sesi */}
-          <div className="w-64">
+          <div className="min-w-0 space-y-2">
+            <Label htmlFor="rekap-filter-sesi" className="text-sm text-ink">Sesi</Label>
             <Select
+              items={sessionFilterItems}
               value={selectedSessionId}
               onValueChange={(val) => setSelectedSessionId(val ?? "all")}
             >
-              <SelectTrigger className="h-9 rounded-xl border-line text-xs">
-                <Clock className="w-3.5 h-3.5 mr-1.5 text-brand-gold-text" />
-                <SelectValue placeholder="Pilih Sesi Acara" />
+              <SelectTrigger id="rekap-filter-sesi" title={selectedSessionLabel} className={filterTriggerClassName}>
+                <Clock className="size-4 text-brand-gold-text" aria-hidden="true" />
+                <SelectValue className="truncate" placeholder="Semua Sesi" />
               </SelectTrigger>
-              <SelectContent className="rounded-xl max-h-72">
+              <SelectContent {...filterContentProps} className="w-(--anchor-width) min-w-0 rounded-xl max-h-[min(18rem,var(--available-height))]">
                 {selectedDay === "all" ? (
                   <>
                     <SelectItem value="all" className="text-xs font-medium">
-                      Semua Sesi (9 Sesi)
+                      Semua Sesi ({sessions.length} Sesi)
                     </SelectItem>
                     <SelectSeparator className="my-1" />
 
@@ -356,6 +394,7 @@ export function AttendanceRekapTable({
                               <SelectItem
                                 key={s.id}
                                 value={String(s.id)}
+                                title={`Sesi ${localOrder}: ${s.nama}`}
                                 className="text-xs pl-4"
                               >
                                 {`Sesi ${localOrder}: ${s.nama}`}
@@ -369,11 +408,7 @@ export function AttendanceRekapTable({
                 ) : (
                   <>
                     <SelectItem value="all" className="text-xs font-semibold">
-                      {selectedDay === "1"
-                        ? "Semua Sesi Hari Pertama"
-                        : selectedDay === "2"
-                        ? "Semua Sesi Hari Kedua"
-                        : "Semua Sesi Hari Ketiga"}
+                      {allSessionsLabel}
                     </SelectItem>
                     <SelectSeparator className="my-1" />
                     <SelectGroup>
@@ -390,6 +425,7 @@ export function AttendanceRekapTable({
                           <SelectItem
                             key={s.id}
                             value={String(s.id)}
+                            title={`Sesi ${localOrder}: ${s.nama}`}
                             className="text-xs pl-3"
                           >
                             {`Sesi ${localOrder}: ${s.nama}`}
@@ -404,21 +440,23 @@ export function AttendanceRekapTable({
           </div>
 
           {/* Filter Daerah */}
-          <div className="w-48">
+          <div className="min-w-0 space-y-2">
+            <Label htmlFor="rekap-filter-daerah" className="text-sm text-ink">Daerah</Label>
             <Select
+              items={daerahFilterItems}
               value={selectedDaerah}
               onValueChange={(val) => setSelectedDaerah(val ?? "all")}
             >
-              <SelectTrigger className="h-9 rounded-xl border-line text-xs">
-                <MapPin className="w-3.5 h-3.5 mr-1.5 text-brand-gold-text" />
-                <SelectValue placeholder="Semua Daerah" />
+              <SelectTrigger id="rekap-filter-daerah" title={selectedDaerahLabel} className={filterTriggerClassName}>
+                <MapPin className="size-4 text-brand-gold-text" aria-hidden="true" />
+                <SelectValue className="truncate" placeholder="Semua Daerah" />
               </SelectTrigger>
-              <SelectContent className="rounded-xl max-h-56">
+              <SelectContent {...filterContentProps} className="w-(--anchor-width) min-w-0 rounded-xl max-h-[min(14rem,var(--available-height))]">
                 <SelectItem value="all" className="text-xs">
                   Semua Daerah ({uniqueDaerahList.length})
                 </SelectItem>
                 {uniqueDaerahList.map((daerah) => (
-                  <SelectItem key={daerah} value={daerah} className="text-xs">
+                  <SelectItem key={daerah} value={daerah} title={daerah} className="text-xs">
                     {daerah}
                   </SelectItem>
                 ))}
@@ -426,27 +464,31 @@ export function AttendanceRekapTable({
             </Select>
           </div>
 
-          {/* Pencarian Nama */}
-          <div className="relative flex-1 min-w-[180px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-ink-muted" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Cari nama atau daerah..."
-              className="pl-8 h-9 rounded-xl border-line text-xs focus-visible:ring-brand-green"
-            />
-          </div>
         </div>
 
-        {/* Tombol Ekspor CSV */}
-        <Button
-          onClick={handleExportCsv}
-          disabled={filteredAttendances.length === 0}
-          className="h-9 px-3.5 rounded-xl bg-primary hover:bg-brand-green-deep text-white text-xs font-semibold shadow-xs transition-all shrink-0"
-        >
-          <Download className="w-3.5 h-3.5 mr-1.5 text-brand-gold-soft" />
-          Ekspor CSV (WIB)
-        </Button>
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
+          <div className="min-w-0 flex-1 space-y-2">
+            <Label htmlFor="rekap-filter-search" className="text-sm text-ink">Pencarian</Label>
+            <div className="relative">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-ink-muted" aria-hidden="true" />
+              <Input
+                id="rekap-filter-search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Cari nama, daerah, jabatan, atau departemen..."
+                className="h-11 pl-10 rounded-xl border-line text-base lg:text-sm focus-visible:ring-brand-green"
+              />
+            </div>
+          </div>
+          <Button
+            onClick={handleExportCsv}
+            disabled={filteredAttendances.length === 0}
+            className="h-11 w-full px-4 rounded-xl bg-primary hover:bg-brand-green-deep text-white text-sm font-semibold shadow-xs transition-all shrink-0 lg:w-auto"
+          >
+            <Download className="size-4 text-brand-gold-soft" aria-hidden="true" />
+            Ekspor CSV (WIB)
+          </Button>
+        </div>
       </div>
 
       {/* Tabel Data Rekap Kehadiran */}

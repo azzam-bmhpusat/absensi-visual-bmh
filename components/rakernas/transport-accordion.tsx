@@ -22,7 +22,7 @@ function getOriginIcon(iconType: "plane" | "train" | "bus") {
   }
 }
 
-export function TransportSection() {
+export function TransportSection({ venueName = EVENT_INFO.hotel }: { venueName?: string } = {}) {
   return (
     <div className="mx-auto w-full max-w-screen-xl px-5 md:px-8">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
@@ -37,7 +37,7 @@ export function TransportSection() {
           </h2>
           <p className="text-base md:text-lg text-ink-muted leading-relaxed">
             menuju{" "}
-            <span className="font-semibold text-ink">{EVENT_INFO.hotel}</span>
+            <span className="font-semibold text-ink">{venueName}</span>
           </p>
           <p className="text-sm text-ink-muted leading-relaxed hidden sm:block">
             Perkiraan tarif moda transportasi umum dari berbagai titik kedatangan

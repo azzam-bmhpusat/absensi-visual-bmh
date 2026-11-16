@@ -56,7 +56,7 @@
 
 **Tujuan:** peserta bisa absen end-to-end.
 
-- [x] `app/page.tsx`: redirect ke `/absen`
+- [x] `app/page.tsx`: Landing Page Rakernas BMH (sebelumnya sempat redirect sementara ke `/absen`)
 - [x] `session-picker.tsx`: dua kartu besar (Hari Pertama / Hari Kedua) sesuai design system
 - [x] `attendance-dialog.tsx`: shadcn Dialog + react-hook-form + zod
 - [x] `name-combobox.tsx`: Command + Popover; sumber data `guests`; boleh ketik bebas (walk-in); pilih tamu → isi daerah otomatis

@@ -209,7 +209,7 @@ Input: `{ sessionId: 1|2, guestId?: string, nama: string, perwakilanDaerah: stri
 
 ```
 app/
-  page.tsx                    # redirect ke /absen
+  page.tsx                    # Landing page Beranda Rakernas BMH (S0–S8)
   absen/page.tsx
   absen/actions.ts            # submitAttendance
   display/page.tsx

@@ -2,8 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { cn } from "cn";
 import { FOOTER_DATA } from "@/content/rakernas";
+import { DEFAULT_EVENT_SETTINGS, getEventSummary, type EventSettings } from "@/lib/event-settings";
 
-export function SiteFooter({ className }: { className?: string }) {
+export function SiteFooter({ className, settings = DEFAULT_EVENT_SETTINGS }: { className?: string; settings?: EventSettings } = {}) {
   return (
     <footer
       id="footer"
@@ -30,12 +31,12 @@ export function SiteFooter({ className }: { className?: string }) {
         {/* Teks Informasi & Tautan Panitia */}
         <div className="space-y-2 max-w-md">
           <p className="text-sm text-white/80 leading-relaxed font-sans">
-            {FOOTER_DATA.text}
+            {getEventSummary(settings)}
           </p>
           <p className="text-sm text-white/80">
             Diselenggarakan oleh{" "}
             <a
-              href={FOOTER_DATA.committee.url}
+              href={settings.footerUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="text-brand-gold-soft font-medium underline underline-offset-4 hover:text-white transition-colors"

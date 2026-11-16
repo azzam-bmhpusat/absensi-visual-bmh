@@ -133,16 +133,16 @@ describe("Fase 5 — Transportasi, Tamu Undangan, Footer", () => {
     });
 
     it("menampilkan teks resmi tanggal, hotel, dan tahun", () => {
-      expect(footerContent).toContain("FOOTER_DATA.text");
+      expect(footerContent).toContain("getEventSummary(settings)");
       expect(FOOTER_DATA.text).toBe(
         "01-03 Desember 2026 | Hotel Luminor Kota Jakarta Barat @2026"
       );
     });
 
     it("menampilkan tautan resmi ke Panitia Rakernas", () => {
-      expect(footerContent).toContain("FOOTER_DATA.committee.url");
+      expect(footerContent).toContain("settings.footerUrl");
       expect(footerContent).toContain("FOOTER_DATA.committee.label");
-      expect(FOOTER_DATA.committee.url).toBe("https://hidayatullahjateng.or.id/");
+      expect(FOOTER_DATA.committee.url).toBe("https://wa.me/6289517795206");
       expect(footerContent).toContain('target="_blank"');
       expect(footerContent).toContain('rel="noopener noreferrer"');
     });

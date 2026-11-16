@@ -15,5 +15,6 @@ export const config = {
     "/guest/:path*",
     "/rekap-kehadiran/:path*",
     "/kelola-sesi-acara/:path*",
+    "/pengaturan/:path*",
   ],
 };

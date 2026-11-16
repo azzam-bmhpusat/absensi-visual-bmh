@@ -4,6 +4,7 @@ import { useId, useState, useSyncExternalStore } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { cn } from "cn";
 import { RUNDOWN_DATA } from "@/content/rakernas";
+import { DEFAULT_EVENT_SETTINGS, formatEventDay, getEventDays } from "@/lib/event-settings";
 import { getDefaultDay, parseRundownTitle } from "@/lib/rakernas-helpers";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -14,13 +15,8 @@ interface DayTabConfig {
   key: DayKey;
   label: string;
   sublabel: string;
+  compactLabel: string;
 }
-
-const DAYS_CONFIG: DayTabConfig[] = [
-  { key: "hari1", label: "Hari 1", sublabel: "Selasa, 01 Des 2026" },
-  { key: "hari2", label: "Hari 2", sublabel: "Rabu, 02 Des 2026" },
-  { key: "hari3", label: "Hari 3", sublabel: "Kamis, 03 Des 2026" },
-];
 
 const DAY_INDEX: Record<DayKey, number> = {
   hari1: 0,
@@ -28,11 +24,17 @@ const DAY_INDEX: Record<DayKey, number> = {
   hari3: 2,
 };
 
-export function RundownSection() {
+export function RundownSection({ startsAt = DEFAULT_EVENT_SETTINGS.startsAt }: { startsAt?: string } = {}) {
+  const daysConfig: DayTabConfig[] = getEventDays(startsAt).map((date, index) => ({
+    key: `hari${index + 1}` as DayKey,
+    label: `Hari ${index + 1}`,
+    sublabel: formatEventDay(date, { weekday: "long", month: "short" }),
+    compactLabel: new Intl.DateTimeFormat("id-ID", { day: "2-digit", month: "short", timeZone: "Asia/Jakarta" }).format(new Date(`${date}T12:00:00+07:00`)),
+  }));
   // Ambil default day via useSyncExternalStore agar tidak mengakses Date saat prerender/SSR
   const defaultDay = useSyncExternalStore(
     () => () => {},
-    () => getDefaultDay(Date.now()),
+    () => getDefaultDay(Date.now(), startsAt),
     () => "hari1" as DayKey
   );
 
@@ -70,7 +72,7 @@ export function RundownSection() {
         >
           {/* Tabs List dengan grid-cols-3 penuh lebar & indikator meluncur */}
           <TabsList className="grid w-full grid-cols-3 group-data-horizontal/tabs:h-auto min-h-13 sm:min-h-15 rounded-2xl border border-line bg-surface p-1 sm:p-1.5 shadow-xs">
-            {DAYS_CONFIG.map(({ key, label, sublabel }) => {
+            {daysConfig.map(({ key, label, sublabel, compactLabel }) => {
               const isActive = selectedDay === key;
               return (
                 <TabsTrigger
@@ -108,10 +110,10 @@ export function RundownSection() {
                     )}
                   >
                     <span className="inline sm:hidden">
-                      {sublabel.split(", ")[1]?.replace(" 2026", "") ?? sublabel}
+                      {compactLabel}
                     </span>
                     <span className="hidden sm:inline">
-                      {sublabel.split(" 2026")[0] ?? sublabel}
+                      {sublabel}
                     </span>
                   </span>
                 </TabsTrigger>
@@ -119,7 +121,7 @@ export function RundownSection() {
             })}
           </TabsList>
 
-          {DAYS_CONFIG.map(({ key, label, sublabel }) => {
+          {daysConfig.map(({ key, label, sublabel }) => {
             const items = RUNDOWN_DATA[key];
             const isPending =
               items.length === 1 && items[0].time === "-";

@@ -4,6 +4,7 @@ import * as React from "react";
 import Image from "next/image";
 import { cn } from "cn";
 import { LOCATION_DATA, type GalleryItem } from "@/content/rakernas";
+import { DEFAULT_EVENT_SETTINGS, type EventSettings } from "@/lib/event-settings";
 import { LocationMap } from "@/components/rakernas/location-map";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,7 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import { MapPin, ExternalLink, ZoomIn } from "lucide-react";
 
-export function LocationSection() {
+export function LocationSection({ settings = DEFAULT_EVENT_SETTINGS }: { settings?: EventSettings } = {}) {
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
   const [count, setCount] = React.useState(0);
@@ -56,13 +57,13 @@ export function LocationSection() {
           {LOCATION_DATA.title}
         </h2>
         <p className="mt-2 md:mt-3 text-ink-muted text-sm md:text-base max-w-xl mx-auto">
-          Lokasi penyelenggaraan Rapat Kerja Nasional BMH 2027 di Kota Jakarta Barat
+          Lokasi penyelenggaraan acara di {settings.venueName}
         </p>
       </div>
 
       {/* Peta lokasi dimuat ketika mendekati layar */}
       <div className="mb-6 md:mb-8">
-        <LocationMap />
+        <LocationMap location={settings} />
       </div>
 
       {/* Kartu Informasi Alamat & Tombol Google Map */}
@@ -74,10 +75,10 @@ export function LocationSection() {
             </div>
             <div>
               <h3 className="text-xl md:text-2xl font-heading font-semibold text-primary">
-                {LOCATION_DATA.hotel}
+                {settings.venueName}
               </h3>
               <p className="mt-1 text-sm md:text-base text-ink-muted leading-relaxed max-w-2xl">
-                {LOCATION_DATA.address}
+                {settings.venueAddress}
               </p>
             </div>
           </div>
@@ -87,7 +88,7 @@ export function LocationSection() {
               nativeButton={false}
               render={
                 <a
-                  href={LOCATION_DATA.mapsUrl}
+                  href={settings.mapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                 />
@@ -95,7 +96,7 @@ export function LocationSection() {
               className="h-12 px-6 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-heading font-medium shadow-md w-full sm:w-auto text-base transition-colors inline-flex items-center justify-center gap-2"
             >
               <MapPin className="size-5 shrink-0" />
-              <span>{LOCATION_DATA.mapsButtonLabel}</span>
+              <span>Google Maps {settings.venueName}</span>
               <ExternalLink className="size-4 shrink-0 opacity-80" />
             </Button>
           </div>
@@ -212,7 +213,7 @@ export function LocationSection() {
               {selectedPhoto?.caption}
             </DialogTitle>
             <DialogDescription className="text-sm text-ink-muted">
-              {selectedPhoto?.alt} &bull; {LOCATION_DATA.hotel}
+              {selectedPhoto?.alt} &bull; {settings.venueName}
             </DialogDescription>
           </DialogHeader>
 

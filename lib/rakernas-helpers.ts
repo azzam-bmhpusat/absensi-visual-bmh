@@ -1,5 +1,6 @@
 // lib/rakernas-helpers.ts
 // Helper fungsi waktu, countdown, dan pemrosesan rundown Rakernas BMH
+import { DEFAULT_EVENT_SETTINGS, getEventDays, toWibDateTime } from "@/lib/event-settings";
 
 export interface TimeLeft {
   days: number;
@@ -67,10 +68,11 @@ export function getTimeLeft(
 
 /**
  * Menentukan default tab rundown berdasarkan tanggal WIB (Asia/Jakarta, UTC+7).
- * Sesuai FR-05: default tab = hari ini (WIB) bila 1–3 Des 2026, selain itu Hari 1.
+ * Default tab mengikuti hari acara dalam WIB; di luar rentang acara kembali ke Hari 1.
  */
 export function getDefaultDay(
-  nowInput: string | Date | number = new Date()
+  nowInput: string | Date | number = new Date(),
+  startsAt: string = DEFAULT_EVENT_SETTINGS.startsAt
 ): "hari1" | "hari2" | "hari3" {
   const d = new Date(nowInput);
   if (isNaN(d.getTime())) {
@@ -78,18 +80,8 @@ export function getDefaultDay(
   }
 
   try {
-    const formatter = new Intl.DateTimeFormat("en-CA", {
-      timeZone: "Asia/Jakarta",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
-    const dateStr = formatter.format(d); // Format: "YYYY-MM-DD"
-
-    if (dateStr === "2026-12-01") return "hari1";
-    if (dateStr === "2026-12-02") return "hari2";
-    if (dateStr === "2026-12-03") return "hari3";
-    return "hari1";
+    const index = getEventDays(startsAt).indexOf(toWibDateTime(d).slice(0, 10));
+    return (["hari1", "hari2", "hari3"] as const)[index] ?? "hari1";
   } catch {
     return "hari1";
   }

@@ -10,6 +10,7 @@ import {
   Users,
   ClipboardList,
   CalendarClock,
+  Settings,
   QrCode,
   Monitor,
   LogOut,
@@ -74,6 +75,7 @@ export function AppSidebar({
           : null,
       badgeColor: "bg-green-100 text-brand-green-deep",
     },
+    { label: "Pengaturan", href: "/pengaturan", icon: Settings, badge: null, badgeColor: "" },
   ];
 
   const generalItems = [

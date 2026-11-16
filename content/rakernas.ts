@@ -302,6 +302,6 @@ export const FOOTER_DATA: FooterInfo = {
   text: "01-03 Desember 2026 | Hotel Luminor Kota Jakarta Barat @2026",
   committee: {
     label: "Panitia Rakernas",
-    url: "https://hidayatullahjateng.or.id/",
+    url: "https://wa.me/6289517795206",
   },
 };
