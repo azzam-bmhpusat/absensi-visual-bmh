@@ -7,7 +7,7 @@ import {
   DRESSCODE_DATA,
   LOCATION_DATA,
   TRANSPORT_DATA,
-  REGISTRATION_DATA,
+  INVITED_GUESTS_CONTENT,
   FOOTER_DATA,
 } from "../content/rakernas";
 
@@ -71,17 +71,15 @@ describe("Fase 1 — Konten Bertipe (PRD Rakernas BMH)", () => {
       expect(totalFares).toBe(18);
     });
 
-    it("memiliki tepat 4 langkah pendaftaran", () => {
-      expect(REGISTRATION_DATA.steps).toHaveLength(4);
-      expect(REGISTRATION_DATA.steps[0]).toContain("Transfer Rp.1.000.000/peserta");
-      expect(REGISTRATION_DATA.steps[1]).toContain("Isi data peserta");
-      expect(REGISTRATION_DATA.steps[2]).toContain("Upload bukti transfer");
-      expect(REGISTRATION_DATA.steps[3]).toContain("Konfirmasi pembayaran");
+    it("menyediakan copywriting pencarian dan empat label detail tamu", () => {
+      expect(INVITED_GUESTS_CONTENT.title).toBe("Tamu Undangan");
+      expect(INVITED_GUESTS_CONTENT.detailsTitle).toBe("Detail Tamu Undangan");
+      expect(Object.keys(INVITED_GUESTS_CONTENT.fields)).toEqual(["nama", "perwakilan_daerah", "jabatan", "departemen"]);
     });
 
     it("memiliki tepat 5 item navigasi header ke S3-S7", () => {
       expect(NAV_ITEMS).toHaveLength(5);
-      const expectedHrefs = ["#rundown", "#dresscode", "#lokasi", "#transportasi", "#pendaftaran"];
+      const expectedHrefs = ["#rundown", "#dresscode", "#lokasi", "#transportasi", "#tamu-undangan"];
       expect(NAV_ITEMS.map((n) => n.href)).toEqual(expectedHrefs);
     });
   });
@@ -98,16 +96,8 @@ describe("Fase 1 — Konten Bertipe (PRD Rakernas BMH)", () => {
       expect(FOOTER_DATA.logoAlt).not.toContain("Hidayatullah");
     });
 
-    it("tagline tema tetap mempertahankan kutipan asli termasuk kata 'Hidayatullah'", () => {
-      expect(EVENT_INFO.theme).toBe(
-        "Konsolidasi Jati Diri dan Transformasi Organisasi Menuju Hidayatullah Mandiri dan Berpengaruh"
-      );
-    });
-
-    it("nama pemilik rekening bank tetap mempertahankan 'an. DPW Hidayatullah Jateng'", () => {
-      expect(REGISTRATION_DATA.bank.accountHolder).toBe("an. DPW Hidayatullah Jateng");
-      expect(REGISTRATION_DATA.bank.accountNumber).toBe("9999-8866-17");
-      expect(REGISTRATION_DATA.bank.bankName).toBe("BANK SYARIAH INDONESIA (BSI)");
+    it("tema mengikuti konten acara terkini", () => {
+      expect(EVENT_INFO.theme).toBe("Tema Acara");
     });
 
     it("tautan panitia di footer tetap mengarah ke situs DPW Hidayatullah Jateng", () => {
@@ -115,11 +105,6 @@ describe("Fase 1 — Konten Bertipe (PRD Rakernas BMH)", () => {
       expect(FOOTER_DATA.committee.url).toBe("https://hidayatullahjateng.or.id/");
     });
 
-    it("teks pesan WhatsApp konfirmasi pendaftaran tetap mempertahankan teks asli", () => {
-      expect(REGISTRATION_DATA.actions.confirm.url).toContain(
-        "text=Bismillah,%20saya%20sudah%20mengisi%20form%20pendaftaran%20Rakernas%202027"
-      );
-    });
   });
 
   describe("Kevalidan Tautan Eksternal & Target Waktu", () => {
@@ -127,8 +112,6 @@ describe("Fase 1 — Konten Bertipe (PRD Rakernas BMH)", () => {
       const urls = [
         EVENT_INFO.mapsUrl,
         LOCATION_DATA.mapsUrl,
-        REGISTRATION_DATA.actions.form.url,
-        REGISTRATION_DATA.actions.confirm.url,
         FOOTER_DATA.committee.url,
       ];
 

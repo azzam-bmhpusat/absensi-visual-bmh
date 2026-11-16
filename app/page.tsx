@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { SITE_METADATA } from "@/content/rakernas";
+import { SITE_METADATA, INVITED_GUESTS_CONTENT } from "@/content/rakernas";
 import { SiteHeader } from "@/components/rakernas/site-header";
 import { HeroSection } from "@/components/rakernas/hero";
 import { CountdownSection } from "@/components/rakernas/countdown";
@@ -7,7 +7,7 @@ import { RundownSection } from "@/components/rakernas/rundown-tabs";
 import { DresscodeSection } from "@/components/rakernas/dresscode-carousel";
 import { LocationSection } from "@/components/rakernas/location-section";
 import { TransportSection } from "@/components/rakernas/transport-accordion";
-import { RegistrationSection } from "@/components/rakernas/registration-section";
+import { InvitedGuestsSection } from "@/components/rakernas/invited-guests-section";
 import { SiteFooter } from "@/components/rakernas/site-footer";
 
 export const metadata: Metadata = {
@@ -72,13 +72,13 @@ export default function HomePage() {
           <TransportSection />
         </section>
 
-        {/* S7 — Cara Mendaftar */}
+        {/* S7 — Pencarian Tamu Undangan */}
         <section
-          id="pendaftaran"
+          id="tamu-undangan"
           className="display-theme display-bg scroll-mt-20 py-12 md:py-20 text-foreground"
-          aria-label="Cara Mendaftar"
+          aria-label={INVITED_GUESTS_CONTENT.title}
         >
-          <RegistrationSection />
+          <InvitedGuestsSection />
         </section>
       </main>
 

@@ -44,8 +44,8 @@ describe("Fase 2 — Kerangka, Header, Hero (PRD Rakernas BMH)", () => {
       expect(pageContent).toContain("bg-background");
       // S6 Transportasi
       expect(pageContent).toContain("bg-surface");
-      // S7 Pendaftaran
-      expect(pageContent).toMatch(/id="pendaftaran"[^>]*display-theme display-bg/);
+      // S7 Tamu Undangan
+      expect(pageContent).toMatch(/id="tamu-undangan"[^>]*display-theme display-bg/);
       // S8 Footer
       expect(pageContent).toContain("bg-brand-green-night");
     });

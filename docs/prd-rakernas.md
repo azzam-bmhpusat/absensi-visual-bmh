@@ -70,7 +70,7 @@ Pasang komponen: `button card tabs carousel accordion dropdown-menu separator ba
 ### S1 — Hero
 - Logo `public/logo.png` ditampilkan besar sebagai visual hero (menggantikan poster sumber; sementara).
 - Judul (H1): **Rapat Kerja Nasional BMH 2027**
-- Tema (H2, dalam tanda kutip): "Konsolidasi Jati Diri dan Transformasi Organisasi Menuju Hidayatullah Mandiri dan Berpengaruh"
+- Tema (H2, dalam tanda kutip): ""Tema Acara""
 - Tanggal besar: **01 - 03** dan di bawahnya **Desember 2026**
 - Tautan lokasi: **Hotel Grasia Semarang** → https://maps.app.goo.gl/UYtvHFrQZcqtyauX6
 

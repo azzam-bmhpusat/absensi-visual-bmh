@@ -8,7 +8,7 @@ import {
   DRESSCODE_DATA,
   LOCATION_DATA,
   TRANSPORT_DATA,
-  REGISTRATION_DATA,
+  INVITED_GUESTS_CONTENT,
   NAV_ITEMS,
   FOOTER_DATA,
 } from "@/content/rakernas";
@@ -19,7 +19,7 @@ describe("Fase 6 — QA & Penyelesaian: Landing Page Rakernas BMH", () => {
       expect(SITE_METADATA.title).toBe("Rakernas BMH");
       expect(EVENT_INFO.title).toBe("Rapat Kerja Nasional BMH 2027");
       expect(EVENT_INFO.theme).toBe(
-        "Konsolidasi Jati Diri dan Transformasi Organisasi Menuju Hidayatullah Mandiri dan Berpengaruh"
+        "Tema Acara"
       );
       expect(EVENT_INFO.dateDays).toBe("01 - 03");
       expect(EVENT_INFO.dateMonthYear).toBe("Desember 2026");
@@ -152,21 +152,10 @@ describe("Fase 6 — QA & Penyelesaian: Landing Page Rakernas BMH", () => {
       });
     });
 
-    it("Cara mendaftar memuat 4 langkah dan detail rekening resmi", () => {
-      expect(REGISTRATION_DATA.steps).toHaveLength(4);
-      expect(REGISTRATION_DATA.steps[0]).toBe("Transfer Rp.1.000.000/peserta ke Rekening Pembayaran");
-      expect(REGISTRATION_DATA.steps[1]).toBe("Isi data peserta di form yg telah disediakan");
-      expect(REGISTRATION_DATA.steps[2]).toBe("Upload bukti transfer");
-      expect(REGISTRATION_DATA.steps[3]).toBe("Konfirmasi pembayaran ke panitia");
-
-      expect(REGISTRATION_DATA.bank.bankName).toBe("BANK SYARIAH INDONESIA (BSI)");
-      expect(REGISTRATION_DATA.bank.accountNumber).toBe("9999-8866-17");
-      expect(REGISTRATION_DATA.bank.accountHolder).toBe("an. DPW Hidayatullah Jateng");
-      expect(REGISTRATION_DATA.actions.form.url).toBe("https://forms.gle/8E5oksPuZpKvvjQR6");
-      expect(REGISTRATION_DATA.actions.confirm.url).toContain("https://wa.me/6283842037788");
-      expect(REGISTRATION_DATA.actions.confirm.url).toContain(
-        "text=Bismillah,%20saya%20sudah%20mengisi%20form%20pendaftaran%20Rakernas%202027"
-      );
+    it("Tamu Undangan menjelaskan empat kolom pencarian dan detail tamu", () => {
+      expect(INVITED_GUESTS_CONTENT.title).toBe("Tamu Undangan");
+      expect(INVITED_GUESTS_CONTENT.description).toBe("Temukan detail tamu undangan berdasarkan nama, perwakilan daerah, jabatan, atau departemen.");
+      expect(INVITED_GUESTS_CONTENT.detailsTitle).toBe("Detail Tamu Undangan");
     });
 
     it("Footer memuat logo, info acara, dan tautan resmi panitia tanpa counter pengunjung", () => {
@@ -184,7 +173,7 @@ describe("Fase 6 — QA & Penyelesaian: Landing Page Rakernas BMH", () => {
         "#dresscode",
         "#lokasi",
         "#transportasi",
-        "#pendaftaran",
+        "#tamu-undangan",
       ]);
     });
   });
@@ -197,9 +186,7 @@ describe("Fase 6 — QA & Penyelesaian: Landing Page Rakernas BMH", () => {
       expect(FOOTER_DATA.logoAlt).not.toContain("Hidayatullah");
     });
 
-    it("Kata 'Hidayatullah' tetap dipertahankan pada kutipan tema, pemilik rekening, dan tautan panitia", () => {
-      expect(EVENT_INFO.theme).toContain("Hidayatullah");
-      expect(REGISTRATION_DATA.bank.accountHolder).toContain("Hidayatullah");
+    it("Tautan panitia tetap dipertahankan", () => {
       expect(FOOTER_DATA.committee.url).toContain("hidayatullahjateng.or.id");
     });
   });
@@ -254,8 +241,8 @@ describe("Fase 6 — QA & Penyelesaian: Landing Page Rakernas BMH", () => {
       expect(content).toContain("size-11");
     });
 
-    it("Tombol aksi pendaftaran memiliki tinggi minimal 48 px (h-12)", () => {
-      const regFile = path.join(process.cwd(), "components", "rakernas", "registration-section.tsx");
+    it("Tombol navigasi pencarian tamu memiliki tinggi minimal 48 px (h-12)", () => {
+      const regFile = path.join(process.cwd(), "components", "rakernas", "invited-guests-section.tsx");
       const content = fs.readFileSync(regFile, "utf-8");
       expect(content).toContain("h-12");
     });
@@ -264,7 +251,7 @@ describe("Fase 6 — QA & Penyelesaian: Landing Page Rakernas BMH", () => {
       const components = [
         "hero.tsx",
         "location-section.tsx",
-        "registration-section.tsx",
+        "invited-guests-section.tsx",
         "site-footer.tsx",
       ];
 
@@ -286,7 +273,7 @@ describe("Fase 6 — QA & Penyelesaian: Landing Page Rakernas BMH", () => {
         'id="dresscode"',
         'id="lokasi"',
         'id="transportasi"',
-        'id="pendaftaran"',
+        'id="tamu-undangan"',
       ];
 
       for (const sectionId of expectedSections) {

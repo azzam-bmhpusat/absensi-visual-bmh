@@ -48,27 +48,6 @@ export interface TransportItem {
   fares: TransportFare[];
 }
 
-export interface RegistrationInfo {
-  title: string;
-  steps: string[];
-  bank: {
-    label: string;
-    bankName: string;
-    accountNumber: string;
-    accountHolder: string;
-  };
-  actions: {
-    form: {
-      label: string;
-      url: string;
-    };
-    confirm: {
-      label: string;
-      url: string;
-    };
-  };
-}
-
 export interface FooterInfo {
   logoSrc: string;
   logoAlt: string;
@@ -98,7 +77,7 @@ export const SITE_METADATA: SiteMetadata = {
 export const EVENT_INFO: EventInfo = {
   name: "Rakernas BMH",
   title: "Rapat Kerja Nasional BMH 2027",
-  theme: "Konsolidasi Jati Diri dan Transformasi Organisasi Menuju Hidayatullah Mandiri dan Berpengaruh",
+  theme: "Tema Acara",
   dateDays: "01 - 03",
   dateMonthYear: "Desember 2026",
   hotel: "Hotel Luminor",
@@ -114,7 +93,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Dress Code", href: "#dresscode" },
   { label: "Lokasi Rakernas", href: "#lokasi" },
   { label: "Info Transportasi", href: "#transportasi" },
-  { label: "Cara Mendaftar", href: "#pendaftaran" },
+  { label: "Tamu Undangan", href: "#tamu-undangan" },
 ];
 
 export const RUNDOWN_DATA: Record<"hari1" | "hari2" | "hari3", RundownItem[]> = {
@@ -285,30 +264,36 @@ export const TRANSPORT_DATA = {
   ] as TransportItem[],
 };
 
-export const REGISTRATION_DATA: RegistrationInfo = {
-  title: "Cara Mendaftar",
-  steps: [
-    "Transfer Rp.1.000.000/peserta ke Rekening Pembayaran",
-    "Isi data peserta di form yg telah disediakan",
-    "Upload bukti transfer",
-    "Konfirmasi pembayaran ke panitia",
-  ],
-  bank: {
-    label: "REKENING PEMBAYARAN",
-    bankName: "BANK SYARIAH INDONESIA (BSI)",
-    accountNumber: "9999-8866-17",
-    accountHolder: "an. DPW Hidayatullah Jateng",
+export const INVITED_GUESTS_CONTENT = {
+  badge: "Informasi Tamu",
+  title: "Tamu Undangan",
+  description: "Temukan detail tamu undangan berdasarkan nama, perwakilan daerah, jabatan, atau departemen.",
+  searchLabel: "Cari tamu undangan",
+  searchPlaceholder: "Cari tamu undangan…",
+  searchHint: "Ketik minimal 2 karakter. Hasil diperbarui otomatis saat Anda mengetik.",
+  clearLabel: "Hapus pencarian",
+  detailsTitle: "Detail Tamu Undangan",
+  fields: {
+    nama: "Nama",
+    perwakilan_daerah: "Perwakilan daerah",
+    jabatan: "Jabatan",
+    departemen: "Departemen",
   },
-  actions: {
-    form: {
-      label: "Isi Data Peserta",
-      url: "https://forms.gle/8E5oksPuZpKvvjQR6",
-    },
-    confirm: {
-      label: "Konfirmasi Pembayaran",
-      url: "https://wa.me/6283842037788?text=Bismillah,%20saya%20sudah%20mengisi%20form%20pendaftaran%20Rakernas%202027",
-    },
-  },
+  missingValue: "Belum dicantumkan",
+  initialTitle: "Temukan tamu undangan Anda",
+  initialDescription: "Mulai dengan mengetik nama, perwakilan daerah, jabatan, atau departemen pada kolom pencarian.",
+  loading: "Sedang mencari tamu undangan…",
+  emptyTitle: "Tamu undangan belum ditemukan",
+  emptyDescription: "Coba kata kunci lain atau periksa kembali ejaan Anda.",
+  errorTitle: "Pencarian belum tersedia",
+  errorDescription: "Data tamu belum dapat dimuat. Silakan coba lagi.",
+  invalidRequest: "Gunakan kata kunci 2–100 karakter dan nomor halaman yang valid.",
+  retryLabel: "Coba lagi",
+  previousLabel: "Sebelumnya",
+  nextLabel: "Berikutnya",
+  paginationLabel: "Halaman hasil pencarian tamu",
+  resultsCount: (total: number) => `${total.toLocaleString("id-ID")} tamu undangan ditemukan`,
+  pageLabel: (page: number, totalPages: number) => `Halaman ${page} dari ${totalPages}`,
 };
 
 export const FOOTER_DATA: FooterInfo = {

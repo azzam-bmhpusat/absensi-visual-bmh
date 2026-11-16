@@ -3,18 +3,18 @@ import fs from "fs";
 import path from "path";
 import {
   TRANSPORT_DATA,
-  REGISTRATION_DATA,
+  INVITED_GUESTS_CONTENT,
   FOOTER_DATA,
 } from "../content/rakernas";
 
-describe("Fase 5 — Transportasi, Pendaftaran, Footer (PRD Rakernas BMH)", () => {
+describe("Fase 5 — Transportasi, Tamu Undangan, Footer", () => {
   const transportFile = path.join(
     __dirname,
     "../components/rakernas/transport-accordion.tsx"
   );
-  const registrationFile = path.join(
+  const invitedGuestsFile = path.join(
     __dirname,
-    "../components/rakernas/registration-section.tsx"
+    "../components/rakernas/invited-guests-section.tsx"
   );
   const footerFile = path.join(
     __dirname,
@@ -23,7 +23,7 @@ describe("Fase 5 — Transportasi, Pendaftaran, Footer (PRD Rakernas BMH)", () =
   const pageFile = path.join(__dirname, "../app/page.tsx");
 
   const transportContent = fs.readFileSync(transportFile, "utf-8");
-  const registrationContent = fs.readFileSync(registrationFile, "utf-8");
+  const invitedGuestsContent = fs.readFileSync(invitedGuestsFile, "utf-8");
   const footerContent = fs.readFileSync(footerFile, "utf-8");
   const pageContent = fs.readFileSync(pageFile, "utf-8");
 
@@ -104,61 +104,23 @@ describe("Fase 5 — Transportasi, Pendaftaran, Footer (PRD Rakernas BMH)", () =
     });
   });
 
-  describe("S7 — Cara Mendaftar (FR-09, FR-10 & B.6)", () => {
+  describe("S7 — Tamu Undangan", () => {
     it("dideklarasikan sebagai Client Component ('use client')", () => {
-      expect(registrationContent).toMatch(/^"use client"/);
+      expect(invitedGuestsContent).toMatch(/^"use client"/);
     });
 
-    it("menampilkan 4 langkah pendaftaran bernomor urut", () => {
-      expect(REGISTRATION_DATA.steps).toHaveLength(4);
-      expect(registrationContent).toContain("REGISTRATION_DATA.steps.map");
-      expect(registrationContent).toContain("bg-brand-green");
-      expect(registrationContent).toContain("text-brand-green-night");
+    it("menyediakan pencarian, kartu detail, dan navigasi hasil dengan shadcn", () => {
+      for (const component of ["InputGroup", "Label", "Card", "Button", "Badge", "Separator", "Skeleton"]) {
+        expect(invitedGuestsContent).toContain(`@/components/ui/${component === "InputGroup" ? "input-group" : component.toLowerCase()}`);
+      }
+      expect(INVITED_GUESTS_CONTENT.title).toBe("Tamu Undangan");
+      expect(INVITED_GUESTS_CONTENT.detailsTitle).toBe("Detail Tamu Undangan");
     });
 
-    it("menampilkan kartu rekening resmi BSI dengan border emas dan nomor rekening tabular", () => {
-      expect(registrationContent).toContain("REGISTRATION_DATA.bank.label");
-      expect(registrationContent).toContain("REGISTRATION_DATA.bank.bankName");
-      expect(registrationContent).toContain(
-        "REGISTRATION_DATA.bank.accountNumber"
-      );
-      expect(registrationContent).toContain(
-        "REGISTRATION_DATA.bank.accountHolder"
-      );
-      expect(REGISTRATION_DATA.bank.accountNumber).toBe("9999-8866-17");
-      expect(REGISTRATION_DATA.bank.accountHolder).toBe(
-        "an. DPW Hidayatullah Jateng"
-      );
-      expect(registrationContent).toContain("border-brand-gold");
-      expect(registrationContent).toContain("text-brand-gold-soft");
-    });
-
-    it("menyediakan tombol salin rekening dengan Tooltip dan Sonner toast", () => {
-      expect(registrationContent).toContain("navigator.clipboard.writeText");
-      expect(registrationContent).toContain("toast.success");
-      expect(registrationContent).toContain("Nomor rekening tersalin");
-      expect(registrationContent).toContain("Tooltip");
-      expect(registrationContent).toContain("TooltipTrigger");
-      expect(registrationContent).toContain("TooltipContent");
-      expect(registrationContent).toContain("Salin nomor");
-      expect(registrationContent).toContain("Check");
-      expect(registrationContent).toContain("Copy");
-    });
-
-    it("menyediakan dua tombol aksi pendaftaran dengan tinggi minimal 48 px dan membuka tab baru", () => {
-      expect(registrationContent).toContain("REGISTRATION_DATA.actions.form.url");
-      expect(registrationContent).toContain(
-        "REGISTRATION_DATA.actions.confirm.url"
-      );
-      expect(REGISTRATION_DATA.actions.form.url).toBe(
-        "https://forms.gle/8E5oksPuZpKvvjQR6"
-      );
-      expect(REGISTRATION_DATA.actions.confirm.url).toContain(
-        "https://wa.me/6283842037788"
-      );
-      expect(registrationContent).toContain('target="_blank"');
-      expect(registrationContent).toContain('rel="noopener noreferrer"');
-      expect(registrationContent).toContain("h-12");
+    it("menghapus rekening, formulir, dan konfirmasi pembayaran dari tampilan", () => {
+      expect(invitedGuestsContent).not.toMatch(/REGISTRATION_DATA|navigator.clipboard|forms\.gle|wa\.me/);
+      expect(pageContent).not.toContain("RegistrationSection");
+      expect(fs.existsSync(path.join(__dirname, "../components/rakernas/registration-section.tsx"))).toBe(false);
     });
   });
 
@@ -192,16 +154,16 @@ describe("Fase 5 — Transportasi, Pendaftaran, Footer (PRD Rakernas BMH)", () =
   });
 
   describe("Integrasi Halaman Utama (app/page.tsx)", () => {
-    it("memasang TransportSection, RegistrationSection, dan SiteFooter", () => {
+    it("memasang TransportSection, InvitedGuestsSection, dan SiteFooter", () => {
       expect(pageContent).toContain("TransportSection");
-      expect(pageContent).toContain("RegistrationSection");
+      expect(pageContent).toContain("InvitedGuestsSection");
       expect(pageContent).toContain("SiteFooter");
     });
 
     it("mengatur id anchor dan latar bagian sesuai Design System", () => {
       expect(pageContent).toContain('id="transportasi"');
       expect(pageContent).toContain("bg-surface");
-      expect(pageContent).toContain('id="pendaftaran"');
+      expect(pageContent).toContain('id="tamu-undangan"');
       expect(pageContent).toContain("display-theme display-bg");
     });
   });

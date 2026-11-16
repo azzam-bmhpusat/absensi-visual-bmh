@@ -28,7 +28,7 @@
   - `<title>` metadata: `"Rakernas BMH"`.
   - Judul acara H1: `"Rapat Kerja Nasional BMH 2027"`.
   - Alt logo: `"Logo Rakernas BMH 2027"`.
-  - Tagline tema tetap: `"Konsolidasi Jati Diri dan Transformasi Organisasi Menuju Hidayatullah Mandiri dan Berpengaruh"`.
+  - Tagline tema tetap: `""Tema Acara""`.
   - Pemilik rekening tetap: `"an. DPW Hidayatullah Jateng"`.
   - Tautan panitia tetap: `https://hidayatullahjateng.or.id/`.
 - **Rundown Fallback**: Hari 2 dan Hari 3 diisi teks penampung `[{ time: "-", title: "Rundown akan segera diumumkan" }]`.
