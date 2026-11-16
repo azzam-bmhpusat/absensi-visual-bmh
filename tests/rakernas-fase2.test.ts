@@ -1,8 +1,11 @@
 import { describe, it, expect } from "vitest";
 import fs from "fs";
 import path from "path";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { HeroSection } from "../components/rakernas/hero";
 import { metadata } from "../app/page";
-import { SITE_METADATA, NAV_ITEMS } from "../content/rakernas";
+import { SITE_METADATA, NAV_ITEMS, EVENT_INFO } from "../content/rakernas";
 
 describe("Fase 2 — Kerangka, Header, Hero (PRD Rakernas BMH)", () => {
   describe("Metadata Halaman (FR-13)", () => {
@@ -14,7 +17,7 @@ describe("Fase 2 — Kerangka, Header, Hero (PRD Rakernas BMH)", () => {
     it("menetapkan description sesuai dengan tanggal dan lokasi acara", () => {
       expect(metadata.description).toBe(SITE_METADATA.description);
       expect(metadata.description).toContain("01–03 Desember 2026");
-      expect(metadata.description).toContain("Hotel Grasia Semarang");
+      expect(metadata.description).toContain("Hotel Luminor");
     });
   });
 
@@ -30,8 +33,9 @@ describe("Fase 2 — Kerangka, Header, Hero (PRD Rakernas BMH)", () => {
     });
 
     it("menerapkan ritme latar per bagian sesuai PRD B.5", () => {
-      // S1 Hero + S2 Countdown dalam satu wadah gelap bersama
-      expect(pageContent).toContain("display-theme display-bg");
+      // S1 Hero berdiri sendiri; tema gelap dibatasi pada S2 Countdown.
+      expect(pageContent).toMatch(/<HeroSection\s*\/>\s*\{\/\*[^}]*\*\/\}\s*<section\s+id="countdown"/);
+      expect(pageContent).toMatch(/id="countdown"[^>]*display-theme display-bg/);
       // S3 Rundown
       expect(pageContent).toContain("page-bg");
       // S4 Dress Code
@@ -82,29 +86,29 @@ describe("Fase 2 — Kerangka, Header, Hero (PRD Rakernas BMH)", () => {
       "utf-8"
     );
 
-    it("menampilkan judul H1, tema H2, tanggal besar, dan tombol lokasi dari EVENT_INFO", () => {
-      expect(heroContent).toContain("EVENT_INFO.title");
-      expect(heroContent).toContain("EVENT_INFO.theme");
-      expect(heroContent).toContain("EVENT_INFO.dateDays");
-      expect(heroContent).toContain("EVENT_INFO.dateMonthYear");
-      expect(heroContent).toContain("EVENT_INFO.hotel");
-      expect(heroContent).toContain("EVENT_INFO.mapsUrl");
+    const heroMarkup = renderToStaticMarkup(createElement(HeroSection));
+
+    it("menampilkan judul H1, tema, tanggal, dan lokasi dari data acara terkini", () => {
+      const title = heroMarkup.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/)?.[1];
+      expect(title?.replace(/<[^>]*>/g, "")).toBe(EVENT_INFO.title);
+      expect(heroMarkup).toContain(EVENT_INFO.theme);
+      expect(heroMarkup).toContain(EVENT_INFO.dateDays.replace(/\s*-\s*/, "–"));
+      expect(heroMarkup).toContain(EVENT_INFO.dateMonthYear);
+      expect(heroMarkup).toContain(EVENT_INFO.hotel);
+      expect(heroMarkup).not.toContain("Semarang");
     });
 
-    it("membungkus logo hero dalam kontainer putih berkontras tinggi (PRD B.6)", () => {
-      expect(heroContent).toContain("rounded-2xl bg-white");
+    it("tidak memuat logo atau gambar pada hero", () => {
+      expect(heroMarkup).not.toContain("<img");
+      expect(heroMarkup).not.toContain(EVENT_INFO.logoSrc);
     });
 
-    it("memiliki tombol lokasi dengan varian aksen emas dan keamanan tautan eksternal", () => {
-      expect(heroContent).toContain("bg-brand-gold-soft");
-      expect(heroContent).toContain('target="_blank"');
-      expect(heroContent).toContain('rel="noopener noreferrer"');
-    });
-
-    it("memiliki layout mobile-first dan dua kolom pada breakpoint lg", () => {
-      expect(heroContent).toContain("order-1 lg:order-2");
-      expect(heroContent).toContain("order-2 lg:order-1");
-      expect(heroContent).toContain("grid-cols-1 lg:grid-cols-12");
+    it("memiliki tombol lokasi ke Maps terkini dengan keamanan tautan eksternal", () => {
+      expect(heroMarkup).toContain(`href="${EVENT_INFO.mapsUrl}"`);
+      expect(heroMarkup).toContain("Lihat lokasi acara");
+      expect(heroMarkup).toContain('target="_blank"');
+      expect(heroMarkup).toContain('rel="noopener noreferrer"');
+      expect(heroContent).toContain("styles.button");
     });
   });
 

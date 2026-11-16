@@ -1,0 +1,156 @@
+.frame {
+  position: relative;
+  isolation: isolate;
+  height: 320px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--muted);
+  color: var(--primary);
+  box-shadow: 0 8px 24px -8px color-mix(in srgb, var(--primary) 18%, transparent);
+}
+
+.canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.overlay {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  background: var(--muted);
+  text-align: center;
+  font-size: 14px;
+}
+
+.overlay > svg {
+  width: 28px;
+  height: 28px;
+}
+
+.overlay p {
+  margin: 0;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.marker {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 52px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.pin {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  border: 2px solid var(--background);
+  border-radius: 50% 50% 50% 0;
+  background: var(--brand-green-deep);
+  transform: rotate(-45deg);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--primary) 25%, transparent);
+}
+
+.pin::after {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border-radius: 50%;
+  background: var(--brand-gold-soft);
+}
+
+.frame :global(.maplibregl-ctrl-group) {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--background);
+}
+
+.frame :global(.maplibregl-ctrl-group button) {
+  width: 44px;
+  height: 44px;
+}
+
+.frame :global(.maplibregl-ctrl-attrib) {
+  max-width: 100%;
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 11px;
+}
+
+.frame :global(.maplibregl-popup-content) {
+  padding: 20px;
+  border-radius: 16px;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, sans-serif;
+}
+
+.frame :global(.maplibregl-popup-close-button) {
+  width: 44px;
+  height: 44px;
+  color: var(--primary);
+  font-size: 24px;
+}
+
+.popup h3 {
+  margin: 0 20px 8px 0;
+  color: var(--primary);
+  font-family: var(--font-heading), Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.popup p {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.link:focus-visible,
+.marker:focus-visible,
+.frame :global(.maplibregl-ctrl-group button:focus-visible),
+.frame :global(.maplibregl-popup-close-button:focus-visible) {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+}
+
+@media (min-width: 768px) {
+  .frame {
+    height: 480px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .spinner {
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

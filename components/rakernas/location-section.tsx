@@ -4,7 +4,7 @@ import * as React from "react";
 import Image from "next/image";
 import { cn } from "cn";
 import { LOCATION_DATA, type GalleryItem } from "@/content/rakernas";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { LocationMap } from "@/components/rakernas/location-map";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
@@ -56,24 +56,13 @@ export function LocationSection() {
           {LOCATION_DATA.title}
         </h2>
         <p className="mt-2 md:mt-3 text-ink-muted text-sm md:text-base max-w-xl mx-auto">
-          Lokasi penyelenggaraan Rapat Kerja Nasional BMH 2027 di Kota Semarang
+          Lokasi penyelenggaraan Rapat Kerja Nasional BMH 2027 di Kota Jakarta Barat
         </p>
       </div>
 
-      {/* Visual Banner Lokasi (16:9) */}
+      {/* Peta lokasi dimuat ketika mendekati layar */}
       <div className="mb-6 md:mb-8">
-        <div className="rounded-2xl border border-line overflow-hidden shadow-[0_8px_24px_-8px_rgba(19,75,64,0.18)] bg-muted/20">
-          <AspectRatio ratio={16 / 9} className="w-full">
-            <Image
-              src={LOCATION_DATA.banner.src}
-              alt={LOCATION_DATA.banner.alt}
-              fill
-              sizes="(max-width: 1280px) 100vw, 1200px"
-              className="object-cover"
-              priority={false}
-            />
-          </AspectRatio>
-        </div>
+        <LocationMap />
       </div>
 
       {/* Kartu Informasi Alamat & Tombol Google Map */}

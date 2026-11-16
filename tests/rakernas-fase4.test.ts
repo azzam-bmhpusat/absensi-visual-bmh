@@ -78,11 +78,12 @@ describe("Fase 4 — Dress Code & Lokasi (PRD Rakernas BMH)", () => {
       expect(locationContent).toMatch(/^"use client"/);
     });
 
-    it("menampilkan visual banner Hotel Grasia dengan AspectRatio 16/9", () => {
-      expect(locationContent).toContain("AspectRatio");
-      expect(locationContent).toMatch(/ratio=\{16\s*\/\s*9\}/);
-      expect(locationContent).toContain("LOCATION_DATA.banner.src");
-      expect(LOCATION_DATA.banner.src).toBe("/rakernas/hotel-grasia-banner.png");
+    it("mengganti banner placeholder dengan peta pada koordinat hotel resmi", () => {
+      expect(locationContent).toContain("<LocationMap />");
+      expect(locationContent).not.toContain("LOCATION_DATA.banner.src");
+      expect(LOCATION_DATA.map.coordinates).toEqual([106.823191, -6.148531]);
+      expect(LOCATION_DATA.map.zoom).toBe(16);
+      expect(LOCATION_DATA.map.styleUrl).toBe("https://tiles.openfreemap.org/styles/positron");
     });
 
     it("menampilkan nama hotel dan alamat lengkap dari LOCATION_DATA", () => {
@@ -97,8 +98,8 @@ describe("Fase 4 — Dress Code & Lokasi (PRD Rakernas BMH)", () => {
       expect(locationContent).toContain("LOCATION_DATA.mapsButtonLabel");
       expect(locationContent).toContain('target="_blank"');
       expect(locationContent).toContain('rel="noopener noreferrer"');
-      expect(LOCATION_DATA.mapsUrl).toBe("https://maps.app.goo.gl/UYtvHFrQZcqtyauX6");
-      expect(LOCATION_DATA.mapsButtonLabel).toBe("Google Map Hotel Grasia");
+      expect(LOCATION_DATA.mapsUrl).toBe("https://maps.app.goo.gl/d4RQdTwK9jbx4qZD8");
+      expect(LOCATION_DATA.mapsButtonLabel).toBe("Google Map Hotel Luminor");
     });
 
     it("menampilkan 8 foto galeri dari LOCATION_DATA dengan urutan keterangan persis sesuai PRD A.5", () => {

@@ -23,11 +23,11 @@ describe("Fase 6 — QA & Penyelesaian: Landing Page Rakernas BMH", () => {
       );
       expect(EVENT_INFO.dateDays).toBe("01 - 03");
       expect(EVENT_INFO.dateMonthYear).toBe("Desember 2026");
-      expect(EVENT_INFO.hotel).toBe("Hotel Grasia Semarang");
+      expect(EVENT_INFO.hotel).toBe("Hotel Luminor");
       expect(EVENT_INFO.address).toBe(
-        "Jl. Letnan Jenderal S. Parman No.29, Gajahmungkur, Kec. Semarang Sel., Kota Semarang, Jawa Tengah 50231"
+        "Jl. Raya Mangga Besar No.73 1, RT.1/RW.2, Tangki, Kec. Taman Sari, Kota Jakarta Barat, Daerah Khusus Ibukota Jakarta 11170"
       );
-      expect(EVENT_INFO.mapsUrl).toBe("https://maps.app.goo.gl/UYtvHFrQZcqtyauX6");
+      expect(EVENT_INFO.mapsUrl).toBe("https://maps.app.goo.gl/d4RQdTwK9jbx4qZD8");
       expect(EVENT_INFO.countdownTarget).toBe("2026-12-01T10:00:00+07:00");
     });
 
@@ -172,7 +172,7 @@ describe("Fase 6 — QA & Penyelesaian: Landing Page Rakernas BMH", () => {
     it("Footer memuat logo, info acara, dan tautan resmi panitia tanpa counter pengunjung", () => {
       expect(FOOTER_DATA.logoSrc).toBe("/logo.png");
       expect(FOOTER_DATA.logoAlt).toBe("Logo Rakernas BMH 2027");
-      expect(FOOTER_DATA.text).toBe("01-03 Desember 2026 | Hotel Grasia Semarang @2026");
+      expect(FOOTER_DATA.text).toBe("01-03 Desember 2026 | Hotel Luminor Kota Jakarta Barat @2026");
       expect(FOOTER_DATA.committee.label).toBe("Panitia Rakernas");
       expect(FOOTER_DATA.committee.url).toBe("https://hidayatullahjateng.or.id/");
     });

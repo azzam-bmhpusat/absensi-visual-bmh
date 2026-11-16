@@ -24,20 +24,17 @@ export default function HomePage() {
       <SiteHeader />
 
       <main className="flex-1 w-full overflow-x-hidden">
-        {/* S1 & S2 — Hero & Hitung Mundur (Latar Gelap Bersama: display-theme display-bg) */}
-        <div className="display-theme display-bg text-foreground">
-          {/* S1 — Hero */}
-          <HeroSection />
+        {/* S1 — Hero minimalis dengan tema terang */}
+        <HeroSection />
 
-          {/* S2 — Hitung Mundur */}
-          <section
-            id="countdown"
-            className="scroll-mt-20 border-t border-line/10 py-10 md:py-16"
-            aria-label="Hitung Mundur Acara"
-          >
-            <CountdownSection />
-          </section>
-        </div>
+        {/* S2 — Hitung Mundur dengan tema gelap */}
+        <section
+          id="countdown"
+          className="display-theme display-bg text-foreground scroll-mt-20 border-t border-line/10 py-10 md:py-16"
+          aria-label="Hitung Mundur Acara"
+        >
+          <CountdownSection />
+        </section>
 
         {/* S3 — Rundown Acara */}
         <section

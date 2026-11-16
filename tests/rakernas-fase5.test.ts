@@ -173,7 +173,7 @@ describe("Fase 5 — Transportasi, Pendaftaran, Footer (PRD Rakernas BMH)", () =
     it("menampilkan teks resmi tanggal, hotel, dan tahun", () => {
       expect(footerContent).toContain("FOOTER_DATA.text");
       expect(FOOTER_DATA.text).toBe(
-        "01-03 Desember 2026 | Hotel Grasia Semarang @2026"
+        "01-03 Desember 2026 | Hotel Luminor Kota Jakarta Barat @2026"
       );
     });
 

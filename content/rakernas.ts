@@ -91,7 +91,7 @@ export interface SiteMetadata {
 
 export const SITE_METADATA: SiteMetadata = {
   title: "Rakernas BMH",
-  description: "Rapat Kerja Nasional BMH 2027. 01–03 Desember 2026 di Hotel Grasia Semarang.",
+  description: "Rapat Kerja Nasional BMH 2027. 01–03 Desember 2026 di Hotel Luminor Kota Jakarta Barat.",
   lang: "id",
 };
 
@@ -101,9 +101,9 @@ export const EVENT_INFO: EventInfo = {
   theme: "Konsolidasi Jati Diri dan Transformasi Organisasi Menuju Hidayatullah Mandiri dan Berpengaruh",
   dateDays: "01 - 03",
   dateMonthYear: "Desember 2026",
-  hotel: "Hotel Grasia Semarang",
-  address: "Jl. Letnan Jenderal S. Parman No.29, Gajahmungkur, Kec. Semarang Sel., Kota Semarang, Jawa Tengah 50231",
-  mapsUrl: "https://maps.app.goo.gl/UYtvHFrQZcqtyauX6",
+  hotel: "Hotel Luminor",
+  address: "Jl. Raya Mangga Besar No.73 1, RT.1/RW.2, Tangki, Kec. Taman Sari, Kota Jakarta Barat, Daerah Khusus Ibukota Jakarta 11170",
+  mapsUrl: "https://maps.app.goo.gl/d4RQdTwK9jbx4qZD8",
   countdownTarget: "2026-12-01T10:00:00+07:00",
   logoSrc: "/logo.png",
   logoAlt: "Logo Rakernas BMH 2027",
@@ -166,61 +166,67 @@ export const DRESSCODE_DATA: DresscodeItem[] = [
 
 export const LOCATION_DATA = {
   title: "Lokasi Rakernas",
+  map: {
+    // [longitude, latitude], dari tautan Maps pada situs resmi Hotel Luminor Kota.
+    coordinates: [106.823191, -6.148531] as [number, number],
+    zoom: 16,
+    styleUrl: "https://tiles.openfreemap.org/styles/positron",
+  },
   banner: {
     src: "/rakernas/hotel-grasia-banner.png",
-    alt: "Hotel Grasia Semarang",
+    alt: "Hotel Luminor Kota Jakarta Barat",
   },
   hotel: EVENT_INFO.hotel,
   address: EVENT_INFO.address,
   mapsUrl: EVENT_INFO.mapsUrl,
-  mapsButtonLabel: "Google Map Hotel Grasia",
+  mapsButtonLabel: "Google Map Hotel Luminor",
   gallery: [
     {
       src: "/rakernas/galeri-gedung-utama.webp",
       caption: "Gedung Utama",
-      alt: "Hotel Grasia Semarang — Gedung Utama",
+      alt: "Hotel Luminor — Gedung Utama",
     },
     {
       src: "/rakernas/galeri-ruang-acara.webp",
       caption: "Ruang Acara",
-      alt: "Hotel Grasia Semarang — Ruang Acara",
+      alt: "Hotel Luminor — Ruang Acara",
     },
     {
       src: "/rakernas/galeri-masjid.jpg",
       caption: "Masjid",
-      alt: "Hotel Grasia Semarang — Masjid",
+      alt: "Hotel Luminor — Masjid",
     },
     {
       src: "/rakernas/galeri-restaurant.webp",
       caption: "Restaurant",
-      alt: "Hotel Grasia Semarang — Restaurant",
+      alt: "Hotel Luminor — Restaurant",
     },
     {
       src: "/rakernas/galeri-kamar-1.jpg",
       caption: "Kamar",
-      alt: "Hotel Grasia Semarang — Kamar 1",
+      alt: "Hotel Luminor — Kamar 1",
     },
     {
       src: "/rakernas/galeri-kamar-2.webp",
       caption: "Kamar",
-      alt: "Hotel Grasia Semarang — Kamar 2",
+      alt: "Hotel Luminor — Kamar 2",
     },
     {
       src: "/rakernas/galeri-kolam-renang.webp",
       caption: "Kolam Renang",
-      alt: "Hotel Grasia Semarang — Kolam Renang",
+      alt: "Hotel Luminor — Kolam Renang",
     },
     {
       src: "/rakernas/galeri-area-parkir.webp",
       caption: "Area Parkir",
-      alt: "Hotel Grasia Semarang — Area Parkir",
+      alt: "Hotel Luminor — Area Parkir",
     },
   ] as GalleryItem[],
 };
 
 export const TRANSPORT_DATA = {
   title: "Info Transportasi",
-  subtitle: "menuju Hotel Grasia Semarang",
+  subtitle: "menuju Hotel Luminor",
   items: [
     {
       origin: "Bandara Ahmad Yani",
@@ -308,7 +314,7 @@ export const REGISTRATION_DATA: RegistrationInfo = {
 export const FOOTER_DATA: FooterInfo = {
   logoSrc: "/logo.png",
   logoAlt: "Logo Rakernas BMH 2027",
-  text: "01-03 Desember 2026 | Hotel Grasia Semarang @2026",
+  text: "01-03 Desember 2026 | Hotel Luminor Kota Jakarta Barat @2026",
   committee: {
     label: "Panitia Rakernas",
     url: "https://hidayatullahjateng.or.id/",

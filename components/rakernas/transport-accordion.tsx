@@ -41,7 +41,7 @@ export function TransportSection() {
           </p>
           <p className="text-sm text-ink-muted leading-relaxed hidden sm:block">
             Perkiraan tarif moda transportasi umum dari berbagai titik kedatangan
-            utama di Kota Semarang (Bandara, Stasiun, dan Terminal) menuju ke lokasi acara.
+            utama (Bandara, Stasiun, dan Terminal) menuju ke lokasi acara.
           </p>
         </div>
 
@@ -61,7 +61,7 @@ export function TransportSection() {
                   value={value}
                   className="rounded-2xl border border-line bg-card shadow-[0_8px_24px_-8px_rgba(19,75,64,0.18)] px-5 md:px-6 transition-all data-open:border-primary/40 data-open:shadow-md"
                 >
-                  <AccordionTrigger className="py-4 hover:no-underline gap-4 text-left font-heading font-semibold text-ink text-base md:text-lg min-h-[44px]">
+                  <AccordionTrigger className="items-center py-4 hover:no-underline gap-4 text-left font-heading font-semibold text-ink text-base md:text-lg min-h-[44px]">
                     <div className="flex items-center gap-3.5 flex-1">
                       <div className="h-10 w-10 rounded-full bg-green-100 text-primary flex items-center justify-center shrink-0">
                         <Icon className="h-5 w-5" aria-hidden="true" />
