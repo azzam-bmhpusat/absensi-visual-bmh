@@ -4,7 +4,7 @@
   height: 320px;
   overflow: hidden;
   border: 1px solid var(--border);
-  border-radius: 24px;
+  border-radius: 15px;
   background: var(--muted);
   color: var(--primary);
   box-shadow: 0 8px 24px -8px color-mix(in srgb, var(--primary) 18%, transparent);
@@ -30,7 +30,7 @@
   font-size: 14px;
 }
 
-.overlay > svg {
+.overlay>svg {
   width: 28px;
   height: 28px;
 }
@@ -152,5 +152,7 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
