@@ -277,7 +277,7 @@ Fokus keyboard: ring 2 px `--ring` dengan offset 2 px.
 - Wrapper `h-screen w-screen overflow-hidden`, padding 48 px.
 - Kolom: judul kolom 36 px dengan garis bawah 2 px (`green-500` untuk Hadir, `gold-500` untuk Belum Hadir).
 - Grid chip: 2 kolom di dalam tiap kolom besar, gap 16 px.
-- Jika daftar Belum Hadir > 40, kelompokkan per Perwakilan Daerah dengan sub-judul `tv-meta` berwarna `gold-300`.
+- Daftar Belum Hadir selalu berupa satu grid rata (tanpa sub-judul per daerah) agar kedua kolom chip terisi penuh; urutan tetap Perwakilan Daerah → nama, dan daerah tampil di baris kedua tiap chip.
 
 ## 9. Gerak (Motion)
 

@@ -49,10 +49,10 @@ export function GuestChip({
 
   return (
     <div
-      className={`min-h-[76px] xl:min-h-[82px] rounded-2xl px-4 xl:px-5 py-2.5 bg-[#134B40] text-white flex items-center justify-between shadow-sm min-w-0 transition-all duration-300 ${
+      className={`min-h-[76px] xl:min-h-[82px] rounded-2xl px-4 xl:px-5 py-2.5 bg-[#134B40] text-white flex items-center justify-between shadow-sm min-w-0 border transition-[border-color,box-shadow] duration-300 ${
         isRecent
-          ? "ring-2 ring-brand-gold-soft shadow-[0_0_20px_rgba(242,208,107,0.35)] scale-[1.01]"
-          : "border border-border/20"
+          ? "border-brand-gold-soft ring-1 ring-brand-gold-soft shadow-[0_0_14px_rgba(242,208,107,0.35)]"
+          : "border-border/20"
       }`}
     >
       <div className="flex items-center gap-3 min-w-0 flex-1 mr-2">

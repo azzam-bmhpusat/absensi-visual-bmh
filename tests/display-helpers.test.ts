@@ -107,18 +107,22 @@ describe("display-helpers", () => {
       expect(res.percentage).toBe(50); // 2/4 * 100 = 50%
     });
 
-    it("mengelompokkan per daerah jika belumHadir > 40", () => {
+    it("tetap berupa daftar rata terurut daerah → nama meski belumHadir > 40", () => {
       const manyGuests: GuestData[] = Array.from({ length: 45 }, (_, i) => ({
         id: `guest-${i}`,
-        nama: `Tamu ${i}`,
-        perwakilan_daerah: i % 2 === 0 ? "Daerah A" : "Daerah B",
+        nama: `Tamu ${String(i).padStart(2, "0")}`,
+        perwakilan_daerah: i % 2 === 0 ? "Daerah B" : "Daerah A",
       }));
 
       const res = deriveAttendanceData(manyGuests, [], 1);
       expect(res.belumHadir.length).toBe(45);
-      expect(res.groupedBelumHadir).not.toBeNull();
-      expect(Object.keys(res.groupedBelumHadir!)).toContain("Daerah A");
-      expect(Object.keys(res.groupedBelumHadir!)).toContain("Daerah B");
+      expect(res).not.toHaveProperty("groupedBelumHadir");
+      // 22 tamu Daerah A (indeks ganjil) di depan, lalu 23 tamu Daerah B
+      expect(res.belumHadir[0].perwakilan_daerah).toBe("Daerah A");
+      expect(res.belumHadir[0].nama).toBe("Tamu 01");
+      expect(res.belumHadir[21].perwakilan_daerah).toBe("Daerah A");
+      expect(res.belumHadir[22].perwakilan_daerah).toBe("Daerah B");
+      expect(res.belumHadir[22].nama).toBe("Tamu 00");
     });
   });
 

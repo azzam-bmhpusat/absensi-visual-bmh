@@ -195,7 +195,7 @@ Input: `{ sessionId: 1|2, guestId?: string, nama: string, perwakilanDaerah: stri
   - `belumHadir` = `guests` dengan `id` tidak ada di `hadir.guest_id`, urut `perwakilan_daerah`, lalu `nama`.
   - `total` = jumlah `guests`.
 - **Layout** (detail di `design-system.md`): header → counter → dua kolom 50/50 → footer kecil status koneksi.
-- Kolom "Belum Hadir" boleh dikelompokkan per Perwakilan Daerah bila daftar > 40 nama.
+- Kolom "Belum Hadir" ditampilkan sebagai satu grid rata tanpa pengelompokan, diurutkan per Perwakilan Daerah lalu nama.
 - Dilarang memakai `localStorage` untuk state penting; selalu bersumber dari DB.
 
 ## 12. Spesifikasi Admin

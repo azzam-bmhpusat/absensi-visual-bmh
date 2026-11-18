@@ -247,7 +247,6 @@ export function AttendanceBoard({
   const {
     hadir,
     belumHadir,
-    groupedBelumHadir,
     totalGuests,
     hadirCount,
     percentage,
@@ -293,7 +292,7 @@ export function AttendanceBoard({
             </span>
           </div>
 
-          <AutoScrollContainer className="flex-1 min-h-0 pr-1">
+          <AutoScrollContainer className="flex-1 min-h-0 pr-1" enabled={hadir.length > 0}>
             {hadir.length === 0 ? (
               <div className="h-48 flex items-center justify-center text-xl text-muted-foreground font-medium">
                 Belum ada kehadiran tercatat pada sesi ini
@@ -342,49 +341,13 @@ export function AttendanceBoard({
             </span>
           </div>
 
-          <AutoScrollContainer className="flex-1 min-h-0 pr-1">
+          <AutoScrollContainer className="flex-1 min-h-0 pr-1" enabled={belumHadir.length > 0}>
             {belumHadir.length === 0 ? (
               <div className="h-48 flex items-center justify-center text-xl text-brand-gold-soft font-semibold">
                 Semua tamu undangan telah hadir!
               </div>
-            ) : groupedBelumHadir ? (
-              // Pengelompokan per daerah jika > 40 tamu
-              <div className="space-y-5 pb-2">
-                {Object.entries(groupedBelumHadir).map(([daerah, guestList]) => (
-                  <div key={daerah} className="space-y-2">
-                    <div className="text-lg font-heading font-semibold text-brand-gold-soft flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-brand-gold" />
-                      <span>{daerah}</span>
-                      <span className="text-sm text-muted-foreground font-normal">
-                        ({guestList.length})
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3.5">
-                      <AnimatePresence initial={false}>
-                        {guestList.map((guest) => (
-                          <motion.div
-                            key={guest.id}
-                            layout
-                            exit={{ opacity: 0, scale: 0.9 }}
-                            transition={{ duration: 0.3 }}
-                          >
-                            <GuestChip
-                              nama={guest.nama}
-                              perwakilanDaerah={guest.perwakilan_daerah}
-                              jabatan={guest.jabatan}
-                              departemen={guest.departemen}
-                              kategori={guest.kategori}
-                              status="belum"
-                            />
-                          </motion.div>
-                        ))}
-                      </AnimatePresence>
-                    </div>
-                  </div>
-                ))}
-              </div>
             ) : (
-              // Tampilan grid 2 kolom standar
+              // Grid 2 kolom rata (urut perwakilan daerah → nama)
               <div className="grid grid-cols-2 gap-3.5 pb-2">
                 <AnimatePresence initial={false}>
                   {belumHadir.map((guest) => (

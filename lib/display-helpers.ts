@@ -123,7 +123,6 @@ export function resolveActiveSession(
 export interface DerivedAttendance {
   hadir: AttendanceData[];
   belumHadir: GuestData[];
-  groupedBelumHadir: Record<string, GuestData[]> | null;
   totalGuests: number;
   hadirCount: number;
   percentage: number;
@@ -163,17 +162,6 @@ export function deriveAttendanceData(
       return a.nama.localeCompare(b.nama, "id");
     });
 
-  // Jika daftar belum hadir > 40, kelompokkan berdasarkan perwakilan daerah
-  let groupedBelumHadir: Record<string, GuestData[]> | null = null;
-  if (belumHadir.length > 40) {
-    groupedBelumHadir = belumHadir.reduce((acc, guest) => {
-      const daerah = guest.perwakilan_daerah || "Lainnya";
-      if (!acc[daerah]) acc[daerah] = [];
-      acc[daerah].push(guest);
-      return acc;
-    }, {} as Record<string, GuestData[]>);
-  }
-
   const totalGuests = guests.length;
   const hadirCount = hadir.length;
   const percentage =
@@ -182,7 +170,6 @@ export function deriveAttendanceData(
   return {
     hadir,
     belumHadir,
-    groupedBelumHadir,
     totalGuests,
     hadirCount,
     percentage,
