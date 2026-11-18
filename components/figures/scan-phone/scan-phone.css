@@ -1,0 +1,26 @@
+/* Fig 1 · Pemindai — layar HP adalah subjek, jadi satu-satunya bidang berwarna (hijau BMH). */
+.sp {
+  --sp-glass: #0f3d34;
+  --sp-bezel: #17181a;
+  --sp-ink: #eefbf5;
+  --sp-ink-dim: #9fd9c2;
+  --sp-accent: #3fbf8f;
+  --sp-qr: #1d1d20;
+}
+.sp .sp-glass { fill: var(--sp-glass); }
+.sp .sp-bezel { fill: var(--sp-bezel); }
+.sp .sp-qr { fill: var(--sp-qr); }
+.sp .sp-ink { fill: var(--sp-ink); font-family: var(--anatomy-mono); font-weight: 600; letter-spacing: 0.02em; }
+.sp .sp-ink-dim { fill: var(--sp-ink-dim); font-family: var(--anatomy-mono); letter-spacing: 0.04em; }
+.sp .sp-live { fill: var(--sp-accent); }
+.sp .sp-vf-fill { fill: #ffffff; opacity: 0.06; }
+.sp .sp-vf { fill: none; stroke: var(--sp-ink); stroke-width: 0.9px; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
+.sp .sp-scan-screen { stroke: var(--sp-accent); stroke-width: 1.4px; vector-effect: non-scaling-stroke; stroke-linecap: round; }
+.sp .sp-scan { stroke: var(--sp-accent); stroke-width: 1.6px; vector-effect: non-scaling-stroke; stroke-linecap: round; opacity: 0.9; }
+.sp .sp-track { fill: #ffffff; opacity: 0.14; }
+.sp .sp-fill { fill: var(--sp-accent); }
+.sp .sp-rule { stroke: var(--sp-ink-dim); stroke-width: 0.5px; vector-effect: non-scaling-stroke; opacity: 0.5; }
+.sp .sp-pill { fill: var(--sp-accent); }
+.sp .sp-pill-ink { fill: var(--sp-glass); font-family: var(--anatomy-mono); font-weight: 700; letter-spacing: 0.06em; }
+.sp .sp-home { stroke: var(--sp-ink-dim); stroke-width: 1px; vector-effect: non-scaling-stroke; stroke-linecap: round; opacity: 0.6; }
+.sp .sp-vf-qr { fill: var(--sp-ink); opacity: 0.55; }

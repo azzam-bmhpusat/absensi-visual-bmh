@@ -1,0 +1,55 @@
+/*
+ * /admin/qr/live — satu warna latar (putih hangat Anatomy #FBFBFA) untuk halaman, QR, dan figur.
+ * Tanpa kotak, border, atau bayangan; pemisah hanya garis tipis solid dan garis titik-titik.
+ */
+.qr-live {
+  --qr-live-bg: #fbfbfa;
+  --qr-live-rule: #d9dfdc;
+  --qr-live-dots: #b9c4bf;
+  --anatomy-card: var(--qr-live-bg);
+  --anatomy-paper: var(--qr-live-bg);
+  background: var(--qr-live-bg);
+}
+
+/* Garis tipis solid di bawah header */
+.qr-live-header {
+  border-bottom: 1px solid var(--qr-live-rule);
+}
+
+/* Garis titik-titik vertikal di antara kolom kiri | QR | kanan */
+.qr-live-col-left { border-right: 1px dotted var(--qr-live-dots); padding-right: 20px; }
+.qr-live-col-right { border-left: 1px dotted var(--qr-live-dots); padding-left: 20px; }
+
+/* Kartu figur Anatomy: latar sama, tanpa bingkai */
+.qr-live-fig .iso-figure {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.qr-live-fig .iso-plate {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+}
+.qr-live-fig .iso-plate-corners { inset: 14px 0; }
+.qr-live-fig .iso-stage { width: 100%; height: 100%; min-height: 0; }
+.qr-live-fig .iso-svg { width: 100%; height: 100%; }
+
+/* Caption dipisah garis titik-titik */
+.qr-live-fig .iso-legend {
+  margin-top: 0;
+  padding: 10px 0 0;
+  border-top: 1px dotted var(--qr-live-dots);
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--color-ink-muted, #5b6f68);
+}

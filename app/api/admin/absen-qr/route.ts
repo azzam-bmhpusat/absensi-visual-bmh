@@ -15,9 +15,22 @@ export async function GET(request: Request) {
     return Response.json({ message: "Hanya admin yang dapat membuka QR presensi." }, { status: 401, headers });
   }
 
-  const { token, expiresAt } = createQrToken();
-  const url = new URL("/absen/scan", new URL(request.url).origin);
-  url.searchParams.set("t", token);
+  let qr: ReturnType<typeof createQrToken>;
+  try {
+    qr = createQrToken();
+  } catch (err) {
+    console.error("Gagal membuat token QR presensi:", err);
+    return Response.json(
+      {
+        message:
+          "QR belum bisa dibuat: environment variable ABSEN_TOKEN_SECRET belum diatur di server (minimal 16 karakter). Atur di Vercel lalu redeploy.",
+      },
+      { status: 500, headers }
+    );
+  }
 
-  return Response.json({ url: url.toString(), expiresAt, serverNow: Date.now() }, { headers });
+  const url = new URL("/absen/scan", new URL(request.url).origin);
+  url.searchParams.set("t", qr.token);
+
+  return Response.json({ url: url.toString(), expiresAt: qr.expiresAt, serverNow: Date.now() }, { headers });
 }

@@ -21,8 +21,10 @@ export function LiveQr({ eventName }: { eventName?: string }) {
   const load = useCallback(async () => {
     try {
       const res = await fetch("/api/admin/absen-qr", { cache: "no-store" });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body?.message || "Gagal memuat QR");
+      const body = await res.json().catch(() => null);
+      if (!res.ok || !body?.url) {
+        throw new Error(body?.message || `Gagal memuat QR (HTTP ${res.status})`);
+      }
       const data = body as QrPayload;
       offsetRef.current = data.serverNow - Date.now();
       setUrl(data.url);
@@ -49,17 +51,17 @@ export function LiveQr({ eventName }: { eventName?: string }) {
   }, [load]);
 
   return (
-    <div className="w-full max-w-2xl mx-auto bg-white border border-line rounded-[28px] p-6 sm:p-10 shadow-xs text-center flex flex-col items-center gap-5">
-      <div className="w-[min(80vw,62vh)] h-[min(80vw,62vh)] flex items-center justify-center select-none">
+    <div className="w-full max-w-2xl mx-auto px-2 text-center flex flex-col items-center gap-4 lg:gap-3 xl:gap-4">
+      <div className="w-[min(80vw,62vh)] h-[min(80vw,62vh)] lg:w-[min(34vw,58vh)] lg:h-[min(34vw,58vh)] flex items-center justify-center select-none">
         {url ? (
-          <RoundedQr value={url} level="M" margin={4} color="#134B40" bgColor="#FFFFFF" className="w-full h-full" />
+          <RoundedQr value={url} level="M" margin={4} color="#134B40" bgColor="#FBFBFA" className="w-full h-full" />
         ) : (
           <Loader2 className="w-10 h-10 animate-spin text-brand-green" />
         )}
       </div>
 
       <div className="space-y-1.5">
-        <h1 className="font-heading text-2xl sm:text-4xl font-bold text-primary tracking-tight">
+        <h1 className="font-heading text-2xl sm:text-4xl lg:text-3xl xl:text-4xl font-bold text-primary tracking-tight">
           Scan untuk absen
         </h1>
         <p className="text-sm text-ink-muted flex items-center justify-center gap-1.5">
@@ -69,9 +71,9 @@ export function LiveQr({ eventName }: { eventName?: string }) {
         {error && <p className="text-sm text-danger font-medium">{error}</p>}
       </div>
 
-      <div className="flex items-center gap-1.5 text-xs text-ink-muted pt-3 border-t border-line/60 w-full justify-center">
+      <div className="flex items-center gap-1.5 text-xs text-ink-muted pt-3 border-t border-dotted border-ink-muted/40 w-full justify-center">
         <ShieldCheck className="w-4 h-4 text-brand-green" />
-        <span>Gunakan HP masing-masing &bull; 1 scan untuk 1 kali absen</span>
+        <span>Gunakan HP masing-masing &bull; 1 HP hanya bisa absen 1 kali per sesi</span>
       </div>
       {eventName && <p className="text-[11px] text-ink-muted/80">{eventName}</p>}
     </div>
