@@ -163,26 +163,48 @@
   line-height: 1.5;
 }
 
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 32px;
+}
+
 .button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
   min-height: 52px;
-  margin-top: 32px;
   padding: 14px 24px;
+  border: 2px solid transparent;
   border-radius: 14px;
-  background: var(--primary);
-  color: var(--primary-foreground);
   font-size: 16px;
   font-weight: 600;
   line-height: 1.6;
   text-decoration: none;
-  transition: background-color 200ms ease;
+  transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease;
 }
 
-.button:hover {
+.buttonPrimary {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.buttonPrimary:hover {
   background: var(--brand-green-night);
+}
+
+.buttonOutline {
+  background: transparent;
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.buttonOutline:hover {
+  background: var(--primary);
+  color: var(--primary-foreground);
 }
 
 .button:focus-visible {
@@ -245,7 +267,11 @@
 
   .button {
     width: 100%;
-    margin-top: 24px;
+  }
+
+  .buttons {
+    flex-direction: column;
+    width: 100%;
   }
 }
 

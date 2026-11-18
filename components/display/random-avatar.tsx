@@ -25,7 +25,7 @@ const PALETTES = [
   { from: "#15803d", to: "#047857", clothes: "#4ade80" }, // Forest Green
   { from: "#c026d3", to: "#9333ea", clothes: "#f472b6" }, // Fuchsia
   { from: "#0284c7", to: "#1d4ed8", clothes: "#38bdf8" }, // Sky-Blue
-  { from: "#134B40", to: "#3FBF8F", clothes: "#F2D06B" }, // Brand BMH
+  { from: "#095046", to: "#39BA87", clothes: "#F2D06B" }, // Brand BMH
   { from: "#b45309", to: "#92400e", clothes: "#fde68a" }, // Warm Gold
   { from: "#4338ca", to: "#6d28d9", clothes: "#818cf8" }, // Indigo-Violet
 ];

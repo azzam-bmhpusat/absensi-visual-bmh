@@ -6,6 +6,7 @@ import { formatEventOpening, getEventStatus } from "@/lib/event-settings";
 import { getTimeLeft, type TimeLeft } from "@/lib/rakernas-helpers";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { RevealItem, RevealStagger } from "@/components/motion/reveal";
 
 interface CountdownUnit {
   key: keyof TimeLeft["formatted"];
@@ -68,14 +69,15 @@ export function CountdownSection({
           Menuju pembukaan {EVENT_INFO.title} &bull; {formatEventOpening(target)}
         </p>
 
-        <div
+        <RevealStagger
           className="mt-6 md:mt-8 grid grid-cols-4 gap-2 sm:gap-3 md:gap-4"
+          stagger={0.1}
           role="timer"
           aria-live="polite"
         >
           {COUNTDOWN_UNITS.map(({ key, label }) => (
+            <RevealItem key={key} y={16}>
             <Card
-              key={key}
               className="rounded-2xl border-line/20 bg-card/30 backdrop-blur-xs p-3 sm:p-4 md:p-6 text-center shadow-lg transition-transform hover:scale-[1.02]"
             >
               <div className="flex h-10 sm:h-12 md:h-16 items-center justify-center">
@@ -91,8 +93,9 @@ export function CountdownSection({
                 {label}
               </span>
             </Card>
+            </RevealItem>
           ))}
-        </div>
+        </RevealStagger>
 
         {isMounted && timeLeft.isExpired && (
           <p className="mt-4 text-xs md:text-sm font-medium text-brand-green">

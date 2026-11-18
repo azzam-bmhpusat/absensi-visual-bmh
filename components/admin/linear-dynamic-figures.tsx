@@ -20,7 +20,7 @@ export function LinearDynamicFigures() {
       {/* FIG 0.1 // GERBANG PEMINDAI */}
       <section
         className={[
-          "bg-[#0A3A30] border border-[#3FBF8F]/15 rounded-[20px] lg:rounded-[18px]",
+          "bg-[#0A3A30] border border-[#39BA87]/15 rounded-[20px] lg:rounded-[18px]",
           "p-4 lg:p-3 xl:p-4",
           "shadow-xs text-left relative overflow-hidden",
           // Desktop: equal height distribution
@@ -29,7 +29,7 @@ export function LinearDynamicFigures() {
         aria-labelledby="fig-01-title"
       >
         <div className="flex items-center justify-between mb-1 lg:mb-0.5 shrink-0">
-          <span className="text-[10px] font-mono font-semibold tracking-wider text-[#3FBF8F]">
+          <span className="text-[10px] font-mono font-semibold tracking-wider text-[#39BA87]">
             FIG 0.1 // GERBANG PEMINDAI
           </span>
           <span className="text-[9px] font-mono text-[#EEFBF5]/50" aria-hidden="true">
@@ -50,8 +50,8 @@ export function LinearDynamicFigures() {
           >
             <defs>
               <linearGradient id="slabGlow" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#3FBF8F" stopOpacity="0.25" />
-                <stop offset="100%" stopColor="#134B40" stopOpacity="0.05" />
+                <stop offset="0%" stopColor="#39BA87" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="#095046" stopOpacity="0.05" />
               </linearGradient>
             </defs>
 
@@ -59,32 +59,32 @@ export function LinearDynamicFigures() {
 
             {/* Layer 0 — Base */}
             <g>
-              <polygon points="160,120 226,145 160,165 94,145" fill="url(#slabGlow)" stroke="#3FBF8F" strokeWidth="1.2" strokeOpacity="0.35" />
-              <polygon points="94,145 160,165 160,172 94,152" fill="#134B40" fillOpacity="0.3" stroke="#3FBF8F" strokeWidth="1" strokeOpacity="0.3" />
-              <polygon points="160,165 226,145 226,152 160,172" fill="#134B40" fillOpacity="0.45" stroke="#3FBF8F" strokeWidth="1" strokeOpacity="0.3" />
+              <polygon points="160,120 226,145 160,165 94,145" fill="url(#slabGlow)" stroke="#39BA87" strokeWidth="1.2" strokeOpacity="0.35" />
+              <polygon points="94,145 160,165 160,172 94,152" fill="#095046" fillOpacity="0.3" stroke="#39BA87" strokeWidth="1" strokeOpacity="0.3" />
+              <polygon points="160,165 226,145 226,152 160,172" fill="#095046" fillOpacity="0.45" stroke="#39BA87" strokeWidth="1" strokeOpacity="0.3" />
             </g>
 
             {/* Projection lines */}
             <motion.g animate={shouldReduceMotion ? undefined : { opacity: [0.35, 0.75, 0.35] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}>
-              <line x1="94" y1="145" x2="105" y2="105" stroke="#3FBF8F" strokeWidth="1" strokeDasharray="2 3" strokeOpacity="0.4" />
-              <line x1="226" y1="145" x2="215" y2="105" stroke="#3FBF8F" strokeWidth="1" strokeDasharray="2 3" strokeOpacity="0.4" />
-              <line x1="160" y1="165" x2="160" y2="125" stroke="#3FBF8F" strokeWidth="1" strokeDasharray="2 3" strokeOpacity="0.4" />
-              <line x1="160" y1="120" x2="160" y2="82" stroke="#3FBF8F" strokeWidth="1" strokeDasharray="2 3" strokeOpacity="0.4" />
+              <line x1="94" y1="145" x2="105" y2="105" stroke="#39BA87" strokeWidth="1" strokeDasharray="2 3" strokeOpacity="0.4" />
+              <line x1="226" y1="145" x2="215" y2="105" stroke="#39BA87" strokeWidth="1" strokeDasharray="2 3" strokeOpacity="0.4" />
+              <line x1="160" y1="165" x2="160" y2="125" stroke="#39BA87" strokeWidth="1" strokeDasharray="2 3" strokeOpacity="0.4" />
+              <line x1="160" y1="120" x2="160" y2="82" stroke="#39BA87" strokeWidth="1" strokeDasharray="2 3" strokeOpacity="0.4" />
             </motion.g>
 
             {/* Layer 1 — Middle */}
             <motion.g animate={shouldReduceMotion ? undefined : { y: [0, -3, 0] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}>
-              <polygon points="160,98 218,120 160,138 102,120" fill="url(#slabGlow)" stroke="#3FBF8F" strokeWidth="1.2" strokeOpacity="0.5" />
-              <polygon points="102,120 160,138 160,144 102,126" fill="#134B40" fillOpacity="0.35" stroke="#3FBF8F" strokeWidth="1" strokeOpacity="0.35" />
-              <polygon points="160,138 218,120 218,126 160,144" fill="#134B40" fillOpacity="0.5" stroke="#3FBF8F" strokeWidth="1" strokeOpacity="0.35" />
+              <polygon points="160,98 218,120 160,138 102,120" fill="url(#slabGlow)" stroke="#39BA87" strokeWidth="1.2" strokeOpacity="0.5" />
+              <polygon points="102,120 160,138 160,144 102,126" fill="#095046" fillOpacity="0.35" stroke="#39BA87" strokeWidth="1" strokeOpacity="0.35" />
+              <polygon points="160,138 218,120 218,126 160,144" fill="#095046" fillOpacity="0.5" stroke="#39BA87" strokeWidth="1" strokeOpacity="0.35" />
             </motion.g>
 
             {/* Layer 2 + Arch */}
             <motion.g animate={shouldReduceMotion ? undefined : { y: [0, -6, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}>
-              <polygon points="160,74 210,93 160,109 110,93" fill="#134B40" fillOpacity="0.5" stroke="#3FBF8F" strokeWidth="1.4" strokeOpacity="0.8" />
-              <polygon points="110,93 160,109 160,114 110,98" fill="#0A3A30" stroke="#3FBF8F" strokeWidth="1" strokeOpacity="0.5" />
-              <polygon points="160,109 210,93 210,98 160,114" fill="#134B40" stroke="#3FBF8F" strokeWidth="1" strokeOpacity="0.5" />
-              <path d="M 136 86 L 136 48 C 136 34, 150 25, 160 18 C 170 25, 184 34, 184 48 L 184 86 L 174 82 L 174 50 C 174 40, 166 34, 160 30 C 154 34, 146 40, 146 50 L 146 82 Z" fill="#134B40" fillOpacity="0.75" stroke="#3FBF8F" strokeWidth="1.3" />
+              <polygon points="160,74 210,93 160,109 110,93" fill="#095046" fillOpacity="0.5" stroke="#39BA87" strokeWidth="1.4" strokeOpacity="0.8" />
+              <polygon points="110,93 160,109 160,114 110,98" fill="#0A3A30" stroke="#39BA87" strokeWidth="1" strokeOpacity="0.5" />
+              <polygon points="160,109 210,93 210,98 160,114" fill="#095046" stroke="#39BA87" strokeWidth="1" strokeOpacity="0.5" />
+              <path d="M 136 86 L 136 48 C 136 34, 150 25, 160 18 C 170 25, 184 34, 184 48 L 184 86 L 174 82 L 174 50 C 174 40, 166 34, 160 30 C 154 34, 146 40, 146 50 L 146 82 Z" fill="#095046" fillOpacity="0.75" stroke="#39BA87" strokeWidth="1.3" />
               <line x1="160" y1="18" x2="160" y2="74" stroke="rgba(63,191,143,0.25)" strokeWidth="1" strokeDasharray="2 2" />
               <circle cx="160" cy="18" r="2" fill="#F2D06B" />
             </motion.g>
@@ -104,7 +104,7 @@ export function LinearDynamicFigures() {
       {/* FIG 0.2 // TITIK TAMU */}
       <section
         className={[
-          "bg-[#0A3A30] border border-[#3FBF8F]/15 rounded-[20px] lg:rounded-[18px]",
+          "bg-[#0A3A30] border border-[#39BA87]/15 rounded-[20px] lg:rounded-[18px]",
           "p-4 lg:p-3 xl:p-4",
           "shadow-xs text-left relative overflow-hidden",
           "lg:flex-1 lg:min-h-0 lg:flex lg:flex-col",
@@ -112,7 +112,7 @@ export function LinearDynamicFigures() {
         aria-labelledby="fig-02-title"
       >
         <div className="flex items-center justify-between mb-1 lg:mb-0.5 shrink-0">
-          <span className="text-[10px] font-mono font-semibold tracking-wider text-[#3FBF8F]">
+          <span className="text-[10px] font-mono font-semibold tracking-wider text-[#39BA87]">
             FIG 0.2 // TITIK TAMU
           </span>
           <span className="text-[9px] font-mono text-[#EEFBF5]/50" aria-hidden="true">
@@ -135,40 +135,40 @@ export function LinearDynamicFigures() {
 
             {/* Cube 1 — Left */}
             <g>
-              <polygon points="108,68 130,80 108,92 86,80" fill="#134B40" fillOpacity="0.45" stroke="#3FBF8F" strokeWidth="1.2" strokeOpacity="0.6" />
-              <polygon points="86,80 108,92 108,126 86,114" fill="#0A3A30" stroke="#3FBF8F" strokeWidth="1" strokeOpacity="0.35" />
-              <polygon points="108,92 130,80 130,114 108,126" fill="#134B40" fillOpacity="0.6" stroke="#3FBF8F" strokeWidth="1" strokeOpacity="0.35" />
+              <polygon points="108,68 130,80 108,92 86,80" fill="#095046" fillOpacity="0.45" stroke="#39BA87" strokeWidth="1.2" strokeOpacity="0.6" />
+              <polygon points="86,80 108,92 108,126 86,114" fill="#0A3A30" stroke="#39BA87" strokeWidth="1" strokeOpacity="0.35" />
+              <polygon points="108,92 130,80 130,114 108,126" fill="#095046" fillOpacity="0.6" stroke="#39BA87" strokeWidth="1" strokeOpacity="0.35" />
             </g>
 
             {/* Cube 2 — Center tall */}
             <motion.g animate={shouldReduceMotion ? undefined : { y: [0, -3, 0] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}>
-              <polygon points="160,34 186,49 160,64 134,49" fill="#134B40" fillOpacity="0.6" stroke="#3FBF8F" strokeWidth="1.3" strokeOpacity="0.8" />
-              <polygon points="134,49 160,64 160,104 134,89" fill="#0A3A30" stroke="#3FBF8F" strokeWidth="1" strokeOpacity="0.4" />
-              <polygon points="160,64 186,49 186,89 160,104" fill="#134B40" fillOpacity="0.7" stroke="#3FBF8F" strokeWidth="1" strokeOpacity="0.4" />
-              <circle cx="160" cy="49" r="2.5" fill="#3FBF8F" />
-              <motion.circle cx="160" cy="49" r="2.5" fill="none" stroke="#3FBF8F" strokeWidth="1" animate={shouldReduceMotion ? undefined : { r: [2.5, 9, 2.5], opacity: [0.8, 0, 0.8] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} />
+              <polygon points="160,34 186,49 160,64 134,49" fill="#095046" fillOpacity="0.6" stroke="#39BA87" strokeWidth="1.3" strokeOpacity="0.8" />
+              <polygon points="134,49 160,64 160,104 134,89" fill="#0A3A30" stroke="#39BA87" strokeWidth="1" strokeOpacity="0.4" />
+              <polygon points="160,64 186,49 186,89 160,104" fill="#095046" fillOpacity="0.7" stroke="#39BA87" strokeWidth="1" strokeOpacity="0.4" />
+              <circle cx="160" cy="49" r="2.5" fill="#39BA87" />
+              <motion.circle cx="160" cy="49" r="2.5" fill="none" stroke="#39BA87" strokeWidth="1" animate={shouldReduceMotion ? undefined : { r: [2.5, 9, 2.5], opacity: [0.8, 0, 0.8] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} />
               <circle cx="160" cy="49" r="1.2" fill="#F2D06B" />
             </motion.g>
 
             {/* Cube 3 — Right */}
             <g>
-              <polygon points="212,68 234,80 212,92 190,80" fill="#134B40" fillOpacity="0.4" stroke="#3FBF8F" strokeWidth="1.2" strokeOpacity="0.6" />
-              <polygon points="190,80 212,92 212,126 190,114" fill="#0A3A30" stroke="#3FBF8F" strokeWidth="1" strokeOpacity="0.35" />
-              <polygon points="212,92 234,80 234,114 212,126" fill="#134B40" fillOpacity="0.5" stroke="#3FBF8F" strokeWidth="1" strokeOpacity="0.35" />
+              <polygon points="212,68 234,80 212,92 190,80" fill="#095046" fillOpacity="0.4" stroke="#39BA87" strokeWidth="1.2" strokeOpacity="0.6" />
+              <polygon points="190,80 212,92 212,126 190,114" fill="#0A3A30" stroke="#39BA87" strokeWidth="1" strokeOpacity="0.35" />
+              <polygon points="212,92 234,80 234,114 212,126" fill="#095046" fillOpacity="0.5" stroke="#39BA87" strokeWidth="1" strokeOpacity="0.35" />
             </g>
 
             {/* Cube 4 — Front small */}
             <motion.g animate={shouldReduceMotion ? undefined : { y: [0, 2, 0] }} transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}>
-              <polygon points="160,112 180,123 160,134 140,123" fill="#134B40" fillOpacity="0.5" stroke="#3FBF8F" strokeWidth="1.2" strokeOpacity="0.7" />
-              <polygon points="140,123 160,134 160,154 140,143" fill="#0A3A30" stroke="#3FBF8F" strokeWidth="1" strokeOpacity="0.35" />
-              <polygon points="160,134 180,123 180,143 160,154" fill="#134B40" fillOpacity="0.6" stroke="#3FBF8F" strokeWidth="1" strokeOpacity="0.35" />
-              <circle cx="160" cy="123" r="2" fill="#3FBF8F" />
-              <motion.circle cx="160" cy="123" r="2" fill="none" stroke="#3FBF8F" strokeWidth="1" animate={shouldReduceMotion ? undefined : { r: [2, 7, 2], opacity: [0.7, 0, 0.7] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }} />
+              <polygon points="160,112 180,123 160,134 140,123" fill="#095046" fillOpacity="0.5" stroke="#39BA87" strokeWidth="1.2" strokeOpacity="0.7" />
+              <polygon points="140,123 160,134 160,154 140,143" fill="#0A3A30" stroke="#39BA87" strokeWidth="1" strokeOpacity="0.35" />
+              <polygon points="160,134 180,123 180,143 160,154" fill="#095046" fillOpacity="0.6" stroke="#39BA87" strokeWidth="1" strokeOpacity="0.35" />
+              <circle cx="160" cy="123" r="2" fill="#39BA87" />
+              <motion.circle cx="160" cy="123" r="2" fill="none" stroke="#39BA87" strokeWidth="1" animate={shouldReduceMotion ? undefined : { r: [2, 7, 2], opacity: [0.7, 0, 0.7] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }} />
             </motion.g>
 
             {/* Projection lines */}
-            <line x1="108" y1="68" x2="160" y2="49" stroke="#3FBF8F" strokeWidth="1" strokeDasharray="2 3" strokeOpacity="0.25" />
-            <line x1="212" y1="68" x2="160" y2="49" stroke="#3FBF8F" strokeWidth="1" strokeDasharray="2 3" strokeOpacity="0.25" />
+            <line x1="108" y1="68" x2="160" y2="49" stroke="#39BA87" strokeWidth="1" strokeDasharray="2 3" strokeOpacity="0.25" />
+            <line x1="212" y1="68" x2="160" y2="49" stroke="#39BA87" strokeWidth="1" strokeDasharray="2 3" strokeOpacity="0.25" />
           </svg>
         </div>
 
@@ -185,7 +185,7 @@ export function LinearDynamicFigures() {
       {/* FIG 0.3 // ALIRAN KE LAYAR */}
       <section
         className={[
-          "bg-[#0A3A30] border border-[#3FBF8F]/15 rounded-[20px] lg:rounded-[18px]",
+          "bg-[#0A3A30] border border-[#39BA87]/15 rounded-[20px] lg:rounded-[18px]",
           "p-4 lg:p-3 xl:p-4",
           "shadow-xs text-left relative overflow-hidden",
           "lg:flex-1 lg:min-h-0 lg:flex lg:flex-col",
@@ -193,7 +193,7 @@ export function LinearDynamicFigures() {
         aria-labelledby="fig-03-title"
       >
         <div className="flex items-center justify-between mb-1 lg:mb-0.5 shrink-0">
-          <span className="text-[10px] font-mono font-semibold tracking-wider text-[#3FBF8F]">
+          <span className="text-[10px] font-mono font-semibold tracking-wider text-[#39BA87]">
             FIG 0.3 // ALIRAN KE LAYAR
           </span>
           <span className="text-[9px] font-mono text-[#EEFBF5]/50" aria-hidden="true">
@@ -214,9 +214,9 @@ export function LinearDynamicFigures() {
           >
             <defs>
               <linearGradient id="finSweep" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#3FBF8F" stopOpacity="0" />
-                <stop offset="50%" stopColor="#3FBF8F" stopOpacity="0.45" />
-                <stop offset="100%" stopColor="#3FBF8F" stopOpacity="0" />
+                <stop offset="0%" stopColor="#39BA87" stopOpacity="0" />
+                <stop offset="50%" stopColor="#39BA87" stopOpacity="0.45" />
+                <stop offset="100%" stopColor="#39BA87" stopOpacity="0" />
               </linearGradient>
             </defs>
 
@@ -236,9 +236,9 @@ export function LinearDynamicFigures() {
               const topY = fin.y - fin.h;
               return (
                 <g key={`fin-${i}`}>
-                  <rect x={fin.x} y={topY} width={fin.w} height={fin.h} fill="#134B40" fillOpacity={0.35 + (fin.h / 90) * 0.35} stroke="#3FBF8F" strokeWidth="1.1" strokeOpacity={0.4 + (fin.h / 90) * 0.4} rx="1" />
-                  <polygon points={`${fin.x},${topY} ${fin.x + 4},${topY - 3} ${fin.x + fin.w + 4},${topY - 3} ${fin.x + fin.w},${topY}`} fill="#3FBF8F" fillOpacity="0.4" stroke="#3FBF8F" strokeWidth="1" strokeOpacity="0.5" />
-                  <polygon points={`${fin.x + fin.w},${topY} ${fin.x + fin.w + 4},${topY - 3} ${fin.x + fin.w + 4},${fin.y - 3} ${fin.x + fin.w},${fin.y}`} fill="#0A3A30" stroke="#3FBF8F" strokeWidth="1" strokeOpacity="0.3" />
+                  <rect x={fin.x} y={topY} width={fin.w} height={fin.h} fill="#095046" fillOpacity={0.35 + (fin.h / 90) * 0.35} stroke="#39BA87" strokeWidth="1.1" strokeOpacity={0.4 + (fin.h / 90) * 0.4} rx="1" />
+                  <polygon points={`${fin.x},${topY} ${fin.x + 4},${topY - 3} ${fin.x + fin.w + 4},${topY - 3} ${fin.x + fin.w},${topY}`} fill="#39BA87" fillOpacity="0.4" stroke="#39BA87" strokeWidth="1" strokeOpacity="0.5" />
+                  <polygon points={`${fin.x + fin.w},${topY} ${fin.x + fin.w + 4},${topY - 3} ${fin.x + fin.w + 4},${fin.y - 3} ${fin.x + fin.w},${fin.y}`} fill="#0A3A30" stroke="#39BA87" strokeWidth="1" strokeOpacity="0.3" />
                 </g>
               );
             })}

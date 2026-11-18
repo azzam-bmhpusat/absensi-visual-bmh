@@ -78,7 +78,7 @@ export function DaerahCombobox({
               setSearch(val);
             }}
           />
-          <CommandList className="max-h-56 overflow-y-auto">
+          <CommandList data-lenis-prevent className="max-h-56 overflow-y-auto">
             {filtered.length === 0 && search.trim().length < 2 && (
               <CommandEmpty className="py-4 text-center text-sm text-ink-muted">
                 Tidak ada daerah ditemukan. Ketik untuk membuat baru.

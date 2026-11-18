@@ -12,6 +12,7 @@ import {
   CarouselNext,
   type CarouselApi,
 } from "@/components/ui/carousel";
+import { Reveal } from "@/components/motion/reveal";
 
 export function DresscodeSection() {
   const [api, setApi] = React.useState<CarouselApi>();
@@ -40,17 +41,17 @@ export function DresscodeSection() {
   return (
     <div className="mx-auto w-full max-w-screen-xl px-5 md:px-8">
       {/* Judul & Deskripsi Bagian */}
-      <div className="text-center mb-8 md:mb-12">
+      <Reveal className="text-center mb-8 md:mb-12">
         <h2 className="text-2xl md:text-4xl font-heading font-semibold text-primary">
           Dress Code
         </h2>
         <p className="mt-2 md:mt-3 text-ink-muted text-sm md:text-base max-w-xl mx-auto">
           Panduan busana dan seragam resmi peserta Rakernas BMH 2027
         </p>
-      </div>
+      </Reveal>
 
       {/* Carousel Dress Code */}
-      <div className="relative">
+      <Reveal className="relative" delay={0.1}>
         <Carousel
           opts={{
             align: "start",
@@ -120,7 +121,7 @@ export function DresscodeSection() {
             </button>
           ))}
         </div>
-      </div>
+      </Reveal>
     </div>
   );
 }

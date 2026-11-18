@@ -7,6 +7,7 @@ import { TICKET_COOKIE, verifyTicket } from "@/lib/absen-token";
 import { SessionPicker, type SessionItem } from "@/components/absen/session-picker";
 import type { GuestItem } from "@/components/absen/name-combobox";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Reveal, RevealItem, RevealStagger } from "@/components/motion/reveal";
 
 type ScanGateReason = "missing" | "expired-qr" | "used";
 
@@ -53,7 +54,7 @@ const SCAN_GATE_TEXT: Record<ScanGateReason, { title: string; body: string }> = 
 function ScanGate({ reason }: { reason: ScanGateReason }) {
   const text = SCAN_GATE_TEXT[reason];
   return (
-    <div className="w-full bg-white/90 backdrop-blur-md p-6 rounded-3xl border border-line shadow-sm space-y-4">
+    <Reveal immediate className="w-full bg-white/90 backdrop-blur-md p-6 rounded-3xl border border-line shadow-sm space-y-4">
       <div className="w-16 h-16 mx-auto rounded-full bg-gold-50 flex items-center justify-center border border-brand-gold-soft">
         <QrCode className="w-8 h-8 text-brand-gold" />
       </div>
@@ -61,7 +62,7 @@ function ScanGate({ reason }: { reason: ScanGateReason }) {
         <h2 className="font-heading text-lg font-bold text-primary">{text.title}</h2>
         <p className="text-xs sm:text-sm text-ink-muted leading-relaxed">{text.body}</p>
       </div>
-    </div>
+    </Reveal>
   );
 }
 
@@ -135,23 +136,23 @@ export default function AbsenPage({
   searchParams: Promise<{ e?: string | string[] }>;
 }) {
   const eventName =
-    process.env.NEXT_PUBLIC_EVENT_NAME || "Silaturahim & Rapat Kerja Nasional BMH 2026";
+    process.env.NEXT_PUBLIC_EVENT_NAME || "Silaturahim & Rapat Kerja Nasional BMH 2027";
 
   return (
     <main className="page-bg min-h-screen flex flex-col justify-between p-4 sm:p-6 pb-8">
       <div className="w-full max-w-md mx-auto text-center space-y-5 my-auto py-2">
         {/* Header Acara (Mobile First) */}
-        <div className="space-y-2">
-          <span className="inline-block text-[11px] font-semibold px-3 py-1 rounded-full bg-secondary text-primary border border-brand-green/20">
+        <RevealStagger immediate stagger={0.08} className="space-y-2">
+          <RevealItem><span className="inline-block text-[11px] font-semibold px-3 py-1 rounded-full bg-secondary text-primary border border-brand-green/20">
             Sistem Presensi Kehadiran
-          </span>
-          <h1 className="font-heading text-xl sm:text-2xl font-bold text-primary tracking-tight leading-snug">
+          </span></RevealItem>
+          <RevealItem><h1 className="font-heading text-xl sm:text-2xl font-bold text-primary tracking-tight leading-snug">
             {eventName}
-          </h1>
-          <p className="text-xs sm:text-sm text-ink-muted leading-relaxed max-w-xs mx-auto">
+          </h1></RevealItem>
+          <RevealItem><p className="text-xs sm:text-sm text-ink-muted leading-relaxed max-w-xs mx-auto">
             Silakan pilih sesi kehadiran di bawah ini untuk mencatat konfirmasi absensi Anda.
-          </p>
-        </div>
+          </p></RevealItem>
+        </RevealStagger>
 
         {/* Daftar Sesi Pilihan */}
         <Suspense fallback={<SessionPickerSkeleton />}>
@@ -159,11 +160,11 @@ export default function AbsenPage({
         </Suspense>
 
         {/* Footer Identitas BMH */}
-        <div className="text-center pt-2">
+        <Reveal immediate delay={0.4} y={8} className="text-center pt-2">
           <p className="text-[11px] text-ink-muted/80">
             Baitul Maal Hidayatullah &bull; Kehadiran Realtime
           </p>
-        </div>
+        </Reveal>
       </div>
     </main>
   );

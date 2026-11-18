@@ -11,7 +11,7 @@ export default function AdminQrPage() {
       : envUrl;
   const eventName =
     process.env.NEXT_PUBLIC_EVENT_NAME ||
-    "Silaturahim & Rapat Kerja Nasional BMH 2026";
+    "Silaturahim & Rapat Kerja Nasional BMH 2027";
 
   return (
     <main

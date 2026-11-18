@@ -30,7 +30,7 @@ const FALLBACK_SESSIONS: SessionData[] = [
 
 
 export async function loadDisplayAnatomyData(querySesi?: string | string[]): Promise<DisplayAnatomyData> {
-  const eventName = process.env.NEXT_PUBLIC_EVENT_NAME || "Silaturahim & Rapat Kerja Nasional BMH 2026";
+  const eventName = process.env.NEXT_PUBLIC_EVENT_NAME || "Silaturahim & Rapat Kerja Nasional BMH 2027";
   const supabase = createPublicServerClient();
   let sessions = FALLBACK_SESSIONS;
   let guests: GuestData[] = [];

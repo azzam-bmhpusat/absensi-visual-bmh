@@ -193,7 +193,7 @@ export function formatWibClock(date = new Date()): string {
 
 /**
  * Format waktu kehadiran: jam, menit, WIB, hari, dan tanggal lengkap
- * Contoh: "13:45 WIB • Jumat, 13 Nov 2026"
+ * Contoh: "13:45 WIB • Jumat, 13 Nov 2027"
  */
 export function formatAttendanceDateTime(dateInput?: string | Date | null): string {
   if (!dateInput) return "-";

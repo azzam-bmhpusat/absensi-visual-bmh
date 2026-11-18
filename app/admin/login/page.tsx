@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 
 export default function AdminLoginPage() {
   const eventName =
-    process.env.NEXT_PUBLIC_EVENT_NAME || "Silaturahim & Rapat Kerja Nasional BMH 2026";
+    process.env.NEXT_PUBLIC_EVENT_NAME || "Silaturahim & Rapat Kerja Nasional BMH 2027";
 
   return (
     <main className="page-bg min-h-screen flex flex-col items-center justify-center p-5 relative">
