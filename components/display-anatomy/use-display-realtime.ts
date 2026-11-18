@@ -31,10 +31,16 @@ export function useDisplayRealtime({
   initialSession,
   initialGuests,
   initialAttendances,
+  basePath = "/display-anatomy",
+  channelName = "attendances-display-anatomy",
 }: {
   initialSession: SessionData;
   initialGuests: GuestData[];
   initialAttendances: AttendanceData[];
+  /** halaman yang dipakai saat pindah sesi (default /display-anatomy) */
+  basePath?: string;
+  /** awalan nama channel realtime (default attendances-display-anatomy) */
+  channelName?: string;
 }) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
@@ -69,7 +75,7 @@ export function useDisplayRealtime({
     window.addEventListener("offline", onOffline);
 
     const channel = supabase
-      .channel(`attendances-display-anatomy:${session.id}`)
+      .channel(`${channelName}:${session.id}`)
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "attendances", filter: `session_id=eq.${session.id}` },
@@ -89,7 +95,7 @@ export function useDisplayRealtime({
       window.removeEventListener("offline", onOffline);
       void supabase.removeChannel(channel);
     };
-  }, [session.id, supabase, handleInsert]);
+  }, [session.id, supabase, handleInsert, channelName]);
 
   // Polling cadangan
   useEffect(() => {
@@ -128,9 +134,9 @@ export function useDisplayRealtime({
           }
         })
         .catch((err) => console.error("Gagal memuat absensi sesi:", err));
-      router.push(`/display-anatomy?sesi=${next.id}`, { scroll: false });
+      router.push(`${basePath}?sesi=${next.id}`, { scroll: false });
     },
-    [session.id, loadSessionData, router]
+    [session.id, loadSessionData, router, basePath]
   );
 
   const dismissWelcome = useCallback((id: string) => setWelcome((prev) => prev.filter((w) => w.id !== id)), []);

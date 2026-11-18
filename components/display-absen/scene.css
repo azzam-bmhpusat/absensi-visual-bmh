@@ -1,0 +1,93 @@
+/*
+ * /display-absen — satu adegan aula (panggung + tribun) layar penuh, tanpa bingkai atau garis pemisah.
+ * Warna sosok: variabel --sk (kulit) --cl (baju) --hr (rambut/peci) --ac (hijab) diset pada elemen <use>.
+ */
+.ab-root {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+  background:
+    radial-gradient(60% 45% at 100% 0%, rgba(242, 208, 107, 0.07) 0%, transparent 70%),
+    radial-gradient(65% 50% at 0% 100%, rgba(63, 191, 143, 0.1) 0%, transparent 70%),
+    var(--anatomy-page);
+}
+.da .ab-svg { width: 100%; height: 100%; display: block; overflow: hidden; }
+
+/* ---------- Bahan berwarna: nada tiap sisi diturunkan dari satu warna dasar ----------
+   Catatan: aturan untuk isi <defs>/<use> TIDAK boleh berawalan .da (selektor tidak menembus batas shadow tree <use>). */
+.pc > .iso-fill { fill: var(--c); }
+.pc > .iso-top { fill: color-mix(in srgb, var(--c) 84%, #fff); }
+.pc > .iso-shade[data-shade="0"] { fill: color-mix(in srgb, var(--c) 56%, #000); }
+.pc > .iso-shade[data-shade="1"] { fill: color-mix(in srgb, var(--c) 68%, #000); }
+.pc > .iso-shade[data-shade="2"] { fill: color-mix(in srgb, var(--c) 82%, #000); }
+.pc > .iso-shade[data-shade="3"] { fill: var(--c); }
+.pc > .iso-line[data-tone] { stroke: color-mix(in srgb, var(--c) 48%, #03160f); }
+.p-skin { --c: var(--sk, #c99468); }
+.p-cloth { --c: var(--cl, #2f9275); }
+.p-hair { --c: var(--hr, #1b1410); }
+.p-acc { --c: var(--ac, #d9f1e7); }
+.p-leaf { --c: #2f8f66; }
+.ab-eye { fill: #1c130d; stroke: none; }
+
+/* ---------- Gerak halus sosok ----------
+   Napas: tiap baris tribun naik-turun bergelombang (satu animasi per baris, bukan per orang).
+   Menoleh: hanya penonton "turner" yang kepalanya sesekali berputar ke arah layar (--tf/--tb diset di <use>). */
+@keyframes ab-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-0.7px); } }
+@keyframes ab-hdf { 0%, 84% { opacity: 0; } 87%, 95% { opacity: 1; } 98%, 100% { opacity: 0; } }
+@keyframes ab-hdb { 0%, 84% { opacity: 1; } 87%, 95% { opacity: 0; } 98%, 100% { opacity: 1; } }
+@keyframes ab-sitfade { from { opacity: 0; } to { opacity: 1; } }
+.da .ab-row { animation: ab-bob 4.6s ease-in-out infinite; animation-delay: calc(var(--r, 0) * -0.42s); }
+.da .ab-live { animation: ab-bob 4.2s ease-in-out var(--ph, 0s) infinite; }
+.da .ab-sit { animation: ab-sitfade 0.7s ease-out 1; }
+.ab-hdf { opacity: 0; animation: var(--tf, none) var(--fc, 14s) linear var(--ph, 0s) infinite; }
+.ab-hdb { animation: var(--tb, none) var(--fc, 14s) linear var(--ph, 0s) infinite; }
+
+/* pembicara menggerakkan tangan */
+@keyframes ab-armup { 0%, 30%, 100% { opacity: 0; } 38%, 62% { opacity: 1; } }
+@keyframes ab-armdn { 0%, 30%, 100% { opacity: 1; } 38%, 62% { opacity: 0; } }
+.ab-armup { opacity: 0; animation: ab-armup 5.5s ease-in-out infinite; }
+.ab-armdn { animation: ab-armdn 5.5s ease-in-out infinite; }
+
+/* ---------- Kartu nama di sandaran kursi ---------- */
+.da .ab-tag { fill: var(--da-glass); stroke: var(--anatomy-lo); stroke-width: 0.5px; vector-effect: non-scaling-stroke; }
+.da .ab-tag-t { font-weight: 700; }
+
+/* ---------- Layar LED, jam, indikator ---------- */
+@keyframes ab-fadein { from { opacity: 0; } to { opacity: 1; } }
+.da .ab-fadein { animation: ab-fadein 0.5s ease-out 1; }
+.da .ab-track { fill: var(--anatomy-faint); }
+.da .ab-fill { fill: var(--da-accent); transition: width 0.8s ease-out; }
+.da .ab-tick { stroke: var(--anatomy-lo); stroke-width: 1.1px; vector-effect: non-scaling-stroke; stroke-linecap: round; }
+.da .ab-tick.on { stroke: var(--anatomy-lit); }
+.da .ab-lamp { fill: var(--da-accent); }
+.da .ab-lamp.warn { fill: var(--da-gold); animation: ab-blink 1s steps(1) infinite; }
+@keyframes ab-blink { 50% { opacity: 0.15; } }
+
+/* ---------- Properti sayap ---------- */
+.da .ab-seg { fill: var(--anatomy-faint); stroke: none; }
+.da .ab-seg.on { fill: var(--da-accent); }
+.da .ab-seg.on.hot { fill: var(--da-gold); }
+.da .ab-tally { fill: #ff6b6b; stroke: none; animation: ab-blink 1.3s steps(1) infinite; }
+.da .ab-qrbg { fill: var(--da-ink); stroke: none; }
+.da .ab-qr { fill: var(--da-glass); stroke: none; }
+@keyframes ab-scan { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(12.4px); } }
+.da .ab-scan { fill: var(--da-gold); stroke: none; animation: ab-scan 2.4s ease-in-out infinite; }
+
+/* ---------- Sorotan lampu & kartu data ---------- */
+.da .ab-beam { fill: url(#ab-beam); stroke: none; pointer-events: none; mix-blend-mode: screen; }
+.da .ab-pool { fill: rgba(242, 208, 107, 0.16); stroke: var(--da-gold); stroke-width: 1px; vector-effect: non-scaling-stroke; }
+@keyframes ab-pop { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.da .ab-card { animation: ab-pop 0.45s cubic-bezier(0.32, 0.72, 0, 1) 1; }
+.da .ab-card-bg { fill: var(--da-glass); fill-opacity: 0.94; stroke: var(--da-gold); stroke-width: 1.2px; vector-effect: non-scaling-stroke; }
+.da .ab-stem { fill: none; stroke: var(--da-gold); stroke-width: 1.2px; vector-effect: non-scaling-stroke; }
+.da .ab-stem-dot { fill: var(--da-gold); stroke: none; }
+
+@keyframes ab-load { 0%, 100% { opacity: 0.25; } 50% { opacity: 0.9; } }
+.ab-loading { position: absolute; inset: 0; display: grid; place-items: center; }
+.ab-loading i { width: 14px; height: 14px; border-radius: 50%; background: var(--da-gold); animation: ab-load 1.4s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .da .ab-row, .da .ab-live, .da .ab-sit, .ab-hdf, .ab-hdb, .ab-armup, .ab-armdn, .da .ab-scan, .da .ab-tally, .da .ab-lamp.warn, .da .ab-card, .da .ab-fadein { animation: none; }
+}

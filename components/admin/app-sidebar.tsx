@@ -14,6 +14,7 @@ import {
   QrCode,
   Monitor,
   Boxes,
+  Theater,
   LogOut,
 } from "lucide-react";
 import {
@@ -91,6 +92,12 @@ export function AppSidebar({
       label: "Videotron Anatomy",
       href: "/display-anatomy",
       icon: Boxes,
+      external: true,
+    },
+    {
+      label: "Videotron Aula",
+      href: "/display-absen",
+      icon: Theater,
       external: true,
     },
   ];
