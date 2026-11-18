@@ -13,6 +13,7 @@ import {
   Settings,
   QrCode,
   Monitor,
+  Boxes,
   LogOut,
 } from "lucide-react";
 import {
@@ -84,6 +85,12 @@ export function AppSidebar({
       label: "Buka Videotron",
       href: "/display",
       icon: Monitor,
+      external: true,
+    },
+    {
+      label: "Videotron Anatomy",
+      href: "/display-anatomy",
+      icon: Boxes,
       external: true,
     },
   ];

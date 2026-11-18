@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatToWibDateTime } from "@/lib/csv";
-import { Clock, Activity, ArrowRight, QrCode, Monitor } from "lucide-react";
+import { Clock, Activity, ArrowRight, QrCode, Monitor, Boxes } from "lucide-react";
 import Link from "next/link";
 
 function DashboardSkeleton() {
@@ -120,6 +120,15 @@ async function DashboardContent() {
           >
             <Monitor className="h-4 w-4 text-brand-green" />
             Buka Videotron
+          </Link>
+          <Link
+            href="/display-anatomy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-5 py-2.5 text-xs font-semibold text-primary shadow-sm transition-colors hover:border-brand-green"
+          >
+            <Boxes className="h-4 w-4 text-brand-green" />
+            Videotron Anatomy
           </Link>
         </div>
       </div>
