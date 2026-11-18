@@ -33,7 +33,6 @@ import {
 } from "@/components/ui/dialog";
 import {
   Search,
-  Download,
   Trash2,
   CheckCircle,
   UserCheck,
@@ -45,11 +44,9 @@ import {
   Award,
   AlertCircle,
 } from "lucide-react";
-import {
-  exportAttendanceToCsv,
-  formatToWibDateTime,
-  type SessionInfo,
-} from "@/lib/csv";
+import { formatToWibDateTime, type SessionInfo } from "@/lib/csv";
+import { filterAttendances } from "@/lib/attendance-export";
+import { RekapMenubar } from "@/components/admin/rekap-menubar";
 import { deleteAttendanceAction } from "@/app/admin/actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -88,6 +85,17 @@ const filterContentProps = {
   alignItemWithTrigger: false,
   collisionAvoidance: { side: "none", align: "none", fallbackAxisSide: "none" },
 } as const;
+
+// Gaya dropdown filter yang seragam (Hari, Sesi, Daerah)
+const filterContentClassName =
+  "w-(--anchor-width) min-w-0 rounded-xl border border-line bg-popover p-1.5 shadow-lg ring-0 [&_[data-slot=select-scroll-up-button]]:rounded-t-lg [&_[data-slot=select-scroll-down-button]]:rounded-b-lg";
+const filterGroupClassName = "p-0";
+const filterItemClassName =
+  "min-h-10 rounded-lg py-2 pr-9 pl-3 text-sm text-ink focus:bg-secondary focus:text-primary data-highlighted:bg-secondary data-highlighted:text-primary data-[selected]:font-semibold data-[selected]:text-primary [&_svg]:text-brand-green *:[span]:first:min-w-0 *:[span]:first:truncate *:[span]:first:block";
+const filterNestedItemClassName = `${filterItemClassName} pl-5`;
+const filterLabelClassName =
+  "px-3 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-wide text-ink-muted";
+const filterSeparatorClassName = "mx-1 my-1.5 bg-line";
 
 export function AttendanceRekapTable({
   attendances,
@@ -185,40 +193,17 @@ export function AttendanceRekapTable({
   const selectedSessionLabel = sessionFilterItems.find((item) => item.value === selectedSessionId)?.label ?? allSessionsLabel;
   const selectedDaerahLabel = daerahFilterItems.find((item) => item.value === selectedDaerah)?.label ?? "Semua Daerah";
 
-  // Filter attendances
-  const filteredAttendances = useMemo(() => {
-    return attendances.filter((item) => {
-      const info = sessionInfoMap.get(item.session_id);
-      const sessionDay = info?.hari ?? (item.session_id <= 3 ? 1 : item.session_id <= 6 ? 2 : 3);
-
-      // Filter hari
-      if (selectedDay !== "all") {
-        if (sessionDay !== Number(selectedDay)) return false;
-      }
-
-      // Filter sesi spesifik
-      if (selectedSessionId !== "all") {
-        if (item.session_id !== Number(selectedSessionId)) return false;
-      }
-
-      // Filter daerah
-      if (selectedDaerah !== "all") {
-        if (item.perwakilan_daerah !== selectedDaerah) return false;
-      }
-
-      // Filter pencarian nama / daerah / jabatan / departemen
-      if (search.trim()) {
-        const q = search.toLowerCase();
-        const matchNama = item.nama.toLowerCase().includes(q);
-        const matchDaerah = item.perwakilan_daerah.toLowerCase().includes(q);
-        const matchJabatan = item.jabatan?.toLowerCase().includes(q);
-        const matchDept = item.departemen?.toLowerCase().includes(q);
-        if (!matchNama && !matchDaerah && !matchJabatan && !matchDept) return false;
-      }
-
-      return true;
-    });
-  }, [attendances, selectedDay, selectedSessionId, selectedDaerah, search, sessionInfoMap]);
+  // Filter attendances (semantik sama dengan ekspor Excel "sesuai filter")
+  const filteredAttendances = useMemo(
+    () =>
+      filterAttendances(attendances, sessions, {
+        hari: selectedDay === "all" ? null : Number(selectedDay),
+        sessionId: selectedSessionId === "all" ? null : Number(selectedSessionId),
+        daerah: selectedDaerah === "all" ? null : selectedDaerah,
+        q: search,
+      }),
+    [attendances, sessions, selectedDay, selectedSessionId, selectedDaerah, search]
+  );
 
   // Metrik statistik
   const metrics = useMemo(() => {
@@ -228,35 +213,6 @@ export function AttendanceRekapTable({
 
     return { total, registered, walkIn };
   }, [filteredAttendances]);
-
-  // Handle ekspor CSV
-  const handleExportCsv = () => {
-    if (filteredAttendances.length === 0) {
-      toast.error("Tidak ada data presensi yang memenuhi filter untuk diekspor.");
-      return;
-    }
-
-    const csvContent = exportAttendanceToCsv(filteredAttendances, sessions);
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-
-    const sessionLabel =
-      selectedSessionId === "all"
-        ? "semua-sesi"
-        : `sesi-${selectedSessionId}`;
-    const timestamp = new Date().toISOString().slice(0, 10);
-    const filename = `rekap-kehadiran-bmh-${sessionLabel}-${timestamp}.csv`;
-
-    link.href = url;
-    link.setAttribute("download", filename);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-
-    toast.success(`Rekap kehadiran (${filteredAttendances.length} baris) berhasil diekspor!`);
-  };
 
   // Handle hapus absensi (FR-18)
   const handleConfirmDelete = () => {
@@ -317,7 +273,14 @@ export function AttendanceRekapTable({
         </div>
       </div>
 
-      {/* Kontrol Filter & Ekspor */}
+      {/* Menubar Ekspor Excel & Hapus Data */}
+      <RekapMenubar
+        sessions={sessions}
+        filter={{ day: selectedDay, sessionId: selectedSessionId, daerah: selectedDaerah, search }}
+        filteredCount={filteredAttendances.length}
+      />
+
+      {/* Kontrol Filter */}
       <div role="group" aria-label="Filter rekap kehadiran" className="space-y-4 bg-white p-4 rounded-2xl border border-line shadow-2xs">
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)_minmax(0,1fr)]">
           {/* Filter Hari */}
@@ -335,19 +298,14 @@ export function AttendanceRekapTable({
                 <Calendar className="size-4 text-brand-green" aria-hidden="true" />
                 <SelectValue className="truncate" placeholder="Semua Hari" />
               </SelectTrigger>
-              <SelectContent {...filterContentProps} className="w-(--anchor-width) min-w-0 rounded-xl max-h-[min(16rem,var(--available-height))]">
-                <SelectItem value="all" className="text-xs">
-                  Semua Hari
-                </SelectItem>
-                <SelectItem value="1" className="text-xs">
-                  Hari Pertama
-                </SelectItem>
-                <SelectItem value="2" className="text-xs">
-                  Hari Kedua
-                </SelectItem>
-                <SelectItem value="3" className="text-xs">
-                  Hari Ketiga
-                </SelectItem>
+              <SelectContent {...filterContentProps} className={`${filterContentClassName} max-h-[min(18rem,var(--available-height))]`}>
+                <SelectGroup className={filterGroupClassName}>
+                  {dayFilterItems.map((item) => (
+                    <SelectItem key={item.value} value={item.value} className={filterItemClassName}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
               </SelectContent>
             </Select>
           </div>
@@ -364,77 +322,35 @@ export function AttendanceRekapTable({
                 <Clock className="size-4 text-brand-gold-text" aria-hidden="true" />
                 <SelectValue className="truncate" placeholder="Semua Sesi" />
               </SelectTrigger>
-              <SelectContent {...filterContentProps} className="w-(--anchor-width) min-w-0 rounded-xl max-h-[min(18rem,var(--available-height))]">
-                {selectedDay === "all" ? (
-                  <>
-                    <SelectItem value="all" className="text-xs font-medium">
-                      Semua Sesi ({sessions.length} Sesi)
-                    </SelectItem>
-                    <SelectSeparator className="my-1" />
+              <SelectContent {...filterContentProps} className={`${filterContentClassName} max-h-[min(22rem,var(--available-height))]`}>
+                <SelectGroup className={filterGroupClassName}>
+                  <SelectItem value="all" className={filterItemClassName}>
+                    {selectedDay === "all" ? `Semua Sesi (${sessions.length} Sesi)` : allSessionsLabel}
+                  </SelectItem>
+                </SelectGroup>
+                {(selectedDay === "all" ? [1, 2, 3] : [Number(selectedDay)]).map((dayNum) => {
+                  const daySessions = sessions.filter(
+                    (s) => (s.hari ?? (s.id <= 3 ? 1 : s.id <= 6 ? 2 : 3)) === dayNum
+                  );
+                  if (daySessions.length === 0) return null;
+                  const dayTitle =
+                    dayFilterItems.find((item) => item.value === String(dayNum))?.label ?? `Hari ${dayNum}`;
 
-                    {[1, 2, 3].map((dayNum) => {
-                      const dayTitle =
-                        dayNum === 1
-                          ? "Hari Pertama"
-                          : dayNum === 2
-                          ? "Hari Kedua"
-                          : "Hari Ketiga";
-                      const daySessions = sessions.filter(
-                        (s) => (s.hari ?? (s.id <= 3 ? 1 : s.id <= 6 ? 2 : 3)) === dayNum
-                      );
-
-                      return (
-                        <SelectGroup key={`group-day-${dayNum}`}>
-                          <SelectLabel className="text-[11px] font-bold text-primary px-2 py-1">
-                            {dayTitle}
-                          </SelectLabel>
-                          {daySessions.map((s) => {
-                            const localOrder = ((s.id - 1) % 3) + 1;
-                            return (
-                              <SelectItem
-                                key={s.id}
-                                value={String(s.id)}
-                                title={`Sesi ${localOrder}: ${s.nama}`}
-                                className="text-xs pl-4"
-                              >
-                                {`Sesi ${localOrder}: ${s.nama}`}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectGroup>
-                      );
-                    })}
-                  </>
-                ) : (
-                  <>
-                    <SelectItem value="all" className="text-xs font-semibold">
-                      {allSessionsLabel}
-                    </SelectItem>
-                    <SelectSeparator className="my-1" />
-                    <SelectGroup>
-                      <SelectLabel className="text-[11px] font-bold text-primary px-2 py-1">
-                        {selectedDay === "1"
-                          ? "Hari Pertama:"
-                          : selectedDay === "2"
-                          ? "Hari Kedua:"
-                          : "Hari Ketiga:"}
-                      </SelectLabel>
-                      {availableSessions.map((s) => {
-                        const localOrder = ((s.id - 1) % 3) + 1;
+                  return (
+                    <SelectGroup key={`group-day-${dayNum}`} className={filterGroupClassName}>
+                      <SelectSeparator className={filterSeparatorClassName} />
+                      <SelectLabel className={filterLabelClassName}>{dayTitle}</SelectLabel>
+                      {daySessions.map((s) => {
+                        const label = `Sesi ${((s.id - 1) % 3) + 1}: ${s.nama}`;
                         return (
-                          <SelectItem
-                            key={s.id}
-                            value={String(s.id)}
-                            title={`Sesi ${localOrder}: ${s.nama}`}
-                            className="text-xs pl-3"
-                          >
-                            {`Sesi ${localOrder}: ${s.nama}`}
+                          <SelectItem key={s.id} value={String(s.id)} title={label} className={filterNestedItemClassName}>
+                            {label}
                           </SelectItem>
                         );
                       })}
                     </SelectGroup>
-                  </>
-                )}
+                  );
+                })}
               </SelectContent>
             </Select>
           </div>
@@ -451,15 +367,22 @@ export function AttendanceRekapTable({
                 <MapPin className="size-4 text-brand-gold-text" aria-hidden="true" />
                 <SelectValue className="truncate" placeholder="Semua Daerah" />
               </SelectTrigger>
-              <SelectContent {...filterContentProps} className="w-(--anchor-width) min-w-0 rounded-xl max-h-[min(14rem,var(--available-height))]">
-                <SelectItem value="all" className="text-xs">
-                  Semua Daerah ({uniqueDaerahList.length})
-                </SelectItem>
-                {uniqueDaerahList.map((daerah) => (
-                  <SelectItem key={daerah} value={daerah} title={daerah} className="text-xs">
-                    {daerah}
+              <SelectContent {...filterContentProps} className={`${filterContentClassName} max-h-[min(20rem,var(--available-height))]`}>
+                <SelectGroup className={filterGroupClassName}>
+                  <SelectItem value="all" className={filterItemClassName}>
+                    Semua Daerah ({uniqueDaerahList.length})
                   </SelectItem>
-                ))}
+                </SelectGroup>
+                {uniqueDaerahList.length > 0 && (
+                  <SelectGroup className={filterGroupClassName}>
+                    <SelectSeparator className={filterSeparatorClassName} />
+                    {uniqueDaerahList.map((daerah) => (
+                      <SelectItem key={daerah} value={daerah} title={daerah} className={filterItemClassName}>
+                        {daerah}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                )}
               </SelectContent>
             </Select>
           </div>
@@ -480,14 +403,6 @@ export function AttendanceRekapTable({
               />
             </div>
           </div>
-          <Button
-            onClick={handleExportCsv}
-            disabled={filteredAttendances.length === 0}
-            className="h-11 w-full px-4 rounded-xl bg-primary hover:bg-brand-green-deep text-white text-sm font-semibold shadow-xs transition-all shrink-0 lg:w-auto"
-          >
-            <Download className="size-4 text-brand-gold-soft" aria-hidden="true" />
-            Ekspor CSV (WIB)
-          </Button>
         </div>
       </div>
 

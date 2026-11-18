@@ -7,22 +7,32 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
+import { AnimatePresence, motion, type HTMLMotionProps } from "motion/react";
 
-interface AutoScrollContainerProps {
-  children: ReactNode;
+interface AutoScrollContainerProps<T> {
+  items: T[];
+  getKey: (item: T) => string;
+  renderItem: (item: T) => ReactNode;
+  /** Ditampilkan bila `items` kosong */
+  empty?: ReactNode;
+  /** Props motion untuk setiap sel grid (animasi masuk/keluar) */
+  itemMotion?: HTMLMotionProps<"div">;
+  columns?: number;
   className?: string;
   speed?: number; // pixels per second (default 28)
   pauseOnHover?: boolean; // jeda saat kursor mouse di-hover
-  enabled?: boolean; // matikan loop (mis. saat daftar kosong)
-  /**
-   * Loop berjalan bila tinggi konten > rasio ini × tinggi container.
-   * Di bawah 1 agar tetap bergulir saat browser di-zoom out (mis. 50%),
-   * ketika container memanjang dan seluruh konten sebenarnya sudah muat.
-   */
-  minFillRatio?: number;
 }
 
-const GAP_PX = 14; // sama dengan gap-3.5 antar salinan
+function findCell(grid: HTMLElement | null, key: string | null) {
+  if (!grid || !key) return null;
+  return grid.querySelector<HTMLElement>(
+    `:scope > [data-loop-key="${CSS.escape(key)}"]`
+  );
+}
+
+function gcd(a: number, b: number): number {
+  return b === 0 ? a : gcd(b, a % b);
+}
 
 function subscribeReducedMotion(callback: () => void) {
   if (typeof window === "undefined") return () => {};
@@ -40,22 +50,52 @@ function getReducedMotionServerSnapshot() {
   return false;
 }
 
-export function AutoScrollContainer({
-  children,
+/**
+ * Grid yang bergulir terus-menerus (seamless loop).
+ *
+ * Semua salinan daftar berada di SATU grid, sehingga sel kosong di baris
+ * terakhir (jumlah item ganjil) langsung terisi item pertama salinan
+ * berikutnya dan jarak antar baris di sambungan sama dengan jarak biasa.
+ * Titik ulang (anchor) adalah item pertama dari salinan ke-k, dengan k
+ * salinan = jumlah terkecil agar susunan kolom kembali sama persis.
+ */
+export function AutoScrollContainer<T>({
+  items,
+  getKey,
+  renderItem,
+  empty,
+  itemMotion,
+  columns = 2,
   className = "",
   speed = 28,
   pauseOnHover = true,
-  enabled = true,
-  minFillRatio = 0.35,
-}: AutoScrollContainerProps) {
+}: AutoScrollContainerProps<T>) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const primaryRef = useRef<HTMLDivElement>(null);
-  const cloneRef = useRef<HTMLDivElement>(null);
-
-  // Jumlah salinan konten untuk loop; 0 = tidak loop
-  const [cloneCount, setCloneCount] = useState(0);
-  const shouldLoop = cloneCount > 0;
+  const gridRef = useRef<HTMLDivElement>(null);
+  // Kunci sel pertama & sel anchor. Node-nya dicari langsung di DOM (lewat
+  // data-loop-key) setiap kali dibutuhkan, bukan disimpan lewat ref, karena
+  // kartu yang sedang animasi keluar saat pindah sesi bisa meninggalkan ref
+  // basi sehingga loop berhenti.
+  const loopKeysRef = useRef<{ first: string | null; anchor: string | null }>({
+    first: null,
+    anchor: null,
+  });
   const isHoveredRef = useRef(false);
+
+  // Total salinan daftar di grid (1 = tanpa loop)
+  const [copies, setCopies] = useState(1);
+  const n = items.length;
+  // Jumlah salinan per periode agar posisi kolom kembali sama
+  const periodCopies = n > 0 ? columns / gcd(n, columns) : 1;
+  const isLooping = copies > periodCopies;
+  const firstItemKey = n > 0 ? getKey(items[0]) : null;
+  const firstKey = firstItemKey !== null ? `0:${firstItemKey}` : null;
+  const anchorKey =
+    firstItemKey !== null ? `${periodCopies}:${firstItemKey}` : null;
+
+  useEffect(() => {
+    loopKeysRef.current = { first: firstKey, anchor: anchorKey };
+  }, [firstKey, anchorKey]);
 
   const isReducedMotion = useSyncExternalStore(
     subscribeReducedMotion,
@@ -63,50 +103,63 @@ export function AutoScrollContainer({
     getReducedMotionServerSnapshot
   );
 
-  // Periksa apakah konten melebihi tinggi container (overflow)
+  // Tentukan apakah perlu loop dan berapa salinan yang dibutuhkan
   useEffect(() => {
-    const checkOverflow = () => {
-      const container = containerRef.current;
-      const primary = primaryRef.current;
-      if (!container || !primary) return;
+    let retryId = 0;
+    let retries = 0;
 
-      const contentH = primary.offsetHeight;
-      const containerH = container.clientHeight;
-
-      if (!enabled || contentH === 0 || contentH <= containerH * minFillRatio) {
-        setCloneCount(0);
+    const measure = () => {
+      if (n === 0 || isReducedMotion) {
+        setCopies(1);
         return;
       }
 
-      // Cukup salinan agar jarak scroll >= satu siklus penuh, walau konten
-      // lebih pendek dari container (zoom out)
-      const cycle = contentH + GAP_PX;
-      const extra = Math.max(0, Math.ceil((containerH - contentH + GAP_PX) / cycle));
-      setCloneCount(1 + extra);
+      const container = containerRef.current;
+      const grid = gridRef.current;
+      const first = findCell(grid, firstKey);
+      if (!container || !grid || !first) {
+        // AnimatePresence bisa memasang kartu baru satu render lebih lambat
+        // (mis. saat pindah sesi). Jangan matikan loop; ukur ulang di frame
+        // berikutnya sampai kartu pertama tersedia.
+        if (retries++ < 120) {
+          cancelAnimationFrame(retryId);
+          retryId = requestAnimationFrame(measure);
+        }
+        return;
+      }
+
+      const containerH = container.clientHeight;
+      const rowH = first.offsetHeight;
+      const gap = parseFloat(getComputedStyle(grid).rowGap) || 0;
+      const rowPitch = rowH + gap;
+      if (rowPitch <= 0) return;
+
+      // Selalu loop selama daftar berisi (konsisten di semua sesi & zoom)
+      // Baris satu periode + baris yang terlihat di container + cadangan
+      const periodRows = (periodCopies * n) / columns;
+      const visibleRows = Math.ceil(containerH / rowPitch) + 1;
+      const needed = Math.ceil(((periodRows + visibleRows) * columns) / n);
+      setCopies(Math.max(periodCopies + 1, needed));
     };
 
-    checkOverflow();
+    measure();
 
-    const resizeObserver = new ResizeObserver(() => {
-      checkOverflow();
-    });
-
+    const resizeObserver = new ResizeObserver(measure);
     if (containerRef.current) resizeObserver.observe(containerRef.current);
-    if (primaryRef.current) resizeObserver.observe(primaryRef.current);
+    if (gridRef.current) resizeObserver.observe(gridRef.current);
 
     return () => {
+      cancelAnimationFrame(retryId);
       resizeObserver.disconnect();
     };
-  }, [children, enabled, minFillRatio]);
+  }, [n, columns, periodCopies, firstKey, isReducedMotion]);
 
   // Animasi Continuous Seamless Scroll (Looping Unlimited)
   useEffect(() => {
-    if (isReducedMotion || !shouldLoop) return;
+    if (isReducedMotion || !isLooping) return;
 
     const el = containerRef.current;
-    const primary = primaryRef.current;
-    const clone = cloneRef.current;
-    if (!el || !primary || !clone) return;
+    if (!el) return;
 
     let animId: number;
     let lastTime = performance.now();
@@ -120,10 +173,17 @@ export function AutoScrollContainer({
       const delta = Math.min((now - lastTime) / 1000, 0.1);
       lastTime = now;
 
+      const { first: fk, anchor: ak } = loopKeysRef.current;
+      const first = findCell(gridRef.current, fk);
+      const anchor = findCell(gridRef.current, ak);
+
       // Jalankan animasi jika tidak sedang di-pause oleh hover kursor
-      if (!isHoveredRef.current) {
-        // Hitung jarak threshold loop dari clone offsetTop ke primary offsetTop
-        const loopThreshold = clone.offsetTop - primary.offsetTop;
+      if (!isHoveredRef.current && first && anchor) {
+        // Jarak satu periode: dari item pertama ke item pertama salinan ke-k.
+        // Pakai getBoundingClientRect (subpiksel), bukan offsetTop yang
+        // dibulatkan, agar tidak ada lompatan ~0,5 px saat reset.
+        const loopThreshold =
+          anchor.getBoundingClientRect().top - first.getBoundingClientRect().top;
 
         if (loopThreshold > 0) {
           // Sinkronkan jika posisi diubah dari luar (mis. scroll manual)
@@ -133,7 +193,7 @@ export function AutoScrollContainer({
 
           position += speed * delta;
 
-          if (position >= loopThreshold) {
+          while (position >= loopThreshold) {
             // Seamless instant reset: kurangi dengan loopThreshold persis
             position -= loopThreshold;
           }
@@ -149,10 +209,10 @@ export function AutoScrollContainer({
 
     animId = requestAnimationFrame(tick);
 
-    return () => {
-      cancelAnimationFrame(animId);
-    };
-  }, [speed, isReducedMotion, shouldLoop]);
+    return () => cancelAnimationFrame(animId);
+  }, [speed, isReducedMotion, isLooping]);
+
+  const totalCopies = n > 0 ? copies : 1;
 
   return (
     <div
@@ -165,15 +225,35 @@ export function AutoScrollContainer({
       }}
       className={`overflow-y-auto no-scrollbar ${className}`}
     >
-      {/* Padding agar ring/glow sorotan kartu tidak terpotong oleh overflow container */}
-      <div className="flex flex-col gap-3.5 px-1.5 pt-1.5 pb-0.5">
-        <div ref={primaryRef}>{children}</div>
-        {Array.from({ length: cloneCount }, (_, i) => (
-          <div key={i} ref={i === 0 ? cloneRef : undefined} aria-hidden="true">
-            {children}
-          </div>
-        ))}
-      </div>
+      {n === 0 ? (
+        empty
+      ) : (
+        // Padding agar ring/glow sorotan kartu tidak terpotong oleh overflow container
+        <div
+          ref={gridRef}
+          className="grid gap-3.5 px-1.5 pt-1.5 pb-0.5"
+          style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+        >
+          <AnimatePresence initial={false}>
+            {Array.from({ length: totalCopies }, (_, copy) =>
+              items.map((item, idx) => {
+                const key = `${copy}:${getKey(item)}`;
+                return (
+                  <motion.div
+                    key={key}
+                    data-loop-key={idx === 0 ? key : undefined}
+                    aria-hidden={copy > 0 ? true : undefined}
+                    layout
+                    {...itemMotion}
+                  >
+                    {renderItem(item)}
+                  </motion.div>
+                );
+              })
+            )}
+          </AnimatePresence>
+        </div>
+      )}
     </div>
   );
 }

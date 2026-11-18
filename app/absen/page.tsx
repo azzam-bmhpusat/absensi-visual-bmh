@@ -1,10 +1,78 @@
 import { Suspense } from "react";
+import { cookies } from "next/headers";
+import { connection } from "next/server";
+import { QrCode } from "lucide-react";
 import { createPublicServerClient } from "@/lib/supabase/server";
+import { TICKET_COOKIE, verifyTicket } from "@/lib/absen-token";
 import { SessionPicker, type SessionItem } from "@/components/absen/session-picker";
 import type { GuestItem } from "@/components/absen/name-combobox";
 import { Skeleton } from "@/components/ui/skeleton";
 
-async function SessionPickerLoader() {
+type ScanGateReason = "missing" | "expired-qr" | "used";
+
+/** Tiket valid dan belum pernah dipakai untuk absen? */
+async function getScanGate(
+  searchParams: Promise<{ e?: string | string[] }>
+): Promise<ScanGateReason | null> {
+  // Tandai render per-request sebelum memakai waktu sekarang (verifikasi masa berlaku tiket)
+  await connection();
+  const [cookieStore, params] = await Promise.all([cookies(), searchParams]);
+  const ticket = verifyTicket(cookieStore.get(TICKET_COOKIE)?.value);
+  if (!ticket) return params.e === "qr" ? "expired-qr" : "missing";
+
+  try {
+    const supabase = createPublicServerClient();
+    const { data } = await supabase
+      .from("attendances")
+      .select("id")
+      .eq("ticket_nonce", ticket.nonce)
+      .limit(1);
+    if (data && data.length > 0) return "used";
+  } catch (err) {
+    // Server action tetap menolak tiket yang sudah dipakai lewat unique index.
+    console.error("Gagal memeriksa status tiket absen:", err);
+  }
+  return null;
+}
+
+const SCAN_GATE_TEXT: Record<ScanGateReason, { title: string; body: string }> = {
+  missing: {
+    title: "Scan QR di Lokasi Acara",
+    body: "Absensi hanya bisa dilakukan dengan memindai QR yang tampil di layar lokasi acara menggunakan HP Anda sendiri.",
+  },
+  "expired-qr": {
+    title: "QR Sudah Kedaluwarsa",
+    body: "QR presensi berganti setiap 30 detik. Silakan pindai ulang QR yang sedang tampil di layar lokasi acara.",
+  },
+  used: {
+    title: "QR Sudah Dipakai",
+    body: "Satu kali scan hanya untuk satu kali absen. Jika ingin absen di sesi lain, pindai ulang QR di layar lokasi acara.",
+  },
+};
+
+function ScanGate({ reason }: { reason: ScanGateReason }) {
+  const text = SCAN_GATE_TEXT[reason];
+  return (
+    <div className="w-full bg-white/90 backdrop-blur-md p-6 rounded-3xl border border-line shadow-sm space-y-4">
+      <div className="w-16 h-16 mx-auto rounded-full bg-gold-50 flex items-center justify-center border border-brand-gold-soft">
+        <QrCode className="w-8 h-8 text-brand-gold" />
+      </div>
+      <div className="space-y-1.5">
+        <h2 className="font-heading text-lg font-bold text-primary">{text.title}</h2>
+        <p className="text-xs sm:text-sm text-ink-muted leading-relaxed">{text.body}</p>
+      </div>
+    </div>
+  );
+}
+
+async function SessionPickerLoader({
+  searchParams,
+}: {
+  searchParams: Promise<{ e?: string | string[] }>;
+}) {
+  const gate = await getScanGate(searchParams);
+  if (gate) return <ScanGate reason={gate} />;
+
   let sessions: SessionItem[] = [
     { id: 1, slug: "hari-1-pagi", nama: "Absen Masuk Pagi", hari: 1, is_active: true },
     { id: 2, slug: "hari-1-isoma", nama: "Masuk Setelah Isoma", hari: 1, is_active: true },
@@ -61,7 +129,11 @@ function SessionPickerSkeleton() {
   );
 }
 
-export default function AbsenPage() {
+export default function AbsenPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ e?: string | string[] }>;
+}) {
   const eventName =
     process.env.NEXT_PUBLIC_EVENT_NAME || "Silaturahim & Rapat Kerja Nasional BMH 2026";
 
@@ -83,7 +155,7 @@ export default function AbsenPage() {
 
         {/* Daftar Sesi Pilihan */}
         <Suspense fallback={<SessionPickerSkeleton />}>
-          <SessionPickerLoader />
+          <SessionPickerLoader searchParams={searchParams} />
         </Suspense>
 
         {/* Footer Identitas BMH */}

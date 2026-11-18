@@ -13,9 +13,20 @@ import { DisplayCounter } from "./display-counter";
 import { GuestChip } from "./guest-chip";
 import { WelcomeBanner, type WelcomeItem } from "./welcome-banner";
 import { AutoScrollContainer } from "./auto-scroll-container";
-import { AnimatePresence, motion } from "motion/react";
 import { Wifi, WifiOff } from "lucide-react";
 import { useRouter } from "next/navigation";
+
+const HADIR_MOTION = {
+  initial: { opacity: 0, y: -16, scale: 0.95 },
+  animate: { opacity: 1, y: 0, scale: 1 },
+  exit: { opacity: 0, scale: 0.95 },
+  transition: { duration: 0.35, ease: [0.2, 0.8, 0.2, 1] as const },
+};
+
+const BELUM_MOTION = {
+  exit: { opacity: 0, scale: 0.9 },
+  transition: { duration: 0.3 },
+};
 
 interface AttendanceBoardProps {
   eventName?: string;
@@ -292,39 +303,29 @@ export function AttendanceBoard({
             </span>
           </div>
 
-          <AutoScrollContainer className="flex-1 min-h-0 pr-1" enabled={hadir.length > 0}>
-            {hadir.length === 0 ? (
+          <AutoScrollContainer
+            className="flex-1 min-h-0 pr-1"
+            items={hadir}
+            getKey={(item) => item.id}
+            itemMotion={HADIR_MOTION}
+            empty={
               <div className="h-48 flex items-center justify-center text-xl text-muted-foreground font-medium">
                 Belum ada kehadiran tercatat pada sesi ini
               </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-3.5 pb-2">
-                <AnimatePresence initial={false}>
-                  {hadir.map((item) => (
-                    <motion.div
-                      key={item.id}
-                      layout
-                      initial={{ opacity: 0, y: -16, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      transition={{ duration: 0.35, ease: [0.2, 0.8, 0.2, 1] }}
-                    >
-                      <GuestChip
-                        nama={item.nama}
-                        perwakilanDaerah={item.perwakilan_daerah}
-                        jabatan={item.jabatan}
-                        departemen={item.departemen}
-                        kategori={item.kategori}
-                        status={item.is_walk_in ? "walk-in" : "hadir"}
-                        isRecent={recentAttendanceIds.includes(item.id)}
-                        checkedInAt={item.checked_in_at}
-                      />
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
+            }
+            renderItem={(item) => (
+              <GuestChip
+                nama={item.nama}
+                perwakilanDaerah={item.perwakilan_daerah}
+                jabatan={item.jabatan}
+                departemen={item.departemen}
+                kategori={item.kategori}
+                status={item.is_walk_in ? "walk-in" : "hadir"}
+                isRecent={recentAttendanceIds.includes(item.id)}
+                checkedInAt={item.checked_in_at}
+              />
             )}
-          </AutoScrollContainer>
+          />
         </div>
 
         {/* Kolom Belum Hadir */}
@@ -341,36 +342,28 @@ export function AttendanceBoard({
             </span>
           </div>
 
-          <AutoScrollContainer className="flex-1 min-h-0 pr-1" enabled={belumHadir.length > 0}>
-            {belumHadir.length === 0 ? (
+          {/* Grid 2 kolom rata (urut perwakilan daerah → nama) */}
+          <AutoScrollContainer
+            className="flex-1 min-h-0 pr-1"
+            items={belumHadir}
+            getKey={(guest) => guest.id}
+            itemMotion={BELUM_MOTION}
+            empty={
               <div className="h-48 flex items-center justify-center text-xl text-brand-gold-soft font-semibold">
                 Semua tamu undangan telah hadir!
               </div>
-            ) : (
-              // Grid 2 kolom rata (urut perwakilan daerah → nama)
-              <div className="grid grid-cols-2 gap-3.5 pb-2">
-                <AnimatePresence initial={false}>
-                  {belumHadir.map((guest) => (
-                    <motion.div
-                      key={guest.id}
-                      layout
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <GuestChip
-                        nama={guest.nama}
-                        perwakilanDaerah={guest.perwakilan_daerah}
-                        jabatan={guest.jabatan}
-                        departemen={guest.departemen}
-                        kategori={guest.kategori}
-                        status="belum"
-                      />
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
+            }
+            renderItem={(guest) => (
+              <GuestChip
+                nama={guest.nama}
+                perwakilanDaerah={guest.perwakilan_daerah}
+                jabatan={guest.jabatan}
+                departemen={guest.departemen}
+                kategori={guest.kategori}
+                status="belum"
+              />
             )}
-          </AutoScrollContainer>
+          />
         </div>
       </div>
 

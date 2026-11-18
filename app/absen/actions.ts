@@ -1,10 +1,20 @@
 "use server";
 
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { attendanceSchema, type AttendanceInput } from "@/lib/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { normalizeCompare, normalizeString } from "@/lib/normalize";
+import {
+  DEVICE_COOKIE,
+  TICKET_COOKIE,
+  hashDeviceId,
+  isValidDeviceId,
+  verifyTicket,
+} from "@/lib/absen-token";
+
+const SCAN_AGAIN_MESSAGE =
+  "Waktu scan sudah habis atau QR sudah dipakai. Silakan scan ulang QR yang tampil di layar lokasi acara.";
 
 export type SubmitAttendanceResponse =
   | { status: "ok"; nama: string; sesi: string }
@@ -58,6 +68,15 @@ export async function submitAttendance(
       message: "Terlalu banyak percobaan, coba sebentar lagi.",
     };
   }
+
+  // 3b. Wajib tiket scan QR yang valid + ID perangkat (anti share link & titip absen)
+  const cookieStore = await cookies();
+  const ticket = verifyTicket(cookieStore.get(TICKET_COOKIE)?.value);
+  const deviceId = cookieStore.get(DEVICE_COOKIE)?.value;
+  if (!ticket || !isValidDeviceId(deviceId)) {
+    return { status: "error", message: SCAN_AGAIN_MESSAGE };
+  }
+  const deviceHash = hashDeviceId(deviceId);
 
   const { sessionId, nama, perwakilanDaerah } = parsed.data;
   let guestId: string | null = parsed.data.guestId ?? null;
@@ -145,6 +164,8 @@ export async function submitAttendance(
       departemen: finalDepartemen,
       kategori: finalKategori,
       is_walk_in: isWalkIn,
+      ticket_nonce: ticket.nonce,
+      device_hash: deviceHash,
     })
     .select("id")
     .maybeSingle();
@@ -152,6 +173,16 @@ export async function submitAttendance(
   if (error) {
     // Unique violation constraint code 23505
     if (error.code === "23505") {
+      const detail = `${error.message ?? ""} ${error.details ?? ""}`;
+      if (detail.includes("attendances_unique_ticket")) {
+        return { status: "error", message: SCAN_AGAIN_MESSAGE };
+      }
+      if (detail.includes("attendances_unique_device")) {
+        return {
+          status: "already",
+          message: `HP ini sudah dipakai untuk absen di ${sesiLabel}. Setiap peserta wajib absen dari HP masing-masing.`,
+        };
+      }
       return {
         status: "already",
         message: `Anda sudah tercatat hadir di ${sesiLabel}.`,

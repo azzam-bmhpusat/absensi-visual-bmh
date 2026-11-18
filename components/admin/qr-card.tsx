@@ -2,7 +2,8 @@
 
 import { useRef, useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Printer, Download, Copy, Check } from "lucide-react";
+import Link from "next/link";
+import { Printer, Download, Copy, Check, MonitorPlay } from "lucide-react";
 import { toast } from "sonner";
 import QRCode from "qrcode";
 import {
@@ -117,6 +118,21 @@ export function QrCard({ siteUrl, eventName }: QrCardProps) {
 
   return (
     <div className="w-full max-w-xl mx-auto lg:mx-0 space-y-3 lg:space-y-4">
+      {/* QR dinamis wajib dipakai saat acara */}
+      <div className="rounded-2xl border border-brand-gold-soft bg-gold-50 p-3 text-left space-y-2 print:hidden">
+        <p className="text-[11px] leading-relaxed text-brand-gold-text">
+          QR cetak di bawah <strong>tidak lagi bisa dipakai untuk absen</strong>. Absensi kini wajib lewat QR dinamis yang berganti
+          setiap 30 detik, sehingga link tidak bisa dibagikan dan 1 scan hanya berlaku untuk 1 kali absen.
+        </p>
+        <Link
+          href="/admin/qr/live"
+          className="inline-flex items-center gap-1.5 h-8 px-3 rounded-xl text-[11px] font-semibold bg-primary text-white shadow-xs"
+        >
+          <MonitorPlay className="w-3.5 h-3.5" />
+          Tampilkan QR Dinamis di Layar
+        </Link>
+      </div>
+
       {/* Toolbar Aksi Minimalis */}
       <div className="flex flex-wrap items-center gap-2 print:hidden">
         <Button
