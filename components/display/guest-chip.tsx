@@ -49,17 +49,16 @@ export function GuestChip({
 
   return (
     <div
-      className={`min-h-[76px] xl:min-h-[82px] rounded-2xl px-4 xl:px-5 py-2.5 bg-[#134B40] text-white flex items-center justify-between shadow-sm min-w-0 border transition-[border-color,box-shadow] duration-300 ${
-        isRecent
+      className={`min-h-[76px] xl:min-h-[82px] rounded-2xl px-4 xl:px-5 py-2.5 bg-[#095046] text-white flex items-center justify-between shadow-sm min-w-0 border transition-[border-color,box-shadow] duration-300 ${isRecent
           ? "border-brand-gold-soft ring-1 ring-brand-gold-soft shadow-[0_0_14px_rgba(242,208,107,0.35)]"
           : "border-border/20"
-      }`}
+        }`}
     >
       <div className="flex items-center gap-3 min-w-0 flex-1 mr-2">
         {/* Avatar Random Vektor dengan Badge Centang */}
         <div className="relative shrink-0">
           <RandomAvatar name={nama} size={44} />
-          <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-brand-green flex items-center justify-center shadow-2xs border-2 border-[#134B40]">
+          <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-brand-green flex items-center justify-center shadow-2xs border-2 border-[#095046]">
             <Check className="w-3 h-3 text-[#0A3A30] stroke-[3]" />
           </div>
         </div>

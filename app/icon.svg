@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <rect width="32" height="32" rx="8" fill="#134B40" />
+  <rect width="32" height="32" rx="8" fill="#095046" />
   <path d="M 0 24 C 8 20, 20 28, 32 18 L 32 32 L 0 32 Z" fill="#0A3A30" opacity="0.6" />
-  <circle cx="26" cy="6" r="3" fill="#D9A93A" />
+  <circle cx="26" cy="6" r="3" fill="#FEB738" />
   <!-- QR / Checkmark Icon -->
-  <path d="M8 9 H14 V15 H8 Z" fill="none" stroke="#3FBF8F" stroke-width="1.8" rx="1" />
-  <rect x="10" y="11" width="2" height="2" fill="#3FBF8F" />
+  <path d="M8 9 H14 V15 H8 Z" fill="none" stroke="#39BA87" stroke-width="1.8" rx="1" />
+  <rect x="10" y="11" width="2" height="2" fill="#39BA87" />
   <path d="M14 21 L18 25 L26 15" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
 </svg>

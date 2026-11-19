@@ -26,21 +26,76 @@
   --anatomy-halo-opacity: 0.85;
   --anatomy-dot: #d9f1e7;
   --da-gold: #f2d06b;
-  --da-accent: #3fbf8f;
+  --da-accent: #39BA87;
   --da-ink: #eefbf5;
   --da-ink-dim: #9fd9c2;
   --da-glass: #06201a;
   background: var(--anatomy-page);
   color: var(--anatomy-text);
 }
-.da .da-ink { fill: var(--da-ink); font-family: var(--anatomy-mono); font-weight: 600; letter-spacing: 0.02em; }
-.da .da-ink-dim { fill: var(--da-ink-dim); font-family: var(--anatomy-mono); letter-spacing: 0.04em; }
-.da .da-ink-gold { fill: var(--da-gold); font-family: var(--anatomy-mono); font-weight: 700; letter-spacing: 0.04em; }
-.da .da-glass { fill: var(--da-glass); }
-.da .da-accent { fill: var(--da-accent); }
-.da .da-gold-fill { fill: var(--da-gold); }
-.da .da-gold-line { fill: none; stroke: var(--da-gold); stroke-width: 1.2px; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
-.da .da-hand { stroke: var(--da-ink); stroke-width: 1.4px; vector-effect: non-scaling-stroke; stroke-linecap: round; }
-.da .da-hand-sec { stroke: var(--da-gold); stroke-width: 0.9px; vector-effect: non-scaling-stroke; stroke-linecap: round; }
-.da [data-hit] { fill: transparent; cursor: pointer; }
-.da [data-hit]:focus-visible { outline: none; stroke: var(--da-gold); stroke-width: 1px; vector-effect: non-scaling-stroke; }
+
+.da .da-ink {
+  fill: var(--da-ink);
+  font-family: var(--anatomy-mono);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.da .da-ink-dim {
+  fill: var(--da-ink-dim);
+  font-family: var(--anatomy-mono);
+  letter-spacing: 0.04em;
+}
+
+.da .da-ink-gold {
+  fill: var(--da-gold);
+  font-family: var(--anatomy-mono);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.da .da-glass {
+  fill: var(--da-glass);
+}
+
+.da .da-accent {
+  fill: var(--da-accent);
+}
+
+.da .da-gold-fill {
+  fill: var(--da-gold);
+}
+
+.da .da-gold-line {
+  fill: none;
+  stroke: var(--da-gold);
+  stroke-width: 1.2px;
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+}
+
+.da .da-hand {
+  stroke: var(--da-ink);
+  stroke-width: 1.4px;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+}
+
+.da .da-hand-sec {
+  stroke: var(--da-gold);
+  stroke-width: 0.9px;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+}
+
+.da [data-hit] {
+  fill: transparent;
+  cursor: pointer;
+}
+
+.da [data-hit]:focus-visible {
+  outline: none;
+  stroke: var(--da-gold);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}

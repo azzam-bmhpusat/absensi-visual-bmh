@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SmoothScroll } from "@/components/motion/smooth-scroll";
 
 export const metadata: Metadata = {
   title: "Absensi Peserta",
@@ -10,5 +11,5 @@ export default function AbsenLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <SmoothScroll>{children}</SmoothScroll>;
 }

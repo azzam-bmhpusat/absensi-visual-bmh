@@ -269,7 +269,7 @@ export const INVITED_GUESTS_CONTENT = {
   title: "Tamu Undangan",
   description: "Temukan detail tamu undangan berdasarkan nama, perwakilan daerah, jabatan, atau departemen.",
   searchLabel: "Cari tamu undangan",
-  searchPlaceholder: "Cari tamu undangan…",
+  searchPlaceholder: "Cari Nama Anda…",
   searchHint: "Ketik minimal 2 karakter. Hasil diperbarui otomatis saat Anda mengetik.",
   clearLabel: "Hapus pencarian",
   detailsTitle: "Detail Tamu Undangan",

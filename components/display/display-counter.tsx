@@ -35,7 +35,7 @@ export function DisplayCounter({ hadir, total, percentage }: DisplayCounterProps
       </div>
 
       {/* Progress Bar Ramping (h-2) agar ruang daftar hadir lebih luas */}
-      <div className="w-full h-2 xl:h-2.5 bg-[#134B40] rounded-full overflow-hidden border border-[#1F6252]">
+      <div className="w-full h-2 xl:h-2.5 bg-[#095046] rounded-full overflow-hidden border border-[#1F6252]">
         <div
           className="h-full rounded-full bg-gradient-to-r from-brand-green to-[#7ADBB2] transition-all duration-500 ease-out"
           style={{ width: `${clampedPercentage}%` }}

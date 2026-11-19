@@ -7,6 +7,7 @@ import { useState, useMemo } from "react";
 import { AttendanceDialog } from "./attendance-dialog";
 import type { GuestItem } from "./name-combobox";
 import { toast } from "sonner";
+import { RevealItem, RevealStagger } from "@/components/motion/reveal";
 
 export interface SessionItem {
   id: number;
@@ -115,15 +116,16 @@ export function SessionPicker({
             <TabsContent
               key={`hari-${dayNumber}`}
               value={`hari-${dayNumber}`}
-              className="space-y-3 sm:space-y-4 text-left w-full mt-0 focus-visible:outline-none"
+              className="text-left w-full mt-0 focus-visible:outline-none"
             >
+              <RevealStagger immediate stagger={0.07} className="space-y-3 sm:space-y-4">
               {daySessions.map((session, idx) => {
                 const isActive = session.is_active !== false;
                 const sessionOrderInDay = idx + 1;
 
                 return (
+                  <RevealItem key={session.id} y={14}>
                   <Card
-                    key={session.id}
                     onClick={() => handleCardClick(session)}
                     className={`group p-4 sm:p-5 rounded-2xl sm:rounded-3xl border transition-all flex items-center justify-between gap-3 min-h-[92px] sm:min-h-[104px] select-none ${
                       isActive
@@ -189,8 +191,10 @@ export function SessionPicker({
                       )}
                     </div>
                   </Card>
+                  </RevealItem>
                 );
               })}
+              </RevealStagger>
             </TabsContent>
           );
         })}

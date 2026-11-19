@@ -8,6 +8,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { TRANSPORT_DATA, EVENT_INFO } from "@/content/rakernas";
+import { Reveal, RevealItem, RevealStagger } from "@/components/motion/reveal";
 
 function getOriginIcon(iconType: "plane" | "train" | "bus") {
   switch (iconType) {
@@ -27,7 +28,7 @@ export function TransportSection({ venueName = EVENT_INFO.hotel }: { venueName?:
     <div className="mx-auto w-full max-w-screen-xl px-5 md:px-8">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
         {/* Kolom Kiri: Judul & Subjudul (Sticky di layar besar) */}
-        <div className="lg:col-span-5 lg:sticky lg:top-28 space-y-4">
+        <Reveal x={-24} y={0} className="lg:col-span-5 lg:sticky lg:top-28 space-y-4">
           <div className="inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-primary">
             <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
             <span>Panduan Rute & Tarif</span>
@@ -43,10 +44,10 @@ export function TransportSection({ venueName = EVENT_INFO.hotel }: { venueName?:
             Perkiraan tarif moda transportasi umum dari berbagai titik kedatangan
             utama (Bandara, Stasiun, dan Terminal) menuju ke lokasi acara.
           </p>
-        </div>
+        </Reveal>
 
         {/* Kolom Kanan: Accordion 6 Titik Asal */}
-        <div className="lg:col-span-7">
+        <RevealStagger className="lg:col-span-7" stagger={0.07}>
           <Accordion
             defaultValue={["origin-0"]}
             className="w-full space-y-3"
@@ -56,8 +57,8 @@ export function TransportSection({ venueName = EVENT_INFO.hotel }: { venueName?:
               const value = `origin-${index}`;
 
               return (
+                <RevealItem key={item.origin} y={16}>
                 <AccordionItem
-                  key={item.origin}
                   value={value}
                   className="rounded-2xl border border-line bg-card shadow-[0_8px_24px_-8px_rgba(19,75,64,0.18)] px-5 md:px-6 transition-all data-open:border-primary/40 data-open:shadow-md"
                 >
@@ -89,10 +90,11 @@ export function TransportSection({ venueName = EVENT_INFO.hotel }: { venueName?:
                     </ul>
                   </AccordionContent>
                 </AccordionItem>
+                </RevealItem>
               );
             })}
           </Accordion>
-        </div>
+        </RevealStagger>
       </div>
     </div>
   );

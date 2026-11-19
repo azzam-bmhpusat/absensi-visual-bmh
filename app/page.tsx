@@ -9,6 +9,8 @@ import { LocationSection } from "@/components/rakernas/location-section";
 import { TransportSection } from "@/components/rakernas/transport-accordion";
 import { InvitedGuestsSection } from "@/components/rakernas/invited-guests-section";
 import { SiteFooter } from "@/components/rakernas/site-footer";
+import { SmoothScroll } from "@/components/motion/smooth-scroll";
+import { Reveal } from "@/components/motion/reveal";
 import { getEventSettings } from "@/lib/event-settings-server";
 import { formatEventDateRange } from "@/lib/event-settings";
 
@@ -27,6 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function HomePage() {
   const settings = await getEventSettings();
   return (
+    <SmoothScroll>
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       {/* S0 — Header (Sticky) */}
       <SiteHeader />
@@ -41,7 +44,7 @@ export default async function HomePage() {
           className="display-theme display-bg text-foreground scroll-mt-20 border-t border-line/10 py-10 md:py-16"
           aria-label="Hitung Mundur Acara"
         >
-          <CountdownSection target={settings.startsAt} endsAt={settings.endsAt} />
+          <Reveal><CountdownSection target={settings.startsAt} endsAt={settings.endsAt} /></Reveal>
         </section>
 
         {/* S3 — Rundown Acara */}
@@ -50,7 +53,7 @@ export default async function HomePage() {
           className="page-bg scroll-mt-20 py-12 md:py-20"
           aria-label="Rundown Acara"
         >
-          <RundownSection startsAt={settings.startsAt} />
+          <Reveal><RundownSection startsAt={settings.startsAt} /></Reveal>
         </section>
 
         {/* S4 — Dress Code */}
@@ -59,7 +62,7 @@ export default async function HomePage() {
           className="bg-secondary scroll-mt-20 py-12 md:py-20"
           aria-label="Dress Code"
         >
-          <DresscodeSection />
+          <Reveal><DresscodeSection /></Reveal>
         </section>
 
         {/* S5 — Lokasi Rakernas */}
@@ -68,7 +71,7 @@ export default async function HomePage() {
           className="bg-background scroll-mt-20 py-12 md:py-20"
           aria-label="Lokasi Rakernas"
         >
-          <LocationSection settings={settings} />
+          <Reveal><LocationSection settings={settings} /></Reveal>
         </section>
 
         {/* S6 — Info Transportasi */}
@@ -77,7 +80,7 @@ export default async function HomePage() {
           className="bg-surface scroll-mt-20 py-12 md:py-20"
           aria-label="Info Transportasi"
         >
-          <TransportSection venueName={settings.venueName} />
+          <Reveal><TransportSection venueName={settings.venueName} /></Reveal>
         </section>
 
         {/* S7 — Pencarian Tamu Undangan */}
@@ -86,12 +89,13 @@ export default async function HomePage() {
           className="display-theme display-bg scroll-mt-20 py-12 md:py-20 text-foreground"
           aria-label={INVITED_GUESTS_CONTENT.title}
         >
-          <InvitedGuestsSection />
+          <Reveal><InvitedGuestsSection /></Reveal>
         </section>
       </main>
 
       {/* S8 — Footer */}
       <SiteFooter className="bg-brand-green-night" settings={settings} />
     </div>
+    </SmoothScroll>
   );
 }

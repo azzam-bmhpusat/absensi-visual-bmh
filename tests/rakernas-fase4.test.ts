@@ -82,7 +82,7 @@ describe("Fase 4 — Dress Code & Lokasi (PRD Rakernas BMH)", () => {
       expect(locationContent).toContain("<LocationMap location={settings} />");
       expect(locationContent).not.toContain("LOCATION_DATA.banner.src");
       expect(LOCATION_DATA.map.coordinates).toEqual([106.823191, -6.148531]);
-      expect(LOCATION_DATA.map.zoom).toBe(16);
+      expect(LOCATION_DATA.map.zoom).toBe(7);
       expect(LOCATION_DATA.map.styleUrl).toBe("https://tiles.openfreemap.org/styles/positron");
     });
 

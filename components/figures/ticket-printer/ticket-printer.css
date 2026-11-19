@@ -2,11 +2,40 @@
 .tp {
   --tp-ink: #1d1d20;
   --tp-ink-dim: #6c6c72;
-  --tp-led: #3fbf8f;
+  --tp-led: #39BA87;
 }
-.tp .tp-ink { fill: var(--tp-ink); font-family: var(--anatomy-mono); font-weight: 600; letter-spacing: 0.02em; }
-.tp .tp-ink-strong { fill: var(--tp-ink); font-family: var(--anatomy-mono); font-weight: 700; letter-spacing: 0.04em; }
-.tp .tp-ink-dim { fill: var(--tp-ink-dim); font-family: var(--anatomy-mono); letter-spacing: 0.06em; }
-.tp .tp-rule { stroke: var(--tp-ink-dim); stroke-width: 0.5px; vector-effect: non-scaling-stroke; stroke-dasharray: 1.5 1.5; }
-.tp .tp-barcode { fill: var(--tp-ink); }
-.tp .tp-led { fill: var(--tp-led); }
+
+.tp .tp-ink {
+  fill: var(--tp-ink);
+  font-family: var(--anatomy-mono);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.tp .tp-ink-strong {
+  fill: var(--tp-ink);
+  font-family: var(--anatomy-mono);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.tp .tp-ink-dim {
+  fill: var(--tp-ink-dim);
+  font-family: var(--anatomy-mono);
+  letter-spacing: 0.06em;
+}
+
+.tp .tp-rule {
+  stroke: var(--tp-ink-dim);
+  stroke-width: 0.5px;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1.5 1.5;
+}
+
+.tp .tp-barcode {
+  fill: var(--tp-ink);
+}
+
+.tp .tp-led {
+  fill: var(--tp-led);
+}

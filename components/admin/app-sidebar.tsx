@@ -82,6 +82,7 @@ export function AppSidebar({
 
   const generalItems = [
     { label: "Cetak QR Absen", href: "/admin/qr", icon: QrCode },
+    { label: "QR Live Absen", href: "/admin/qr/live", icon: QrCode },
     {
       label: "Buka Videotron",
       href: "/display",

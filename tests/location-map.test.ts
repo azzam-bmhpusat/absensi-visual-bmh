@@ -108,7 +108,7 @@ describe("LocationMap lifecycle", () => {
     expect(harness.construct).toHaveBeenCalledWith(expect.objectContaining({
       center: LOCATION_DATA.map.coordinates,
       style: LOCATION_DATA.map.styleUrl,
-      zoom: 16,
+      zoom: 7,
       cooperativeGestures: true,
     }));
     expect(harness.marker.setLngLat).toHaveBeenCalledWith(LOCATION_DATA.map.coordinates);

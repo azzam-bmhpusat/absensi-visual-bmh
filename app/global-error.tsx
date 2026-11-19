@@ -62,7 +62,7 @@ export default function GlobalError({
             style={{
               fontSize: "1.5rem",
               fontWeight: "bold",
-              color: "#134B40",
+              color: "#095046",
               margin: "0 0 0.5rem 0",
             }}
           >
@@ -81,7 +81,7 @@ export default function GlobalError({
           <button
             onClick={() => reset()}
             style={{
-              backgroundColor: "#134B40",
+              backgroundColor: "#095046",
               color: "#FFFFFF",
               border: "none",
               borderRadius: "0.75rem",

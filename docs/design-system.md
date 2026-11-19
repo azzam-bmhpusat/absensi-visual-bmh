@@ -17,11 +17,11 @@ Nilai hex disampel dari screenshot lalu dirapikan.
 
 | Token | Hex | Peran |
 |---|---|---|
-| `green-500` (hijau terang) | `#3FBF8F` | Aksen utama, ikon, progress, status "hadir" |
-| `green-900` (hijau tua) | `#134B40` | Warna primer: tombol, judul, badge |
+| `green-500` (hijau terang) | `#39BA87` | Aksen utama, ikon, progress, status "hadir" |
+| `green-900` (hijau tua) | `#095046` | Warna primer: tombol, judul, badge |
 | `green-950` (hijau paling tua) | `#0A3A30` | Latar videotron, teks di atas kuning/hijau terang |
 | `gold-300` (kuning muda) | `#F2D06B` | Sorotan, kata penekanan, swoosh |
-| `gold-500` (kuning emas) | `#D9A93A` | Aksen sekunder, penanda walk-in, garis hias |
+| `gold-500` (kuning emas) | `#FEB738` | Aksen sekunder, penanda walk-in, garis hias |
 | `gold-700` (emas tua) | `#8A6A1F` | Teks kuning di atas latar terang (agar terbaca) |
 
 ### 2.2 Skala Lengkap
@@ -32,11 +32,11 @@ green-100  #D5F5E6
 green-200  #AEEBCF
 green-300  #7ADBB2
 green-400  #52CB9C
-green-500  #3FBF8F   ← merek
+green-500  #39BA87   ← merek
 green-600  #2FA075
 green-700  #25805F
 green-800  #1A6050
-green-900  #134B40   ← primer
+green-900  #095046   ← primer
 green-950  #0A3A30
 
 gold-50    #FFF9E6
@@ -44,7 +44,7 @@ gold-100   #FDEFBF
 gold-200   #F8E08F
 gold-300   #F2D06B
 gold-400   #E6BC4A
-gold-500   #D9A93A
+gold-500   #FEB738
 gold-600   #B88A2A
 gold-700   #8A6A1F
 ```
@@ -60,7 +60,7 @@ gold-700   #8A6A1F
 | `white` | `#FFFFFF` | Kartu, latar |
 | `danger` | `#D14343` | Error |
 | `success` | `#2FA075` | Sukses (= `green-600`) |
-| `warning` | `#D9A93A` | Peringatan (= `gold-500`) |
+| `warning` | `#FEB738` | Peringatan (= `gold-500`) |
 
 ### 2.4 Aturan Kontras (WCAG AA) — penting
 
@@ -93,11 +93,11 @@ Tempel ke `app/globals.css`. Nilai hex langsung (kompatibel Tailwind v4 / shadcn
   --popover: #FFFFFF;
   --popover-foreground: #0F2A24;
 
-  --primary: #134B40;
+  --primary: #095046;
   --primary-foreground: #FFFFFF;
 
   --secondary: #EEFBF5;
-  --secondary-foreground: #134B40;
+  --secondary-foreground: #095046;
 
   --muted: #F4F8F6;
   --muted-foreground: #5B6F68;
@@ -108,19 +108,19 @@ Tempel ke `app/globals.css`. Nilai hex langsung (kompatibel Tailwind v4 / shadcn
   --destructive: #D14343;
   --border: #DDE7E2;
   --input: #DDE7E2;
-  --ring: #3FBF8F;
+  --ring: #39BA87;
 
-  --chart-1: #3FBF8F;
-  --chart-2: #134B40;
-  --chart-3: #D9A93A;
+  --chart-1: #39BA87;
+  --chart-2: #095046;
+  --chart-3: #FEB738;
   --chart-4: #7ADBB2;
   --chart-5: #F2D06B;
 
   /* token tambahan proyek */
-  --brand-green: #3FBF8F;
-  --brand-green-deep: #134B40;
+  --brand-green: #39BA87;
+  --brand-green-deep: #095046;
   --brand-green-night: #0A3A30;
-  --brand-gold: #D9A93A;
+  --brand-gold: #FEB738;
   --brand-gold-soft: #F2D06B;
   --brand-gold-text: #8A6A1F;
 }
@@ -134,10 +134,10 @@ Tempel ke `app/globals.css`. Nilai hex langsung (kompatibel Tailwind v4 / shadcn
   --popover: #0F4439;
   --popover-foreground: #F4FBF8;
 
-  --primary: #3FBF8F;
+  --primary: #39BA87;
   --primary-foreground: #0A3A30;
 
-  --secondary: #134B40;
+  --secondary: #095046;
   --secondary-foreground: #F4FBF8;
 
   --muted: #0F4439;
@@ -232,16 +232,16 @@ Teks videotron tidak boleh di bawah 22 px.
 ### 7.4 Chip Tamu (`guest-chip`) — videotron
 | Varian | Latar | Teks | Aksen |
 |---|---|---|---|
-| Hadir | `#134B40` (card) | putih | Titik/ikon centang `green-500` di kiri |
+| Hadir | `#095046` (card) | putih | Titik/ikon centang `green-500` di kiri |
 | Belum hadir | transparan, border `#1F6252` | `#A9CFC2` | Tidak ada ikon |
 | Walk-in | sama dengan Hadir | putih | Lencana kecil `gold-300` bertuliskan "Tamu baru", teks `green-950` |
-| Baru saja hadir (5 dtk) | `#134B40` | putih | Ring 2 px `gold-300` + kilau lembut |
+| Baru saja hadir (5 dtk) | `#095046` | putih | Ring 2 px `gold-300` + kilau lembut |
 
 Tinggi chip 72 px, radius 16 px, padding horizontal 24 px. Nama maksimal 2 baris dengan elipsis.
 
 ### 7.5 Counter & Progress (videotron)
 - Angka `tv-counter` warna `gold-300`, format `{hadir}` besar dan `/ {total}` lebih kecil berwarna `muted-foreground`.
-- Progress bar tinggi 16 px, trek `#134B40`, isi gradasi `green-500` → `green-300`, radius penuh.
+- Progress bar tinggi 16 px, trek `#095046`, isi gradasi `green-500` → `green-300`, radius penuh.
 
 ### 7.6 Banner Sambutan
 - Muncul di atas kolom, lebar penuh, latar `gold-300`, teks `green-950`, radius 20 px.

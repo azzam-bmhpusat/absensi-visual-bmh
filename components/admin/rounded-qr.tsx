@@ -51,7 +51,7 @@ export function RoundedQr({
   value,
   level = "M",
   margin = 4,
-  color = "#134B40",
+  color = "#095046",
   bgColor = "#FFFFFF",
   className,
   svgRef,

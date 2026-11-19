@@ -111,7 +111,7 @@ function signedArea(points: Plane[] | Flat[]) {
 
 const oriented = (points: Flat[]) => (signedArea(points) < 0 ? [...points].reverse() : points);
 
-function convexHull(points: Flat[]): Flat[] {
+export function convexHull(points: Flat[]): Flat[] {
   const sorted = [...points].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
   if (sorted.length < 3) return sorted;
   const cross = (o: Flat, a: Flat, b: Flat) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
