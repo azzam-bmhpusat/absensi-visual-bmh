@@ -19,7 +19,7 @@ async function DisplayLoader({ searchParams }: { searchParams: Promise<{ [key: s
 
   const eventName =
     process.env.NEXT_PUBLIC_EVENT_NAME ||
-    "Silaturahim & Rapat Kerja Nasional BMH 2026";
+    "Silaturahim & Rapat Kerja Nasional BMH 2027";
 
   const supabase = createPublicServerClient();
 

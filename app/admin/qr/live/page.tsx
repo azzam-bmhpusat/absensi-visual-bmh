@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function AdminLiveQrPage() {
   const eventName =
-    process.env.NEXT_PUBLIC_EVENT_NAME || "Silaturahim & Rapat Kerja Nasional BMH 2026";
+    process.env.NEXT_PUBLIC_EVENT_NAME || "Silaturahim & Rapat Kerja Nasional BMH 2027";
 
   return (
     <Suspense fallback={<main className="page-bg h-dvh" />}>

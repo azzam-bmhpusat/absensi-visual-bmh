@@ -1,6 +1,7 @@
-import { ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
+import { ArrowUpRight, CalendarDays, ChevronDown, MapPin } from "lucide-react";
 import { EVENT_INFO } from "@/content/rakernas";
 import { DEFAULT_EVENT_SETTINGS, formatEventDateRange, type EventSettings } from "@/lib/event-settings";
+import { RevealItem, RevealStagger } from "@/components/motion/reveal";
 import styles from "./hero.module.css";
 
 export function HeroSection({ settings = DEFAULT_EVENT_SETTINGS }: { settings?: EventSettings } = {}) {
@@ -8,9 +9,12 @@ export function HeroSection({ settings = DEFAULT_EVENT_SETTINGS }: { settings?: 
 
   return (
     <section className={styles.hero} aria-labelledby="hero-title">
-      <div className={styles.wrap}>
-        <p className={styles.eyebrow}>{EVENT_INFO.name}</p>
+      <RevealStagger immediate stagger={0.07} className={styles.wrap}>
+        <RevealItem>
+          <p className={styles.eyebrow}>{EVENT_INFO.name}</p>
+        </RevealItem>
 
+        <RevealItem>
         <h1 className={styles.title} id="hero-title">
           {titleParts ? (
             <>
@@ -24,9 +28,13 @@ export function HeroSection({ settings = DEFAULT_EVENT_SETTINGS }: { settings?: 
             EVENT_INFO.title
           )}
         </h1>
+        </RevealItem>
 
-        <p className={styles.theme}>{EVENT_INFO.theme}</p>
+        <RevealItem>
+          <p className={styles.theme}>{EVENT_INFO.theme}</p>
+        </RevealItem>
 
+        <RevealItem>
         <div className={styles.details}>
           <div className={styles.detail}>
             <span className={styles.icon} aria-hidden="true">
@@ -49,18 +57,31 @@ export function HeroSection({ settings = DEFAULT_EVENT_SETTINGS }: { settings?: 
             </div>
           </div>
         </div>
+        </RevealItem>
 
-        <a
-          className={styles.button}
-          href={settings.mapsUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={`Lihat lokasi ${settings.venueName} di Google Maps (tab baru)`}
-        >
-          Lihat lokasi acara
-          <ArrowUpRight aria-hidden="true" />
-        </a>
-      </div>
+        <RevealItem>
+        <div className={styles.buttons}>
+          <a
+            className={`${styles.button} ${styles.buttonPrimary}`}
+            href={settings.mapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Lihat lokasi ${settings.venueName} di Google Maps (tab baru)`}
+          >
+            Lihat lokasi acara
+            <ArrowUpRight aria-hidden="true" />
+          </a>
+          <a
+            className={`${styles.button} ${styles.buttonOutline}`}
+            href="#countdown"
+            aria-label="Scroll ke informasi acara"
+          >
+            Informasi Acara
+            <ChevronDown aria-hidden="true" />
+          </a>
+        </div>
+        </RevealItem>
+      </RevealStagger>
     </section>
   );
 }

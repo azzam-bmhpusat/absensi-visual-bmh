@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { cn } from "cn";
 import { Menu } from "lucide-react";
+import { useLenis } from "lenis/react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -16,6 +17,7 @@ import { EVENT_INFO, NAV_ITEMS } from "@/content/rakernas";
 
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const lenis = useLenis();
 
   useEffect(() => {
     const desktop = window.matchMedia("(min-width: 1024px)");
@@ -31,7 +33,9 @@ export function SiteHeader() {
       const targetId = href.replace("#", "");
       const elem = document.getElementById(targetId);
       if (elem) {
-        elem.scrollIntoView({ behavior: "smooth" });
+        // Lenis menghormati scroll-margin-top pada section (scroll-mt-20)
+        if (lenis) lenis.scrollTo(elem, { duration: 1.2 });
+        else elem.scrollIntoView({ behavior: "smooth" });
       }
     }
   };

@@ -25,9 +25,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatWibClock } from "@/lib/display-helpers";
 
-const BRAND = "#134B40";
-const GREEN = "#3FBF8F";
-const GOLD = "#D9A93A";
+const BRAND = "#095046";
+const GREEN = "#39BA87";
+const GOLD = "#FEB738";
 
 interface SessionChartData {
   id: number;
@@ -283,12 +283,12 @@ export function CompositionGauge({
 
         <div className="flex w-full items-center justify-center gap-4 border-t border-line pt-3 text-xs">
           <span className="flex items-center gap-1.5 text-ink-muted">
-            <span className="h-2 w-2 rounded-full bg-[#134B40]" />
+            <span className="h-2 w-2 rounded-full bg-[#095046]" />
             Terdaftar
             <strong className="text-primary">{registeredCount}</strong>
           </span>
           <span className="flex items-center gap-1.5 text-ink-muted">
-            <span className="h-2 w-2 rounded-full bg-[#D9A93A]" />
+            <span className="h-2 w-2 rounded-full bg-[#FEB738]" />
             Walk-in
             <strong className="text-brand-gold-text">{walkInCount}</strong>
           </span>

@@ -2,6 +2,8 @@
 
 import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "motion/react";
+import { useLenis } from "lenis/react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -25,6 +27,14 @@ import { DaerahCombobox } from "./daerah-combobox";
 
 type DialogState = "form" | "success" | "already";
 
+// Transisi antar state dialog (form → sukses / sudah tercatat)
+const STATE_MOTION = {
+  initial: { opacity: 0, y: 8 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -8 },
+  transition: { duration: 0.2, ease: [0.22, 1, 0.36, 1] as const },
+};
+
 interface AttendanceDialogProps {
   sessionId: number;
   sessionNama: string;
@@ -46,6 +56,14 @@ export function AttendanceDialog({
   const [result, setResult] = useState<SubmitAttendanceResponse | null>(null);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const lenis = useLenis();
+
+  // Dialog mengunci scroll body; hentikan juga smooth scroll selama dialog terbuka
+  useEffect(() => {
+    if (!open) return;
+    lenis?.stop();
+    return () => lenis?.start();
+  }, [open, lenis]);
 
   useEffect(() => {
     if (state === "success") {
@@ -121,9 +139,13 @@ export function AttendanceDialog({
 
   return (
     <Dialog open={open} onOpenChange={(o) => (!o ? handleClose() : null)}>
-      <DialogContent className="w-[calc(100vw-2rem)] max-w-[440px] rounded-3xl p-5 sm:p-6 border-line">
+      <DialogContent
+        data-lenis-prevent
+        className="w-[calc(100vw-2rem)] max-w-[440px] rounded-3xl p-5 sm:p-6 border-line"
+      >
+        <AnimatePresence mode="wait" initial={false}>
         {state === "form" && (
-          <>
+          <motion.div key="form" {...STATE_MOTION}>
             <DialogHeader className="space-y-2 text-left">
               <div>
                 <Badge
@@ -240,12 +262,12 @@ export function AttendanceDialog({
                 )}
               </Button>
             </form>
-          </>
+          </motion.div>
         )}
 
         {/* State SUKSES */}
         {state === "success" && result?.status === "ok" && (
-          <div className="text-center space-y-4 py-4">
+          <motion.div key="success" {...STATE_MOTION} className="text-center space-y-4 py-4">
             <div className="w-16 h-16 mx-auto rounded-full bg-brand-green flex items-center justify-center shadow-sm">
               <Check className="w-8 h-8 text-white stroke-[2.5]" />
             </div>
@@ -261,12 +283,12 @@ export function AttendanceDialog({
               <Loader2 className="w-4 h-4 animate-spin text-brand-green" />
               <span>Mengalihkan ke halaman selesai...</span>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* State SUDAH TERCATAT (already) */}
         {state === "already" && result?.status === "already" && (
-          <div className="text-center space-y-4 py-4">
+          <motion.div key="already" {...STATE_MOTION} className="text-center space-y-4 py-4">
             <div className="w-16 h-16 mx-auto rounded-full bg-gold-50 flex items-center justify-center border border-brand-gold-soft shadow-sm">
               <Info className="w-8 h-8 text-brand-gold stroke-[2.5]" />
             </div>
@@ -285,8 +307,9 @@ export function AttendanceDialog({
             >
               Tutup
             </Button>
-          </div>
+          </motion.div>
         )}
+        </AnimatePresence>
       </DialogContent>
     </Dialog>
   );

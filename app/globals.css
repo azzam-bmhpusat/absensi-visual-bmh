@@ -58,7 +58,7 @@
   --color-surface: #F4F8F6;
   --color-danger: #D14343;
   --color-success: #2FA075;
-  --color-warning: #D9A93A;
+  --color-warning: #FEB738;
 
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -80,11 +80,11 @@
   --popover: #FFFFFF;
   --popover-foreground: #0F2A24;
 
-  --primary: #134B40;
+  --primary: #095046;
   --primary-foreground: #FFFFFF;
 
   --secondary: #EEFBF5;
-  --secondary-foreground: #134B40;
+  --secondary-foreground: #095046;
 
   --muted: #F4F8F6;
   --muted-foreground: #5B6F68;
@@ -95,19 +95,19 @@
   --destructive: #D14343;
   --border: #DDE7E2;
   --input: #DDE7E2;
-  --ring: #3FBF8F;
+  --ring: #39BA87;
 
-  --chart-1: #3FBF8F;
-  --chart-2: #134B40;
-  --chart-3: #D9A93A;
+  --chart-1: #39BA87;
+  --chart-2: #095046;
+  --chart-3: #FEB738;
   --chart-4: #7ADBB2;
   --chart-5: #F2D06B;
 
   /* token tambahan proyek BMH */
-  --brand-green: #3FBF8F;
-  --brand-green-deep: #134B40;
+  --brand-green: #39BA87;
+  --brand-green-deep: #095046;
   --brand-green-night: #0A3A30;
-  --brand-gold: #D9A93A;
+  --brand-gold: #FEB738;
   --brand-gold-soft: #F2D06B;
   --brand-gold-text: #8A6A1F;
 
@@ -119,12 +119,12 @@
   /* sidebar tokens (brand BMH) */
   --sidebar: #F4F8F6;
   --sidebar-foreground: #0F2A24;
-  --sidebar-primary: #134B40;
+  --sidebar-primary: #095046;
   --sidebar-primary-foreground: #FFFFFF;
   --sidebar-accent: #EEFBF5;
-  --sidebar-accent-foreground: #134B40;
+  --sidebar-accent-foreground: #095046;
   --sidebar-border: #DDE7E2;
-  --sidebar-ring: #3FBF8F;
+  --sidebar-ring: #39BA87;
 }
 
 /* Tema videotron: tambahkan class "display-theme" pada wrapper /display */
@@ -136,10 +136,10 @@
   --popover: #0F4439;
   --popover-foreground: #F4FBF8;
 
-  --primary: #3FBF8F;
+  --primary: #39BA87;
   --primary-foreground: #0A3A30;
 
-  --secondary: #134B40;
+  --secondary: #095046;
   --secondary-foreground: #F4FBF8;
 
   --muted: #0F4439;
@@ -155,9 +155,9 @@
 
 .page-bg {
   background:
-    radial-gradient(60% 40% at 100% 0%,  rgba(242, 208, 107, 0.35) 0%, transparent 70%),
+    radial-gradient(60% 40% at 100% 0%, rgba(242, 208, 107, 0.35) 0%, transparent 70%),
     radial-gradient(70% 45% at 100% 100%, rgba(63, 191, 143, 0.30) 0%, transparent 70%),
-    radial-gradient(50% 35% at 0% 0%,     rgba(63, 191, 143, 0.18) 0%, transparent 70%),
+    radial-gradient(50% 35% at 0% 0%, rgba(63, 191, 143, 0.18) 0%, transparent 70%),
     linear-gradient(180deg, #FFFFFF 0%, #F1F5F3 100%);
 }
 
@@ -171,6 +171,7 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -180,9 +181,11 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }

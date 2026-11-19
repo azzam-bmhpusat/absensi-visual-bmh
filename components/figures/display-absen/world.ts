@@ -114,7 +114,8 @@ export function buildWorld(plan: HallPlan): World {
     }
     const presenter = standingArt(P, T, kind, 0, "down");
     defs.push(`<g id="ab-pp${kind}">${presenter.body}${presenter.face}</g>`);
-    defs.push(`<g id="ab-pd${kind}">${deskArt(P, T, kind)}</g>`);
+    defs.push(`<g id="ab-pd${kind}">${deskArt(P, T, kind, 8)}</g>`);
+    defs.push(`<g id="ab-pr${kind}">${deskArt(P, T, kind, 13)}</g>`);
   }
   defs.push(
     `<linearGradient id="ab-beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2d06b" stop-opacity="0.5"/><stop offset="1" stop-color="#f2d06b" stop-opacity="0.07"/></linearGradient>`
@@ -345,7 +346,7 @@ export function buildWorld(plan: HallPlan): World {
     props.push({ y: by + 2, html: b.join("") });
 
     const ry = depthAt(0.46);
-    const recep: string[] = [place("ab-pd0", xc, ry - 7, 0, look("#e3b88f", "#d9f1e7", "#3b2a1c", "#4f86a8"))];
+    const recep: string[] = [place("ab-pr0", xc, ry - 7, 0, look("#e3b88f", "#d9f1e7", "#3b2a1c", "#4f86a8"))];
     const rdesk: Plan = { x: xc - 24, y: ry - 5, w: 48, d: 13, r: 1.6 };
     recep.push(S(k.slabOf(rdesk, 0, 13, P, 4, 0.6), { tone: "mid", inner: L(k.sideSeam(rdesk, 6, P, 4), { tone: "faint" }) }));
     recep.push(S(k.slabOf({ x: xc - 8, y: ry - 2, w: 12, d: 7, r: 0.8 }, 13, 0.8, P, 3), { tone: "lo" }));

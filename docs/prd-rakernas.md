@@ -236,13 +236,13 @@ Bersih, lapang, hangat, resmi. Hijau tua sebagai jangkar, hijau mint dan emas se
 | Latar terang | `bg-background`, `page-bg`, `bg-surface`, `bg-secondary` | `#FFFFFF`, gradasi, `#F4F8F6`, `#EEFBF5` |
 | Latar gelap | `display-theme display-bg`, `bg-brand-green-night` | `#0A3A30` |
 | Teks utama / sekunder | `text-ink`, `text-ink-muted` | `#0F2A24`, `#5B6F68` |
-| Primer (tombol, judul terang) | `bg-primary text-primary-foreground`, `text-primary` | `#134B40` |
-| Aksen mint | `text-brand-green`, `bg-brand-green` | `#3FBF8F` |
-| Aksen emas | `bg-brand-gold-soft`, `bg-brand-gold`, `text-brand-gold-text` | `#F2D06B`, `#D9A93A`, `#8A6A1F` |
+| Primer (tombol, judul terang) | `bg-primary text-primary-foreground`, `text-primary` | `#095046` |
+| Aksen mint | `text-brand-green`, `bg-brand-green` | `#39BA87` |
+| Aksen emas | `bg-brand-gold-soft`, `bg-brand-gold`, `text-brand-gold-text` | `#F2D06B`, `#FEB738`, `#8A6A1F` |
 | Emas lembut | `bg-gold-50`, `bg-gold-100` | `#FFF9E6`, `#FDEFBF` |
 | Hijau lembut | `bg-green-100` | `#D5F5E6` |
 | Garis | `border-line` / `border-border` | `#DDE7E2` |
-| Fokus | `ring-ring` | `#3FBF8F` |
+| Fokus | `ring-ring` | `#39BA87` |
 
 Catatan: di dalam wrapper `display-theme`, token shadcn (`bg-card`, `bg-primary`, `text-muted-foreground`, `border-border`) otomatis berganti ke versi gelap. Karena itu komponen shadcn di bagian gelap tidak perlu diberi warna khusus.
 

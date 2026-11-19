@@ -37,7 +37,7 @@ interface AttendanceBoardProps {
 }
 
 export function AttendanceBoard({
-  eventName = "Silaturahim & Rapat Kerja Nasional BMH 2026",
+  eventName = "Silaturahim & Rapat Kerja Nasional BMH 2027",
   initialSessions = [],
   activeSession,
   initialGuests,
@@ -372,7 +372,7 @@ export function AttendanceBoard({
         <div className="flex items-center gap-2.5 shrink-0 min-w-0">
           {connectionStatus === "connected" ? (
             <>
-              <span className="w-3 h-3 rounded-full bg-brand-green animate-pulse shadow-[0_0_10px_#3FBF8F]" />
+              <span className="w-3 h-3 rounded-full bg-brand-green animate-pulse shadow-[0_0_10px_#39BA87]" />
               <Wifi className="w-4 h-4 text-brand-green" />
               <span className="text-white/80 font-medium">Terhubung ke sistem</span>
             </>
@@ -406,8 +406,8 @@ export function AttendanceBoard({
                     onClick={() => handleSelectSession(s)}
                     type="button"
                     className={`px-2.5 xl:px-3 py-1 xl:py-1.5 rounded-lg xl:rounded-xl text-[11px] xl:text-xs font-heading font-semibold transition-all cursor-pointer select-none whitespace-nowrap ${isCurrent
-                        ? "bg-brand-gold-soft text-[#0A3A30] shadow-md scale-100 font-bold"
-                        : "text-white/70 hover:text-white hover:bg-white/10"
+                      ? "bg-brand-gold-soft text-[#0A3A30] shadow-md scale-100 font-bold"
+                      : "text-white/70 hover:text-white hover:bg-white/10"
                       }`}
                     title={`Hari ${h}: ${s.nama}`}
                   >

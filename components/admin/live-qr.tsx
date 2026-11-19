@@ -54,7 +54,7 @@ export function LiveQr({ eventName }: { eventName?: string }) {
     <div className="w-full max-w-2xl mx-auto px-2 text-center flex flex-col items-center gap-4 lg:gap-3 xl:gap-4">
       <div className="w-[min(80vw,62vh)] h-[min(80vw,62vh)] lg:w-[min(34vw,58vh)] lg:h-[min(34vw,58vh)] flex items-center justify-center select-none">
         {url ? (
-          <RoundedQr value={url} level="M" margin={4} color="#134B40" bgColor="#FBFBFA" className="w-full h-full" />
+          <RoundedQr value={url} level="M" margin={4} color="#095046" bgColor="#FBFBFA" className="w-full h-full" />
         ) : (
           <Loader2 className="w-10 h-10 animate-spin text-brand-green" />
         )}

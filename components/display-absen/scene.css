@@ -28,8 +28,14 @@
 .p-cloth { --c: var(--cl, #2f9275); }
 .p-hair { --c: var(--hr, #1b1410); }
 .p-acc { --c: var(--ac, #d9f1e7); }
+.p-pants { --c: color-mix(in srgb, var(--cl, #2f9275) 22%, #232b35); }
+.p-shoe { --c: #1d1b1a; }
+.p-white { --c: #f1f3ee; }
 .p-leaf { --c: #2f8f66; }
 .ab-eye { fill: #1c130d; stroke: none; }
+.ab-brow { fill: var(--hr, #1b1410); stroke: none; }
+.ab-nose { fill: rgba(60, 25, 10, 0.16); stroke: none; }
+.ab-mouth { fill: #8a3f37; stroke: none; }
 
 /* ---------- Gerak halus sosok ----------
    Napas: tiap baris tribun naik-turun bergelombang (satu animasi per baris, bukan per orang).

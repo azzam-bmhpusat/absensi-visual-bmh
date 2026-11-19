@@ -183,7 +183,7 @@ export function QrCard({ siteUrl, eventName }: QrCardProps) {
           className="h-8 px-3 rounded-xl text-[11px] font-semibold bg-primary hover:bg-[#0A3A30] text-white shadow-xs ml-auto transition-colors"
           title="Buka dialog cetak dokumen (Ctrl+P)"
         >
-          <Printer className="w-3 h-3 mr-1.5 text-[#3FBF8F]" />
+          <Printer className="w-3 h-3 mr-1.5 text-[#39BA87]" />
           Cetak
         </Button>
       </div>
@@ -197,7 +197,7 @@ export function QrCard({ siteUrl, eventName }: QrCardProps) {
             value={targetUrl}
             level="M"
             margin={4}
-            color="#134B40"
+            color="#095046"
             bgColor="#FFFFFF"
             className="w-full h-full object-contain"
           />
@@ -205,7 +205,7 @@ export function QrCard({ siteUrl, eventName }: QrCardProps) {
 
         {/* Teks "Scan untuk absen" */}
         <div className="space-y-1 pt-0.5">
-          <h2 className="font-heading text-lg sm:text-xl lg:text-xl font-bold text-[#134B40] tracking-tight">
+          <h2 className="font-heading text-lg sm:text-xl lg:text-xl font-bold text-[#095046] tracking-tight">
             Scan untuk absen
           </h2>
           <p className="text-[11px] font-mono font-medium text-ink-muted break-all max-w-sm">

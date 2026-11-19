@@ -92,7 +92,7 @@ export function NameCombobox({
               setSearch(val);
             }}
           />
-          <CommandList className="max-h-60 overflow-y-auto">
+          <CommandList data-lenis-prevent className="max-h-60 overflow-y-auto">
             {filtered.length === 0 && search.trim().length < 2 && (
               <CommandEmpty className="py-4 text-center text-sm text-ink-muted">
                 Tidak ada nama tamu ditemukan.
