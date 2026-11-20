@@ -23,6 +23,10 @@ describe("Guest search parameters and literal filters", () => {
     expect(buildGuestSearchFilter("Ali")).toBe('nama.ilike."%Ali%",perwakilan_daerah.ilike."%Ali%",jabatan.ilike."%Ali%",departemen.ilike."%Ali%"');
   });
 
+  it("dapat memakai daftar kolom kustom (pendaftar memakai perwakilan_bmh)", () => {
+    expect(buildGuestSearchFilter("Ali", ["nama", "perwakilan_bmh"])).toBe('nama.ilike."%Ali%",perwakilan_bmh.ilike."%Ali%"');
+  });
+
   it("mengutip koma, tanda kutip, apostrof, kurung, dan backslash sebagai nilai", () => {
     const query = 'O\'Connor, "Ketua" (IT) \\';
     const filter = buildGuestSearchFilter(query);

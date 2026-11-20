@@ -16,5 +16,6 @@ export const config = {
     "/rekap-kehadiran/:path*",
     "/kelola-sesi-acara/:path*",
     "/pengaturan/:path*",
+    "/approval/:path*",
   ],
 };

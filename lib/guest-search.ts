@@ -34,7 +34,35 @@ export function parseGuestSearchParams(params: URLSearchParams) {
   return { query, page };
 }
 
-export function buildGuestSearchFilter(query: string) {
+const GUEST_SEARCH_COLUMNS = ["nama", "perwakilan_daerah", "jabatan", "departemen"] as const;
+
+export const REGISTRATION_SEARCH_COLUMNS = [
+  "nama",
+  "perwakilan_bmh",
+  "jabatan",
+  "departemen",
+] as const;
+
+// Pendaftar yang belum di-approve (status "pending"). Hanya kolom publik yang aman.
+export interface PendingRegistration {
+  id: string;
+  nama: string;
+  perwakilan_bmh: string;
+  jabatan: string | null;
+  departemen: string | null;
+}
+
+export interface RegistrationSearchResponse {
+  registrations: PendingRegistration[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+export function buildGuestSearchFilter(
+  query: string,
+  columns: readonly string[] = GUEST_SEARCH_COLUMNS
+) {
   // PostgREST treats '*' as a LIKE wildcard even inside quoted values.
   // A literal regular expression preserves searches containing an actual '*'.
   const hasAsterisk = query.includes("*");
@@ -44,7 +72,7 @@ export function buildGuestSearchFilter(query: string) {
     : `%${query.replace(/[\\%_]/g, "\\$&")}%`;
   // Quote the value for PostgREST grammar; the SDK handles URL encoding.
   const value = JSON.stringify(pattern);
-  return ["nama", "perwakilan_daerah", "jabatan", "departemen"]
+  return columns
     .map((column) => `${column}.${operator}.${value}`)
     .join(",");
 }

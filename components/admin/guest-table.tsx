@@ -43,6 +43,8 @@ export interface GuestItem {
   jabatan?: string | null;
   departemen?: string | null;
   kategori?: string | null;
+  ukuran_baju?: string | null;
+  mode_kehadiran?: string | null;
   created_at?: string;
 }
 
@@ -177,6 +179,9 @@ export function GuestTable({ initialGuests }: GuestTableProps) {
               <TableHead className="text-xs font-bold text-primary">
                 Jabatan / Departemen
               </TableHead>
+              <TableHead className="text-xs font-bold text-primary">
+                Ukuran / Kehadiran
+              </TableHead>
               <TableHead className="w-24 text-center text-xs font-bold text-primary">
                 Aksi
               </TableHead>
@@ -186,7 +191,7 @@ export function GuestTable({ initialGuests }: GuestTableProps) {
             {filteredGuests.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={5}
+                  colSpan={6}
                   className="h-36 text-center text-xs text-ink-muted py-8"
                 >
                   <Users className="w-8 h-8 text-ink-muted/40 mx-auto mb-2" />
@@ -218,6 +223,21 @@ export function GuestTable({ initialGuests }: GuestTableProps) {
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-brand-green border border-emerald-200">
                         {guest.jabatan}
                         {guest.departemen ? `: ${guest.departemen}` : ""}
+                      </span>
+                    ) : (
+                      <span className="text-[11px] text-ink-muted/60">-</span>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-xs text-ink-muted">
+                    {guest.ukuran_baju || guest.mode_kehadiran ? (
+                      <span>
+                        {guest.ukuran_baju ?? "-"}
+                        {" / "}
+                        {guest.mode_kehadiran === "online"
+                          ? "Online"
+                          : guest.mode_kehadiran === "offline"
+                            ? "Offline"
+                            : "-"}
                       </span>
                     ) : (
                       <span className="text-[11px] text-ink-muted/60">-</span>

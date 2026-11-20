@@ -16,6 +16,7 @@ import {
   Boxes,
   Theater,
   LogOut,
+  UserCheck,
 } from "lucide-react";
 import {
   Sidebar,
@@ -35,12 +36,14 @@ interface AppSidebarProps {
   guestsCount?: number;
   attendancesCount?: number;
   activeSessionsCount?: number;
+  pendingApprovalCount?: number;
 }
 
 export function AppSidebar({
   guestsCount,
   attendancesCount,
   activeSessionsCount,
+  pendingApprovalCount,
 }: AppSidebarProps) {
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
@@ -59,6 +62,16 @@ export function AppSidebar({
       icon: Users,
       badge: guestsCount !== undefined ? `${guestsCount}` : null,
       badgeColor: "bg-secondary text-primary",
+    },
+    {
+      label: "Approval Registrasi",
+      href: "/approval",
+      icon: UserCheck,
+      badge:
+        pendingApprovalCount !== undefined && pendingApprovalCount > 0
+          ? `${pendingApprovalCount}`
+          : null,
+      badgeColor: "bg-gold-100 text-brand-gold-text",
     },
     {
       label: "Rekap Kehadiran",

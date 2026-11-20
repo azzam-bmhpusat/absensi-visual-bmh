@@ -2,12 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Search, UsersRound, X } from "lucide-react";
+import { useLenis } from "lenis/react";
 import { INVITED_GUESTS_CONTENT as copy } from "@/content/rakernas";
 import { normalizeString } from "@/lib/normalize";
 import {
   GUEST_SEARCH_MAX_LENGTH,
   GUEST_SEARCH_MIN_LENGTH,
   type GuestSearchResponse,
+  type RegistrationSearchResponse,
 } from "@/lib/guest-search";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,12 +20,78 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 
 type SearchResult =
-  | { key: string; status: "success"; data: GuestSearchResponse }
+  | {
+      key: string;
+      status: "success";
+      data: GuestSearchResponse;
+      // null jika pencarian pendaftar gagal: hasil tamu tetap ditampilkan
+      pending: RegistrationSearchResponse | null;
+    }
   | { key: string; status: "error" };
 
+type ResultCard = {
+  id: string;
+  nama: string;
+  perwakilan_daerah: string;
+  jabatan: string | null;
+  departemen: string | null;
+  accepted: boolean;
+};
+
 const detailFields = ["perwakilan_daerah", "jabatan", "departemen"] as const;
+const SEARCH_ANCHOR = "#invited-guest-search";
+
+function ResultGroup({ title, cards }: { title: string; cards: ResultCard[] }) {
+  return (
+    <section aria-label={title} className="space-y-3">
+      <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">{title}</h3>
+      <div className="grid gap-4 md:grid-cols-2">
+        {cards.map((guest) => (
+          <Card
+            key={`${guest.accepted ? "g" : "p"}-${guest.id}`}
+            className="min-w-0 rounded-2xl border-border bg-card/80"
+            role="article"
+            aria-labelledby={`invited-guest-${guest.id}`}
+          >
+            <CardHeader>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-xs font-medium text-muted-foreground">{copy.fields.nama}</p>
+                <Badge
+                  variant="outline"
+                  className={
+                    guest.accepted
+                      ? "border-brand-green/30 bg-brand-green/15 text-brand-green"
+                      : "border-brand-gold/40 bg-brand-gold/15 text-brand-gold-soft"
+                  }
+                >
+                  {guest.accepted ? copy.statusAccepted : copy.statusPending}
+                </Badge>
+              </div>
+              <CardTitle>
+                <h4 id={`invited-guest-${guest.id}`} className="wrap-anywhere text-lg font-semibold text-foreground">{guest.nama}</h4>
+              </CardTitle>
+              {!guest.accepted && <p className="text-xs text-muted-foreground">{copy.pendingNote}</p>}
+            </CardHeader>
+            <CardContent>
+              <Separator className="mb-5 bg-border" />
+              <dl className="space-y-4">
+                {detailFields.map((field) => (
+                  <div key={field} className="space-y-1">
+                    <dt className="text-xs text-muted-foreground">{copy.fields[field]}</dt>
+                    <dd className="wrap-anywhere text-sm font-medium leading-relaxed text-foreground">{guest[field]?.trim() || copy.missingValue}</dd>
+                  </div>
+                ))}
+              </dl>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 export function InvitedGuestsSection() {
+  const lenis = useLenis();
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
   const [retry, setRetry] = useState(0);
@@ -36,7 +104,42 @@ export function InvitedGuestsSection() {
   const loading = canSearch && currentResult === null;
   const data = canSearch && currentResult?.status === "success" ? currentResult.data : null;
   const failed = canSearch && currentResult?.status === "error";
-  const totalPages = data ? Math.max(1, Math.ceil(data.total / data.pageSize)) : 1;
+  const pending = canSearch && currentResult?.status === "success" ? currentResult.pending : null;
+  const guestPages = data ? Math.ceil(data.total / data.pageSize) : 0;
+  const pendingPages = pending ? Math.ceil(pending.total / pending.pageSize) : 0;
+  const totalPages = Math.max(1, guestPages, pendingPages);
+  const combinedTotal = (data?.total ?? 0) + (pending?.total ?? 0);
+  const acceptedCards: ResultCard[] = (data?.guests ?? []).map((guest) => ({ ...guest, accepted: true }));
+  const pendingCards: ResultCard[] = (pending?.registrations ?? []).map((row) => ({
+    id: row.id,
+    nama: row.nama,
+    perwakilan_daerah: row.perwakilan_bmh,
+    jabatan: row.jabatan,
+    departemen: row.departemen,
+    accepted: false,
+  }));
+  const hasCards = acceptedCards.length + pendingCards.length > 0;
+
+  // Tautan "Cek Pendaftaran Anda" (/#invited-guest-search): gulir & fokus ke kolom pencarian
+  useEffect(() => {
+    const focusSearch = () => {
+      if (window.location.hash !== SEARCH_ANCHOR) return;
+      const input = inputRef.current;
+      if (!input) return;
+      // Lenis mengendalikan scroll halaman; scroll native tidak bergerak saat Lenis aktif
+      // (Lenis menghormati scroll-margin-top pada input).
+      if (lenis) lenis.scrollTo(input, { duration: 1.2 });
+      else input.scrollIntoView({ behavior: "smooth", block: "center" });
+      input.focus({ preventScroll: true });
+    };
+    // Tunggu animasi Reveal & inisialisasi smooth scroll sebelum menggulir
+    const timer = setTimeout(focusSearch, 400);
+    window.addEventListener("hashchange", focusSearch);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("hashchange", focusSearch);
+    };
+  }, [lenis]);
 
   useEffect(() => {
     if (normalizedQuery.length < GUEST_SEARCH_MIN_LENGTH) return;
@@ -45,13 +148,25 @@ export function InvitedGuestsSection() {
     const timer = setTimeout(async () => {
       try {
         const params = new URLSearchParams({ q: normalizedQuery, page: String(page) });
-        const response = await fetch(`/api/guests/search?${params}`, {
-          signal: controller.signal,
-          cache: "no-store",
-        });
+        const init = { signal: controller.signal, cache: "no-store" as const };
+        const [response, pendingResponse] = await Promise.all([
+          fetch(`/api/guests/search?${params}`, init),
+          // Kegagalan pencarian pendaftar tidak boleh menggagalkan hasil tamu
+          fetch(`/api/registrations/search?${params}`, init).catch(() => null),
+        ]);
         if (!response.ok) throw new Error("Guest search failed");
         const payload: GuestSearchResponse = await response.json();
-        if (active) setResult({ key: requestKey, status: "success", data: payload });
+        let pendingPayload: RegistrationSearchResponse | null = null;
+        if (pendingResponse?.ok) {
+          try {
+            pendingPayload = await pendingResponse.json();
+          } catch {
+            pendingPayload = null;
+          }
+        }
+        if (active) {
+          setResult({ key: requestKey, status: "success", data: payload, pending: pendingPayload });
+        }
       } catch {
         if (active) setResult({ key: requestKey, status: "error" });
       }
@@ -67,7 +182,7 @@ export function InvitedGuestsSection() {
   const announcement = !canSearch ? copy.searchHint
     : loading ? copy.loading
     : failed ? copy.errorDescription
-    : copy.resultsCount(data?.total ?? 0);
+    : copy.resultsCount(combinedTotal);
 
   function changeQuery(value: string) {
     setQuery(value);
@@ -87,6 +202,15 @@ export function InvitedGuestsSection() {
           {copy.title}
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground md:text-base">{copy.description}</p>
+        <div className="pt-2">
+          <Button
+            render={<a href={copy.registerCta.href} />}
+            nativeButton={false}
+            className="h-12 w-full bg-brand-gold px-8 font-semibold text-brand-green-night hover:bg-brand-gold-soft sm:w-auto"
+          >
+            {copy.registerCta.label}
+          </Button>
+        </div>
       </div>
 
       <Card className="mx-auto mt-8 max-w-3xl rounded-2xl border-border bg-card/80 shadow-sm md:mt-10">
@@ -108,7 +232,7 @@ export function InvitedGuestsSection() {
                 autoComplete="off"
                 aria-describedby="invited-guest-hint"
                 aria-controls="invited-guest-results"
-                className="h-13 min-w-0 text-base text-foreground placeholder:text-muted-foreground [&::-webkit-search-cancel-button]:hidden"
+                className="scroll-mt-40 h-13 min-w-0 text-base text-foreground placeholder:text-muted-foreground [&::-webkit-search-cancel-button]:hidden"
               />
               {query && (
                 <InputGroupAddon align="inline-end" className="pr-1">
@@ -133,7 +257,7 @@ export function InvitedGuestsSection() {
         {canSearch && (
           <div className="mb-5 flex flex-wrap items-center justify-between gap-2">
             <h3 className="font-heading text-lg font-semibold text-foreground sm:text-xl">{copy.detailsTitle}</h3>
-            {data && <Badge variant="secondary" className="border-border px-3 py-1 text-xs">{copy.resultsCount(data.total)}</Badge>}
+            {data && <Badge variant="secondary" className="border-border px-3 py-1 text-xs">{copy.resultsCount(combinedTotal)}</Badge>}
           </div>
         )}
 
@@ -150,30 +274,15 @@ export function InvitedGuestsSection() {
               </Card>
             ))}
           </div>
-        ) : data && data.guests.length > 0 ? (
+        ) : data && hasCards ? (
           <>
-            <div className="grid gap-4 md:grid-cols-2">
-              {data.guests.map((guest) => (
-                <Card key={guest.id} className="min-w-0 rounded-2xl border-border bg-card/80" role="article" aria-labelledby={`invited-guest-${guest.id}`}>
-                  <CardHeader>
-                    <p className="text-xs font-medium text-muted-foreground">{copy.fields.nama}</p>
-                    <CardTitle>
-                      <h4 id={`invited-guest-${guest.id}`} className="wrap-anywhere text-lg font-semibold text-foreground">{guest.nama}</h4>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Separator className="mb-5 bg-border" />
-                    <dl className="space-y-4">
-                      {detailFields.map((field) => (
-                        <div key={field} className="space-y-1">
-                          <dt className="text-xs text-muted-foreground">{copy.fields[field]}</dt>
-                          <dd className="wrap-anywhere text-sm font-medium leading-relaxed text-foreground">{guest[field]?.trim() || copy.missingValue}</dd>
-                        </div>
-                      ))}
-                    </dl>
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="space-y-8">
+              {acceptedCards.length > 0 && (
+                <ResultGroup title={copy.acceptedGroupTitle} cards={acceptedCards} />
+              )}
+              {pendingCards.length > 0 && (
+                <ResultGroup title={copy.pendingGroupTitle} cards={pendingCards} />
+              )}
             </div>
             {totalPages > 1 && (
               <nav className="mt-6 flex flex-wrap items-center justify-center gap-3 sm:justify-between" aria-label={copy.paginationLabel}>
