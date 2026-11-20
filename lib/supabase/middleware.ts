@@ -53,6 +53,7 @@ export async function updateSession(request: NextRequest) {
     "/kelola-sesi-acara",
     "/pengaturan",
     "/manajemen-user",
+    "/data-peserta",
     "/admin",
   ];
 

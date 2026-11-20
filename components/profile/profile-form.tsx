@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { AlertCircle, CalendarClock, Loader2, Save } from "lucide-react";
 import { updateProfile, type ProfileActionResult } from "@/app/(site)/profile/actions";
 import { formatArrival, wibLocalToIso } from "@/lib/profile-contact";
-import { UKURAN_BAJU } from "@/lib/participant-options";
+import { MODE_KEHADIRAN, MODE_KEHADIRAN_LABEL, UKURAN_BAJU } from "@/lib/participant-options";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -20,6 +20,7 @@ export interface ProfileInitial {
   noWhatsapp: string;
   /** nilai datetime-local (WIB) */
   rencanaKedatangan: string;
+  keteranganKehadiran: string;
 }
 
 const inputClass = "h-11 rounded-xl border-line";
@@ -135,6 +136,28 @@ export function ProfileForm({ initial }: { initial: ProfileInitial }) {
           )}
         </Field>
       </div>
+
+      <fieldset className="space-y-1.5" disabled={isPending}>
+        <legend className="text-xs font-semibold text-primary">Keterangan Kehadiran</legend>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {MODE_KEHADIRAN.map((mode) => (
+            <label
+              key={mode}
+              className="flex h-11 cursor-pointer items-center gap-2.5 rounded-xl border border-line px-3 text-sm has-[:checked]:border-primary has-[:checked]:bg-primary/5"
+            >
+              <input
+                type="radio"
+                name="keterangan_kehadiran"
+                value={mode}
+                required
+                defaultChecked={initial.keteranganKehadiran === mode}
+                className="accent-primary"
+              />
+              {MODE_KEHADIRAN_LABEL[mode]}
+            </label>
+          ))}
+        </div>
+      </fieldset>
 
       <Button type="submit" disabled={isPending} className="h-11 rounded-xl bg-primary px-6 font-medium text-white hover:bg-brand-green-deep">
         {isPending ? (

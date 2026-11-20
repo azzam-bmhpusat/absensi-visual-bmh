@@ -9,6 +9,7 @@ import {
   profileContactSchema,
   profileSchema,
   safeNextPath,
+  whatsappLink,
   wibLocalToIso,
 } from "@/lib/profile-contact";
 
@@ -48,6 +49,7 @@ describe("profile-contact", () => {
       ukuran_baju: "XL",
       no_whatsapp: "0812 3456 7890",
       rencana_kedatangan: "2026-11-20T14:00",
+      keterangan_kehadiran: "offline",
     };
     const ok = profileSchema.safeParse(base);
     expect(ok.success && ok.data).toMatchObject({
@@ -57,7 +59,7 @@ describe("profile-contact", () => {
       ukuran_baju: "XL",
       no_whatsapp: "081234567890",
     });
-    for (const key of ["jabatan", "ukuran_baju", "no_whatsapp", "rencana_kedatangan"] as const) {
+    for (const key of ["jabatan", "ukuran_baju", "no_whatsapp", "rencana_kedatangan", "keterangan_kehadiran"] as const) {
       expect(profileSchema.safeParse({ ...base, [key]: "" }).success).toBe(false);
     }
     expect(profileSchema.safeParse({ ...base, nama: " " }).success).toBe(false);
@@ -73,6 +75,7 @@ describe("profile-contact", () => {
       ukuran_baju: "XL",
       no_whatsapp: "0812",
       rencana_kedatangan: "2026-11-20T07:00:00.000Z",
+      keterangan_kehadiran: "online",
     };
     expect(isProfileComplete(full)).toBe(true);
     expect(isProfileComplete(null)).toBe(false);
@@ -96,6 +99,13 @@ describe("profile-contact", () => {
     }
   });
 
+  it("whatsappLink membuat link wa.me", () => {
+    expect(whatsappLink("081234567890")).toBe("https://wa.me/6281234567890");
+    expect(whatsappLink("+6281234567890")).toBe("https://wa.me/6281234567890");
+    expect(whatsappLink("")).toBeNull();
+    expect(profileSchema.shape.keterangan_kehadiran.safeParse("hybrid").success).toBe(false);
+  });
+
   it("hanya menerima ?next= internal", () => {
     expect(safeNextPath("/profile")).toBe("/profile");
     expect(safeNextPath("https://evil.com")).toBe("/profile");
@@ -109,6 +119,15 @@ describe("Migrasi 0012_profiles_contact_arrival.sql", () => {
   it("menambah dua kolom tanpa membukanya ke klien", () => {
     expect(sql).toMatch(/add column if not exists no_whatsapp text/);
     expect(sql).toMatch(/add column if not exists rencana_kedatangan timestamptz/);
+    expect(sql.replace(/--.*$/gm, "")).not.toMatch(/grant/i);
+  });
+});
+
+describe("Migrasi 0014_profiles_keterangan_kehadiran.sql", () => {
+  const sql = fs.readFileSync(path.join(__dirname, "..", "supabase", "migrations", "0014_profiles_keterangan_kehadiran.sql"), "utf-8");
+  it("menambah kolom online/offline tanpa grant", () => {
+    expect(sql).toMatch(/add column if not exists keterangan_kehadiran text/);
+    expect(sql).toContain("'online', 'offline'");
     expect(sql.replace(/--.*$/gm, "")).not.toMatch(/grant/i);
   });
 });

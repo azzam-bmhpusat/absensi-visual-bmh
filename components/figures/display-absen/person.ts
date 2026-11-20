@@ -9,7 +9,7 @@ type V3 = k.Point3;
 /**
  * Sosok & kursi dibangun SEKALI di titik asal (0,0,0) lalu dipasang berulang lewat <use> + translate
  * (proyeksi affine: menggeser dunia = menggeser layar). Warna lewat variabel CSS pada <use>:
- * --sk kulit · --cl baju · --hr rambut/peci · --ac hijab/aksen. Celana, sepatu, kerah memakai warna tetap/turunan.
+ * --sk kulit · --cl baju · --hr rambut/peci · --ac aksen. Celana, sepatu, kerah memakai warna tetap/turunan.
  *
  * Proporsi ±7,2 kepala (tinggi berdiri ≈ 39,5 satuan): kepala telur 5,5 tinggi, bahu ±11, pinggul ±8,6,
  * persendian pinggul/lutut/pergelangan serta bahu/siku/pergelangan; bagian dibangun dari loft elips (lihat body.ts).
@@ -25,7 +25,7 @@ const PANTS = "pc p-pants";
 const SHOE = "pc p-shoe";
 const WHITE = "pc p-white";
 
-export type HeadKind = 0 | 1 | 2;
+export type HeadKind = 0 | 1;
 
 function solids(T: Tools) {
   const { S } = T;
@@ -91,86 +91,57 @@ function headParts(P: Projection, T: Tools, kind: HeadKind, zc: number, cy: numb
     { z: zc + 2.8, rx: 0.7, ry: 0.9, dy: -f * 0.2 },
   ];
 
-  if (kind === 2) {
-    // kerudung membungkus kepala; wajah oval terbuka di sisi depan
+  out.push(s.skin(stack(cx, cy, skull, P, { n: 12 })));
+  if (kind === 0) {
+    // rambut: tudung atas (garis rambut tinggi di dahi) + massa belakang sampai tengkuk
     out.push(
-      s.acc(
+      s.hair(
         stack(cx, cy, [
-          { z: zc - 3.0, rx: 2.3, ry: 2.5, dy: -f * 0.5 },
-          { z: zc - 1.8, rx: 2.95, ry: 3.05, dy: -f * 0.45 },
-          { z: zc, rx: 3.05, ry: 3.2, dy: -f * 0.4 },
-          { z: zc + 1.5, rx: 2.85, ry: 3.0, dy: -f * 0.4 },
-          { z: zc + 2.6, rx: 2.0, ry: 2.3, dy: -f * 0.35 },
-          { z: zc + 3.2, rx: 0.8, ry: 1.0, dy: -f * 0.3 },
-        ], P, { n: 14 })
+          { z: zc - 1.5, rx: 2.0, ry: 1.5, dy: -f * 1.35 },
+          { z: zc - 0.2, rx: 2.58, ry: 2.0, dy: -f * 0.95 },
+          { z: zc + 1.4, rx: 2.55, ry: 2.2, dy: -f * 0.8 },
+          { z: zc + 2.4, rx: 1.95, ry: 1.8, dy: -f * 0.5 },
+        ], P, { n: 12, cap: false })
       )
     );
-    if (face) {
-      out.push(
-        s.skin(
-          stack(cx, cy + 1.3, [
-            { z: zc - 2.1, rx: 1.1, ry: 1.0 },
-            { z: zc - 0.9, rx: 1.75, ry: 1.2 },
-            { z: zc + 0.3, rx: 1.95, ry: 1.3 },
-            { z: zc + 1.4, rx: 1.7, ry: 1.2 },
-            { z: zc + 2.1, rx: 1.1, ry: 0.8 },
-          ], P, { n: 10 })
-        )
-      );
-    }
+    out.push(
+      s.hair(
+        stack(cx, cy, [
+          { z: zc + 1.35, rx: 2.55, ry: 2.8, dy: -f * 0.3 },
+          { z: zc + 2.1, rx: 2.0, ry: 2.3, dy: -f * 0.25 },
+          { z: zc + 2.7, rx: 1.1, ry: 1.4, dy: -f * 0.2 },
+          { z: zc + 3.0, rx: 0.45, ry: 0.6, dy: -f * 0.2 },
+        ], P, { n: 12 })
+      )
+    );
   } else {
-    out.push(s.skin(stack(cx, cy, skull, P, { n: 12 })));
-    if (kind === 0) {
-      // rambut: tudung atas (garis rambut tinggi di dahi) + massa belakang sampai tengkuk
-      out.push(
-        s.hair(
-          stack(cx, cy, [
-            { z: zc - 1.5, rx: 2.0, ry: 1.5, dy: -f * 1.35 },
-            { z: zc - 0.2, rx: 2.58, ry: 2.0, dy: -f * 0.95 },
-            { z: zc + 1.4, rx: 2.55, ry: 2.2, dy: -f * 0.8 },
-            { z: zc + 2.4, rx: 1.95, ry: 1.8, dy: -f * 0.5 },
-          ], P, { n: 12, cap: false })
-        )
-      );
-      out.push(
-        s.hair(
-          stack(cx, cy, [
-            { z: zc + 1.35, rx: 2.55, ry: 2.8, dy: -f * 0.3 },
-            { z: zc + 2.1, rx: 2.0, ry: 2.3, dy: -f * 0.25 },
-            { z: zc + 2.7, rx: 1.1, ry: 1.4, dy: -f * 0.2 },
-            { z: zc + 3.0, rx: 0.45, ry: 0.6, dy: -f * 0.2 },
-          ], P, { n: 12 })
-        )
-      );
-    } else {
-      // peci hitam di atas rambut pendek
-      out.push(
-        s.hair(
-          stack(cx, cy, [
-            { z: zc - 1.3, rx: 1.9, ry: 1.3, dy: -f * 1.4 },
-            { z: zc, rx: 2.5, ry: 1.9, dy: -f * 1.0 },
-            { z: zc + 1.2, rx: 2.5, ry: 2.1, dy: -f * 0.8 },
-          ], P, { n: 12, cap: false })
-        )
-      );
-      out.push(
-        s.hair(
-          stack(cx, cy, [
-            { z: zc + 1.0, rx: 2.72, ry: 2.95, dy: -f * 0.2 },
-            { z: zc + 3.2, rx: 2.35, ry: 2.6, dy: -f * 0.2 },
-            { z: zc + 3.45, rx: 2.15, ry: 2.4, dy: -f * 0.2 },
-          ], P, { n: 12 })
-        )
-      );
-    }
-    // telinga terdekat (+x)
-    out.push(s.skin(ellipsoid([cx + 2.4, cy - f * 0.1, zc - 0.1], 0.45, 0.7, 0.95, P, { lat: 3, n: 6 })));
+    // peci hitam di atas rambut pendek
+    out.push(
+      s.hair(
+        stack(cx, cy, [
+          { z: zc - 1.3, rx: 1.9, ry: 1.3, dy: -f * 1.4 },
+          { z: zc, rx: 2.5, ry: 1.9, dy: -f * 1.0 },
+          { z: zc + 1.2, rx: 2.5, ry: 2.1, dy: -f * 0.8 },
+        ], P, { n: 12, cap: false })
+      )
+    );
+    out.push(
+      s.hair(
+        stack(cx, cy, [
+          { z: zc + 1.0, rx: 2.72, ry: 2.95, dy: -f * 0.2 },
+          { z: zc + 3.2, rx: 2.35, ry: 2.6, dy: -f * 0.2 },
+          { z: zc + 3.45, rx: 2.15, ry: 2.4, dy: -f * 0.2 },
+        ], P, { n: 12 })
+      )
+    );
   }
+  // telinga terdekat (+x)
+  out.push(s.skin(ellipsoid([cx + 2.4, cy - f * 0.1, zc - 0.1], 0.45, 0.7, 0.95, P, { lat: 3, n: 6 })));
 
   if (face) {
     const u = k.cameraOf(P).k;
     const front = (x: number, dz: number, rx = 2.45, ry = 2.7, rz = 2.75) =>
-      cy + (kind === 2 ? 1.3 + 1.3 * Math.sqrt(Math.max(0, 1 - (x / 1.95) ** 2 - (dz / 2.4) ** 2)) : ry * Math.sqrt(Math.max(0.05, 1 - (x / rx) ** 2 - (dz / rz) ** 2)));
+      cy + ry * Math.sqrt(Math.max(0.05, 1 - (x / rx) ** 2 - (dz / rz) ** 2));
     const e: string[] = [];
     for (const sx of [-0.95, 0.95]) {
       const [ex, ey] = k.iso([cx + sx, front(sx, 0.2), zc + 0.2], P);
@@ -195,7 +166,7 @@ interface Rig {
   cy: number;
 }
 
-/** Leher + kerah/kerudung. */
+/** Leher + kerah. */
 function neckParts(P: Projection, T: Tools, kind: HeadKind, rig: Rig): Part[] {
   const s = solids(T);
   const { zs, cy } = rig;
@@ -213,25 +184,11 @@ function neckParts(P: Projection, T: Tools, kind: HeadKind, rig: Rig): Part[] {
       at: [0, cy, zs + 0.5],
       bias: 0.6,
     });
-  } else if (kind === 2) {
-    parts.push({
-      svg: s.acc(
-        stack(0, cy, [
-          { z: zs + 1.8, rx: 2.5, ry: 2.5 },
-          { z: zs + 0.5, rx: 3.8, ry: 2.8 },
-          { z: zs - 1.0, rx: 4.85, ry: 3.1 },
-          { z: zs - 3.2, rx: 4.65, ry: 3.0 },
-          { z: zs - 4.8, rx: 4.1, ry: 2.8 },
-        ], P, { n: 14 })
-      ),
-      at: [0, cy, zs - 1],
-      bias: 0.4,
-    });
   }
   return parts;
 }
 
-/** Satu lengan: bahu → siku → pergelangan + tangan. Lengan panjang untuk kind 1 & 2, pendek untuk kind 0. */
+/** Satu lengan: bahu → siku → pergelangan + tangan. Lengan panjang untuk kind 1 (peci), pendek untuk kind 0. */
 function armParts(P: Projection, T: Tools, kind: HeadKind, S0: V3, E: V3, W: V3, hand: { c: V3; r: V3 }): Part[] {
   const s = solids(T);
   const sleeve = kind !== 0;
@@ -254,21 +211,19 @@ export function seatedArt(P: Projection, T: Tools, kind: HeadKind) {
   const parts: Part[] = [];
   const cy = 0.9; // titik tengah badan (y)
   const zs = 23.3; // puncak bahu
-  const gamis = kind === 2;
 
   // kaki: paha ke depan, lutut menekuk ±90°, betis turun ke sepatu
   for (const sx of [-1, 1]) {
     const hip: V3 = [sx * 2.2, 0.9, 10.4];
     const knee: V3 = [sx * 2.5, -10.0, 10.6];
     const ankle: V3 = [sx * 2.6, -11.5, 2.6];
-    const legTone = gamis ? s.cloth : s.pants;
-    parts.push({ svg: legTone(limb(hip, knee, gamis ? 2.05 : 1.85, gamis ? 1.8 : 1.5, P, { n: 8, bulge: 0.05 })), at: lerp3(hip, knee, 0.5) });
-    parts.push({ svg: legTone(limb(knee, ankle, gamis ? 1.7 : 1.4, gamis ? 1.35 : 1.0, P, { n: 8 })), at: lerp3(knee, ankle, 0.5), bias: 0.02 });
+    parts.push({ svg: s.pants(limb(hip, knee, 1.85, 1.5, P, { n: 8, bulge: 0.05 })), at: lerp3(hip, knee, 0.5) });
+    parts.push({ svg: s.pants(limb(knee, ankle, 1.4, 1.0, P, { n: 8 })), at: lerp3(knee, ankle, 0.5), bias: 0.02 });
     parts.push({ svg: s.shoe(ellipsoid([sx * 2.6, -12.6, 1.2], 1.55, 2.5, 1.2, P, { lat: 3, n: 8 })), at: [sx * 2.6, -12.6, 1.2], bias: 0.03 });
   }
   // panggul + torso
   parts.push({
-    svg: (gamis ? s.cloth : s.pants)(
+    svg: s.pants(
       stack(0, cy, [
         { z: 8.95, rx: 3.5, ry: 2.7 },
         { z: 10.6, rx: 4.25, ry: 3.0 },
@@ -341,7 +296,6 @@ export function standingArt(P: Projection, T: Tools, kind: HeadKind, step: -1 | 
   const parts: Part[] = [];
   const cy = 0.1;
   const zs = 33.0;
-  const gamis = kind === 2;
   const a = step * 2.8;
 
   // kaki (x=−2.3 maju bila step=1; x=+2.3 maju bila step=−1)
@@ -351,40 +305,21 @@ export function standingArt(P: Projection, T: Tools, kind: HeadKind, step: -1 | 
     const hip: V3 = [sx * 2.3, 0, 19.6];
     const knee: V3 = [sx * 2.45, dy * 0.6 + (dy < 0 ? -0.9 : 0), 10.9 + lift * 0.55];
     const ankle: V3 = [sx * 2.4, dy, 2.2 + lift];
-    if (!gamis) {
-      parts.push({ svg: s.pants(limb(hip, knee, 1.9, 1.5, P, { n: 8, bulge: 0.05 })), at: lerp3(hip, knee, 0.5) });
-      parts.push({ svg: s.pants(limb(knee, ankle, 1.45, 1.0, P, { n: 8 })), at: lerp3(knee, ankle, 0.5), bias: 0.02 });
-    } else {
-      parts.push({ svg: s.skin(limb([sx * 2.4, dy * 0.8, 4.6 + lift], ankle, 0.85, 0.8, P, { n: 6 })), at: ankle });
-    }
+    parts.push({ svg: s.pants(limb(hip, knee, 1.9, 1.5, P, { n: 8, bulge: 0.05 })), at: lerp3(hip, knee, 0.5) });
+    parts.push({ svg: s.pants(limb(knee, ankle, 1.45, 1.0, P, { n: 8 })), at: lerp3(knee, ankle, 0.5), bias: 0.02 });
     parts.push({ svg: s.shoe(ellipsoid([sx * 2.4, dy - 0.9, 1.3 + lift], 1.55, 2.5, 1.2, P, { lat: 3, n: 8 })), at: [sx * 2.4, dy - 0.9, 1.3 + lift], bias: 0.03 });
   }
-  // panggul / rok / torso
-  if (gamis) {
-    parts.push({
-      svg: s.cloth(
-        stack(0, cy, [
-          { z: 3.4, rx: 4.5, ry: 3.4 },
-          { z: 10.5, rx: 4.0, ry: 2.9 },
-          { z: 17.5, rx: 3.8, ry: 2.5 },
-          { z: 23.8, rx: 3.4, ry: 2.15 },
-        ], P, { n: 14, cap: false })
-      ),
-      at: [0, cy, 13],
-      bias: 0.04,
-    });
-  } else {
-    parts.push({
-      svg: s.pants(
-        stack(0, cy, [
-          { z: 18.7, rx: 3.6, ry: 2.4 },
-          { z: 20.4, rx: 4.3, ry: 2.65 },
-          { z: 23.7, rx: 3.5, ry: 2.15 },
-        ], P, { n: 12, cap: false })
-      ),
-      at: [0, cy, 21],
-    });
-  }
+  // panggul / torso
+  parts.push({
+    svg: s.pants(
+      stack(0, cy, [
+        { z: 18.7, rx: 3.6, ry: 2.4 },
+        { z: 20.4, rx: 4.3, ry: 2.65 },
+        { z: 23.7, rx: 3.5, ry: 2.15 },
+      ], P, { n: 12, cap: false })
+    ),
+    at: [0, cy, 21],
+  });
   parts.push({
     svg: s.cloth(
       stack(0, cy, [

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { normalizeString } from "./normalize";
-import { UKURAN_BAJU } from "./participant-options";
+import { MODE_KEHADIRAN, UKURAN_BAJU } from "./participant-options";
 import { emailSchema } from "./user-schema";
 
 /** Zona waktu acara: WIB (UTC+7). */
@@ -113,7 +113,15 @@ export const profileSchema = profileContactSchema.extend({
   rencana_kedatangan: profileContactSchema.shape.rencana_kedatangan.pipe(
     z.string({ error: "Rencana kedatangan wajib diisi" })
   ),
+  keterangan_kehadiran: z.enum(MODE_KEHADIRAN, { error: "Keterangan kehadiran wajib dipilih" }),
 });
+
+/** Link chat WhatsApp: 0812... -> https://wa.me/62812... ; null bila nomor kosong. */
+export function whatsappLink(no: string | null | undefined): string | null {
+  const digits = (no ?? "").replace(/\D/g, "");
+  if (!digits) return null;
+  return `https://wa.me/${digits.startsWith("0") ? `62${digits.slice(1)}` : digits}`;
+}
 
 export type ProfileInput = z.input<typeof profileSchema>;
 
@@ -127,12 +135,21 @@ export function isProfileComplete(
         ukuran_baju?: string | null;
         no_whatsapp?: string | null;
         rencana_kedatangan?: string | null;
+        keterangan_kehadiran?: string | null;
       }
     | null
     | undefined
 ): boolean {
   if (!p) return false;
-  return [p.nama, p.perwakilan_daerah, p.jabatan, p.ukuran_baju, p.no_whatsapp, p.rencana_kedatangan].every(
+  return [
+    p.nama,
+    p.perwakilan_daerah,
+    p.jabatan,
+    p.ukuran_baju,
+    p.no_whatsapp,
+    p.rencana_kedatangan,
+    p.keterangan_kehadiran,
+  ].every(
     (v) => typeof v === "string" && v.trim().length > 0
   );
 }

@@ -33,6 +33,7 @@ describe("tabel guests sudah dihapus: semua kode memakai profiles", () => {
     const allowAllProfiles = new Set([
       "app/(admin)/manajemen-user/page.tsx",
       "app/(admin)/manajemen-user/actions.ts",
+      "app/(admin)/data-peserta/page.tsx",
       "lib/participant-account.ts",
       "app/admin/actions.ts",
       // Profil akun sendiri (difilter .eq("id", user.id)), termasuk kolom privat no_whatsapp/rencana_kedatangan.

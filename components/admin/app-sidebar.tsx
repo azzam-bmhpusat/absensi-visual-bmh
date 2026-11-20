@@ -17,6 +17,7 @@ import {
   Theater,
   LogOut,
   UserCog,
+  Contact,
 } from "lucide-react";
 import {
   Sidebar,
@@ -64,6 +65,7 @@ export function AppSidebar({
       badge: guestsCount !== undefined ? `${guestsCount}` : null,
       badgeColor: "bg-secondary text-primary",
     },
+    { label: "Data Peserta", href: "/data-peserta", icon: Contact, badge: null, badgeColor: "" },
     {
       label: "Rekap Kehadiran",
       href: "/rekap-kehadiran",

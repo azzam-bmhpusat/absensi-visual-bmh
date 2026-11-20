@@ -110,7 +110,7 @@ describe("display absen model", () => {
   it("varian sosok deterministik", () => {
     expect(lookOf("abc")).toEqual(lookOf("abc"));
     expect(lookOf("abc")).not.toEqual(lookOf("abd"));
-    expect([0, 1, 2]).toContain(lookOf("x").head);
+    expect([0, 1]).toContain(lookOf("x").head);
   });
 
   it("teks nama ringkas & tur sorot melingkar", () => {

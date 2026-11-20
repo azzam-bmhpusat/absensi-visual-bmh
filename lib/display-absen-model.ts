@@ -217,19 +217,35 @@ export function slotOfY(y: number, rows: number): number {
 // ---------- Jalur jalan tamu ----------
 export type V3 = [number, number, number];
 
+/** Tangga di sisi kiri teras: dari lantai aula naik ke teras belakang (searah sumbu x). */
+export const STEP_W = 3;
+export function stairOf(plan: Pick<HallPlan, "blockW" | "rows">) {
+  const top = zDeckOf(plan.rows);
+  const steps = Math.max(1, Math.ceil(top / RISE));
+  const edgeX = -plan.blockW / 2 - SIDE; // tepi kiri teras
+  return { steps, edgeX, footX: edgeX - steps * STEP_W, y: yFrontOf(plan.rows) - 9, top };
+}
+
+/** Gerbang masuk berdiri di LANTAI aula, di depan kaki tangga teras. */
 export function gatePos(plan: Pick<HallPlan, "blockW" | "rows">): V3 {
-  return [-plan.blockW / 2 - SIDE / 2 - 2, plan.rows * PITCH_Y + DECK_D * 0.55, zDeckOf(plan.rows)];
+  const st = stairOf(plan);
+  return [st.footX - 5, yFrontOf(plan.rows) + 4, 0];
 }
 
 /** Titik-titik rute: gerbang → lorong samping → jalur kaki baris → kursi. */
 export function walkRoute(plan: Pick<HallPlan, "blockW" | "rows" | "cols" | "blockSize">, index: number): V3[] {
   const seat = seatPos(plan, index);
   const gate = gatePos(plan);
-  const sideX = gate[0];
   const lane = laneStartY(seat.row) + LANE * 0.55;
-  const top = zDeckOf(plan.rows);
+  const st = stairOf(plan);
+  const top = st.top;
+  const sideX = -plan.blockW / 2 - SIDE / 2 - 2;
   return [
     gate,
+    [gate[0], st.y, 0],
+    [st.footX, st.y, 0],
+    [st.edgeX, st.y, top],
+    [sideX, st.y, top],
     [sideX, plan.rows * PITCH_Y + 4, top],
     [sideX, lane, rowZ(seat.row)],
     [seat.x, lane, seat.z],
@@ -284,14 +300,14 @@ export function hashOf(text: string): number {
 export const SKIN = ["#e3b88f", "#cf9a6e", "#a8744c", "#7b4e33"] as const;
 export const CLOTH = ["#2f9275", "#d9f1e7", "#c9a24a", "#4f86a8", "#8fbfae", "#b9715c", "#e8e2cf", "#5b6fb0"] as const;
 export const HAIR = ["#1b1410", "#2d1e14", "#3b2a1c", "#0d0d0d"] as const;
-export const HEAD_KINDS = 3; // 0 rambut · 1 peci · 2 hijab
+export const HEAD_KINDS = 2; // 0 rambut · 1 peci
 
 export interface Look {
   skin: string;
   cloth: string;
   hair: string;
   accent: string;
-  head: 0 | 1 | 2;
+  head: 0 | 1;
   /** fase & durasi gerak halus (detik) */
   delay: number;
   bob: number;
@@ -303,7 +319,7 @@ export interface Look {
 export function lookOf(key: string): Look {
   const h = hashOf(key);
   const pick = <T,>(list: readonly T[], shift: number) => list[(h >>> shift) % list.length];
-  const head = ((h >>> 11) % HEAD_KINDS) as 0 | 1 | 2;
+  const head = ((h >>> 11) % HEAD_KINDS) as 0 | 1;
   return {
     skin: pick(SKIN, 3),
     cloth: pick(CLOTH, 7),

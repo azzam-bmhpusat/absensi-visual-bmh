@@ -67,6 +67,7 @@ describe("Guardrail: Rute Beranda (/) Bebas dari Redirect ke /absen", () => {
         routePattern.startsWith("/kelola-sesi-acara") ||
         routePattern.startsWith("/pengaturan") ||
         routePattern.startsWith("/manajemen-user") ||
+        routePattern.startsWith("/data-peserta") ||
         routePattern.startsWith("/profile") ||
         routePattern.startsWith("/informasi-kamar-hotel") ||
         routePattern.startsWith("/publikasi/") ||

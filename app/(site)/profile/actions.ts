@@ -19,6 +19,7 @@ const FIELDS = [
   "ukuran_baju",
   "no_whatsapp",
   "rencana_kedatangan",
+  "keterangan_kehadiran",
 ] as const;
 
 /** Menyimpan seluruh data profil milik akun yang sedang login. */

@@ -25,7 +25,7 @@ async function ProfileContent() {
   const admin = createAdminClient();
   const { data: profile } = await admin
     .from("profiles")
-    .select("nama, perwakilan_daerah, jabatan, ukuran_baju, no_whatsapp, rencana_kedatangan")
+    .select("nama, perwakilan_daerah, jabatan, ukuran_baju, no_whatsapp, rencana_kedatangan, keterangan_kehadiran")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -46,6 +46,7 @@ async function ProfileContent() {
               ukuranBaju: profile?.ukuran_baju ?? "",
               noWhatsapp: profile?.no_whatsapp ?? "",
               rencanaKedatangan: isoToWibLocal(profile?.rencana_kedatangan),
+              keteranganKehadiran: profile?.keterangan_kehadiran ?? "",
             }}
           />
         </CardContent>

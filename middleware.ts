@@ -17,6 +17,7 @@ export const config = {
     "/kelola-sesi-acara/:path*",
     "/pengaturan/:path*",
     "/manajemen-user/:path*",
+    "/data-peserta/:path*",
     "/profile/:path*",
     "/informasi-kamar-hotel/:path*",
     "/publikasi/foto-galeri-kegiatan/:path*",

@@ -7,7 +7,7 @@ import { AZIMUTH, ELEVATION } from "@/lib/display-absen-model";
 
 const P: k.Projection = { origin: [0, 0], scale: 1, azimuth: AZIMUTH, elevation: ELEVATION };
 const T = toolsFor(P, "t");
-const KINDS: HeadKind[] = [0, 1, 2];
+const KINDS: HeadKind[] = [0, 1];
 
 /** Tinggi layar (y) semua titik path, dalam satuan dunia (dibagi cos(elevasi)·k). */
 function heightUnits(svg: string) {

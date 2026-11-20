@@ -13,18 +13,20 @@ import {
   STAGE_H,
   TRUSS_Z,
   WALL_H,
-  hashOf,
   seatPos,
   slotOfY,
   yBackOf,
   yFrontOf,
   zDeckOf,
+  gatePos,
+  stairOf,
+  STEP_W,
   type HallPlan,
   type V3,
 } from "@/lib/display-absen-model";
 
 export const VIEW_H = 1080;
-const KINDS: HeadKind[] = [0, 1, 2];
+const KINDS: HeadKind[] = [0, 1];
 
 interface Prop {
   /** kedalaman (y) tempat benda digambar */
@@ -118,7 +120,7 @@ export function buildWorld(plan: HallPlan): World {
     defs.push(`<g id="ab-pr${kind}">${deskArt(P, T, kind, 13)}</g>`);
   }
   defs.push(
-    `<linearGradient id="ab-beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2d06b" stop-opacity="0.5"/><stop offset="1" stop-color="#f2d06b" stop-opacity="0.07"/></linearGradient>`
+    `<linearGradient id="ab-beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2d06b" stop-opacity="0.32"/><stop offset="1" stop-color="#f2d06b" stop-opacity="0.07"/></linearGradient>`
   );
 
   // ---------- Lantai ----------
@@ -212,7 +214,7 @@ export function buildWorld(plan: HallPlan): World {
   const tx = -Math.min(stageW * 0.3, ledW / 2 + 70);
   const ty = STAGE.y + 64;
   s2.push(place("ab-pd1", tx - 14, ty - 7, STAGE_H + 2.4, look("#a8744c", "#4f86a8", "#0d0d0d", "#2f9275")));
-  s2.push(place("ab-pd2", tx + 14, ty - 7, STAGE_H + 2.4, look("#e3b88f", "#c9a24a", "#2d1e14", "#d9f1e7")));
+  s2.push(place("ab-pd0", tx + 14, ty - 7, STAGE_H + 2.4, look("#e3b88f", "#c9a24a", "#2d1e14", "#d9f1e7")));
   const table: Plan = { x: tx - 28, y: ty - 3, w: 56, d: 12, r: 1.6 };
   s2.push(S(k.slabOf(table, STAGE_H + 8.6, 1.8, P, 3, 0.4), { tone: "mid" }));
   s2.push(S(k.slabOf({ x: tx - 27, y: ty - 2, w: 54, d: 1.6, r: 0.4 }, STAGE_H, 8.6, P, 2), { tone: "lo" }));
@@ -233,12 +235,25 @@ export function buildWorld(plan: HallPlan): World {
   const deck: string[] = [S(k.slabOf(deckPlan, 0, zDeck, P, 3), { tone: "lo", crease: "none" })];
   deck.push(L(k.planOutline(k.insetPlan(deckPlan, 3), zDeck, P, 3), { tone: "faint" }));
   // gerbang masuk
-  const gate: V3 = [-blockW / 2 - SIDE / 2 - 2, rows * PITCH_Y + DECK_D * 0.55, zDeck];
+  // tangga di sisi kiri teras: lantai aula -> teras (anak tangga makin tinggi ke arah teras)
+  const st = stairOf(plan);
+  for (let i = 0; i < st.steps; i++) {
+    const h = Math.min(st.top, (i + 1) * RISE);
+    deck.push(S(k.slabOf({ x: st.edgeX - (i + 1) * STEP_W, y: st.y - 7, w: STEP_W + 0.4, d: 14, r: 0.3 }, 0, h, P, 2, 0.2), { tone: i % 2 ? "mid" : "lo" }));
+  }
+  // gerbang masuk berdiri di lantai aula, di depan kaki tangga
+  const gate = gatePos(plan);
   const gy = gate[1];
-  for (const sx of [-9, 9]) deck.push(S(k.slabOf({ x: gate[0] + sx - 1.8, y: gy - 2, w: 3.6, d: 4, r: 0.6 }, zDeck, 40, P, 2, 0.3), { tone: "mid" }));
-  const lintel: Plan = { x: gate[0] - 12, y: gy - 2.4, w: 24, d: 4.8, r: 0.8 };
-  deck.push(S(k.slabOf(lintel, zDeck + 38, 7, P, 2, 0.4), { tone: "mid", inner: L(k.sideSeam(lintel, zDeck + 40, P, 2), { tone: "faint" }) }));
-  deck.push(faceText(gy + 2.4, gate[0], zDeck + 40.2, "MASUK", 3.6, "da-ink-gold"));
+  const mat: Plan = { x: gate[0] - 8, y: st.y - 7, w: 16, d: gy - st.y + 13, r: 1 };
+  deck.push(S(k.slabOf(mat, 0, 0.5, P, 3), { tone: "mid", className: "ab-mat", crease: "none" }));
+  for (const sx of [-8, 8]) {
+    deck.push(S(k.slabOf({ x: gate[0] + sx - 2.6, y: gy - 2.8, w: 5.2, d: 5.6, r: 0.8 }, 0, 2.4, P, 2, 0.3), { tone: "lo" }));
+    deck.push(S(k.slabOf({ x: gate[0] + sx - 1.8, y: gy - 2, w: 3.6, d: 4, r: 0.6 }, 2.4, 37.6, P, 2, 0.3), { tone: "mid" }));
+  }
+  const lintel: Plan = { x: gate[0] - 13, y: gy - 2.6, w: 26, d: 5.2, r: 0.8 };
+  deck.push(S(k.slabOf(lintel, 39, 9, P, 2, 0.4), { tone: "mid" }));
+  deck.push(`<g transform="${planeOf(gy + 2.65)}"><rect class="ab-banner" x="${f1(gate[0] - 11.5)}" y="${f1(-47)}" width="23" height="7" rx="0.8"/></g>`);
+  deck.push(faceText(gy + 2.7, gate[0], 41.9, "MASUK", 4.4, "da-ink-gold"));
 
   // ---------- Kursi ----------
   const cap = plan.cols * plan.rows;
@@ -256,12 +271,22 @@ export function buildWorld(plan: HallPlan): World {
   const midX = (side: number) => side * ((inner + outer) / 2);
   const wingW = outer - inner;
   const depthAt = (f: number) => yBack + 22 + f * (yFront - 14 - (yBack + 22));
-  const plant = (x: number, y: number, h = 22) => {
-    const out = [S(k.cylinder(x, y, 5.4, 0, 6, P, 14, 0.4), { tone: "lo" })];
-    out.push(S(k.cylinder(x, y, 5.6, 6, 1.2, P, 14), { tone: "mid", crease: "none" }));
-    out.push(S(k.cylinder(x, y, 5.2, 7.2, h * 0.38, P, 14, 1), { tone: "mid", className: "pc p-leaf" }));
-    out.push(S(k.cylinder(x, y, 3.8, 7.2 + h * 0.34, h * 0.34, P, 14, 1), { tone: "mid", className: "pc p-leaf" }));
-    out.push(S(k.cylinder(x, y, 2.2, 7.2 + h * 0.62, h * 0.3, P, 12, 0.8), { tone: "mid", className: "pc p-leaf" }));
+  // kipas angin berdiri: alas + tiang (iso), kepala menghadap penonton dengan bilah berputar & menoleh (CSS)
+  let fanN = 0;
+  const fan = (x: number, y: number, h = 34) => {
+    const out = [S(k.cylinder(x, y, 6, 0, 1.6, P, 16, 0.6), { tone: "lo" })];
+    out.push(S(k.cylinder(x, y, 0.9, 1.6, h - 6, P, 8), { tone: "mid", crease: "none" }));
+    out.push(S(k.cylinder(x, y, 2.2, h - 5.6, 3.2, P, 12, 0.6), { tone: "mid" }));
+    const [cx, cy] = at([x, y + 1.6, h]);
+    const r = 8.2 * k.cameraOf(P).k;
+    const blades = [0, 120, 240]
+      .map((a) => `<path class="ab-fan-blade" transform="rotate(${a})" d="M0 0C${f1(r * 0.25)} ${f1(-r * 0.2)} ${f1(r * 0.75)} ${f1(-r * 0.32)} ${f1(r * 0.82)} ${f1(-r * 0.05)}C${f1(r * 0.7)} ${f1(r * 0.18)} ${f1(r * 0.3)} ${f1(r * 0.12)} 0 0z"/>`)
+      .join("");
+    out.push(
+      `<g transform="translate(${f1(cx)} ${f1(cy)})"><g class="ab-fan-head" style="--fd:${-(fanN++ * 2.3).toFixed(1)}s">` +
+        `<circle class="ab-fan-back" r="${f1(r)}"/><g class="ab-fan-blades">${blades}</g>` +
+        `<circle class="ab-fan-guard" r="${f1(r)}"/><circle class="ab-fan-guard" r="${f1(r * 0.6)}"/><circle class="ab-fan-hub" r="${f1(r * 0.16)}"/></g></g>`
+    );
     return out.join("");
   };
   const speaker = (x: number, y: number, h: number) => {
@@ -283,8 +308,13 @@ export function buildWorld(plan: HallPlan): World {
     props.push({ y: STAGE.y + 24, html: speaker(xc, STAGE.y + 24, 54) });
     props.push({ y: STAGE.y + 60, html: crate(xc, STAGE.y + 60, 22, 14, 12) + crate(xc, STAGE.y + 60, 16, 10, 9, 12) });
     // tanaman penghias
-    props.push({ y: depthAt(0.62), html: plant(xc + side * (wingW * 0.22), depthAt(0.62), 26) });
-    props.push({ y: depthAt(0.97), html: plant(xc - side * (wingW * 0.2), depthAt(0.97), 20) + crate(xc + side * (wingW * 0.12), depthAt(0.97), 20, 12, 10) });
+    props.push({ y: depthAt(0.62), html: fan(xc + side * (wingW * 0.22), depthAt(0.62), 36) });
+    // sisi kiri: gerbang & tangga ada di dekat tribun, jadi kipas & peti digeser ke tepi luar sayap
+    props.push(
+      side < 0
+        ? { y: depthAt(0.97), html: fan(xc - wingW * 0.36, depthAt(0.97), 30) }
+        : { y: depthAt(0.97), html: fan(xc - side * (wingW * 0.2), depthAt(0.97), 30) + crate(xc + side * (wingW * 0.12), depthAt(0.97), 20, 12, 10) }
+    );
   }
 
   // kiri: kamera + meja mixer + operator
@@ -337,12 +367,21 @@ export function buildWorld(plan: HallPlan): World {
   {
     const xc = midX(1);
     const by = depthAt(0.2);
-    const ban: Plan = { x: xc - 13, y: by - 1.2, w: 26, d: 2.4, r: 0.6 };
-    const b: string[] = [S(k.slabOf({ x: xc - 14, y: by - 3, w: 28, d: 6, r: 1 }, 0, 2.4, P, 3), { tone: "lo" })];
+    // spanduk berdiri: kaki + panel; teks rata tengah dengan pemisah emas
+    const ban: Plan = { x: xc - 15, y: by - 1.2, w: 30, d: 2.4, r: 0.6 };
+    const b: string[] = [S(k.slabOf({ x: xc - 16, y: by - 3, w: 32, d: 6, r: 1 }, 0, 2.4, P, 3), { tone: "lo" })];
     b.push(S(k.slabOf(ban, 2.4, 74, P, 2, 0.4), { tone: "mid" }));
-    b.push(faceText(by + 1.4, xc, 70, "RAKERNAS", 4.6, "da-ink-gold"));
-    b.push(faceText(by + 1.4, xc, 61, "BMH 2026", 3.6, "da-ink-dim"));
-    b.push(L(k.lineOnTop([xc - 10, by + 1.3], [xc + 10, by + 1.3], 2.4, P), { tone: "faint" }));
+    const face = by + 1.25;
+    b.push(`<g transform="${planeOf(face)}"><rect class="ab-banner" x="${f1(xc - 13)}" y="${f1(-74)}" width="26" height="68" rx="1"/>` +
+      `<rect class="ab-banner-rule" x="${f1(xc - 8)}" y="${f1(-57.6)}" width="16" height="0.5"/>` +
+      `<rect class="ab-banner-rule" x="${f1(xc - 8)}" y="${f1(-18.6)}" width="16" height="0.5"/></g>`);
+    b.push(faceText(face, xc, 63, "RAKERNAS", 4.4, "da-ink-gold"));
+    b.push(faceText(face, xc, 51, "BMH", 6.4, "da-ink"));
+    b.push(faceText(face, xc, 44, "2027", 5.2, "da-ink-gold"));
+    b.push(faceText(face, xc, 33, "SILATURAHIM &amp;", 2.2, "da-ink-dim"));
+    b.push(faceText(face, xc, 29.6, "RAPAT KERJA", 2.2, "da-ink-dim"));
+    b.push(faceText(face, xc, 26.2, "NASIONAL", 2.2, "da-ink-dim"));
+    b.push(faceText(face, xc, 13, "Hall Utama", 2.4, "da-ink-dim"));
     props.push({ y: by + 2, html: b.join("") });
 
     const ry = depthAt(0.46);
@@ -351,20 +390,6 @@ export function buildWorld(plan: HallPlan): World {
     recep.push(S(k.slabOf(rdesk, 0, 13, P, 4, 0.6), { tone: "mid", inner: L(k.sideSeam(rdesk, 6, P, 4), { tone: "faint" }) }));
     recep.push(S(k.slabOf({ x: xc - 8, y: ry - 2, w: 12, d: 7, r: 0.8 }, 13, 0.8, P, 3), { tone: "lo" }));
     recep.push(S(k.slabOf({ x: xc - 8, y: ry - 2.2, w: 12, d: 0.9, r: 0.3 }, 13.8, 7, P, 2), { tone: "mid" }));
-    // poster QR di muka meja
-    const hash = hashOf("bmh-absen");
-    const mods: string[] = [];
-    const N = 9;
-    const q = 1.4;
-    for (let r = 0; r < N; r++) {
-      for (let c = 0; c < N; c++) {
-        const corner = (r < 3 && c < 3) || (r < 3 && c >= N - 3) || (r >= N - 3 && c < 3);
-        const hole = corner && (r === 1 || r === N - 2) && (c === 1 || c === N - 2);
-        const on = corner ? !hole : ((hash >>> ((r * N + c) % 28)) & 1) === 1;
-        if (on) mods.push(`M${f1(xc + 12 + c * q - (N * q) / 2)} ${f1(-(5 + (N - r) * q))}h${q}v${q}h-${q}z`);
-      }
-    }
-    recep.push(`<g transform="${planeOf(ry - 5 + 13)}"><rect x="${f1(xc + 12 - (N * q) / 2 - 1.2)}" y="${f1(-(5 + N * q + 1.2 + q))}" width="${f1(N * q + 2.4)}" height="${f1(N * q + 2.4)}" rx="0.6" class="ab-qrbg"/><path class="ab-qr" d="${mods.join("")}"/><rect class="ab-scan" x="${f1(xc + 12 - (N * q) / 2 - 1.2)}" y="${f1(-(5 + N * q + q))}" width="${f1(N * q + 2.4)}" height="0.7"/></g>`);
     props.push({ y: ry + 6, html: recep.join("") });
   }
   // sebar properti ke slot masing-masing (y < 0 → belakang, di samping panggung)

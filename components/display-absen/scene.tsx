@@ -124,28 +124,30 @@ function Led({ world, eventName, sessionName, hadir, total, pct, welcome, ticker
   const track = w - 16;
   return (
     <g transform={world.led.plane}>
-      <text className="da-ink-gold" x={0} y={Y(7)} fontSize={5.6} textAnchor="middle">
-        {fit(eventName.toUpperCase(), 5.6)}
+      <text className="da-ink-gold ab-led-head" x={0} y={Y(8)} fontSize={5.2} textAnchor="middle">
+        {fit(eventName.toUpperCase(), 5.2, w - 24)}
       </text>
-      <text className="da-ink-dim" x={0} y={Y(13.8)} fontSize={4.2} textAnchor="middle">
-        {fit(sessionName.toUpperCase(), 4.2)}
+      <text className="da-ink-dim" x={0} y={Y(14.4)} fontSize={3.9} textAnchor="middle">
+        {fit(sessionName.toUpperCase(), 3.9, w - 24)}
       </text>
+      <rect className="ab-led-rule" x={-w * 0.18} y={Y(17.6)} width={w * 0.36} height={0.5} />
       {welcome ? (
         <g key={welcome.key} className="ab-fadein">
-          <text className="da-ink-dim" x={0} y={Y(24)} fontSize={4.8} textAnchor="middle">
+          <text className="da-ink-dim" x={0} y={Y(25)} fontSize={4.4} textAnchor="middle" letterSpacing={1.2}>
             SELAMAT DATANG
           </text>
-          <text className="da-ink" x={0} y={Y(38.5)} fontSize={13.5} textAnchor="middle">
-            {fit(welcome.nama, 13.5)}
+          <text className="da-ink" x={0} y={Y(39)} fontSize={13} textAnchor="middle">
+            {fit(welcome.nama, 13, w - 24)}
           </text>
-          <text className="da-ink-dim" x={0} y={Y(48)} fontSize={5.8} textAnchor="middle">
+          <text className="da-ink-dim" x={0} y={Y(47.6)} fontSize={5.4} textAnchor="middle">
             {fit(
               formatGuestAffiliation({ perwakilan_daerah: welcome.daerah, jabatan: welcome.jabatan, departemen: welcome.departemen, kategori: welcome.kategori }),
-              5.8
+              5.4,
+              w - 24
             )}
           </text>
-          <text className="da-ink-gold" x={0} y={Y(58.5)} fontSize={7} textAnchor="middle">
-            {`MASUK ${welcome.checkedInAt ? clockOf(welcome.checkedInAt) : ""}`}
+          <text className="da-ink-gold" x={0} y={Y(56.4)} fontSize={6} textAnchor="middle">
+            {welcome.checkedInAt ? `MASUK ${clockOf(welcome.checkedInAt)} WIB` : "MASUK"}
           </text>
         </g>
       ) : (
@@ -168,9 +170,9 @@ function Led({ world, eventName, sessionName, hadir, total, pct, welcome, ticker
           ))}
         </g>
       )}
-      <rect className="ab-track" x={x0 + 8} y={-(z0 + 7.4)} width={track} height={2.4} rx={1.2} />
-      <rect className="ab-fill" x={x0 + 8} y={-(z0 + 7.4)} width={Math.max(0, Math.min(1, pct / 100)) * track} height={2.4} rx={1.2} />
-      <text className="da-ink-dim" x={x1 - 8} y={-(z0 + 10.6)} fontSize={3.6} textAnchor="end">
+      <rect className="ab-track" x={x0 + 8} y={-(z0 + 5.2)} width={track - 18} height={2.2} rx={1.1} />
+      <rect className="ab-fill" x={x0 + 8} y={-(z0 + 5.2)} width={Math.max(0, Math.min(1, pct / 100)) * (track - 18)} height={2.2} rx={1.1} />
+      <text className="da-ink-dim" x={x1 - 8} y={-(z0 + 3.2)} fontSize={3.6} textAnchor="end">
         {`${pct}%`}
       </text>
     </g>
@@ -247,20 +249,28 @@ function Callout({ world, entry, index }: { world: World; entry: SeatEntry; inde
   const x = Math.min(world.W - width - 12, Math.max(12, anchor[0] - width / 2));
   const y = Math.max(12, anchor[1] - height - 34);
   const aff = formatGuestAffiliation({ perwakilan_daerah: entry.daerah, jabatan: entry.jabatan, departemen: entry.departemen, kategori: entry.kategori });
+  // batas karakter dari lebar kartu (font monospace ≈ 0.62em per karakter) agar teks tidak keluar bingkai
+  const maxChars = (size: number) => Math.max(6, Math.floor((width - 28) / (size * 0.62)));
+  const clipId = `ab-card-clip-${index}`;
   return (
     <g className="ab-card" key={entry.key}>
       <path className="ab-stem" d={`M${anchor[0].toFixed(1)} ${anchor[1].toFixed(1)}L${anchor[0].toFixed(1)} ${(y + height).toFixed(1)}`} />
       <circle className="ab-stem-dot" cx={anchor[0]} cy={anchor[1]} r={3} />
       <rect className="ab-card-bg" x={x} y={y} width={width} height={height} rx={9} />
-      <text className="da-ink" x={x + 14} y={y + 30} fontSize={23}>
-        {fitText(entry.nama, 20)}
-      </text>
-      <text className="da-ink-dim" x={x + 14} y={y + 54} fontSize={15}>
-        {fitText(aff, 28)}
-      </text>
-      <text className="da-ink-gold" x={x + 14} y={y + 78} fontSize={16}>
-        {entry.checkedInAt ? `MASUK ${clockOf(entry.checkedInAt)} WIB` : "TERDAFTAR"}
-      </text>
+      <clipPath id={clipId}>
+        <rect x={x + 1} y={y + 1} width={width - 2} height={height - 2} rx={8} />
+      </clipPath>
+      <g clipPath={`url(#${clipId})`}>
+        <text className="da-ink" x={x + 14} y={y + 30} fontSize={23}>
+          {fitText(entry.nama, maxChars(23))}
+        </text>
+        <text className="da-ink-dim" x={x + 14} y={y + 54} fontSize={15}>
+          {fitText(aff, maxChars(15))}
+        </text>
+        <text className="da-ink-gold" x={x + 14} y={y + 78} fontSize={16}>
+          {fitText(entry.checkedInAt ? `MASUK ${clockOf(entry.checkedInAt)} WIB` : "TERDAFTAR", maxChars(16))}
+        </text>
+      </g>
     </g>
   );
 }
@@ -527,7 +537,7 @@ function Hall({ eventName, live }: { eventName: string; live: LiveData }) {
     const y0 = rows * PITCH_Y + 30;
     const defs: Array<[number, number, number]> = [
       [0, -half + 20, 0],
-      [2, half - 20, 0],
+      [1, half - 20, 0],
     ];
     defs.forEach(([kind, xs], i) => {
       const route: V3[] = [
@@ -618,6 +628,21 @@ function Hall({ eventName, live }: { eventName: string; live: LiveData }) {
             <path ref={(el) => void ((beamRefs.current[i] ??= { path: null, pool: null }).pool = el)} className="ab-pool" />
           </g>
         ))}
+      </g>
+      {/* teks layar digambar ulang di atas sorot lampu agar tetap terbaca */}
+      <g className="ab-over" aria-hidden="true">
+        <Led
+          world={world}
+          eventName={eventName}
+          sessionName={live.session.nama}
+          hadir={live.hadirCount}
+          total={live.totalGuests}
+          pct={live.percentage}
+          welcome={ledEntry}
+          ticker={ticker}
+        />
+        <ClockFace world={world} />
+        <Gauge world={world} pct={live.percentage} status={live.status} />
       </g>
       {focusIndex >= 0 ? <Callout world={world} entry={seats[focusIndex]} index={focusIndex} /> : null}
     </svg>

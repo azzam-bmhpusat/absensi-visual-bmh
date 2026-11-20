@@ -1,6 +1,6 @@
 /*
  * /display-absen — satu adegan aula (panggung + tribun) layar penuh, tanpa bingkai atau garis pemisah.
- * Warna sosok: variabel --sk (kulit) --cl (baju) --hr (rambut/peci) --ac (hijab) diset pada elemen <use>.
+ * Warna sosok: variabel --sk (kulit) --cl (baju) --hr (rambut/peci) --ac (aksen) diset pada elemen <use>.
  */
 .ab-root {
   position: fixed;
@@ -31,7 +31,6 @@
 .p-pants { --c: color-mix(in srgb, var(--cl, #2f9275) 22%, #232b35); }
 .p-shoe { --c: #1d1b1a; }
 .p-white { --c: #f1f3ee; }
-.p-leaf { --c: #2f8f66; }
 .ab-eye { fill: #1c130d; stroke: none; }
 .ab-brow { fill: var(--hr, #1b1410); stroke: none; }
 .ab-nose { fill: rgba(60, 25, 10, 0.16); stroke: none; }
@@ -64,6 +63,7 @@
 @keyframes ab-fadein { from { opacity: 0; } to { opacity: 1; } }
 .da .ab-fadein { animation: ab-fadein 0.5s ease-out 1; }
 .da .ab-track { fill: var(--anatomy-faint); }
+.da .ab-led-rule { fill: var(--da-gold); opacity: 0.55; }
 .da .ab-fill { fill: var(--da-accent); transition: width 0.8s ease-out; }
 .da .ab-tick { stroke: var(--anatomy-lo); stroke-width: 1.1px; vector-effect: non-scaling-stroke; stroke-linecap: round; }
 .da .ab-tick.on { stroke: var(--anatomy-lit); }
@@ -76,10 +76,19 @@
 .da .ab-seg.on { fill: var(--da-accent); }
 .da .ab-seg.on.hot { fill: var(--da-gold); }
 .da .ab-tally { fill: #ff6b6b; stroke: none; animation: ab-blink 1.3s steps(1) infinite; }
-.da .ab-qrbg { fill: var(--da-ink); stroke: none; }
-.da .ab-qr { fill: var(--da-glass); stroke: none; }
-@keyframes ab-scan { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(12.4px); } }
-.da .ab-scan { fill: var(--da-gold); stroke: none; animation: ab-scan 2.4s ease-in-out infinite; }
+/* muka spanduk & papan gerbang: panel gelap agar teks terbaca */
+.da .ab-banner { fill: var(--da-glass); stroke: var(--da-gold); stroke-width: 0.8px; vector-effect: non-scaling-stroke; }
+.da .ab-banner-rule { fill: var(--da-gold); stroke: none; opacity: 0.8; }
+.ab-mat { --c: #8a2d2d; }
+/* kipas angin berdiri: bilah berputar, kepala menoleh kiri-kanan */
+@keyframes ab-spin { to { transform: rotate(360deg); } }
+@keyframes ab-sweep { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(0.55); } }
+.da .ab-fan-head { animation: ab-sweep 8s ease-in-out var(--fd, 0s) infinite; }
+.da .ab-fan-blades { animation: ab-spin 0.6s linear infinite; }
+.da .ab-fan-back { fill: var(--da-glass); fill-opacity: 0.7; stroke: none; }
+.da .ab-fan-blade { fill: var(--da-accent); fill-opacity: 0.85; stroke: none; }
+.da .ab-fan-guard { fill: none; stroke: var(--anatomy-lit); stroke-width: 1px; vector-effect: non-scaling-stroke; }
+.da .ab-fan-hub { fill: var(--da-gold); stroke: none; }
 
 /* ---------- Sorotan lampu & kartu data ---------- */
 .da .ab-beam { fill: url(#ab-beam); stroke: none; pointer-events: none; mix-blend-mode: screen; }
@@ -95,5 +104,5 @@
 .ab-loading i { width: 14px; height: 14px; border-radius: 50%; background: var(--da-gold); animation: ab-load 1.4s ease-in-out infinite; }
 
 @media (prefers-reduced-motion: reduce) {
-  .da .ab-row, .da .ab-live, .da .ab-sit, .ab-hdf, .ab-hdb, .ab-armup, .ab-armdn, .da .ab-scan, .da .ab-tally, .da .ab-lamp.warn, .da .ab-card, .da .ab-fadein { animation: none; }
+  .da .ab-row, .da .ab-live, .da .ab-sit, .ab-hdf, .ab-hdb, .ab-armup, .ab-armdn, .da .ab-fan-head, .da .ab-fan-blades, .da .ab-tally, .da .ab-lamp.warn, .da .ab-card, .da .ab-fadein { animation: none; }
 }

@@ -20,7 +20,7 @@ export async function ProfileGate({ path, children }: { path: string; children?:
   // Kolom no_whatsapp / rencana_kedatangan privat: dibaca server-side untuk akun sendiri saja.
   const { data: profile } = await createAdminClient()
     .from("profiles")
-    .select("nama, perwakilan_daerah, jabatan, ukuran_baju, no_whatsapp, rencana_kedatangan")
+    .select("nama, perwakilan_daerah, jabatan, ukuran_baju, no_whatsapp, rencana_kedatangan, keterangan_kehadiran")
     .eq("id", user.id)
     .maybeSingle();
 
