@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cn } from "cn";
 import { Menu } from "lucide-react";
@@ -14,10 +15,31 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { EVENT_INFO, NAV_ITEMS } from "@/content/rakernas";
+import { scrollToElementWhenReady } from "@/lib/scroll-to-element";
 
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const lenis = useLenis();
+  const pathname = usePathname();
+  // Anchor section (#rundown, dst.) hanya ada di beranda. Di halaman lain (mis. /registrasi)
+  // menu menuju "/#section" lewat navigasi client-side; navbar ini tetap terpasang.
+  const isHome = pathname === "/";
+  const navHref = (href: string) => (isHome ? href : `/${href}`);
+
+  // Setelah berpindah ke "/#section" dari halaman lain (atau memuat URL ber-hash),
+  // gulir ke section tersebut lewat Lenis (Lenis menahan scroll native).
+  useEffect(() => {
+    if (!isHome) return;
+    const hash = window.location.hash;
+    if (!NAV_ITEMS.some((item) => item.href === hash)) return;
+    // Konten beranda bisa baru muncul setelah navigasi: helper mencoba ulang sampai
+    // section benar-benar berada di bawah navbar (scroll-mt-20 = 80px).
+    return scrollToElementWhenReady({
+      lenis,
+      getElement: () => document.getElementById(hash.slice(1)),
+      offset: 80,
+    });
+  }, [isHome, lenis]);
 
   useEffect(() => {
     const desktop = window.matchMedia("(min-width: 1024px)");
@@ -62,62 +84,80 @@ export function SiteHeader() {
         {/* Navigasi langsung pada laptop dan desktop */}
         <nav aria-label="Navigasi utama" className="hidden items-center gap-1 lg:flex">
           {NAV_ITEMS.map((item) => (
-            <a
+            <Link
               key={item.href}
-              href={item.href}
+              href={navHref(item.href)}
               className={cn(
                 buttonVariants({ variant: "ghost" }),
                 "h-11 px-3 text-sm text-ink hover:bg-secondary hover:text-primary",
               )}
               onClick={(event) => {
+                // Di luar beranda biarkan Link berpindah halaman
+                if (!isHome) return;
                 if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
                 event.preventDefault();
                 handleNavClick(item.href);
               }}
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
-        {/* Hamburger untuk HP dan tablet */}
-        <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
-          <DropdownMenuTrigger
-            render={
-              <Button
-                variant="ghost"
-                size="icon"
-                className="size-11 rounded-lg text-ink hover:text-primary hover:bg-secondary focus-visible:ring-ring lg:hidden"
-                aria-label="Buka menu navigasi"
-              />
-            }
+        {/* Area kanan: Daftar + Hamburger */}
+        <div className="flex items-center gap-2">
+          {/* Tombol Daftar — selalu tampil */}
+          <Link
+            href="/registrasi"
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors",
+              "bg-[var(--brand-green)] hover:bg-[var(--brand-green-deep)]",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            )}
           >
-            <Menu className="size-6" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            className="w-56 rounded-xl border border-line bg-popover p-1.5 shadow-lg lg:hidden"
-          >
-            {NAV_ITEMS.map((item) => (
-              <DropdownMenuItem
-                key={item.href}
-                onClick={() => handleNavClick(item.href)}
-                className="flex min-h-[44px] cursor-pointer items-center rounded-lg px-3 py-2 text-sm font-medium text-ink hover:bg-secondary hover:text-primary transition-colors focus:bg-secondary focus:text-primary"
-              >
-                <a
-                  href={item.href}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNavClick(item.href);
-                  }}
-                  className="w-full"
+            Daftar
+          </Link>
+
+          {/* Hamburger untuk HP dan tablet */}
+          <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-11 rounded-lg text-ink hover:text-primary hover:bg-secondary focus-visible:ring-ring lg:hidden"
+                  aria-label="Buka menu navigasi"
+                />
+              }
+            >
+              <Menu className="size-6" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="w-56 rounded-xl border border-line bg-popover p-1.5 shadow-lg lg:hidden"
+            >
+              {NAV_ITEMS.map((item) => (
+                <DropdownMenuItem
+                  key={item.href}
+                  onClick={() => handleNavClick(item.href)}
+                  className="flex min-h-[44px] cursor-pointer items-center rounded-lg px-3 py-2 text-sm font-medium text-ink hover:bg-secondary hover:text-primary transition-colors focus:bg-secondary focus:text-primary"
                 >
-                  {item.label}
-                </a>
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+                  <Link
+                    href={navHref(item.href)}
+                    onClick={(e) => {
+                      if (!isHome) return;
+                      e.preventDefault();
+                      handleNavClick(item.href);
+                    }}
+                    className="w-full"
+                  >
+                    {item.label}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </header>
   );

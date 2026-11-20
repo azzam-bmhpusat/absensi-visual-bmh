@@ -36,8 +36,8 @@ describe("CountdownSection Stability & Prerender Guardrail", () => {
     expect(html).toContain("Detik");
   });
 
-  it("app/page.tsx mengeset instant = false untuk menonaktifkan validasi instant-shell-url-data", () => {
-    const pagePath = path.join(__dirname, "../app/page.tsx");
+  it("app/(site)/page.tsx mengeset instant = false untuk menonaktifkan validasi instant-shell-url-data", () => {
+    const pagePath = path.join(__dirname, "../app/(site)/page.tsx");
     const pageContent = fs.readFileSync(pagePath, "utf-8");
 
     expect(pageContent).toContain("export const instant = false;");

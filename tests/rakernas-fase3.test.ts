@@ -211,9 +211,9 @@ describe("Fase 3 — Hitung Mundur & Rundown (PRD Rakernas BMH)", () => {
     });
   });
 
-  describe("Integrasi Halaman Utama (app/page.tsx)", () => {
+  describe("Integrasi Halaman Utama (app/(site)/page.tsx)", () => {
     const pageContent = fs.readFileSync(
-      path.join(__dirname, "../app/page.tsx"),
+      path.join(__dirname, "../app/(site)/page.tsx"),
       "utf-8"
     );
 

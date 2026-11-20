@@ -97,7 +97,9 @@ describe("Fase 1 — Konten Bertipe (PRD Rakernas BMH)", () => {
     });
 
     it("tema mengikuti konten acara terkini", () => {
-      expect(EVENT_INFO.theme).toBe("Tema Acara");
+      expect(EVENT_INFO.theme).toBe(
+        "Akselerasi Pertumbuhan dan Penguatan Resiliensi Menuju BMH Unggul 2030"
+      );
     });
 
     it("tautan awal panitia mengikuti konten proyek terbaru", () => {

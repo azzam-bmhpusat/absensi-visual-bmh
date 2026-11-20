@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import {
   Search,
-  Download,
+  FileDown,
   Trash2,
   Users,
   MapPin,
@@ -29,9 +29,8 @@ import {
   UserPlus,
   Pencil,
 } from "lucide-react";
-import { CsvImportDialog } from "./csv-import-dialog";
 import { GuestFormDialog } from "./guest-form-dialog";
-import { generateGuestCsvTemplate, type ExistingGuestLookup } from "@/lib/csv";
+import { GuestExportDialog } from "./guest-export-dialog";
 import { deleteGuestAction } from "@/app/admin/actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -58,14 +57,8 @@ export function GuestTable({ initialGuests }: GuestTableProps) {
   const [selectedDeleteGuest, setSelectedDeleteGuest] = useState<GuestItem | null>(null);
   const [editingGuest, setEditingGuest] = useState<GuestItem | null>(null);
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [isExportOpen, setIsExportOpen] = useState(false);
   const [isDeleting, startDeleteTransition] = useTransition();
-
-  const existingLookup: ExistingGuestLookup[] = useMemo(() => {
-    return initialGuests.map((g) => ({
-      nama: g.nama,
-      perwakilan_daerah: g.perwakilan_daerah,
-    }));
-  }, [initialGuests]);
 
   const filteredGuests = useMemo(() => {
     if (!search.trim()) return initialGuests;
@@ -78,20 +71,6 @@ export function GuestTable({ initialGuests }: GuestTableProps) {
         (g.departemen && g.departemen.toLowerCase().includes(q))
     );
   }, [initialGuests, search]);
-
-  const handleDownloadTemplate = () => {
-    const csvContent = generateGuestCsvTemplate();
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "template-tamu-undangan-bmh.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    toast.success("Template CSV berhasil diunduh!");
-  };
 
   const handleConfirmDelete = () => {
     if (!selectedDeleteGuest) return;
@@ -133,17 +112,12 @@ export function GuestTable({ initialGuests }: GuestTableProps) {
 
           <Button
             variant="outline"
-            onClick={handleDownloadTemplate}
+            onClick={() => setIsExportOpen(true)}
             className="h-10 px-3.5 rounded-xl border-line text-primary hover:border-brand-green text-xs font-semibold shadow-2xs"
           >
-            <Download className="w-4 h-4 mr-1.5 text-brand-gold-text" />
-            Template CSV
+            <FileDown className="w-4 h-4 mr-1.5 text-brand-gold-text" />
+            Export PDF
           </Button>
-
-          <CsvImportDialog
-            existingGuests={existingLookup}
-            onImportSuccess={() => router.refresh()}
-          />
         </div>
       </div>
 
@@ -319,6 +293,12 @@ export function GuestTable({ initialGuests }: GuestTableProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {/* Dialog Filter & Export PDF */}
+      <GuestExportDialog
+        open={isExportOpen}
+        onOpenChange={setIsExportOpen}
+        guests={initialGuests}
+      />
       {/* Dialog Form Tambah / Edit Tamu */}
       <GuestFormDialog
         open={isAddOpen || Boolean(editingGuest)}

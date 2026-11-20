@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ApprovalTable } from "@/components/admin/approval-table";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { RegistrationRow } from "@/lib/registration-pdf";
+import type { RegistrationRow } from "@/lib/registration-row";
 
 function ApprovalSkeleton() {
   return (

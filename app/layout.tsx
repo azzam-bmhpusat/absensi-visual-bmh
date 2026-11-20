@@ -23,7 +23,15 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+// Dasar URL absolut untuk og:image dll. (wajib untuk preview WhatsApp)
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000");
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Sistem Absensi Visual QR BMH",
     template: "%s | Absensi Visual BMH",

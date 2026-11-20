@@ -19,7 +19,7 @@ describe("Fase 6 — QA & Penyelesaian: Landing Page Rakernas BMH", () => {
       expect(SITE_METADATA.title).toBe("Rakernas BMH");
       expect(EVENT_INFO.title).toBe("Rapat Kerja Nasional BMH 2027");
       expect(EVENT_INFO.theme).toBe(
-        "Tema Acara"
+        "Akselerasi Pertumbuhan dan Penguatan Resiliensi Menuju BMH Unggul 2030"
       );
       expect(EVENT_INFO.dateDays).toBe("01 - 03");
       expect(EVENT_INFO.dateMonthYear).toBe("Desember 2026");
@@ -195,7 +195,7 @@ describe("Fase 6 — QA & Penyelesaian: Landing Page Rakernas BMH", () => {
     it("Seluruh komponen rakernas tidak menggunakan kelas warna bawaan Tailwind terlarang", () => {
       const rakernasDir = path.join(process.cwd(), "components", "rakernas");
       const files = fs.readdirSync(rakernasDir).filter((f) => f.endsWith(".tsx"));
-      files.push(path.join("..", "..", "app", "page.tsx"));
+      files.push(path.join("..", "..", "app", "(site)", "page.tsx"));
 
       const forbiddenRegex =
         /\b(?:green-(?:200|300|400|500|600|700|800|900|950)|emerald-[0-9]{2,3}|yellow-[0-9]{2,3})\b/;
@@ -265,7 +265,7 @@ describe("Fase 6 — QA & Penyelesaian: Landing Page Rakernas BMH", () => {
     });
 
     it("Setiap section landing page dilengkapi id dan scroll-mt-20", () => {
-      const pageFile = path.join(process.cwd(), "app", "page.tsx");
+      const pageFile = path.join(process.cwd(), "app", "(site)", "page.tsx");
       const content = fs.readFileSync(pageFile, "utf-8");
       const expectedSections = [
         'id="countdown"',

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   Check,
-  FileDown,
   Loader2,
   Search,
   Trash2,
@@ -32,13 +31,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   approveRegistrationAction,
   deleteRegistrationAction,
   rejectRegistrationAction,
@@ -47,20 +39,9 @@ import {
   MODE_KEHADIRAN_LABEL,
   REGISTRATION_STATUS_LABEL,
 } from "@/lib/registration-schema";
-import {
-  exportRegistrationsPdf,
-  formatRegistrationDate,
-  type RegistrationRow,
-} from "@/lib/registration-pdf";
+import { formatRegistrationDate, type RegistrationRow } from "@/lib/registration-row";
 
 type StatusFilter = "all" | RegistrationRow["status"];
-type ModeFilter = "all" | RegistrationRow["mode_kehadiran"];
-
-const MODE_FILTER_LABEL: Record<ModeFilter, string> = {
-  all: "Semua kehadiran",
-  offline: "Offline",
-  online: "Online via Zoom",
-};
 
 const FILTERS: { value: StatusFilter; label: string }[] = [
   { value: "pending", label: "Menunggu" },
@@ -86,14 +67,6 @@ export function ApprovalTable({ registrations }: ApprovalTableProps) {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [toDelete, setToDelete] = useState<RegistrationRow | null>(null);
   const [isPending, startTransition] = useTransition();
-  const [isExporting, setIsExporting] = useState(false);
-  const [exportMode, setExportMode] = useState<ModeFilter>("all");
-
-  const modeCounts = useMemo(() => {
-    const c = { all: registrations.length, offline: 0, online: 0 };
-    for (const r of registrations) c[r.mode_kehadiran] += 1;
-    return c;
-  }, [registrations]);
 
   const counts = useMemo(() => {
     const c = { pending: 0, approved: 0, rejected: 0 };
@@ -134,34 +107,6 @@ export function ApprovalTable({ registrations }: ApprovalTableProps) {
     });
   };
 
-  const handleExport = async () => {
-    // Export mencakup semua status; hanya dipersempit oleh filter kehadiran
-    const rows =
-      exportMode === "all"
-        ? registrations
-        : registrations.filter((r) => r.mode_kehadiran === exportMode);
-    if (rows.length === 0) {
-      toast.error(
-        exportMode === "all"
-          ? "Belum ada data pendaftar untuk diexport."
-          : `Tidak ada pendaftar dengan kehadiran ${MODE_FILTER_LABEL[exportMode]}.`
-      );
-      return;
-    }
-    setIsExporting(true);
-    try {
-      await exportRegistrationsPdf(rows, {
-        mode: exportMode === "all" ? undefined : exportMode,
-      });
-      toast.success("PDF berhasil dibuat.");
-    } catch (err) {
-      console.error("Export PDF gagal:", err);
-      toast.error("Gagal membuat PDF.");
-    } finally {
-      setIsExporting(false);
-    }
-  };
-
   return (
     <div className="space-y-4">
       <div className="flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-center">
@@ -173,43 +118,6 @@ export function ApprovalTable({ registrations }: ApprovalTableProps) {
             placeholder="Cari nama, perwakilan, atau jabatan..."
             className="h-10 rounded-xl border-line pl-9 text-xs focus-visible:ring-brand-green"
           />
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Select
-            value={exportMode}
-            onValueChange={(v) => v && setExportMode(v as ModeFilter)}
-            disabled={isExporting}
-          >
-            <SelectTrigger
-              aria-label="Filter kehadiran untuk export PDF"
-              className="h-10 w-48 rounded-xl border-line bg-white text-xs"
-            >
-              <SelectValue>
-                {(value: ModeFilter) =>
-                  `${MODE_FILTER_LABEL[value ?? "all"]} (${modeCounts[value ?? "all"]})`
-                }
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent alignItemWithTrigger={false}>
-              {(Object.keys(MODE_FILTER_LABEL) as ModeFilter[]).map((m) => (
-                <SelectItem key={m} value={m} className="text-xs">
-                  {MODE_FILTER_LABEL[m]} ({modeCounts[m]})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button
-            onClick={handleExport}
-            disabled={isExporting}
-            className="h-10 rounded-xl bg-primary px-3.5 text-xs font-semibold text-white shadow-xs hover:bg-brand-green-deep"
-          >
-            {isExporting ? (
-              <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
-            ) : (
-              <FileDown className="mr-1.5 h-4 w-4 text-brand-gold-soft" />
-            )}
-            Export PDF
-          </Button>
         </div>
       </div>
 

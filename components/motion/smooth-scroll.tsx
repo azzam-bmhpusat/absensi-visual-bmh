@@ -6,8 +6,9 @@ import { useReducedMotion } from "motion/react";
 import "lenis/dist/lenis.css";
 
 /**
- * Smooth scroll (Lenis) untuk satu route. Pasang hanya di halaman yang memang
- * memerlukannya (beranda dan /absen) — Lenis otomatis dilepas saat unmount.
+ * Smooth scroll (Lenis) untuk satu route/layout. Pasang hanya yang memang
+ * memerlukannya (layout situs publik (site): beranda dan /registrasi, serta /absen)
+ * — Lenis otomatis dilepas saat unmount.
  * Pengguna dengan prefers-reduced-motion tetap memakai scroll native.
  */
 export function SmoothScroll({ children }: { children: ReactNode }) {

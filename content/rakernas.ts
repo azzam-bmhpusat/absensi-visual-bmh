@@ -74,10 +74,14 @@ export const SITE_METADATA: SiteMetadata = {
   lang: "id",
 };
 
+// Tema acara: tampil di hero beranda dan dipakai untuk Open Graph.
+export const EVENT_THEME =
+  "Akselerasi Pertumbuhan dan Penguatan Resiliensi Menuju BMH Unggul 2030";
+
 export const EVENT_INFO: EventInfo = {
   name: "Rakernas BMH",
   title: "Rapat Kerja Nasional BMH 2027",
-  theme: "Tema Acara",
+  theme: EVENT_THEME,
   dateDays: "01 - 03",
   dateMonthYear: "Desember 2026",
   hotel: "Hotel Luminor",

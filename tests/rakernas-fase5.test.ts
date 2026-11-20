@@ -20,7 +20,7 @@ describe("Fase 5 — Transportasi, Tamu Undangan, Footer", () => {
     __dirname,
     "../components/rakernas/site-footer.tsx"
   );
-  const pageFile = path.join(__dirname, "../app/page.tsx");
+  const pageFile = path.join(__dirname, "../app/(site)/page.tsx");
 
   const transportContent = fs.readFileSync(transportFile, "utf-8");
   const invitedGuestsContent = fs.readFileSync(invitedGuestsFile, "utf-8");
@@ -153,7 +153,7 @@ describe("Fase 5 — Transportasi, Tamu Undangan, Footer", () => {
     });
   });
 
-  describe("Integrasi Halaman Utama (app/page.tsx)", () => {
+  describe("Integrasi Halaman Utama (app/(site)/page.tsx)", () => {
     it("memasang TransportSection, InvitedGuestsSection, dan SiteFooter", () => {
       expect(pageContent).toContain("TransportSection");
       expect(pageContent).toContain("InvitedGuestsSection");

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { EVENT_INFO, SITE_METADATA, INVITED_GUESTS_CONTENT } from "@/content/rakernas";
-import { SiteHeader } from "@/components/rakernas/site-header";
 import { HeroSection } from "@/components/rakernas/hero";
 import { CountdownSection } from "@/components/rakernas/countdown";
 import { RundownSection } from "@/components/rakernas/rundown-tabs";
@@ -9,10 +8,10 @@ import { LocationSection } from "@/components/rakernas/location-section";
 import { TransportSection } from "@/components/rakernas/transport-accordion";
 import { InvitedGuestsSection } from "@/components/rakernas/invited-guests-section";
 import { SiteFooter } from "@/components/rakernas/site-footer";
-import { SmoothScroll } from "@/components/motion/smooth-scroll";
 import { Reveal } from "@/components/motion/reveal";
 import { getEventSettings } from "@/lib/event-settings-server";
 import { formatEventDateRange } from "@/lib/event-settings";
+import { buildSocialMetadata } from "@/lib/og-metadata";
 
 export const instant = false;
 
@@ -23,17 +22,16 @@ export async function generateMetadata(): Promise<Metadata> {
       absolute: SITE_METADATA.title,
     },
     description: `${EVENT_INFO.title}. ${formatEventDateRange(settings.startsAt)} di ${settings.venueName}. ${settings.venueAddress}`,
+    // Preview link: hanya judul + tema (tanpa tanggal/lokasi)
+    ...buildSocialMetadata({ path: "/" }),
   };
 }
 
 export default async function HomePage() {
   const settings = await getEventSettings();
   return (
-    <SmoothScroll>
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
-      {/* S0 — Header (Sticky) */}
-      <SiteHeader />
-
+    <>
+      {/* S0 — Header (Sticky) ada di app/(site)/layout.tsx */}
       <main className="flex-1 w-full overflow-x-hidden">
         {/* S1 — Hero minimalis dengan tema terang */}
         <HeroSection settings={settings} />
@@ -95,7 +93,6 @@ export default async function HomePage() {
 
       {/* S8 — Footer */}
       <SiteFooter className="bg-brand-green-night" settings={settings} />
-    </div>
-    </SmoothScroll>
+    </>
   );
 }

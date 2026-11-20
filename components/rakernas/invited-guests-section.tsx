@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, Search, UsersRound, X } from "lucide-react";
 import { useLenis } from "lenis/react";
 import { INVITED_GUESTS_CONTENT as copy } from "@/content/rakernas";
 import { normalizeString } from "@/lib/normalize";
+import { scrollToElementWhenReady } from "@/lib/scroll-to-element";
 import {
   GUEST_SEARCH_MAX_LENGTH,
   GUEST_SEARCH_MIN_LENGTH,
@@ -122,22 +123,24 @@ export function InvitedGuestsSection() {
 
   // Tautan "Cek Pendaftaran Anda" (/#invited-guest-search): gulir & fokus ke kolom pencarian
   useEffect(() => {
-    const focusSearch = () => {
-      if (window.location.hash !== SEARCH_ANCHOR) return;
-      const input = inputRef.current;
-      if (!input) return;
-      // Lenis mengendalikan scroll halaman; scroll native tidak bergerak saat Lenis aktif
-      // (Lenis menghormati scroll-margin-top pada input).
-      if (lenis) lenis.scrollTo(input, { duration: 1.2 });
-      else input.scrollIntoView({ behavior: "smooth", block: "center" });
-      input.focus({ preventScroll: true });
+    let stop = () => {};
+    // Lenis (satu instance di layout (site)) bertahan antar halaman dan menahan scroll native;
+    // helper mencoba ulang sampai kolom pencarian benar-benar berada di posisi (scroll-mt-40).
+    const start = () => {
+      stop();
+      stop = scrollToElementWhenReady({
+        lenis,
+        getElement: () => inputRef.current,
+        offset: 160,
+        enabled: () => window.location.hash === SEARCH_ANCHOR,
+        onReach: (el) => (el as HTMLInputElement).focus({ preventScroll: true }),
+      });
     };
-    // Tunggu animasi Reveal & inisialisasi smooth scroll sebelum menggulir
-    const timer = setTimeout(focusSearch, 400);
-    window.addEventListener("hashchange", focusSearch);
+    start();
+    window.addEventListener("hashchange", start);
     return () => {
-      clearTimeout(timer);
-      window.removeEventListener("hashchange", focusSearch);
+      stop();
+      window.removeEventListener("hashchange", start);
     };
   }, [lenis]);
 

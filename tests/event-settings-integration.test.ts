@@ -9,7 +9,7 @@ vi.mock("@/lib/supabase/server", () => ({ createClient: async () => ({ auth: { g
 vi.mock("next/server", () => ({ connection: async () => {} }));
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }), redirect: mocks.redirect }));
 vi.mock("@/app/(admin)/pengaturan/actions", () => ({ saveEventSettings: vi.fn() }));
-import HomePage, { generateMetadata } from "@/app/page";
+import HomePage, { generateMetadata } from "@/app/(site)/page";
 import PengaturanPage from "@/app/(admin)/pengaturan/page";
 import { EventSettingsForm } from "@/components/admin/event-settings-form";
 

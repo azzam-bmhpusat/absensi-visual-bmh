@@ -23,7 +23,8 @@ Peserta memindai satu QR statis, memilih sesi kehadiran, mencari atau mengetik n
   - Auto-scroll otomatis dan halus untuk daftar tamu panjang (> 40 tamu).
 - **Panel Administrasi Panitia (`/admin`)**:
   - Login aman berbasis Supabase Auth.
-  - **Manajemen Tamu**: Tabel tamu undangan, filter daerah, pencarian nama, unduh template CSV, dan fitur **Import CSV Massal** dengan validasi pratinjau (baris valid, duplikat, invalid).
+  - **Manajemen Tamu**: Tabel tamu undangan, pencarian nama, tambah/edit/hapus tamu, dan **Export PDF** dengan dialog filter kehadiran (Offline / Online via Zoom).
+  - **Approval Registrasi (`/approval`)**: Pendaftar dari formulir publik `/registrasi` ditinjau admin; yang disetujui otomatis masuk ke daftar tamu.
   - **Rekapitulasi Kehadiran**: Tabel kehadiran lengkap per sesi, filter perwakilan daerah, penanda walk-in, dan **Ekspor CSV** (format waktu WIB & UTF-8 dengan BOM agar terbaca sempurna di Microsoft Excel).
   - **Generator QR Cetak (`/admin/qr`)**: Halaman siap cetak dengan styling `@media print` untuk mencetak QR code beresolusi tinggi di lokasi registrasi.
 
@@ -34,7 +35,7 @@ Peserta memindai satu QR statis, memilih sesi kehadiran, mencari atau mengetik n
 - **Framework**: Next.js 16 (App Router, Turbopack, React 19, TypeScript)
 - **Styling & UI**: Tailwind CSS v4, shadcn/ui, Lucide Icons, Framer Motion
 - **Database & Auth**: Supabase (PostgreSQL, Realtime Subscriptions, Row Level Security, Supabase Auth)
-- **Validasi & Utilitas**: Zod, React Hook Form, PapaParse (CSV), QRCode, Sonner (Toaster)
+- **Validasi & Utilitas**: Zod, React Hook Form, jsPDF (export PDF), QRCode, Sonner (Toaster)
 - **Testing & Tooling**: Vitest, tsx, ESLint
 
 ---
@@ -112,16 +113,10 @@ Akses aplikasi di browser:
 ## 📋 Panduan Pengoperasian Acara
 
 ### A. Persiapan Sebelum Acara (Pra-Kegiatan)
-1. **Import Daftar Tamu Undangan**:
-   - Buka `/admin` dan masuk ke tab **Tamu**.
-   - Unduh template CSV atau siapkan file CSV dengan header:
-     ```csv
-     nama,perwakilan_daerah
-     Ahmad Fauzi,BMH Jawa Timur
-     Dewi Sartika,BMH Jawa Barat
-     Budi Santoso,BMH Jawa Tengah
-     ```
-   - Klik **Import CSV**, pilih file, dan periksa pratinjau. Baris duplikat akan dilewati otomatis. Klik **Simpan Tamu**.
+1. **Siapkan Daftar Tamu Undangan**:
+   - Peserta mendaftar sendiri lewat `/registrasi`. Buka `/approval`, tinjau pendaftar, lalu klik **Setujui** agar masuk ke daftar tamu.
+   - Tamu juga bisa ditambahkan manual lewat tombol **Tambah Tamu** di halaman `/guest`.
+   - Gunakan **Export PDF** di `/guest` (dengan filter Offline / Online) untuk mencetak daftar tamu.
 2. **Cetak QR Code Registrasi**:
    - Buka `/admin/qr` pada browser komputer panitia.
    - Tekan `Ctrl + P` (atau `Cmd + P`). Halaman sudah dioptimasi khusus untuk cetak kertas A4/A5 tanpa header/footer browser yang mengganggu.

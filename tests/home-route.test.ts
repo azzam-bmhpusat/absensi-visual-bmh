@@ -16,17 +16,18 @@ vi.mock("@/lib/event-settings-server", () => ({
 }));
 
 describe("Guardrail: Rute Beranda (/) Bebas dari Redirect ke /absen", () => {
-  const pagePath = path.join(__dirname, "../app/page.tsx");
+  const pagePath = path.join(__dirname, "../app/(site)/page.tsx");
   const pageContent = fs.readFileSync(pagePath, "utf-8");
 
-  it("app/page.tsx TIDAK mengimpor atau memanggil fungsi redirect", () => {
+  it("app/(site)/page.tsx TIDAK mengimpor atau memanggil fungsi redirect", () => {
     expect(pageContent).not.toMatch(/redirect\s*\(\s*["']\/absen["']\s*\)/);
     expect(pageContent).not.toMatch(/import\s*\{[^}]*redirect[^}]*\}\s*from\s*["']next\/navigation["']/);
   });
 
-  it("app/page.tsx merender struktur Landing Page resmi (S0–S8)", () => {
-    // S0: SiteHeader
-    expect(pageContent).toContain("<SiteHeader");
+  it("app/(site)/page.tsx merender struktur Landing Page resmi (S0–S8)", () => {
+    // S0: SiteHeader kini dirender oleh shared layout app/(site)/layout.tsx
+    const layoutContent = fs.readFileSync(path.join(__dirname, "../app/(site)/layout.tsx"), "utf-8");
+    expect(layoutContent).toContain("<SiteHeader");
     // S1: HeroSection
     expect(pageContent).toContain("<HeroSection");
     // S2: CountdownSection

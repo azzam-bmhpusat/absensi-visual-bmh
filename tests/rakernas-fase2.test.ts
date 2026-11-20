@@ -4,7 +4,7 @@ import path from "path";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { HeroSection } from "../components/rakernas/hero";
-import { generateMetadata } from "../app/page";
+import { generateMetadata } from "../app/(site)/page";
 import { DEFAULT_EVENT_SETTINGS } from "@/lib/event-settings";
 vi.mock("@/lib/event-settings-server", () => ({ getEventSettings: async () => DEFAULT_EVENT_SETTINGS }));
 import { SITE_METADATA, NAV_ITEMS, EVENT_INFO } from "../content/rakernas";
@@ -25,7 +25,7 @@ describe("Fase 2 — Kerangka, Header, Hero (PRD Rakernas BMH)", () => {
   });
 
   describe("Struktur Kerangka Halaman S0–S8 (A.4 & B.5)", () => {
-    const pageContent = fs.readFileSync(path.join(__dirname, "../app/page.tsx"), "utf-8");
+    const pageContent = fs.readFileSync(path.join(__dirname, "../app/(site)/page.tsx"), "utf-8");
 
     it("memuat seluruh section anchor yang ada di NAV_ITEMS dengan scroll-mt-20", () => {
       NAV_ITEMS.forEach((item) => {
@@ -117,7 +117,7 @@ describe("Fase 2 — Kerangka, Header, Hero (PRD Rakernas BMH)", () => {
 
   describe("Audit Design System (PRD B.9)", () => {
     const filesToAudit = [
-      path.join(__dirname, "../app/page.tsx"),
+      path.join(__dirname, "../app/(site)/page.tsx"),
       path.join(__dirname, "../components/rakernas/site-header.tsx"),
       path.join(__dirname, "../components/rakernas/hero.tsx"),
     ];

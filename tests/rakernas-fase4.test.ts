@@ -12,7 +12,7 @@ describe("Fase 4 — Dress Code & Lokasi (PRD Rakernas BMH)", () => {
     __dirname,
     "../components/rakernas/location-section.tsx"
   );
-  const pageFile = path.join(__dirname, "../app/page.tsx");
+  const pageFile = path.join(__dirname, "../app/(site)/page.tsx");
 
   const dresscodeContent = fs.readFileSync(dresscodeFile, "utf-8");
   const locationContent = fs.readFileSync(locationFile, "utf-8");
@@ -141,7 +141,7 @@ describe("Fase 4 — Dress Code & Lokasi (PRD Rakernas BMH)", () => {
     });
   });
 
-  describe("Integrasi Halaman Beranda (app/page.tsx)", () => {
+  describe("Integrasi Halaman Beranda (app/(site)/page.tsx)", () => {
     it("merender DresscodeSection di dalam section #dresscode dengan background bg-secondary", () => {
       expect(pageContent).toContain('import { DresscodeSection }');
       expect(pageContent).toMatch(

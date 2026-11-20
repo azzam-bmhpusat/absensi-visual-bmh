@@ -24,8 +24,8 @@ npm run cleanup:test-data
 ```
 Jika ada update daftar tamu undangan resmi dari panitia:
 1. Login ke panel admin di `${NEXT_PUBLIC_SITE_URL}/admin/login`.
-2. Buka tab **Tamu Undangan**.
-3. Klik **Import CSV**, pilih file CSV daftar tamu final (`nama,perwakilan_daerah`), periksa ringkasan pratinjau (valid, duplikat, invalid), lalu klik **Simpan ke Database**.
+2. Buka **Approval Registrasi** (`/approval`) dan setujui pendaftar baru agar masuk ke daftar tamu.
+3. Untuk tamu yang tidak mendaftar lewat formulir, buka **Daftar Tamu Undangan** (`/guest`) dan klik **Tambah Tamu**. Daftar tamu dapat dicetak lewat **Export PDF** (filter Offline / Online).
 
 ### 2.2 Pencetakan QR Code & Cadangan Fisik
 1. Buka `${NEXT_PUBLIC_SITE_URL}/admin/qr`.
