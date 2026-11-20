@@ -16,7 +16,6 @@ import {
   Boxes,
   Theater,
   LogOut,
-  UserCheck,
   UserCog,
 } from "lucide-react";
 import {
@@ -32,19 +31,20 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface AppSidebarProps {
   guestsCount?: number;
   attendancesCount?: number;
   activeSessionsCount?: number;
-  pendingApprovalCount?: number;
+  sessions?: { id: number; nama: string }[];
 }
 
 export function AppSidebar({
   guestsCount,
   attendancesCount,
   activeSessionsCount,
-  pendingApprovalCount,
+  sessions = [],
 }: AppSidebarProps) {
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
@@ -63,16 +63,6 @@ export function AppSidebar({
       icon: Users,
       badge: guestsCount !== undefined ? `${guestsCount}` : null,
       badgeColor: "bg-secondary text-primary",
-    },
-    {
-      label: "Approval Registrasi",
-      href: "/approval",
-      icon: UserCheck,
-      badge:
-        pendingApprovalCount !== undefined && pendingApprovalCount > 0
-          ? `${pendingApprovalCount}`
-          : null,
-      badgeColor: "bg-gold-100 text-brand-gold-text",
     },
     {
       label: "Rekap Kehadiran",
@@ -108,12 +98,6 @@ export function AppSidebar({
       label: "Videotron Anatomy",
       href: "/display-anatomy",
       icon: Boxes,
-      external: true,
-    },
-    {
-      label: "Videotron Aula",
-      href: "/display-absen",
-      icon: Theater,
       external: true,
     },
   ];
@@ -209,6 +193,67 @@ export function AppSidebar({
                   </SidebarMenuItem>
                 );
               })}
+              <SidebarMenuItem>
+                {sessions.length > 0 ? (
+                  <Popover>
+                    <PopoverTrigger
+                      nativeButton={false}
+                      openOnHover
+                      delay={80}
+                      closeDelay={150}
+                      render={
+                        <SidebarMenuButton
+                          render={
+                            <Link
+                              href="/display-absen"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            />
+                          }
+                        />
+                      }
+                    >
+                      <Theater className="text-ink-muted" />
+                      <span>Videotron Aula</span>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      side="right"
+                      align="start"
+                      sideOffset={8}
+                      className="w-56 gap-0.5 p-1.5"
+                    >
+                      {sessions.map((s) => (
+                        <Link
+                          key={s.id}
+                          href={`/display-absen?sesi=${s.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex flex-col rounded-md px-2.5 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+                        >
+                          <span className="font-medium">Sesi {s.id}</span>
+                          <span className="truncate text-[11px] text-muted-foreground">
+                            {s.nama}
+                          </span>
+                        </Link>
+                      ))}
+                    </PopoverContent>
+                  </Popover>
+                ) : (
+                  <SidebarMenuButton
+                    render={
+                      <Link
+                        href="/display-absen"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      />
+                    }
+                    tooltip="Videotron Aula"
+                  >
+                    <Theater className="text-ink-muted" />
+                    <span>Videotron Aula</span>
+                  </SidebarMenuButton>
+                )}
+              </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
                   onClick={handleLogout}

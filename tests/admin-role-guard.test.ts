@@ -55,7 +55,6 @@ describe("Penerapan role admin di aplikasi", () => {
   it("tidak ada pengecekan admin berbasis 'sudah login' saja yang tersisa", () => {
     const files = [
       ["app", "admin", "actions.ts"],
-      ["app", "(admin)", "approval", "actions.ts"],
       ["app", "(admin)", "pengaturan", "actions.ts"],
       ["app", "(admin)", "pengaturan", "page.tsx"],
       ["app", "api", "admin", "absen-qr", "route.ts"],

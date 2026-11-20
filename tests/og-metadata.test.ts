@@ -6,7 +6,7 @@ import { buildSocialMetadata, OG_DESCRIPTION } from "../lib/og-metadata";
 
 const FORBIDDEN = /luminor|jakarta|hotel|alamat|mangga besar|desember|2026|\b0?1\s*[–-]\s*0?3\b/i;
 
-describe("Open Graph (beranda & registrasi)", () => {
+describe("Open Graph (beranda)", () => {
   it("deskripsi OG hanya berisi tema acara", () => {
     expect(EVENT_THEME).toBe(
       "Akselerasi Pertumbuhan dan Penguatan Resiliensi Menuju BMH Unggul 2030"
@@ -30,20 +30,8 @@ describe("Open Graph (beranda & registrasi)", () => {
     expect(meta.twitter).toMatchObject({ card: "summary_large_image", title: EVENT_INFO.title });
   });
 
-  it("registrasi: judul khusus registrasi dan URL /registrasi", () => {
-    const meta = buildSocialMetadata({ title: "Registrasi Peserta Rakernas BMH 2027", path: "/registrasi" });
-    expect(meta.openGraph).toMatchObject({
-      url: "/registrasi",
-      title: "Registrasi Peserta Rakernas BMH 2027",
-      description: OG_DESCRIPTION,
-    });
-  });
-
   it("metadata OG tidak memuat tanggal maupun lokasi", () => {
-    const text = JSON.stringify([
-      buildSocialMetadata({ path: "/" }),
-      buildSocialMetadata({ title: "Registrasi Peserta Rakernas BMH 2027", path: "/registrasi" }),
-    ]);
+    const text = JSON.stringify([buildSocialMetadata({ path: "/" })]);
     expect(text).not.toMatch(FORBIDDEN);
   });
 

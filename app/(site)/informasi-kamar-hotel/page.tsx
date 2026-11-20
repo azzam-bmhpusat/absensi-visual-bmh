@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
+import { ProfileGate } from "@/components/rakernas/profile-gate";
 import { PublicPage } from "@/components/rakernas/public-page";
 import { buildSocialMetadata } from "@/lib/og-metadata";
 
@@ -12,5 +14,11 @@ export const metadata: Metadata = {
 };
 
 export default function InformasiKamarHotelPage() {
-  return <PublicPage title={TITLE} />;
+  return (
+    <PublicPage title={TITLE}>
+      <Suspense fallback={null}>
+        <ProfileGate path="/informasi-kamar-hotel" />
+      </Suspense>
+    </PublicPage>
+  );
 }

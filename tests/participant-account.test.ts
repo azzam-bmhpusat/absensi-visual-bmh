@@ -125,7 +125,6 @@ describe("migrasi 0010 & 0011 dan pemasangan di aplikasi", () => {
   it("kode tidak lagi membaca tabel guests atau memanggil approve_registration", () => {
     const files = [
       ["app", "admin", "actions.ts"],
-      ["app", "(admin)", "approval", "actions.ts"],
       ["app", "absen", "actions.ts"],
       ["app", "absen", "page.tsx"],
       ["app", "display", "page.tsx"],
@@ -152,12 +151,11 @@ describe("migrasi 0010 & 0011 dan pemasangan di aplikasi", () => {
     }
   });
 
-  it("tambah/hapus tamu dan approval membuat/menghapus akun Auth", () => {
+  it("tambah/hapus tamu membuat/menghapus akun Auth", () => {
     const admin = read("app", "admin", "actions.ts");
     expect(admin).toContain("createParticipantAccount(");
     expect(admin).toContain("admin.auth.admin.deleteUser(guestId)");
     expect(admin).toContain("Akun admin tidak dapat dihapus dari daftar peserta");
-    expect(read("app", "(admin)", "approval", "actions.ts")).toContain("createParticipantAccount(");
   });
 
   it("password default sesuai permintaan dan dapat diganti lewat env", () => {

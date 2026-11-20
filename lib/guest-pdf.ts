@@ -1,4 +1,4 @@
-import { MODE_KEHADIRAN_LABEL } from "./registration-schema";
+import { MODE_KEHADIRAN_LABEL } from "./participant-options";
 
 export type GuestModeFilter = "all" | "offline" | "online";
 

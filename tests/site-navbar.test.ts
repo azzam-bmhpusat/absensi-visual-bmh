@@ -34,7 +34,7 @@ describe("Navbar halaman publik", () => {
     for (const item of NAV_ITEMS) expect(home).toContain(`id="${item.href.slice(1)}"`);
   });
 
-  it("setiap halaman tujuan ada, memuat judul, dan isinya kosong", () => {
+  it("setiap halaman tujuan ada, memuat judul, dan dibatasi ProfileGate", () => {
     const pages: [string, string][] = [
       ["informasi-kamar-hotel", "Informasi Kamar Hotel"],
       ["publikasi/foto-galeri-kegiatan", "Foto Galeri Kegiatan"],
@@ -46,14 +46,16 @@ describe("Navbar halaman publik", () => {
       expect(fs.existsSync(file), route).toBe(true);
       const content = fs.readFileSync(file, "utf-8");
       expect(content).toContain(`const TITLE = "${title}"`);
-      expect(content).toContain("<PublicPage title={TITLE} />");
+      expect(content).toContain("<PublicPage title={TITLE}>");
+      expect(content).toContain(`<ProfileGate path="/${route}" />`);
       expect(content).toContain(`path: "/${route}"`);
     }
   });
 
-  it("header: Daftar di luar drawer, Publikasi hover di desktop, drawer di HP/tablet", () => {
+  it("header: slot akun di luar drawer, Publikasi hover di desktop, drawer di HP/tablet", () => {
     const header = read("components", "rakernas", "site-header.tsx");
-    expect(header).toContain('href="/registrasi"');
+    expect(header).not.toContain("/registrasi");
+    expect(header).toContain("{account}");
     expect(header).toContain("openOnHover");
     expect(header).toContain("<Accordion");
     expect(header).toContain("lg:hidden");

@@ -7,7 +7,7 @@ import "lenis/dist/lenis.css";
 
 /**
  * Smooth scroll (Lenis) untuk satu route/layout. Pasang hanya yang memang
- * memerlukannya (layout situs publik (site): beranda dan /registrasi, serta /absen)
+ * memerlukannya (layout situs publik (site): beranda, /login, /profile, serta /absen)
  * — Lenis otomatis dilepas saat unmount.
  * Pengguna dengan prefers-reduced-motion tetap memakai scroll native.
  */

@@ -63,7 +63,7 @@ export function DresscodeSection() {
             {DRESSCODE_DATA.map((item) => (
               <CarouselItem
                 key={item.src}
-                className="basis-4/5 sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 pl-4"
+                className="basis-4/5 sm:basis-1/2 lg:basis-1/3 pl-4"
               >
                 <div className="group rounded-2xl border border-line bg-card overflow-hidden shadow-[0_8px_24px_-8px_rgba(19,75,64,0.18)] transition-all duration-300 hover:shadow-lg flex flex-col">
                   {/* Kontainer Gambar */}
@@ -73,16 +73,19 @@ export function DresscodeSection() {
                       alt={item.alt}
                       fill
                       sizes="(max-width: 640px) 80vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                      className="object-contain p-3 transition-transform duration-300 group-hover:scale-105"
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
                       loading="lazy"
                     />
                   </div>
 
                   {/* Keterangan */}
                   <div className="p-4 border-t border-line text-center bg-card">
-                    <span className="font-heading font-medium text-sm md:text-base text-primary">
-                      {item.alt}
+                    <span className="block font-heading font-semibold text-sm md:text-base text-primary">
+                      {item.day}
                     </span>
+                    <p className="mt-1 text-xs md:text-sm text-ink-muted">
+                      {item.desc}
+                    </p>
                   </div>
                 </div>
               </CarouselItem>

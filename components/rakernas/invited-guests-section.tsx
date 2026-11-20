@@ -10,7 +10,6 @@ import {
   GUEST_SEARCH_MAX_LENGTH,
   GUEST_SEARCH_MIN_LENGTH,
   type GuestSearchResponse,
-  type RegistrationSearchResponse,
 } from "@/lib/guest-search";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,8 +24,6 @@ type SearchResult =
       key: string;
       status: "success";
       data: GuestSearchResponse;
-      // null jika pencarian pendaftar gagal: hasil tamu tetap ditampilkan
-      pending: RegistrationSearchResponse | null;
     }
   | { key: string; status: "error" };
 
@@ -36,7 +33,6 @@ type ResultCard = {
   perwakilan_daerah: string;
   jabatan: string | null;
   departemen: string | null;
-  accepted: boolean;
 };
 
 const detailFields = ["perwakilan_daerah", "jabatan", "departemen"] as const;
@@ -49,7 +45,7 @@ function ResultGroup({ title, cards }: { title: string; cards: ResultCard[] }) {
       <div className="grid gap-4 md:grid-cols-2">
         {cards.map((guest) => (
           <Card
-            key={`${guest.accepted ? "g" : "p"}-${guest.id}`}
+            key={guest.id}
             className="min-w-0 rounded-2xl border-border bg-card/80"
             role="article"
             aria-labelledby={`invited-guest-${guest.id}`}
@@ -59,19 +55,14 @@ function ResultGroup({ title, cards }: { title: string; cards: ResultCard[] }) {
                 <p className="text-xs font-medium text-muted-foreground">{copy.fields.nama}</p>
                 <Badge
                   variant="outline"
-                  className={
-                    guest.accepted
-                      ? "border-brand-green/30 bg-brand-green/15 text-brand-green-text"
-                      : "border-brand-gold/40 bg-brand-gold/15 text-brand-gold-soft"
-                  }
+                  className="border-brand-green/30 bg-brand-green/15 text-brand-green-text"
                 >
-                  {guest.accepted ? copy.statusAccepted : copy.statusPending}
+                  {copy.statusAccepted}
                 </Badge>
               </div>
               <CardTitle>
                 <h4 id={`invited-guest-${guest.id}`} className="wrap-anywhere text-lg font-semibold text-foreground">{guest.nama}</h4>
               </CardTitle>
-              {!guest.accepted && <p className="text-xs text-muted-foreground">{copy.pendingNote}</p>}
             </CardHeader>
             <CardContent>
               <Separator className="mb-5 bg-border" />
@@ -105,23 +96,13 @@ export function InvitedGuestsSection() {
   const loading = canSearch && currentResult === null;
   const data = canSearch && currentResult?.status === "success" ? currentResult.data : null;
   const failed = canSearch && currentResult?.status === "error";
-  const pending = canSearch && currentResult?.status === "success" ? currentResult.pending : null;
   const guestPages = data ? Math.ceil(data.total / data.pageSize) : 0;
-  const pendingPages = pending ? Math.ceil(pending.total / pending.pageSize) : 0;
-  const totalPages = Math.max(1, guestPages, pendingPages);
-  const combinedTotal = (data?.total ?? 0) + (pending?.total ?? 0);
-  const acceptedCards: ResultCard[] = (data?.guests ?? []).map((guest) => ({ ...guest, accepted: true }));
-  const pendingCards: ResultCard[] = (pending?.registrations ?? []).map((row) => ({
-    id: row.id,
-    nama: row.nama,
-    perwakilan_daerah: row.perwakilan_bmh,
-    jabatan: row.jabatan,
-    departemen: row.departemen,
-    accepted: false,
-  }));
-  const hasCards = acceptedCards.length + pendingCards.length > 0;
+  const totalPages = Math.max(1, guestPages);
+  const combinedTotal = data?.total ?? 0;
+  const acceptedCards: ResultCard[] = data?.guests ?? [];
+  const hasCards = acceptedCards.length > 0;
 
-  // Tautan "Cek Pendaftaran Anda" (/#invited-guest-search): gulir & fokus ke kolom pencarian
+  // Tautan ke /#invited-guest-search: gulir & fokus ke kolom pencarian
   useEffect(() => {
     let stop = () => {};
     // Lenis (satu instance di layout (site)) bertahan antar halaman dan menahan scroll native;
@@ -151,24 +132,14 @@ export function InvitedGuestsSection() {
     const timer = setTimeout(async () => {
       try {
         const params = new URLSearchParams({ q: normalizedQuery, page: String(page) });
-        const init = { signal: controller.signal, cache: "no-store" as const };
-        const [response, pendingResponse] = await Promise.all([
-          fetch(`/api/guests/search?${params}`, init),
-          // Kegagalan pencarian pendaftar tidak boleh menggagalkan hasil tamu
-          fetch(`/api/registrations/search?${params}`, init).catch(() => null),
-        ]);
+        const response = await fetch(`/api/guests/search?${params}`, {
+          signal: controller.signal,
+          cache: "no-store",
+        });
         if (!response.ok) throw new Error("Guest search failed");
         const payload: GuestSearchResponse = await response.json();
-        let pendingPayload: RegistrationSearchResponse | null = null;
-        if (pendingResponse?.ok) {
-          try {
-            pendingPayload = await pendingResponse.json();
-          } catch {
-            pendingPayload = null;
-          }
-        }
         if (active) {
-          setResult({ key: requestKey, status: "success", data: payload, pending: pendingPayload });
+          setResult({ key: requestKey, status: "success", data: payload });
         }
       } catch {
         if (active) setResult({ key: requestKey, status: "error" });
@@ -205,15 +176,6 @@ export function InvitedGuestsSection() {
           {copy.title}
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground md:text-base">{copy.description}</p>
-        <div className="pt-2">
-          <Button
-            render={<a href={copy.registerCta.href} />}
-            nativeButton={false}
-            className="h-12 w-full bg-brand-gold px-8 font-semibold text-brand-green-night hover:bg-brand-gold-soft sm:w-auto"
-          >
-            {copy.registerCta.label}
-          </Button>
-        </div>
       </div>
 
       <Card className="mx-auto mt-8 max-w-3xl rounded-2xl border-border bg-card/80 shadow-sm md:mt-10">
@@ -282,9 +244,6 @@ export function InvitedGuestsSection() {
             <div className="space-y-8">
               {acceptedCards.length > 0 && (
                 <ResultGroup title={copy.acceptedGroupTitle} cards={acceptedCards} />
-              )}
-              {pendingCards.length > 0 && (
-                <ResultGroup title={copy.pendingGroupTitle} cards={pendingCards} />
               )}
             </div>
             {totalPages > 1 && (

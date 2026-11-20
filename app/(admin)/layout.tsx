@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
-import { createClient, createPublicServerClient } from "@/lib/supabase/server";
+import { createPublicServerClient } from "@/lib/supabase/server";
 import {
   SidebarProvider,
   SidebarInset,
@@ -31,20 +31,12 @@ export default async function AdminLayout({
   // Sesi admin (cookie) memakai waktu sekarang untuk cek token: tandai render per-request dulu
   await connection();
   const supabase = createPublicServerClient();
-  // registrations hanya bisa dibaca sesi admin (RLS), jadi pakai client berbasis cookie
-  const adminSupabase = await createClient();
 
-  const [guestsRes, attendancesRes, sessionsRes, pendingRes] = await Promise.all([
+  const [guestsRes, attendancesRes, sessionsRes] = await Promise.all([
     supabase.from("profiles").select("id").not("nama", "is", null),
     supabase.from("attendances").select("id"),
-    supabase.from("sessions").select("id, is_active"),
-    adminSupabase
-      .from("registrations")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "pending"),
+    supabase.from("sessions").select("id, nama, is_active").order("id", { ascending: true }),
   ]);
-
-  const pendingApprovalCount = pendingRes.error ? undefined : (pendingRes.count ?? 0);
 
   const guestsCount = (guestsRes.data || []).length;
   const attendancesCount = (attendancesRes.data || []).length;
@@ -58,7 +50,10 @@ export default async function AdminLayout({
         guestsCount={guestsCount}
         attendancesCount={attendancesCount}
         activeSessionsCount={activeSessionsCount}
-        pendingApprovalCount={pendingApprovalCount}
+        sessions={(sessionsRes.data || []).map((s) => ({
+          id: s.id as number,
+          nama: (s.nama as string | null) ?? `Sesi ${s.id}`,
+        }))}
       />
       <SidebarInset className="page-bg">
         <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-line/60 bg-white/80 px-4 backdrop-blur md:px-6">

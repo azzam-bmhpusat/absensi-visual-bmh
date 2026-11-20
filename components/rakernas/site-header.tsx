@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { cn } from "cn";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { useLenis } from "lenis/react";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Accordion,
   AccordionContent,
@@ -40,7 +40,7 @@ const linkBase =
 const linkActive =
   "text-primary after:absolute after:inset-x-3 after:bottom-1 after:h-0.5 after:rounded-full after:bg-brand-gold";
 
-export function SiteHeader() {
+export function SiteHeader({ account }: { account?: React.ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const lenis = useLenis();
   const pathname = usePathname();
@@ -138,19 +138,10 @@ export function SiteHeader() {
           )}
         </nav>
 
-        {/* Area kanan: Daftar + Hamburger */}
+        {/* Area kanan: akun + Hamburger */}
         <div className="flex shrink-0 items-center gap-2">
-          {/* Tombol Daftar — selalu tampil, di luar hamburger */}
-          <Link
-            href="/registrasi"
-            className={cn(
-              buttonVariants({ variant: "default" }),
-              "h-11 rounded-lg bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-brand-green-night",
-              "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-            )}
-          >
-            Daftar
-          </Link>
+          {/* Slot akun: menu profil (Profil & Logout) */}
+          {account}
 
           {/* Drawer untuk HP dan tablet */}
           <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>

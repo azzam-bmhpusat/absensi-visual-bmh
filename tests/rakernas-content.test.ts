@@ -19,12 +19,23 @@ describe("Fase 1 — Konten Bertipe (PRD Rakernas BMH)", () => {
       expect(RUNDOWN_DATA.hari3).toHaveLength(8);
     });
 
-    it("memiliki tepat 5 item dress code", () => {
-      expect(DRESSCODE_DATA).toHaveLength(5);
-      DRESSCODE_DATA.forEach((item, index) => {
-        expect(item.src).toBe(`/rakernas/dresscode-${index + 1}.webp`);
-        expect(item.alt).toBe(`Dress Code ${index + 1}`);
-      });
+    it("memiliki tepat 3 item dress code (hari pertama sampai ketiga)", () => {
+      expect(DRESSCODE_DATA).toHaveLength(3);
+      expect(DRESSCODE_DATA.map((i) => i.src)).toEqual([
+        "/dresscode/hari-pertama.png",
+        "/dresscode/hari-kedua.png",
+        "/dresscode/hari-ketiga.png",
+      ]);
+      expect(DRESSCODE_DATA.map((i) => i.day)).toEqual([
+        "Hari Pertama",
+        "Hari Kedua",
+        "Hari Ketiga",
+      ]);
+      expect(DRESSCODE_DATA.map((i) => i.desc)).toEqual([
+        "Kemeja lengan panjang + Jas + Songkok Nasional.",
+        "Baju koko + Songkok Nasional.",
+        "Batik lengan panjang + Songkok Nasional.",
+      ]);
     });
 
     it("memiliki tepat 8 foto galeri lokasi dengan urutan keterangan sesuai A.5", () => {

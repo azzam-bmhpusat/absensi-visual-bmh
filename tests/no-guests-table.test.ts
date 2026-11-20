@@ -35,7 +35,11 @@ describe("tabel guests sudah dihapus: semua kode memakai profiles", () => {
       "app/(admin)/manajemen-user/actions.ts",
       "lib/participant-account.ts",
       "app/admin/actions.ts",
-      "app/(admin)/approval/actions.ts",
+      // Profil akun sendiri (difilter .eq("id", user.id)), termasuk kolom privat no_whatsapp/rencana_kedatangan.
+      "app/(site)/profile/page.tsx",
+      "app/(site)/profile/actions.ts",
+      "components/rakernas/profile-gate.tsx",
+      "components/auth/account-menu.tsx",
       "scripts/migrate-guests-to-profiles.ts",
       "scripts/verify-rls.ts",
       "scripts/create-admin.ts",

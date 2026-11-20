@@ -33,6 +33,8 @@ export interface RundownItem {
 export interface DresscodeItem {
   src: string;
   alt: string;
+  day: string;
+  desc: string;
 }
 
 export interface GalleryItem {
@@ -124,7 +126,7 @@ export const PUBLIKASI_MENU: NavItem[] = [
   { label: "Notula Rapat", href: "/publikasi/notula-rapat" },
 ];
 
-/** Satu sumber kebenaran menu navbar halaman publik (tombol Daftar berdiri sendiri). */
+/** Satu sumber kebenaran menu navbar halaman publik. */
 export const NAV_MENU: NavMenuEntry[] = [
   { label: "Beranda", href: "/" },
   ...NAV_ITEMS,
@@ -211,11 +213,24 @@ export const RUNDOWN_DATA: Record<"hari1" | "hari2" | "hari3", RundownItem[]> = 
 };
 
 export const DRESSCODE_DATA: DresscodeItem[] = [
-  { src: "/rakernas/dresscode-1.webp", alt: "Dress Code 1" },
-  { src: "/rakernas/dresscode-2.webp", alt: "Dress Code 2" },
-  { src: "/rakernas/dresscode-3.webp", alt: "Dress Code 3" },
-  { src: "/rakernas/dresscode-4.webp", alt: "Dress Code 4" },
-  { src: "/rakernas/dresscode-5.webp", alt: "Dress Code 5" },
+  {
+    src: "/dresscode/hari-pertama.png",
+    alt: "Dress code hari pertama: kemeja lengan panjang, jas, dan songkok nasional",
+    day: "Hari Pertama",
+    desc: "Kemeja lengan panjang + Jas + Songkok Nasional.",
+  },
+  {
+    src: "/dresscode/hari-kedua.png",
+    alt: "Dress code hari kedua: baju koko dan songkok nasional",
+    day: "Hari Kedua",
+    desc: "Baju koko + Songkok Nasional.",
+  },
+  {
+    src: "/dresscode/hari-ketiga.png",
+    alt: "Dress code hari ketiga: batik lengan panjang dan songkok nasional",
+    day: "Hari Ketiga",
+    desc: "Batik lengan panjang + Songkok Nasional.",
+  },
 ];
 
 export const LOCATION_DATA = {
@@ -376,12 +391,8 @@ export const INVITED_GUESTS_CONTENT = {
   badge: "Informasi Tamu",
   title: "Peserta Rakernas",
   description: "Temukan detail peserta berdasarkan nama, perwakilan daerah, jabatan, atau departemen.",
-  registerCta: { label: "Daftar", href: "/registrasi" },
   statusAccepted: "Sudah diterima",
-  statusPending: "Belum diterima",
-  pendingNote: "Menunggu persetujuan panitia",
   acceptedGroupTitle: "Sudah diterima",
-  pendingGroupTitle: "Belum diterima (menunggu persetujuan)",
   searchLabel: "Cari peserta",
   searchPlaceholder: "Cari Nama Anda…",
   searchHint: "Ketik minimal 2 karakter. Hasil diperbarui otomatis saat Anda mengetik.",

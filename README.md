@@ -24,7 +24,6 @@ Peserta memindai satu QR statis, memilih sesi kehadiran, mencari atau mengetik n
 - **Panel Administrasi Panitia (`/admin`)**:
   - Login aman berbasis Supabase Auth.
   - **Manajemen Tamu**: Tabel tamu undangan, pencarian nama, tambah/edit/hapus tamu, dan **Export PDF** dengan dialog filter kehadiran (Offline / Online via Zoom).
-  - **Approval Registrasi (`/approval`)**: Pendaftar dari formulir publik `/registrasi` ditinjau admin; yang disetujui otomatis masuk ke daftar tamu.
   - **Rekapitulasi Kehadiran**: Tabel kehadiran lengkap per sesi, filter perwakilan daerah, penanda walk-in, dan **Ekspor CSV** (format waktu WIB & UTF-8 dengan BOM agar terbaca sempurna di Microsoft Excel).
   - **Generator QR Cetak (`/admin/qr`)**: Halaman siap cetak dengan styling `@media print` untuk mencetak QR code beresolusi tinggi di lokasi registrasi.
 
@@ -120,8 +119,7 @@ Akses aplikasi di browser:
 
 ### A. Persiapan Sebelum Acara (Pra-Kegiatan)
 1. **Siapkan Daftar Tamu Undangan**:
-   - Peserta mendaftar sendiri lewat `/registrasi`. Buka `/approval`, tinjau pendaftar, lalu klik **Setujui** agar masuk ke daftar tamu.
-   - Tamu juga bisa ditambahkan manual lewat tombol **Tambah Tamu** di halaman `/guest`.
+   - Tamu ditambahkan manual lewat tombol **Tambah Tamu** di halaman `/guest`.
    - Gunakan **Export PDF** di `/guest` (dengan filter Offline / Online) untuk mencetak daftar tamu.
 2. **Cetak QR Code Registrasi**:
    - Buka `/admin/qr` pada browser komputer panitia.

@@ -2,6 +2,14 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { checkAdmin } from "@/lib/auth/admin";
 
+/** Halaman yang hanya untuk admin / peserta dengan profil lengkap. */
+const MEMBER_PATHS = [
+  "/informasi-kamar-hotel",
+  "/publikasi/foto-galeri-kegiatan",
+  "/publikasi/materi-presentasi-rakernas",
+  "/publikasi/notula-rapat",
+];
+
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({
     request: {
@@ -44,12 +52,42 @@ export async function updateSession(request: NextRequest) {
     "/rekap-kehadiran",
     "/kelola-sesi-acara",
     "/pengaturan",
-    "/approval",
     "/manajemen-user",
     "/admin",
   ];
 
   const isProtectedPath = protectedAdminPaths.some((p) => pathname.startsWith(p));
+
+  // /profile wajib login; /login untuk yang sudah login langsung ke /profile
+  if (pathname === "/profile" || pathname.startsWith("/profile/")) {
+    if (!user) {
+      const loginUrl = request.nextUrl.clone();
+      loginUrl.pathname = "/login";
+      loginUrl.search = `?next=${encodeURIComponent("/profile")}`;
+      return NextResponse.redirect(loginUrl);
+    }
+    return response;
+  }
+  // Halaman khusus peserta: wajib login (kelengkapan profil dicek di ProfileGate)
+  const memberPath = MEMBER_PATHS.find((p) => pathname === p || pathname.startsWith(`${p}/`));
+  if (memberPath) {
+    if (!user) {
+      const loginUrl = request.nextUrl.clone();
+      loginUrl.pathname = "/login";
+      loginUrl.search = `?next=${encodeURIComponent(memberPath)}`;
+      return NextResponse.redirect(loginUrl);
+    }
+    return response;
+  }
+  if (pathname === "/login" || pathname === "/login/") {
+    if (user) {
+      const profileUrl = request.nextUrl.clone();
+      profileUrl.pathname = "/profile";
+      profileUrl.search = "";
+      return NextResponse.redirect(profileUrl);
+    }
+    return response;
+  }
 
   // Redirect /admin langsung ke /dashboard jika sudah atau belum login
   if (pathname === "/admin" || pathname === "/admin/") {

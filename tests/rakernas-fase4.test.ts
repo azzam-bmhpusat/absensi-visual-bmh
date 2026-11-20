@@ -35,19 +35,18 @@ describe("Fase 4 — Dress Code & Lokasi (PRD Rakernas BMH)", () => {
       expect(dresscodeContent).toContain('align: "start"');
     });
 
-    it("menerapkan responsive item basis mobile first: basis-4/5, sm:basis-1/2, lg:basis-1/3, xl:basis-1/4", () => {
+    it("menerapkan responsive item basis mobile first: basis-4/5, sm:basis-1/2, lg:basis-1/3", () => {
       expect(dresscodeContent).toContain("basis-4/5");
       expect(dresscodeContent).toContain("sm:basis-1/2");
       expect(dresscodeContent).toContain("lg:basis-1/3");
-      expect(dresscodeContent).toContain("xl:basis-1/4");
     });
 
-    it("merender 5 item dress code dari DRESSCODE_DATA", () => {
-      expect(DRESSCODE_DATA).toHaveLength(5);
+    it("merender 3 item dress code dari DRESSCODE_DATA", () => {
+      expect(DRESSCODE_DATA).toHaveLength(3);
       expect(dresscodeContent).toContain("DRESSCODE_DATA.map");
       DRESSCODE_DATA.forEach((item) => {
-        expect(item.src).toMatch(/^\/rakernas\/dresscode-\d\.webp$/);
-        expect(item.alt).toMatch(/^Dress Code \d$/);
+        expect(item.src).toMatch(/^\/dresscode\/hari-(pertama|kedua|ketiga)\.png$/);
+        expect(item.alt).toMatch(/^Dress code hari /);
       });
     });
 

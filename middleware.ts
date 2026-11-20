@@ -16,7 +16,12 @@ export const config = {
     "/rekap-kehadiran/:path*",
     "/kelola-sesi-acara/:path*",
     "/pengaturan/:path*",
-    "/approval/:path*",
     "/manajemen-user/:path*",
+    "/profile/:path*",
+    "/informasi-kamar-hotel/:path*",
+    "/publikasi/foto-galeri-kegiatan/:path*",
+    "/publikasi/materi-presentasi-rakernas/:path*",
+    "/publikasi/notula-rapat/:path*",
+    "/login",
   ],
 };
