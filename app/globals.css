@@ -4,12 +4,22 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * Palet BMH — hanya tiga warna dasar, semua token lain diturunkan lewat color-mix():
+ *   hijau      #39BA87  → aksen/isi (BUKAN teks di latar terang: kontras 2,5:1)
+ *   emas       #FEB738  → aksen/isi dengan teks gelap (BUKAN teks di latar terang: 1,7:1)
+ *   hijau tua  #095046  → warna utama: teks, tombol, tautan (putih di atasnya 9,3:1)
+ *
+ * Pasangan teks/latar sudah dihitung ≥ 4,5:1 (indikator fokus ≥ 3:1):
+ *   --brand-green-text  / putih 5,5:1   --brand-gold-text / putih 6,2:1
+ *   --ink-muted / putih 5,6:1           --brand-green-night / putih 13:1
+ *   di tema gelap: --brand-green / latar 5,4:1, --brand-gold-soft / latar 9:1
+ */
+
 @theme inline {
+  /* Semantik (shadcn) */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-heading: var(--font-heading);
-
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
@@ -27,13 +37,9 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
 
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-
+  /* Merek */
   --color-brand-green: var(--brand-green);
+  --color-brand-green-text: var(--brand-green-text);
   --color-brand-green-deep: var(--brand-green-deep);
   --color-brand-green-night: var(--brand-green-night);
   --color-brand-gold: var(--brand-gold);
@@ -43,6 +49,23 @@
   --color-gold-100: var(--gold-100);
   --color-green-100: var(--green-100);
 
+  /* Netral & status */
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-line: var(--line);
+  --color-surface: var(--surface);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+
+  /* Grafik */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Sidebar */
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -52,13 +75,8 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --color-ink: #0F2A24;
-  --color-ink-muted: #5B6F68;
-  --color-line: #DDE7E2;
-  --color-surface: #F4F8F6;
-  --color-danger: #D14343;
-  --color-success: #2FA075;
-  --color-warning: #FEB738;
+  --font-sans: var(--font-sans);
+  --font-heading: var(--font-heading);
 
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -72,100 +90,122 @@
 :root {
   --radius: 1rem;
 
+  /* 1) Sumber: tiga warna dasar */
+  --brand-green: #39BA87;
+  --brand-gold: #FEB738;
+  --brand-green-deep: #095046;
+
+  /* 2) Turunan merek */
+  --brand-green-night: color-mix(in oklab, var(--brand-green-deep) 78%, black);
+  --brand-green-text: color-mix(in oklab, var(--brand-green) 38%, var(--brand-green-deep));
+  --brand-gold-text: color-mix(in oklab, var(--brand-gold) 60%, black);
+  --brand-gold-soft: color-mix(in oklab, var(--brand-gold) 70%, white);
+  --green-100: color-mix(in oklab, var(--brand-green) 22%, white);
+  --gold-50: color-mix(in oklab, var(--brand-gold) 10%, white);
+  --gold-100: color-mix(in oklab, var(--brand-gold) 25%, white);
+
+  /* 3) Netral — condong ke hijau tua agar selaras dengan palet */
+  --ink: color-mix(in oklab, var(--brand-green-deep) 72%, black);
+  --ink-muted: color-mix(in oklab, var(--brand-green-deep) 80%, white);
+  --line: color-mix(in oklab, var(--brand-green-deep) 14%, white);
+  --surface: color-mix(in oklab, var(--brand-green-deep) 5%, white);
+
+  /* 4) Status (satu-satunya warna di luar palet: merah untuk galat) */
+  --danger: #D14343;
+  --success: var(--brand-green-text);
+  --warning: var(--brand-gold);
+
+  /* 5) Semantik (shadcn) */
   --background: #FFFFFF;
-  --foreground: #0F2A24;
+  --foreground: var(--ink);
 
   --card: #FFFFFF;
-  --card-foreground: #0F2A24;
+  --card-foreground: var(--ink);
   --popover: #FFFFFF;
-  --popover-foreground: #0F2A24;
+  --popover-foreground: var(--ink);
 
-  --primary: #095046;
+  --primary: var(--brand-green-deep);
   --primary-foreground: #FFFFFF;
 
-  --secondary: #EEFBF5;
-  --secondary-foreground: #095046;
+  --secondary: color-mix(in oklab, var(--brand-green) 10%, white);
+  --secondary-foreground: var(--brand-green-deep);
 
-  --muted: #F4F8F6;
-  --muted-foreground: #5B6F68;
+  --muted: var(--surface);
+  --muted-foreground: var(--ink-muted);
 
-  --accent: #F2D06B;
-  --accent-foreground: #0A3A30;
+  --accent: var(--brand-gold);
+  --accent-foreground: var(--brand-green-night);
 
-  --destructive: #D14343;
-  --border: #DDE7E2;
-  --input: #DDE7E2;
-  --ring: #39BA87;
+  --destructive: var(--danger);
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--brand-green-text);
 
-  --chart-1: #39BA87;
-  --chart-2: #095046;
-  --chart-3: #FEB738;
-  --chart-4: #7ADBB2;
-  --chart-5: #F2D06B;
+  --chart-1: var(--brand-green);
+  --chart-2: var(--brand-green-deep);
+  --chart-3: var(--brand-gold);
+  --chart-4: color-mix(in oklab, var(--brand-green) 55%, white);
+  --chart-5: color-mix(in oklab, var(--brand-gold) 60%, white);
 
-  /* token tambahan proyek BMH */
-  --brand-green: #39BA87;
-  --brand-green-deep: #095046;
-  --brand-green-night: #0A3A30;
-  --brand-gold: #FEB738;
-  --brand-gold-soft: #F2D06B;
-  --brand-gold-text: #8A6A1F;
-
-  /* gold scale */
-  --gold-50: #FFF9E6;
-  --gold-100: #FDEFBF;
-  --green-100: #D5F5E6;
-
-  /* sidebar tokens (brand BMH) */
-  --sidebar: #F4F8F6;
-  --sidebar-foreground: #0F2A24;
-  --sidebar-primary: #095046;
+  --sidebar: var(--surface);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--brand-green-deep);
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #EEFBF5;
-  --sidebar-accent-foreground: #095046;
-  --sidebar-border: #DDE7E2;
-  --sidebar-ring: #39BA87;
+  --sidebar-accent: var(--secondary);
+  --sidebar-accent-foreground: var(--brand-green-deep);
+  --sidebar-border: var(--line);
+  --sidebar-ring: var(--brand-green-text);
 }
 
 /* Tema videotron: tambahkan class "display-theme" pada wrapper /display */
 .display-theme {
-  --background: #0A3A30;
-  --foreground: #F4FBF8;
-  --card: #0F4439;
-  --card-foreground: #F4FBF8;
-  --popover: #0F4439;
-  --popover-foreground: #F4FBF8;
+  --background: var(--brand-green-night);
+  --foreground: color-mix(in oklab, var(--brand-green) 6%, white);
 
-  --primary: #39BA87;
-  --primary-foreground: #0A3A30;
+  --card: color-mix(in oklab, var(--brand-green) 8%, var(--brand-green-night));
+  --card-foreground: var(--foreground);
+  --popover: var(--card);
+  --popover-foreground: var(--foreground);
 
-  --secondary: #095046;
-  --secondary-foreground: #F4FBF8;
+  --primary: var(--brand-green);
+  --primary-foreground: var(--brand-green-night);
 
-  --muted: #0F4439;
-  --muted-foreground: #A9CFC2;
+  --secondary: var(--brand-green-deep);
+  --secondary-foreground: var(--foreground);
 
-  --accent: #F2D06B;
-  --accent-foreground: #0A3A30;
+  --muted: var(--card);
+  --muted-foreground: color-mix(in oklab, var(--brand-green) 40%, white);
 
-  --border: #1F6252;
-  --input: #1F6252;
-  --ring: #F2D06B;
+  --accent: var(--brand-gold);
+  --accent-foreground: var(--brand-green-night);
+
+  --border: color-mix(in oklab, var(--brand-green) 28%, var(--brand-green-night));
+  --input: var(--border);
+  --ring: var(--brand-gold);
+
+  /* Teks hijau/emas & netral otomatis kontras di latar gelap */
+  --brand-green-text: var(--brand-green);
+  --brand-gold-text: var(--brand-gold-soft);
+  --ink: var(--foreground);
+  --ink-muted: var(--muted-foreground);
+  --line: var(--border);
+  --surface: var(--card);
+  --success: var(--brand-green);
 }
 
 .page-bg {
   background:
-    radial-gradient(60% 40% at 100% 0%, rgba(242, 208, 107, 0.35) 0%, transparent 70%),
-    radial-gradient(70% 45% at 100% 100%, rgba(63, 191, 143, 0.30) 0%, transparent 70%),
-    radial-gradient(50% 35% at 0% 0%, rgba(63, 191, 143, 0.18) 0%, transparent 70%),
-    linear-gradient(180deg, #FFFFFF 0%, #F1F5F3 100%);
+    radial-gradient(60% 40% at 100% 0%, color-mix(in srgb, var(--brand-gold) 35%, transparent) 0%, transparent 70%),
+    radial-gradient(70% 45% at 100% 100%, color-mix(in srgb, var(--brand-green) 30%, transparent) 0%, transparent 70%),
+    radial-gradient(50% 35% at 0% 0%, color-mix(in srgb, var(--brand-green) 18%, transparent) 0%, transparent 70%),
+    linear-gradient(180deg, #FFFFFF 0%, var(--surface) 100%);
 }
 
 .display-bg {
   background:
-    radial-gradient(60% 45% at 100% 0%, rgba(242, 208, 107, 0.12) 0%, transparent 70%),
-    radial-gradient(65% 50% at 0% 100%, rgba(63, 191, 143, 0.15) 0%, transparent 70%),
-    #0A3A30;
+    radial-gradient(60% 45% at 100% 0%, color-mix(in srgb, var(--brand-gold) 12%, transparent) 0%, transparent 70%),
+    radial-gradient(65% 50% at 0% 100%, color-mix(in srgb, var(--brand-green) 15%, transparent) 0%, transparent 70%),
+    var(--brand-green-night);
 }
 
 .no-scrollbar::-webkit-scrollbar {

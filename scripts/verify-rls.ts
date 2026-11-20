@@ -2,8 +2,9 @@
  * Script: Verifikasi Menyeluruh Kebijakan RLS Supabase
  *
  * Menguji bahwa:
- * 1. Anon key BISA membaca (SELECT) sessions, guests, attendances.
- * 2. Anon key TIDAK BISA menulis (INSERT, UPDATE, DELETE) pada sessions, guests, attendances.
+ * 1. Anon key BISA membaca (SELECT) sessions, peserta (kolom peserta di profiles), attendances.
+ * 2. Anon key TIDAK BISA menulis (INSERT, UPDATE, DELETE) pada sessions, profiles, attendances,
+ *    dan TIDAK BISA membaca kolom email/role pada profiles.
  * 3. Service role key BISA melakukan operasi manajemen.
  *
  * Dijalankan dengan:
@@ -71,8 +72,13 @@ async function runRlsTests() {
   const { data: sessions, error: sessErr } = await anon.from("sessions").select("id, slug, nama");
   assert("Anon dapat membaca sessions", !sessErr && Array.isArray(sessions), sessErr?.message);
 
-  const { data: guests, error: guestErr } = await anon.from("guests").select("id, nama").limit(5);
-  assert("Anon dapat membaca guests", !guestErr && Array.isArray(guests), guestErr?.message);
+  const { data: guests, error: guestErr } = await anon.from("profiles").select("id, nama").not("nama", "is", null).limit(5);
+  assert("Anon dapat membaca peserta (profiles)", !guestErr && Array.isArray(guests), guestErr?.message);
+
+  const { error: emailErr } = await anon.from("profiles").select("email").limit(1);
+  assert("Anon DITOLAK membaca email di profiles", !!emailErr, emailErr ? `code: ${emailErr.code}` : "Lolos!");
+  const { error: roleErr } = await anon.from("profiles").select("role").limit(1);
+  assert("Anon DITOLAK membaca role di profiles", !!roleErr, roleErr ? `code: ${roleErr.code}` : "Lolos!");
 
   const { data: atts, error: attErr } = await anon.from("attendances").select("id, nama").limit(5);
   assert("Anon dapat membaca attendances", !attErr && Array.isArray(atts), attErr?.message);
@@ -82,8 +88,8 @@ async function runRlsTests() {
   const { error: insSessErr } = await anon.from("sessions").insert({ id: 99, slug: "hack", nama: "Hack" });
   assert("Anon DITOLAK insert ke sessions", !!insSessErr, insSessErr ? `code: ${insSessErr.code}` : "Lolos!");
 
-  const { error: insGuestErr } = await anon.from("guests").insert({ nama: "Hacker Guest", perwakilan_daerah: "DarkWeb" });
-  assert("Anon DITOLAK insert ke guests", !!insGuestErr, insGuestErr ? `code: ${insGuestErr.code}` : "Lolos!");
+  const { error: insGuestErr } = await anon.from("profiles").insert({ nama: "Hacker Guest", perwakilan_daerah: "DarkWeb" });
+  assert("Anon DITOLAK insert ke profiles", !!insGuestErr, insGuestErr ? `code: ${insGuestErr.code}` : "Lolos!");
 
   const { error: insAttErr } = await anon.from("attendances").insert({ session_id: 1, nama: "Hacker Attendance", perwakilan_daerah: "DarkWeb" });
   assert("Anon DITOLAK insert ke attendances", !!insAttErr, insAttErr ? `code: ${insAttErr.code}` : "Lolos!");
@@ -92,8 +98,8 @@ async function runRlsTests() {
   console.log("\n[3] Proteksi Modifikasi Anon (UPDATE & DELETE)");
   const dummyUuid = "00000000-0000-0000-0000-000000000000";
 
-  const { data: updGuests, error: updGuestErr } = await anon.from("guests").update({ nama: "Hacked" }).eq("id", dummyUuid).select();
-  assert("Anon DITOLAK update guests (atau 0 baris terpengaruh)", !updGuests || updGuests.length === 0, updGuestErr?.message);
+  const { data: updProfiles, error: updProfileErr } = await anon.from("profiles").update({ nama: "Hacked" }).eq("id", dummyUuid).select("id");
+  assert("Anon DITOLAK update profiles (atau 0 baris terpengaruh)", !updProfiles || updProfiles.length === 0, updProfileErr?.message);
 
   const { data: delAtts, error: delAttErr } = await anon.from("attendances").delete().eq("id", dummyUuid).select();
   assert("Anon DITOLAK delete attendances (atau 0 baris terhapus)", !delAtts || delAtts.length === 0, delAttErr?.message);

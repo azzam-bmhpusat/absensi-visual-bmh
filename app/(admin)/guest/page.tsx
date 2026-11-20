@@ -17,10 +17,11 @@ async function GuestContent() {
   const supabase = createPublicServerClient();
 
   const guestsRes = await supabase
-    .from("guests")
+    .from("profiles")
     .select(
       "id, nama, perwakilan_daerah, jabatan, departemen, kategori, ukuran_baju, mode_kehadiran, created_at"
     )
+    .not("nama", "is", null)
     .order("created_at", { ascending: false });
 
   const rawGuests = guestsRes.data || [];

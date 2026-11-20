@@ -139,13 +139,13 @@ export function QrCard({ siteUrl, eventName }: QrCardProps) {
           variant="outline"
           size="sm"
           onClick={handleCopyLink}
-          className="h-8 px-2.5 rounded-xl text-[11px] font-semibold border-line text-primary hover:border-brand-green bg-white shadow-2xs transition-colors"
+          className="h-8 px-2.5 rounded-xl text-[11px] font-semibold border-line text-primary hover:border-ring bg-white shadow-2xs transition-colors"
           title="Salin tautan halaman absen"
         >
           {copied ? (
             <>
-              <Check className="w-3 h-3 mr-1 text-brand-green" />
-              <span className="text-brand-green font-bold">Tersalin</span>
+              <Check className="w-3 h-3 mr-1 text-brand-green-text" />
+              <span className="text-brand-green-text font-bold">Tersalin</span>
             </>
           ) : (
             <>
@@ -159,7 +159,7 @@ export function QrCard({ siteUrl, eventName }: QrCardProps) {
           variant="outline"
           size="sm"
           onClick={handleDownloadSvg}
-          className="h-8 px-2.5 rounded-xl text-[11px] font-semibold border-line text-primary hover:border-brand-green bg-white shadow-2xs transition-colors"
+          className="h-8 px-2.5 rounded-xl text-[11px] font-semibold border-line text-primary hover:border-ring bg-white shadow-2xs transition-colors"
           title="Unduh format vektor SVG murni"
         >
           <Download className="w-3 h-3 mr-1 text-ink-muted" />
@@ -170,7 +170,7 @@ export function QrCard({ siteUrl, eventName }: QrCardProps) {
           variant="outline"
           size="sm"
           onClick={handleDownloadPng}
-          className="h-8 px-2.5 rounded-xl text-[11px] font-semibold border-line text-primary hover:border-brand-green bg-white shadow-2xs transition-colors"
+          className="h-8 px-2.5 rounded-xl text-[11px] font-semibold border-line text-primary hover:border-ring bg-white shadow-2xs transition-colors"
           title="Unduh gambar PNG 1200×1200px resolusi tinggi"
         >
           <Download className="w-3 h-3 mr-1 text-ink-muted" />

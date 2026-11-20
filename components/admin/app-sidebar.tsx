@@ -17,6 +17,7 @@ import {
   Theater,
   LogOut,
   UserCheck,
+  UserCog,
 } from "lucide-react";
 import {
   Sidebar,
@@ -90,6 +91,7 @@ export function AppSidebar({
           : null,
       badgeColor: "bg-green-100 text-brand-green-deep",
     },
+    { label: "Manajemen User", href: "/manajemen-user", icon: UserCog, badge: null, badgeColor: "" },
     { label: "Pengaturan", href: "/pengaturan", icon: Settings, badge: null, badgeColor: "" },
   ];
 
@@ -138,7 +140,7 @@ export function AppSidebar({
           </div>
           <div className="flex flex-col leading-tight overflow-hidden transition-[opacity,max-width] duration-200 ease-linear max-w-48 opacity-100 group-data-[collapsible=icon]:max-w-0 group-data-[collapsible=icon]:opacity-0">
             <span className="font-heading text-sm font-bold text-primary whitespace-nowrap">
-              Absensi Visual
+              Rakernas BMH 2027
             </span>
             <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-ink-muted whitespace-nowrap">
               Panel Administrasi
@@ -165,7 +167,7 @@ export function AppSidebar({
                       tooltip={item.label}
                     >
                       <Icon
-                        className={isActive ? "text-brand-green" : "text-ink-muted"}
+                        className={isActive ? "text-brand-green-text" : "text-ink-muted"}
                       />
                       <span>{item.label}</span>
                     </SidebarMenuButton>
@@ -230,7 +232,7 @@ export function AppSidebar({
               <QrCode className="h-4 w-4 text-brand-gold-soft" />
             </div>
             <p className="font-heading text-sm font-bold">Buka Halaman Absen</p>
-            <p className="mt-0.5 text-[11px] leading-relaxed text-emerald-100/80">
+            <p className="mt-0.5 text-[11px] leading-relaxed text-white/80">
               Bagikan QR absensi ke peserta acara
             </p>
             <Link

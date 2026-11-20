@@ -35,7 +35,7 @@ export default async function AdminLayout({
   const adminSupabase = await createClient();
 
   const [guestsRes, attendancesRes, sessionsRes, pendingRes] = await Promise.all([
-    supabase.from("guests").select("id"),
+    supabase.from("profiles").select("id").not("nama", "is", null),
     supabase.from("attendances").select("id"),
     supabase.from("sessions").select("id, is_active"),
     adminSupabase

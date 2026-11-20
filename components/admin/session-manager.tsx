@@ -98,7 +98,7 @@ export function SessionManager({
     <div className="space-y-6">
       {/* Kartu Informasi */}
       <div className="p-4 rounded-2xl bg-secondary/60 border border-brand-green/20 flex items-start gap-3 text-xs text-primary leading-relaxed">
-        <Info className="w-5 h-5 text-brand-green shrink-0 mt-0.5" />
+        <Info className="w-5 h-5 text-brand-green-text shrink-0 mt-0.5" />
         <div>
           <span className="font-bold">Kendali Presensi Acara:</span> Saat status
           sesi diubah menjadi <strong>Ditutup</strong>, peserta yang membuka
@@ -116,7 +116,7 @@ export function SessionManager({
           return (
             <div key={`day-group-${dayNumber}`} className="space-y-3">
               <div className="flex items-center gap-2 pb-1 border-b border-line">
-                <CalendarDays className="w-4 h-4 text-brand-green" />
+                <CalendarDays className="w-4 h-4 text-brand-green-text" />
                 <h3 className="font-heading text-sm font-bold text-primary">
                   {getDayTitle(dayNumber)}
                 </h3>
@@ -186,7 +186,7 @@ export function SessionManager({
                           <div className="space-y-1.5 pt-2 border-t border-line/50 text-xs">
                             <div className="flex items-center justify-between text-ink-muted">
                               <span className="flex items-center gap-1.5">
-                                <Users className="w-3.5 h-3.5 text-brand-green" />
+                                <Users className="w-3.5 h-3.5 text-brand-green-text" />
                                 Kehadiran Masuk:
                               </span>
                               <span className="font-semibold text-primary font-mono">
@@ -239,10 +239,10 @@ export function SessionManager({
                           <Link
                             href={`/display?sesi=${session.id}`}
                             target="_blank"
-                            className="inline-flex items-center justify-center gap-1.5 w-full h-9 rounded-xl text-xs font-semibold border border-line bg-secondary/30 text-ink hover:text-primary hover:border-brand-green hover:bg-white transition-all cursor-pointer"
+                            className="inline-flex items-center justify-center gap-1.5 w-full h-9 rounded-xl text-xs font-semibold border border-line bg-secondary/30 text-ink hover:text-primary hover:border-ring hover:bg-white transition-all cursor-pointer"
                             title={`Buka tampilan videotron untuk ${session.nama}`}
                           >
-                            <Tv className="w-3.5 h-3.5 text-brand-green" />
+                            <Tv className="w-3.5 h-3.5 text-brand-green-text" />
                             Tampilkan di Videotron
                             <ExternalLink className="w-3 h-3 text-ink-muted/70 ml-0.5" />
                           </Link>

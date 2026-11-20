@@ -56,7 +56,7 @@ export function LiveQr({ eventName }: { eventName?: string }) {
         {url ? (
           <RoundedQr value={url} level="M" margin={4} color="#095046" bgColor="#FBFBFA" className="w-full h-full" />
         ) : (
-          <Loader2 className="w-10 h-10 animate-spin text-brand-green" />
+          <Loader2 className="w-10 h-10 animate-spin text-brand-green-text" />
         )}
       </div>
 
@@ -65,14 +65,14 @@ export function LiveQr({ eventName }: { eventName?: string }) {
           Scan untuk absen
         </h1>
         <p className="text-sm text-ink-muted flex items-center justify-center gap-1.5">
-          <RefreshCw className="w-4 h-4 text-brand-green" />
+          <RefreshCw className="w-4 h-4 text-brand-green-text" />
           QR berganti dalam <span className="font-semibold text-primary tabular-nums">{secondsLeft} detik</span>
         </p>
         {error && <p className="text-sm text-danger font-medium">{error}</p>}
       </div>
 
       <div className="flex items-center gap-1.5 text-xs text-ink-muted pt-3 border-t border-dotted border-ink-muted/40 w-full justify-center">
-        <ShieldCheck className="w-4 h-4 text-brand-green" />
+        <ShieldCheck className="w-4 h-4 text-brand-green-text" />
         <span>Gunakan HP masing-masing &bull; 1 HP hanya bisa absen 1 kali per sesi</span>
       </div>
       {eventName && <p className="text-[11px] text-ink-muted/80">{eventName}</p>}

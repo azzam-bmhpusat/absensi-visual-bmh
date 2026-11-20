@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { checkAdmin } from "@/lib/auth/admin";
 import { createQrToken } from "@/lib/absen-token";
 
 const headers = { "Cache-Control": "no-store" };
@@ -6,13 +7,13 @@ const headers = { "Cache-Control": "no-store" };
 /** URL QR dinamis untuk layar lokasi. Hanya untuk admin yang sudah login. */
 export async function GET(request: Request) {
   const supabase = await createClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
+  const { user, isAdmin } = await checkAdmin(supabase);
 
-  if (error || !user) {
+  if (!user) {
     return Response.json({ message: "Hanya admin yang dapat membuka QR presensi." }, { status: 401, headers });
+  }
+  if (!isAdmin) {
+    return Response.json({ message: "Hanya admin yang dapat membuka QR presensi." }, { status: 403, headers });
   }
 
   let qr: ReturnType<typeof createQrToken>;

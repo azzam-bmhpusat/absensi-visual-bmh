@@ -17,5 +17,6 @@ export const config = {
     "/kelola-sesi-acara/:path*",
     "/pengaturan/:path*",
     "/approval/:path*",
+    "/manajemen-user/:path*",
   ],
 };

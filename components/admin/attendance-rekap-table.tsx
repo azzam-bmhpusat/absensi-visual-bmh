@@ -91,7 +91,7 @@ const filterContentClassName =
   "w-(--anchor-width) min-w-0 rounded-xl border border-line bg-popover p-1.5 shadow-lg ring-0 [&_[data-slot=select-scroll-up-button]]:rounded-t-lg [&_[data-slot=select-scroll-down-button]]:rounded-b-lg";
 const filterGroupClassName = "p-0";
 const filterItemClassName =
-  "min-h-10 rounded-lg py-2 pr-9 pl-3 text-sm text-ink focus:bg-secondary focus:text-primary data-highlighted:bg-secondary data-highlighted:text-primary data-[selected]:font-semibold data-[selected]:text-primary [&_svg]:text-brand-green *:[span]:first:min-w-0 *:[span]:first:truncate *:[span]:first:block";
+  "min-h-10 rounded-lg py-2 pr-9 pl-3 text-sm text-ink focus:bg-secondary focus:text-primary data-highlighted:bg-secondary data-highlighted:text-primary data-[selected]:font-semibold data-[selected]:text-primary [&_svg]:text-brand-green-text *:[span]:first:min-w-0 *:[span]:first:truncate *:[span]:first:block";
 const filterNestedItemClassName = `${filterItemClassName} pl-5`;
 const filterLabelClassName =
   "px-3 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-wide text-ink-muted";
@@ -237,8 +237,8 @@ export function AttendanceRekapTable({
       {/* Kartu Ringkasan Metrik */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="p-4 rounded-2xl bg-white border border-line shadow-2xs flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center text-primary">
-            <CheckCircle className="w-5 h-5 text-brand-green" />
+          <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-primary">
+            <CheckCircle className="w-5 h-5 text-brand-green-text" />
           </div>
           <div>
             <div className="text-2xl font-bold font-heading text-primary">
@@ -262,7 +262,7 @@ export function AttendanceRekapTable({
 
         <div className="p-4 rounded-2xl bg-white border border-line shadow-2xs flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gold-50 flex items-center justify-center text-brand-gold-text">
-            <UserPlus className="w-5 h-5 text-brand-gold" />
+            <UserPlus className="w-5 h-5 text-brand-gold-text" />
           </div>
           <div>
             <div className="text-2xl font-bold font-heading text-brand-gold-text">
@@ -295,7 +295,7 @@ export function AttendanceRekapTable({
               }}
             >
               <SelectTrigger id="rekap-filter-hari" title={selectedDayLabel} className={filterTriggerClassName}>
-                <Calendar className="size-4 text-brand-green" aria-hidden="true" />
+                <Calendar className="size-4 text-brand-green-text" aria-hidden="true" />
                 <SelectValue className="truncate" placeholder="Semua Hari" />
               </SelectTrigger>
               <SelectContent {...filterContentProps} className={`${filterContentClassName} max-h-[min(18rem,var(--available-height))]`}>
@@ -399,7 +399,7 @@ export function AttendanceRekapTable({
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Cari nama, daerah, jabatan, atau departemen..."
-                className="h-11 pl-10 rounded-xl border-line text-base lg:text-sm focus-visible:ring-brand-green"
+                className="h-11 pl-10 rounded-xl border-line text-base lg:text-sm focus-visible:ring-ring"
               />
             </div>
           </div>
@@ -494,7 +494,7 @@ export function AttendanceRekapTable({
                     </TableCell>
                     <TableCell className="text-xs text-ink-muted">
                       {item.jabatan || item.departemen ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-brand-green border border-emerald-200">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-secondary text-brand-green-text border border-brand-green/30">
                           {item.jabatan}
                           {item.departemen ? `: ${item.departemen}` : ""}
                         </span>
@@ -508,15 +508,15 @@ export function AttendanceRekapTable({
                           Tamu Baru
                         </Badge>
                       ) : (
-                        <Badge className="bg-green-100 text-brand-green-deep border-green-300 text-[10px] font-semibold hover:bg-green-100">
+                        <Badge className="bg-green-100 text-brand-green-deep border-brand-green/30 text-[10px] font-semibold hover:bg-green-100">
                           Terdaftar
                         </Badge>
                       )}
                     </TableCell>
                     <TableCell className="text-center">
                       {rank === "first" ? (
-                        <Badge className="bg-amber-100 text-amber-900 border-amber-300 text-[10px] font-bold hover:bg-amber-100 inline-flex items-center gap-1">
-                          <Award className="w-3 h-3 text-amber-600" />
+                        <Badge className="bg-gold-100 text-brand-gold-text border-brand-gold/40 text-[10px] font-bold hover:bg-gold-100 inline-flex items-center gap-1">
+                          <Award className="w-3 h-3 text-brand-gold-text" />
                           3 Pertama
                         </Badge>
                       ) : rank === "last" ? (

@@ -81,7 +81,7 @@ export function DashboardStatCards({
       {/* Kartu highlight hijau solid */}
       <div className="rounded-2xl bg-primary p-5 shadow-sm">
         <div className="flex items-center gap-2">
-          <p className="text-xs font-medium text-emerald-100/90">
+          <p className="text-xs font-medium text-white/90">
             Total Tamu Terdaftar
           </p>
           <div className="ml-auto flex h-7 w-7 items-center justify-center rounded-full bg-white">
@@ -200,7 +200,7 @@ export function SessionBarChart({
                         </p>
                         <p className="text-ink-muted">
                           Total Hadir:{" "}
-                          <strong className="font-mono text-brand-green">
+                          <strong className="font-mono text-brand-green-text">
                             {data.count} Tamu
                           </strong>
                         </p>
@@ -363,7 +363,7 @@ export function SessionTracker() {
     <div className="rounded-3xl bg-gradient-to-b from-primary to-brand-green-night p-5 shadow-sm">
       <div className="flex items-center gap-2">
         <Clock className="h-4 w-4 text-brand-gold-soft" />
-        <p className="text-xs font-medium text-emerald-100/90">
+        <p className="text-xs font-medium text-white/90">
           Waktu Server (WIB)
         </p>
       </div>
@@ -377,7 +377,7 @@ export function SessionTracker() {
         <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#D14343]">
           <Square className="h-3.5 w-3.5 text-white" />
         </span>
-        <span className="text-[11px] text-emerald-100/70">
+        <span className="text-[11px] text-white/70">
           Kontrol sesi dari Kelola Sesi Acara
         </span>
       </div>

@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { DEFAULT_EVENT_SETTINGS } from "@/lib/event-settings";
 import { eventSettingsToRow, toEventSettingsForm } from "@/lib/event-settings-validation";
 
-const mocks = vi.hoisted(() => ({ getUser: vi.fn(), from: vi.fn(), update: vi.fn(), eq: vi.fn(), select: vi.fn(), single: vi.fn(), updateTag: vi.fn(), revalidatePath: vi.fn(), redirect: vi.fn() }));
-vi.mock("@/lib/supabase/server", () => ({ createClient: async () => ({ auth: { getUser: mocks.getUser }, from: mocks.from }) }));
+const mocks = vi.hoisted(() => ({ getUser: vi.fn(), rpc: vi.fn(), from: vi.fn(), update: vi.fn(), eq: vi.fn(), select: vi.fn(), single: vi.fn(), updateTag: vi.fn(), revalidatePath: vi.fn(), redirect: vi.fn() }));
+vi.mock("@/lib/supabase/server", () => ({ createClient: async () => ({ auth: { getUser: mocks.getUser }, rpc: mocks.rpc, from: mocks.from }) }));
 vi.mock("next/cache", () => ({ updateTag: mocks.updateTag, revalidatePath: mocks.revalidatePath }));
 import { saveEventSettings } from "@/app/(admin)/pengaturan/actions";
 
@@ -12,6 +12,7 @@ describe("saveEventSettings authorization and persistence", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.getUser.mockResolvedValue({ data: { user: { id: "admin" } }, error: null });
+    mocks.rpc.mockResolvedValue({ data: true, error: null });
     mocks.from.mockReturnValue({ update: mocks.update });
     mocks.update.mockReturnValue({ eq: mocks.eq });
     mocks.eq.mockReturnValue({ select: mocks.select });
@@ -21,6 +22,13 @@ describe("saveEventSettings authorization and persistence", () => {
 
   it("denies anonymous requests before accessing the table", async () => {
     mocks.getUser.mockResolvedValue({ data: { user: null }, error: null });
+    expect(await saveEventSettings(values)).toMatchObject({ success: false, error: expect.stringContaining("admin") });
+    expect(mocks.from).not.toHaveBeenCalled();
+    expect(mocks.updateTag).not.toHaveBeenCalled();
+  });
+
+  it("denies a logged-in account that is not an admin (role user)", async () => {
+    mocks.rpc.mockResolvedValue({ data: false, error: null });
     expect(await saveEventSettings(values)).toMatchObject({ success: false, error: expect.stringContaining("admin") });
     expect(mocks.from).not.toHaveBeenCalled();
     expect(mocks.updateTag).not.toHaveBeenCalled();

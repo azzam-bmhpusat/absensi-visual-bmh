@@ -98,7 +98,7 @@ export function CountdownSection({
         </RevealStagger>
 
         {isMounted && timeLeft.isExpired && (
-          <p className="mt-4 text-xs md:text-sm font-medium text-brand-green">
+          <p className="mt-4 text-xs md:text-sm font-medium text-brand-green-text">
             {getEventStatus({ startsAt: target, endsAt }, now!) === "finished" ? "Acara telah selesai." : "Acara sedang berlangsung atau telah dimulai!"}
           </p>
         )}

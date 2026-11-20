@@ -92,6 +92,20 @@ async function main() {
     console.log(`✅ Akun admin berhasil dibuat! (ID: ${newUser.user?.id})`);
   }
 
+  // Trigger di database membuat profil baru dengan role 'user'; jadikan akun ini 'admin'.
+  const { error: roleErr } = await admin
+    .from("profiles")
+    .update({ role: "admin" })
+    .ilike("email", email);
+  if (roleErr) {
+    console.warn(
+      `⚠ Role admin pada tabel profiles belum diatur (${roleErr.message}). ` +
+        "Pastikan migrasi 0008_profiles.sql sudah dijalankan, lalu jalankan ulang skrip ini."
+    );
+  } else {
+    console.log("✅ Role 'admin' diterapkan pada tabel profiles.");
+  }
+
   console.log("\nKredensial Login Admin:");
   console.log(`- Email:    ${email}`);
   console.log(`- Password: ${password}`);

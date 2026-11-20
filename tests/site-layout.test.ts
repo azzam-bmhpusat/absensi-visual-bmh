@@ -16,6 +16,22 @@ describe("Shared layout situs publik: app/(site)", () => {
     expect(layout).toContain("{children}");
   });
 
+  it("layout memasang popup WhatsApp yang tautannya mengikuti footer_url event settings", () => {
+    const slot = read("components", "rakernas", "whatsapp-float-slot.tsx");
+    const float = read("components", "rakernas", "whatsapp-float.tsx");
+    expect(layout).toContain("<WhatsAppFloatSlot");
+    expect(slot).toContain("getEventSettings");
+    expect(slot).toContain("href={footerUrl}");
+    expect(float).toContain("const LOGO_MS = 2000");
+    expect(float).toContain("const IMAGE_MS = 1000");
+    expect(float).toContain("/whatsapp-popup.jpeg");
+    expect(float).toContain("fixed bottom-");
+    // Gambar seukuran logo: lingkaran 56 px, tanpa kartu portrait besar
+    expect(float).toContain("size-14");
+    expect(float).toContain("rounded-full");
+    expect(float).not.toContain("h-32 w-24");
+  });
+
   it("beranda dan registrasi tidak merender navbar sendiri (memakai layout)", () => {
     expect(home).not.toContain("<SiteHeader");
     expect(home).not.toContain("<SmoothScroll");
@@ -30,9 +46,10 @@ describe("Shared layout situs publik: app/(site)", () => {
 
   it("menu navbar menuju '/#section' saat berada di luar beranda", () => {
     expect(header).toContain("usePathname");
-    expect(header).toMatch(/isHome\s*\?\s*href\s*:\s*`\/\$\{href\}`/);
+    // Anchor "#id" menjadi "/#id" di luar beranda; halaman lain tetap memakai href-nya
+    expect(header).toMatch(/href\.startsWith\("#"\)\s*&&\s*!isHome\s*\?\s*`\/\$\{href\}`/);
     // Link client-side, bukan <a> biasa yang memuat ulang halaman
-    expect(header).toContain("href={navHref(item.href)}");
-    expect(header).not.toMatch(/<a\s[^>]*href=\{item\.href\}/);
+    expect(header).toContain("href={resolveHref(entry.href)}");
+    expect(header).not.toMatch(/<a\s[^>]*href=\{entry\.href\}/);
   });
 });

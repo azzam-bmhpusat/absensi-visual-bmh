@@ -32,9 +32,10 @@ function table(name: string) {
   const b: Record<string, unknown> = {};
   b.select = () => b;
   b.eq = () => b;
+  b.not = () => b;
   b.maybeSingle = async () =>
     name === "sessions" ? { data: { id: 1, nama: "Absen Masuk Pagi", is_active: true } } : mocks.insertResult;
-  b.then = (resolve: (v: unknown) => unknown) => resolve({ data: [] }); // daftar guests
+  b.then = (resolve: (v: unknown) => unknown) => resolve({ data: [] }); // daftar peserta (profiles)
   b.insert = (row: unknown) => {
     mocks.insert(row);
     return b;

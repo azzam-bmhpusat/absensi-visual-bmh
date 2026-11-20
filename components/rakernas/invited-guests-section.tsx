@@ -61,7 +61,7 @@ function ResultGroup({ title, cards }: { title: string; cards: ResultCard[] }) {
                   variant="outline"
                   className={
                     guest.accepted
-                      ? "border-brand-green/30 bg-brand-green/15 text-brand-green"
+                      ? "border-brand-green/30 bg-brand-green/15 text-brand-green-text"
                       : "border-brand-gold/40 bg-brand-gold/15 text-brand-gold-soft"
                   }
                 >
@@ -197,7 +197,7 @@ export function InvitedGuestsSection() {
   return (
     <div className="mx-auto w-full max-w-screen-xl px-5 md:px-8">
       <div className="mx-auto max-w-2xl space-y-3 text-center">
-        <Badge variant="outline" className="gap-2 border-brand-green/25 bg-brand-green/15 px-3 py-1 text-brand-green">
+        <Badge variant="outline" className="gap-2 border-brand-green/25 bg-brand-green/15 px-3 py-1 text-brand-green-text">
           <UsersRound className="size-3.5" aria-hidden="true" />
           {copy.badge}
         </Badge>
@@ -304,7 +304,7 @@ export function InvitedGuestsSection() {
         ) : (
           <Card className="rounded-2xl border-border bg-card/40 text-center shadow-none">
             <CardContent className="flex min-h-44 flex-col items-center justify-center gap-3 py-8">
-              <UsersRound className="size-8 text-brand-green" aria-hidden="true" />
+              <UsersRound className="size-8 text-brand-green-text" aria-hidden="true" />
               <h3 className="font-heading text-base font-semibold text-foreground">{failed ? copy.errorTitle : canSearch ? copy.emptyTitle : copy.initialTitle}</h3>
               <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">{failed ? copy.errorDescription : canSearch ? copy.emptyDescription : copy.initialDescription}</p>
               {failed && <Button variant="secondary" className="mt-1 h-12 px-5" onClick={() => setRetry(retry + 1)}>{copy.retryLabel}</Button>}

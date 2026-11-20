@@ -59,7 +59,7 @@ export function useLiveAttendance(querySesi?: string | null): LiveAttendance {
   const loadSessions = useCallback(() => {
     Promise.all([
       supabase.from("sessions").select("id, slug, nama, tanggal, hari, is_active").order("id"),
-      supabase.from("guests").select("id", { count: "exact", head: true }),
+      supabase.from("profiles").select("id", { count: "exact", head: true }).not("nama", "is", null),
     ])
       .then(([sessRes, guestRes]) => {
         if (sessRes.error) return;

@@ -3,9 +3,9 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { DEFAULT_EVENT_SETTINGS } from "@/lib/event-settings";
 
-const mocks = vi.hoisted(() => ({ settings: vi.fn(), read: vi.fn(), getUser: vi.fn(), redirect: vi.fn() }));
+const mocks = vi.hoisted(() => ({ settings: vi.fn(), read: vi.fn(), getUser: vi.fn(), rpc: vi.fn(), redirect: vi.fn() }));
 vi.mock("@/lib/event-settings-server", () => ({ getEventSettings: mocks.settings, readEventSettings: mocks.read }));
-vi.mock("@/lib/supabase/server", () => ({ createClient: async () => ({ auth: { getUser: mocks.getUser } }) }));
+vi.mock("@/lib/supabase/server", () => ({ createClient: async () => ({ auth: { getUser: mocks.getUser }, rpc: mocks.rpc }) }));
 vi.mock("next/server", () => ({ connection: async () => {} }));
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }), redirect: mocks.redirect }));
 vi.mock("@/app/(admin)/pengaturan/actions", () => ({ saveEventSettings: vi.fn() }));
@@ -25,6 +25,7 @@ describe("event settings integration", () => {
     mocks.settings.mockResolvedValue(settings);
     mocks.read.mockResolvedValue({ settings, error: null });
     mocks.getUser.mockResolvedValue({ data: { user: { id: "admin" } }, error: null });
+    mocks.rpc.mockResolvedValue({ data: true, error: null });
     mocks.redirect.mockImplementation(() => { throw new Error("NEXT_REDIRECT"); });
   });
 
@@ -47,6 +48,13 @@ describe("event settings integration", () => {
 
   it("denies the settings page to anonymous users before loading settings", async () => {
     mocks.getUser.mockResolvedValue({ data: { user: null }, error: null });
+    await expect(PengaturanPage()).rejects.toThrow("NEXT_REDIRECT");
+    expect(mocks.redirect).toHaveBeenCalledWith("/admin/login");
+    expect(mocks.read).not.toHaveBeenCalled();
+  });
+
+  it("denies the settings page to logged-in accounts without the admin role", async () => {
+    mocks.rpc.mockResolvedValue({ data: false, error: null });
     await expect(PengaturanPage()).rejects.toThrow("NEXT_REDIRECT");
     expect(mocks.redirect).toHaveBeenCalledWith("/admin/login");
     expect(mocks.read).not.toHaveBeenCalled();

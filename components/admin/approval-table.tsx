@@ -52,7 +52,7 @@ const FILTERS: { value: StatusFilter; label: string }[] = [
 
 const STATUS_STYLE: Record<RegistrationRow["status"], string> = {
   pending: "bg-gold-100 text-brand-gold-text border-brand-gold/40",
-  approved: "bg-emerald-50 text-brand-green-deep border-emerald-200",
+  approved: "bg-secondary text-brand-green-deep border-brand-green/30",
   rejected: "bg-red-50 text-danger border-red-200",
 };
 
@@ -116,7 +116,7 @@ export function ApprovalTable({ registrations }: ApprovalTableProps) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Cari nama, perwakilan, atau jabatan..."
-            className="h-10 rounded-xl border-line pl-9 text-xs focus-visible:ring-brand-green"
+            className="h-10 rounded-xl border-line pl-9 text-xs focus-visible:ring-ring"
           />
         </div>
       </div>
@@ -137,7 +137,7 @@ export function ApprovalTable({ registrations }: ApprovalTableProps) {
                 "rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors",
                 active
                   ? "border-primary bg-primary text-white"
-                  : "border-line bg-white text-ink-muted hover:border-brand-green"
+                  : "border-line bg-white text-ink-muted hover:border-ring"
               )}
             >
               {f.label} ({count})
@@ -210,7 +210,7 @@ export function ApprovalTable({ registrations }: ApprovalTableProps) {
                             size="icon"
                             disabled={busy}
                             onClick={() => run(r.id, approveRegistrationAction)}
-                            className="h-8 w-8 rounded-lg text-brand-green hover:bg-emerald-50"
+                            className="h-8 w-8 rounded-lg text-brand-green-text hover:bg-secondary"
                             title="Setujui"
                             aria-label={`Setujui ${r.nama}`}
                           >

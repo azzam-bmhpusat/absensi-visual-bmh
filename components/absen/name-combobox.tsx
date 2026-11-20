@@ -117,7 +117,7 @@ export function NameCombobox({
                       </span>
                     </div>
                     {isSelected && (
-                      <Check className="h-4 w-4 text-brand-green shrink-0" />
+                      <Check className="h-4 w-4 text-brand-green-text shrink-0" />
                     )}
                   </CommandItem>
                 );

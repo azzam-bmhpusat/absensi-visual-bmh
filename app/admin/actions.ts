@@ -2,7 +2,9 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getAdminUser, checkAdmin } from "@/lib/auth/admin";
 import { guestRowSchema, type GuestRowInput } from "@/lib/schemas";
+import { createParticipantAccount, getParticipantPassword } from "@/lib/participant-account";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -45,6 +47,16 @@ export async function loginAdmin(
     };
   }
 
+  // Akun valid tetapi bukan admin (role 'user'): akhiri sesi dan tolak.
+  const { isAdmin } = await checkAdmin(supabase);
+  if (!isAdmin) {
+    await supabase.auth.signOut();
+    return {
+      success: false,
+      error: "Akun ini tidak memiliki akses admin.",
+    };
+  }
+
   return { success: true };
 }
 
@@ -58,15 +70,15 @@ export async function logoutAdmin(): Promise<void> {
 }
 
 /**
- * Menghapus data tamu dari daftar undangan
+ * Menghapus peserta dari daftar. Peserta adalah akun Supabase Auth + profil, jadi akunnya ikut dihapus
+ * (profil terhapus lewat on delete cascade; riwayat kehadiran tetap, guest_id menjadi null).
+ * Akun admin tidak bisa dihapus dari sini — gunakan Manajemen User.
  */
 export async function deleteGuestAction(
   guestId: string
 ): Promise<ActionResult> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAdminUser(supabase);
 
   if (!user) {
     return {
@@ -77,7 +89,19 @@ export async function deleteGuestAction(
 
   try {
     const admin = createAdminClient();
-    const { error } = await admin.from("guests").delete().eq("id", guestId);
+    const { data: profile } = await admin
+      .from("profiles")
+      .select("id, role")
+      .eq("id", guestId)
+      .not("nama", "is", null)
+      .maybeSingle();
+    if (!profile) return { success: false, error: "Peserta tidak ditemukan." };
+    if (profile.role === "admin") {
+      return { success: false, error: "Akun admin tidak dapat dihapus dari daftar peserta. Gunakan Manajemen User." };
+    }
+    if (profile.id === user.id) return { success: false, error: "Anda tidak dapat menghapus akun Anda sendiri." };
+
+    const { error } = await admin.auth.admin.deleteUser(guestId);
 
     if (error) {
       return {
@@ -98,15 +122,14 @@ export async function deleteGuestAction(
 }
 
 /**
- * Menambahkan 1 tamu baru secara manual dari form admin
+ * Menambahkan 1 peserta baru dari form admin: dibuat akun Auth (email dari nama depan + @bmh.or.id,
+ * password default, role user) beserta profil pesertanya.
  */
 export async function addGuestAction(
   data: GuestRowInput
 ): Promise<ActionResult<{ id: string }>> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAdminUser(supabase);
 
   if (!user) {
     return {
@@ -125,20 +148,19 @@ export async function addGuestAction(
 
   try {
     const admin = createAdminClient();
-    const { data: inserted, error } = await admin
-      .from("guests")
-      .insert({
+    const created = await createParticipantAccount(admin, {
+      password: getParticipantPassword(),
+      fields: {
         nama: parse.data.nama,
         perwakilan_daerah: parse.data.perwakilan_daerah,
         jabatan: parse.data.jabatan || null,
         departemen: parse.data.departemen || null,
         kategori: parse.data.kategori || "daerah",
-      })
-      .select("id")
-      .maybeSingle();
+      },
+    });
 
-    if (error) {
-      if (error.code === "23505") {
+    if (!created.ok) {
+      if (created.code === "duplicate_person") {
         return {
           success: false,
           error: "Tamu dengan nama dan daerah ini sudah terdaftar.",
@@ -146,9 +168,10 @@ export async function addGuestAction(
       }
       return {
         success: false,
-        error: "Gagal menambahkan tamu: " + error.message,
+        error: "Gagal menambahkan tamu: " + created.error,
       };
     }
+    const inserted = { id: created.id };
 
     revalidatePath("/admin");
     revalidatePath("/absen");
@@ -173,9 +196,7 @@ export async function updateGuestAction(
   data: GuestRowInput
 ): Promise<ActionResult> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAdminUser(supabase);
 
   if (!user) {
     return {
@@ -195,7 +216,7 @@ export async function updateGuestAction(
   try {
     const admin = createAdminClient();
     const { error } = await admin
-      .from("guests")
+      .from("profiles")
       .update({
         nama: parse.data.nama,
         perwakilan_daerah: parse.data.perwakilan_daerah,
@@ -203,7 +224,8 @@ export async function updateGuestAction(
         departemen: parse.data.departemen || null,
         kategori: parse.data.kategori || "daerah",
       })
-      .eq("id", guestId);
+      .eq("id", guestId)
+      .not("nama", "is", null);
 
     if (error) {
       if (error.code === "23505") {
@@ -236,9 +258,7 @@ export async function deleteAttendanceAction(
   attendanceId: string
 ): Promise<ActionResult> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAdminUser(supabase);
 
   if (!user) {
     return {
@@ -279,9 +299,7 @@ export async function toggleSessionStatusAction(
   isActive: boolean
 ): Promise<ActionResult<{ id: number; is_active: boolean }>> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAdminUser(supabase);
 
   if (!user) {
     return {
@@ -329,11 +347,7 @@ const sessionIdSchema = z.coerce.number().int().positive().max(32767);
 
 async function requireAdminUser(): Promise<boolean> {
   const supabase = await createClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-  return Boolean(user) && !error;
+  return Boolean(await getAdminUser(supabase));
 }
 
 function revalidateAttendanceViews() {

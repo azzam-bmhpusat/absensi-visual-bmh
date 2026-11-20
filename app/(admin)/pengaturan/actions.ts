@@ -2,6 +2,7 @@
 
 import { revalidatePath, updateTag } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getAdminUser } from "@/lib/auth/admin";
 import { EVENT_SETTINGS_CACHE_TAG, type EventSettings } from "@/lib/event-settings";
 import { eventSettingsFormSchema, eventSettingsToRow, type EventSettingsFieldErrors } from "@/lib/event-settings-validation";
 
@@ -12,8 +13,8 @@ export type SaveEventSettingsResult =
 export async function saveEventSettings(input: unknown): Promise<SaveEventSettingsResult> {
   try {
     const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) return { success: false, error: "Sesi admin berakhir. Silakan masuk kembali." };
+    const user = await getAdminUser(supabase);
+    if (!user) return { success: false, error: "Sesi admin berakhir. Silakan masuk kembali." };
 
     const parsed = eventSettingsFormSchema.safeParse(input);
     if (!parsed.success) {

@@ -1,6 +1,7 @@
 import { type NextRequest } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { checkAdmin } from "@/lib/auth/admin";
 import { buildAttendanceWorkbook } from "@/lib/attendance-xlsx";
 import {
   buildExportFilename,
@@ -45,6 +46,8 @@ async function fetchAll<T>(
   const rows: T[] = [];
   for (let from = 0; ; from += PAGE_SIZE) {
     let query = supabase.from(table).select(columns).order(orderBy, { ascending: true }).order("id", { ascending: true });
+    // Daftar peserta = profil yang punya nama (akun admin tanpa nama dikecualikan)
+    if (table === "profiles") query = query.not("nama", "is", null);
     if (sessionId !== undefined) query = query.eq("session_id", sessionId);
     const { data, error } = await query.range(from, from + PAGE_SIZE - 1);
     if (error) throw new Error(`Gagal membaca ${table}: ${error.message}`);
@@ -55,11 +58,9 @@ async function fetchAll<T>(
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-  if (authError || !user) return jsonError(401, "Akses ditolak. Silakan login sebagai admin.");
+  const { user, isAdmin } = await checkAdmin(supabase);
+  if (!user) return jsonError(401, "Akses ditolak. Silakan login sebagai admin.");
+  if (!isAdmin) return jsonError(403, "Akses ditolak. Akun ini bukan admin.");
 
   const params = Object.fromEntries(request.nextUrl.searchParams.entries());
   const parsed = querySchema.safeParse(params);
@@ -97,7 +98,7 @@ export async function GET(request: NextRequest) {
       ),
       scope.kind === "filter"
         ? Promise.resolve([] as ExportGuest[])
-        : fetchAll<ExportGuest>(supabase, "guests", "id, nama, perwakilan_daerah, jabatan, departemen, kategori", "nama"),
+        : fetchAll<ExportGuest>(supabase, "profiles", "id, nama, perwakilan_daerah, jabatan, departemen, kategori", "nama"),
     ]);
 
     const buffer = await buildAttendanceWorkbook({ scope, sessions, attendances, guests });

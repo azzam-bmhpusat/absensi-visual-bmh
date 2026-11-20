@@ -44,8 +44,9 @@ async function DisplayLoader({ searchParams }: { searchParams: Promise<{ [key: s
         .select("id, slug, nama, tanggal, hari, is_active")
         .order("id", { ascending: true }),
       supabase
-        .from("guests")
+        .from("profiles")
         .select("id, nama, perwakilan_daerah, jabatan, departemen, kategori")
+        .not("nama", "is", null)
         .order("perwakilan_daerah", { ascending: true })
         .order("nama", { ascending: true }),
     ]);

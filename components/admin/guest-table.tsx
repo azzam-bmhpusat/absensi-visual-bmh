@@ -97,7 +97,7 @@ export function GuestTable({ initialGuests }: GuestTableProps) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Cari nama tamu atau daerah..."
-            className="pl-9 h-10 rounded-xl border-line text-xs focus-visible:ring-brand-green"
+            className="pl-9 h-10 rounded-xl border-line text-xs focus-visible:ring-ring"
           />
         </div>
 
@@ -113,7 +113,7 @@ export function GuestTable({ initialGuests }: GuestTableProps) {
           <Button
             variant="outline"
             onClick={() => setIsExportOpen(true)}
-            className="h-10 px-3.5 rounded-xl border-line text-primary hover:border-brand-green text-xs font-semibold shadow-2xs"
+            className="h-10 px-3.5 rounded-xl border-line text-primary hover:border-ring text-xs font-semibold shadow-2xs"
           >
             <FileDown className="w-4 h-4 mr-1.5 text-brand-gold-text" />
             Export PDF
@@ -124,7 +124,7 @@ export function GuestTable({ initialGuests }: GuestTableProps) {
       {/* Baris Informasi Jumlah */}
       <div className="flex items-center justify-between text-xs text-ink-muted">
         <div className="flex items-center gap-1.5">
-          <Users className="w-3.5 h-3.5 text-brand-green" />
+          <Users className="w-3.5 h-3.5 text-brand-green-text" />
           <span>
             Total: <strong>{initialGuests.length}</strong> tamu terdaftar
           </span>
@@ -194,7 +194,7 @@ export function GuestTable({ initialGuests }: GuestTableProps) {
                   </TableCell>
                   <TableCell className="text-xs text-ink-muted">
                     {guest.jabatan || guest.departemen ? (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-brand-green border border-emerald-200">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-secondary text-brand-green-text border border-brand-green/30">
                         {guest.jabatan}
                         {guest.departemen ? `: ${guest.departemen}` : ""}
                       </span>

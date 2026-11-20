@@ -62,7 +62,7 @@ export function useDisplayRealtime({
     (sessionId: number) =>
       Promise.all([
         supabase.from("attendances").select(ATTENDANCE_COLUMNS).eq("session_id", sessionId).order("checked_in_at", { ascending: false }),
-        supabase.from("guests").select(GUEST_COLUMNS).order("perwakilan_daerah", { ascending: true }).order("nama", { ascending: true }),
+        supabase.from("profiles").select(GUEST_COLUMNS).not("nama", "is", null).order("perwakilan_daerah", { ascending: true }).order("nama", { ascending: true }),
       ]),
     [supabase]
   );

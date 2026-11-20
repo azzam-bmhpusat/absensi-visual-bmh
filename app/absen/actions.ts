@@ -92,9 +92,10 @@ export async function submitAttendance(
   // 4. Tentukan tamu (guestId atau exact match)
   if (guestId) {
     const { data: guest } = await supabase
-      .from("guests")
+      .from("profiles")
       .select("id, nama, perwakilan_daerah, jabatan, departemen, kategori")
       .eq("id", guestId)
+      .not("nama", "is", null)
       .maybeSingle();
 
     if (guest) {
@@ -114,8 +115,9 @@ export async function submitAttendance(
     const normDaerah = normalizeCompare(perwakilanDaerah);
 
     const { data: matchedGuests } = await supabase
-      .from("guests")
-      .select("id, nama, perwakilan_daerah, jabatan, departemen, kategori");
+      .from("profiles")
+      .select("id, nama, perwakilan_daerah, jabatan, departemen, kategori")
+      .not("nama", "is", null);
 
     const matched = (matchedGuests || []).find(
       (g) =>

@@ -31,40 +31,48 @@ describe("Fase 6 — QA & Penyelesaian: Landing Page Rakernas BMH", () => {
       expect(EVENT_INFO.countdownTarget).toBe("2026-12-01T10:00:00+07:00");
     });
 
-    it("Rundown Hari 1 memuat 10 agenda persis dengan tabel sumber", () => {
+    it("Rundown Hari 1 memuat 26 agenda dalam bagian A-G sesuai rundown resmi", () => {
       const h1 = RUNDOWN_DATA.hari1;
-      expect(h1).toHaveLength(10);
-      expect(h1[0]).toEqual({ time: "10.00", title: "Check in" });
-      expect(h1[1]).toEqual({ time: "11.00", title: "Makan Siang" });
-      expect(h1[2]).toEqual({ time: "11.30", title: "Sholat Dzuhur" });
-      expect(h1[3]).toEqual({ time: "13.00", title: "Pembukaan" });
-      expect(h1[4]).toEqual({ time: "15.00", title: "Break" });
-      expect(h1[5]).toEqual({
-        time: "16.00",
-        title: "Rapat Pleno 1 (Presentasi Program Kerja Bidang Pendidikan)",
-        note: "Presentasi Program Kerja Bidang Pendidikan",
+      expect(h1).toHaveLength(26);
+      expect(h1[0]).toEqual({
+        section: "A. Registrasi Peserta",
+        time: "10.00 - 12.00",
+        title: "Panitia stand by di lobby utama hotel menyambut dan mengarahkan peserta menuju tempat registrasi",
       });
-      expect(h1[6]).toEqual({ time: "17.30", title: "Ishoma" });
-      expect(h1[7]).toEqual({
-        time: "19.30",
-        title: "Rapat Pleno 2 (Presentasi Program Kerja Bidang Dakwah & Pelayanan Ummat)",
-        note: "Presentasi Program Kerja Bidang Dakwah & Pelayanan Ummat",
+      expect(h1[25]).toEqual({
+        section: "G. Paparan Strategi 2027",
+        time: "20.30 - 21.30",
+        title: "Paparan Strategi 2027",
       });
-      expect(h1[8]).toEqual({
-        time: "21.00",
-        title: "Rapat Pleno 3 (Presentasi Program Bidang Rekrutmen, Pengkaderan & Pembinaan Anggota)",
-        note: "Presentasi Program Bidang Rekrutmen, Pengkaderan & Pembinaan Anggota",
-      });
-      expect(h1[9]).toEqual({
-        time: "22.30",
-        title: "Istirahat (tidur)",
-        note: "tidur",
-      });
+      const sections: string[] = [];
+      for (const item of h1) if (item.section && sections.at(-1) !== item.section) sections.push(item.section);
+      expect(sections).toEqual([
+        "A. Registrasi Peserta",
+        "B. Pembukaan",
+        "C. Check-in Kamar Hotel",
+        "D. Orientasi Kelembagaan",
+        "E. Laporan Kinerja BMH 2026",
+        "F. Sosialisasi Kebijakan",
+        "G. Paparan Strategi 2027",
+      ]);
+      expect(h1.filter((i) => i.section === "A. Registrasi Peserta")).toHaveLength(5);
+      expect(h1.filter((i) => i.section === "B. Pembukaan")).toHaveLength(13);
     });
 
-    it("Rundown Hari 2 dan Hari 3 memiliki fallback resmi terdefinisi", () => {
-      expect(RUNDOWN_DATA.hari2[0].title).toBe("Rundown akan segera diumumkan");
-      expect(RUNDOWN_DATA.hari3[0].title).toBe("Rundown akan segera diumumkan");
+    it("Rundown Hari 2 dan Hari 3 memuat jadwal resmi tanpa placeholder", () => {
+      const { hari2, hari3 } = RUNDOWN_DATA;
+      expect(hari2).toHaveLength(14);
+      expect(hari2[0]).toEqual({ time: "03.00 - 04.00", title: "Sholat Lail" });
+      expect(hari2[2].title).toBe("H. Tausiyah (1)");
+      expect(hari2[13]).toEqual({ time: "20.30 - 21.30", title: "N. Presentasi Pengawasan" });
+      expect(hari3).toHaveLength(8);
+      expect(hari3[2].title).toBe("O. Tausiyah (2)");
+      const penutupan = hari3[7];
+      expect(penutupan.title).toBe("Y. Penutupan");
+      expect(penutupan.time).toBe("10.30 - 12.00");
+      expect(penutupan.details).toHaveLength(8);
+      expect(penutupan.details?.[1]).toBe("Tilawah Al Qur’an");
+      for (const item of [...hari2, ...hari3]) expect(item.title).not.toContain("segera diumumkan");
     });
 
     it("Dresscode memuat 5 item terurut", () => {
@@ -93,88 +101,49 @@ describe("Fase 6 — QA & Penyelesaian: Landing Page Rakernas BMH", () => {
       });
     });
 
-    it("Info transportasi memuat 6 titik asal dan 18 tarif cocok 100%", () => {
-      expect(TRANSPORT_DATA.items).toHaveLength(6);
+    it("Info transportasi memuat 8 titik asal dan 24 tarif cocok 100% dengan data resmi", () => {
+      expect(TRANSPORT_DATA.items).toHaveLength(8);
+      const fares = (a: string, b: string, c: string, modeA = "Taksi Konvensional") => [
+        { mode: modeA, price: a },
+        { mode: "Taksi Online", price: b },
+        { mode: "Ojek Online", price: c },
+      ];
       const expectedData = [
-        {
-          origin: "Bandara Ahmad Yani",
-          fares: [
-            { mode: "Taksi Bandara", price: "Rp. 70.000 - 100.000" },
-            { mode: "Taksi Online", price: "Rp. 45.000 - 65.000" },
-            { mode: "Ojek Online", price: "Rp. 20.000 - 30.000" },
-          ],
-        },
-        {
-          origin: "Stasiun Tawang",
-          fares: [
-            { mode: "Taksi Stasiun", price: "Rp. 30.000 - 40.000" },
-            { mode: "Taksi Online", price: "Rp. 20.000 - 30.000" },
-            { mode: "Ojek Online", price: "Rp. 12.000 - 18.000" },
-          ],
-        },
-        {
-          origin: "Stasiun Poncol",
-          fares: [
-            { mode: "Taksi Stasiun", price: "Rp. 25.000 - 35.000" },
-            { mode: "Taksi Online", price: "Rp. 15.000 - 25.000" },
-            { mode: "Ojek Online", price: "Rp. 10.000 - 15.000" },
-          ],
-        },
-        {
-          origin: "Terminal Mangkang",
-          fares: [
-            { mode: "Taksi Terminal", price: "Rp. 80.000 - 110.000" },
-            { mode: "Taksi Online", price: "Rp. 60.000 - 90.000" },
-            { mode: "Ojek Online", price: "Rp. 35.000 - 50.000" },
-          ],
-        },
-        {
-          origin: "Terminal Terboyo",
-          fares: [
-            { mode: "Taksi Terminal", price: "Rp. 45.000 - 60.000" },
-            { mode: "Taksi Online", price: "Rp. 30.000 - 45.000" },
-            { mode: "Ojek Online", price: "Rp. 18.000 - 25.000" },
-          ],
-        },
-        {
-          origin: "Terminal Banyumanik",
-          fares: [
-            { mode: "Taksi Terminal", price: "Rp. 50.000 - 65.000" },
-            { mode: "Taksi Online", price: "Rp. 35.000 - 50.000" },
-            { mode: "Ojek Online", price: "Rp. 20.000 - 28.000" },
-          ],
-        },
+        { origin: "Stasiun Pasar Senen", distance: "± 3-4 km", fares: fares("Rp 30.000 - 50.000", "Rp 25.000 - 40.000", "Rp 12.000 - 20.000") },
+        { origin: "Stasiun Gambir", distance: "± 5-6 km", fares: fares("Rp 40.000 - 60.000", "Rp 30.000 - 50.000", "Rp 15.000 - 25.000") },
+        { origin: "Terminal Tanjung Priok", distance: "± 9-10 km", fares: fares("Rp 60.000 - 90.000", "Rp 45.000 - 70.000", "Rp 25.000 - 40.000") },
+        { origin: "Terminal Pulogadung", distance: "± 10-11 km", fares: fares("Rp 60.000 - 90.000", "Rp 45.000 - 70.000", "Rp 25.000 - 40.000") },
+        { origin: "Bandara Halim Perdanakusuma", distance: "± 14-16 km", fares: fares("Rp 90.000 - 140.000", "Rp 65.000 - 100.000", "Rp 40.000 - 60.000", "Taksi Bandara") },
+        { origin: "Terminal Kalideres", distance: "± 17-19 km", fares: fares("Rp 110.000 - 160.000", "Rp 80.000 - 120.000", "Rp 50.000 - 75.000") },
+        { origin: "Terminal Kampung Rambutan", distance: "± 22-25 km", fares: fares("Rp 120.000 - 180.000", "Rp 90.000 - 140.000", "Rp 60.000 - 90.000") },
+        { origin: "Bandara Soekarno-Hatta", distance: "± 30 km", fares: fares("Rp 200.000 - 300.000", "Rp 150.000 - 230.000", "Rp 100.000 - 150.000", "Taksi Bandara") },
       ];
 
       TRANSPORT_DATA.items.forEach((item, idx) => {
         expect(item.origin).toBe(expectedData[idx].origin);
+        expect(item.distance).toBe(expectedData[idx].distance);
         expect(item.fares).toEqual(expectedData[idx].fares);
       });
+      expect(JSON.stringify(TRANSPORT_DATA)).not.toMatch(/Ahmad Yani|Tawang|Poncol|Mangkang|Terboyo|Banyumanik/);
     });
 
     it("Tamu Undangan menjelaskan empat kolom pencarian dan detail tamu", () => {
-      expect(INVITED_GUESTS_CONTENT.title).toBe("Tamu Undangan");
-      expect(INVITED_GUESTS_CONTENT.description).toBe("Temukan detail tamu undangan berdasarkan nama, perwakilan daerah, jabatan, atau departemen.");
-      expect(INVITED_GUESTS_CONTENT.detailsTitle).toBe("Detail Tamu Undangan");
+      expect(INVITED_GUESTS_CONTENT.title).toBe("Peserta Rakernas");
+      expect(INVITED_GUESTS_CONTENT.description).toBe("Temukan detail peserta berdasarkan nama, perwakilan daerah, jabatan, atau departemen.");
+      expect(INVITED_GUESTS_CONTENT.detailsTitle).toBe("Detail Peserta");
     });
 
     it("Footer memuat logo, info acara, dan tautan resmi panitia tanpa counter pengunjung", () => {
       expect(FOOTER_DATA.logoSrc).toBe("/logo.png");
       expect(FOOTER_DATA.logoAlt).toBe("Logo Rakernas BMH 2027");
-      expect(FOOTER_DATA.text).toBe("01-03 Desember 2026 | Hotel Luminor Kota Jakarta Barat @2026");
+      expect(FOOTER_DATA.text).toBe("08-10 Desember 2026 | Hotel Luminor Kota Jakarta Barat @2026");
       expect(FOOTER_DATA.committee.label).toBe("Panitia Rakernas");
       expect(FOOTER_DATA.committee.url).toBe("https://wa.me/6289517795206");
     });
 
-    it("Navigasi header memuat 5 anchor section sesuai PRD", () => {
-      expect(NAV_ITEMS).toHaveLength(5);
-      expect(NAV_ITEMS.map((n) => n.href)).toEqual([
-        "#rundown",
-        "#dresscode",
-        "#lokasi",
-        "#transportasi",
-        "#tamu-undangan",
-      ]);
+    it("Navigasi header memuat anchor Rundown Acara dan Dress Code", () => {
+      expect(NAV_ITEMS).toHaveLength(2);
+      expect(NAV_ITEMS.map((n) => n.href)).toEqual(["#rundown", "#dresscode"]);
     });
   });
 

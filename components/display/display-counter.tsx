@@ -28,7 +28,7 @@ export function DisplayCounter({ hadir, total, percentage }: DisplayCounterProps
           <span className="text-xs xl:text-sm font-medium text-muted-foreground">
             Tingkat Kehadiran:
           </span>
-          <span className="text-xl xl:text-3xl font-heading font-bold text-brand-green leading-none">
+          <span className="text-xl xl:text-3xl font-heading font-bold text-brand-green-text leading-none">
             {clampedPercentage}%
           </span>
         </div>
@@ -37,7 +37,7 @@ export function DisplayCounter({ hadir, total, percentage }: DisplayCounterProps
       {/* Progress Bar Ramping (h-2) agar ruang daftar hadir lebih luas */}
       <div className="w-full h-2 xl:h-2.5 bg-[#095046] rounded-full overflow-hidden border border-[#1F6252]">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-brand-green to-[#7ADBB2] transition-all duration-500 ease-out"
+          className="h-full rounded-full bg-gradient-to-r from-brand-green to-chart-4 transition-all duration-500 ease-out"
           style={{ width: `${clampedPercentage}%` }}
         />
       </div>

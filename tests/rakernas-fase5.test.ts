@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import fs from "fs";
 import path from "path";
+import { renderToStaticMarkup } from "react-dom/server";
+import { TransportSection } from "../components/rakernas/transport-accordion";
 import {
   TRANSPORT_DATA,
   INVITED_GUESTS_CONTENT,
@@ -49,46 +51,64 @@ describe("Fase 5 — Transportasi, Tamu Undangan, Footer", () => {
       expect(transportContent).toContain("lg:col-span-7");
     });
 
-    it("menampilkan 6 titik asal dari TRANSPORT_DATA", () => {
-      expect(TRANSPORT_DATA.items).toHaveLength(6);
+    it("menampilkan 8 titik asal dari TRANSPORT_DATA", () => {
+      expect(TRANSPORT_DATA.items).toHaveLength(8);
       TRANSPORT_DATA.items.forEach((item) => {
         expect(item.origin).toBeTruthy();
+        expect(item.distance).toBeTruthy();
         expect(item.fares).toHaveLength(3);
       });
       expect(transportContent).toContain("TRANSPORT_DATA.items.map");
+      expect(transportContent).toContain("item.distance");
     });
 
-    it("mencakup seluruh 18 tarif moda transportasi yang identik dengan PRD A.5", () => {
+    it("mencakup seluruh 24 tarif moda transportasi sesuai data resmi", () => {
       const allFares = TRANSPORT_DATA.items.flatMap((item) => item.fares);
-      expect(allFares).toHaveLength(18);
+      expect(allFares).toHaveLength(24);
 
-      // Verifikasi beberapa sampel kunci dari A.5
-      const bandara = TRANSPORT_DATA.items.find(
-        (i) => i.origin === "Bandara Ahmad Yani"
-      );
-      expect(bandara).toBeDefined();
-      expect(bandara?.fares[0]).toEqual({
-        mode: "Taksi Bandara",
-        price: "Rp. 70.000 - 100.000",
-      });
-      expect(bandara?.fares[1]).toEqual({
-        mode: "Taksi Online",
-        price: "Rp. 45.000 - 65.000",
-      });
-      expect(bandara?.fares[2]).toEqual({
-        mode: "Ojek Online",
-        price: "Rp. 20.000 - 30.000",
-      });
+      const senen = TRANSPORT_DATA.items.find((i) => i.origin === "Stasiun Pasar Senen");
+      expect(senen?.distance).toBe("± 3-4 km");
+      expect(senen?.fares).toEqual([
+        { mode: "Taksi Konvensional", price: "Rp 30.000 - 50.000" },
+        { mode: "Taksi Online", price: "Rp 25.000 - 40.000" },
+        { mode: "Ojek Online", price: "Rp 12.000 - 20.000" },
+      ]);
 
-      const tawang = TRANSPORT_DATA.items.find(
-        (i) => i.origin === "Stasiun Tawang"
-      );
-      expect(tawang?.fares[0].price).toBe("Rp. 30.000 - 40.000");
+      const halim = TRANSPORT_DATA.items.find((i) => i.origin === "Bandara Halim Perdanakusuma");
+      expect(halim?.icon).toBe("plane");
+      expect(halim?.fares[0]).toEqual({ mode: "Taksi Bandara", price: "Rp 90.000 - 140.000" });
 
-      const mangkang = TRANSPORT_DATA.items.find(
-        (i) => i.origin === "Terminal Mangkang"
+      const soetta = TRANSPORT_DATA.items.find((i) => i.origin === "Bandara Soekarno-Hatta");
+      expect(soetta?.distance).toBe("± 30 km");
+      expect(soetta?.fares[2].price).toBe("Rp 100.000 - 150.000");
+
+      TRANSPORT_DATA.items.forEach((item) => {
+        const expectedIcon = item.origin.startsWith("Stasiun") ? "train" : item.origin.startsWith("Terminal") ? "bus" : "plane";
+        expect(item.icon, item.origin).toBe(expectedIcon);
+      });
+    });
+
+    it("menampilkan pengumuman transit: 'panitia' menaut ke footerUrl dan tombol Google Maps terpisah", () => {
+      expect(transportContent).toContain("footerUrl");
+      expect(transportContent).toContain("href={footerUrl}");
+      expect(transportContent).toContain("announcement.mapsUrl");
+      expect(transportContent).toContain("announcement.linkLabel");
+      expect(transportContent).toContain('role="note"');
+      expect(transportContent.match(/rel="noopener noreferrer"/g)?.length).toBe(2);
+      // Halaman beranda meneruskan footer_url dari event settings
+      expect(pageContent).toContain("footerUrl={settings.footerUrl}");
+    });
+
+    it("merender pengumuman dengan tautan footerUrl kustom dan tombol Maps", () => {
+      // TransportSection tidak memakai hook sendiri, jadi cukup dipanggil sebagai fungsi.
+      const html = renderToStaticMarkup(
+        TransportSection({ venueName: "Hotel Uji", footerUrl: "https://example.com/panitia-baru" })
       );
-      expect(mangkang?.fares[0].price).toBe("Rp. 80.000 - 110.000");
+      expect(html).toContain("Hotel Uji");
+      expect(html).toContain("Guest House YPPH Depok");
+      expect(html).toContain('href="https://example.com/panitia-baru"');
+      expect(html).toContain('href="https://maps.app.goo.gl/LrBzn1tPFqKaRFTTA"');
+      expect(html).toContain("Stasiun Pasar Senen");
     });
 
     it("menampilkan ikon transportasi di dalam lingkaran hijau lembut (bg-green-100 text-primary)", () => {
@@ -113,8 +133,8 @@ describe("Fase 5 — Transportasi, Tamu Undangan, Footer", () => {
       for (const component of ["InputGroup", "Label", "Card", "Button", "Badge", "Separator", "Skeleton"]) {
         expect(invitedGuestsContent).toContain(`@/components/ui/${component === "InputGroup" ? "input-group" : component.toLowerCase()}`);
       }
-      expect(INVITED_GUESTS_CONTENT.title).toBe("Tamu Undangan");
-      expect(INVITED_GUESTS_CONTENT.detailsTitle).toBe("Detail Tamu Undangan");
+      expect(INVITED_GUESTS_CONTENT.title).toBe("Peserta Rakernas");
+      expect(INVITED_GUESTS_CONTENT.detailsTitle).toBe("Detail Peserta");
     });
 
     it("menghapus rekening, formulir, dan konfirmasi pembayaran dari tampilan", () => {
@@ -135,7 +155,7 @@ describe("Fase 5 — Transportasi, Tamu Undangan, Footer", () => {
     it("menampilkan teks resmi tanggal, hotel, dan tahun", () => {
       expect(footerContent).toContain("getEventSummary(settings)");
       expect(FOOTER_DATA.text).toBe(
-        "01-03 Desember 2026 | Hotel Luminor Kota Jakarta Barat @2026"
+        "08-10 Desember 2026 | Hotel Luminor Kota Jakarta Barat @2026"
       );
     });
 

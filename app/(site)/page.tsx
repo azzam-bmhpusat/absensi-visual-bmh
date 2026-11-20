@@ -78,7 +78,7 @@ export default async function HomePage() {
           className="bg-surface scroll-mt-20 py-12 md:py-20"
           aria-label="Info Transportasi"
         >
-          <Reveal><TransportSection venueName={settings.venueName} /></Reveal>
+          <Reveal><TransportSection venueName={settings.venueName} footerUrl={settings.footerUrl} /></Reveal>
         </section>
 
         {/* S7 — Pencarian Tamu Undangan */}

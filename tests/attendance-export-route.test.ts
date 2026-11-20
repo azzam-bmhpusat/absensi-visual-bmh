@@ -3,9 +3,9 @@ import { NextRequest } from "next/server";
 
 vi.mock("server-only", () => ({}));
 
-const mocks = vi.hoisted(() => ({ getUser: vi.fn(), from: vi.fn() }));
+const mocks = vi.hoisted(() => ({ getUser: vi.fn(), rpc: vi.fn(), from: vi.fn() }));
 vi.mock("@/lib/supabase/server", () => ({
-  createClient: async () => ({ auth: { getUser: mocks.getUser }, from: mocks.from }),
+  createClient: async () => ({ auth: { getUser: mocks.getUser }, rpc: mocks.rpc, from: mocks.from }),
 }));
 
 import { GET } from "@/app/api/admin/rekap-kehadiran/export/route";
@@ -18,12 +18,12 @@ const tables: Record<string, unknown[]> = {
   attendances: [
     { id: "a1", session_id: 1, guest_id: "g1", nama: "Ahmad", perwakilan_daerah: "Jatim", is_walk_in: false, checked_in_at: "2026-11-13T01:00:00Z" },
   ],
-  guests: [{ id: "g1", nama: "Ahmad", perwakilan_daerah: "Jatim" }],
+  profiles: [{ id: "g1", nama: "Ahmad", perwakilan_daerah: "Jatim" }],
 };
 
 function fakeTable(name: string, eqCalls: unknown[][]) {
   const builder: Record<string, unknown> = {};
-  for (const m of ["select", "order"]) builder[m] = () => builder;
+  for (const m of ["select", "order", "not"]) builder[m] = () => builder;
   builder.eq = (...args: unknown[]) => {
     eqCalls.push([name, ...args]);
     return builder;
@@ -41,6 +41,7 @@ describe("GET /api/admin/rekap-kehadiran/export", () => {
     vi.clearAllMocks();
     eqCalls = [];
     mocks.getUser.mockResolvedValue({ data: { user: { id: "admin" } }, error: null });
+    mocks.rpc.mockResolvedValue({ data: true, error: null });
     mocks.from.mockImplementation((name: string) => fakeTable(name, eqCalls));
   });
 
@@ -48,6 +49,13 @@ describe("GET /api/admin/rekap-kehadiran/export", () => {
     mocks.getUser.mockResolvedValue({ data: { user: null }, error: null });
     const res = await GET(req("mode=all"));
     expect(res.status).toBe(401);
+    expect(mocks.from).not.toHaveBeenCalled();
+  });
+
+  it("403 untuk akun login yang bukan admin dan tidak membaca data", async () => {
+    mocks.rpc.mockResolvedValue({ data: false, error: null });
+    const res = await GET(req("mode=all"));
+    expect(res.status).toBe(403);
     expect(mocks.from).not.toHaveBeenCalled();
   });
 

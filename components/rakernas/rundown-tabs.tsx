@@ -162,7 +162,7 @@ export function RundownSection({ startsAt = DEFAULT_EVENT_SETTINGS.startsAt }: {
                       </p>
                     </div>
                     <span className="text-xs font-medium text-ink-muted">
-                      {isPending ? "Belum dirilis" : `${items.length} sesi kegiatan`}
+                      {isPending ? "Belum dirilis" : `${items.length} agenda`}
                     </span>
                   </div>
 
@@ -182,41 +182,63 @@ export function RundownSection({ startsAt = DEFAULT_EVENT_SETTINGS.startsAt }: {
                   ) : (
                     <div className="relative mt-6 pl-4 sm:pl-6 space-y-6 before:absolute before:left-1 sm:before:left-2 before:top-3 before:bottom-3 before:w-0.5 before:bg-line">
                       {items.map((item, index) => {
-                        const { mainTitle, subtitle } = parseRundownTitle(
-                          item.title,
-                          item.note
-                        );
+                        // Pisahkan "(keterangan)" hanya bila ada note eksplisit; judul seperti
+                        // "Tausiyah (1)" harus tampil utuh.
+                        const { mainTitle, subtitle } = item.note
+                          ? parseRundownTitle(item.title, item.note)
+                          : { mainTitle: item.title, subtitle: undefined };
                         const itemKey = `${uniqueId}-${key}-${index}`;
+                        const startsSection =
+                          Boolean(item.section) && item.section !== items[index - 1]?.section;
 
                         return (
-                          <div
-                            key={itemKey}
-                            className="relative flex items-start gap-3 sm:gap-4 group"
-                          >
-                            {/* Titik Penanda Timeline */}
-                            <span
-                              className="absolute -left-4 sm:-left-6 top-1.5 flex size-2.5 sm:size-3 items-center justify-center rounded-full bg-background ring-2 ring-brand-green group-hover:bg-brand-green transition-colors"
-                              aria-hidden="true"
-                            />
+                          <div key={itemKey} className="space-y-4">
+                            {/* Judul bagian (mis. "A. Registrasi Peserta") */}
+                            {startsSection && (
+                              <div className="relative pt-1">
+                                <span
+                                  className="absolute -left-4 sm:-left-6 top-3 size-2.5 sm:size-3 rotate-45 rounded-[2px] bg-brand-gold ring-2 ring-background"
+                                  aria-hidden="true"
+                                />
+                                <h4 className="font-heading text-sm sm:text-base font-bold text-primary">
+                                  {item.section}
+                                </h4>
+                              </div>
+                            )}
 
-                            {/* Badge Waktu */}
-                            <Badge
-                              variant="secondary"
-                              className="w-16 shrink-0 justify-center font-mono text-[11px] sm:text-xs font-semibold tabular-nums bg-green-100 text-primary border border-line"
-                            >
-                              {item.time}
-                            </Badge>
+                            <div className="relative flex flex-col items-start gap-1.5 sm:flex-row sm:gap-4 group">
+                              {/* Titik Penanda Timeline */}
+                              <span
+                                className="absolute -left-4 sm:-left-6 top-1.5 flex size-2.5 sm:size-3 items-center justify-center rounded-full bg-background ring-2 ring-brand-green group-hover:bg-brand-green transition-colors"
+                                aria-hidden="true"
+                              />
 
-                            {/* Judul & Keterangan Acara */}
-                            <div className="flex-1 pt-0.5 min-w-0">
-                              <p className="text-sm sm:text-base font-medium text-ink leading-snug">
-                                {mainTitle}
-                              </p>
-                              {subtitle && (
-                                <p className="mt-0.5 text-xs sm:text-sm text-ink-muted">
-                                  {subtitle}
+                              {/* Badge Waktu (rentang, mis. 10.00 - 12.00) */}
+                              <Badge
+                                variant="secondary"
+                                className="w-fit shrink-0 justify-center font-mono text-[11px] sm:w-28 sm:text-xs font-semibold tabular-nums bg-green-100 text-primary border border-line"
+                              >
+                                {item.time}
+                              </Badge>
+
+                              {/* Judul & Keterangan Acara */}
+                              <div className="flex-1 pt-0.5 min-w-0">
+                                <p className="text-sm sm:text-base font-medium text-ink leading-snug">
+                                  {mainTitle}
                                 </p>
-                              )}
+                                {subtitle && (
+                                  <p className="mt-0.5 text-xs sm:text-sm text-ink-muted">
+                                    {subtitle}
+                                  </p>
+                                )}
+                                {item.details && item.details.length > 0 && (
+                                  <ol className="mt-2 list-decimal space-y-1 pl-5 text-xs sm:text-sm text-ink-muted marker:font-medium marker:text-primary">
+                                    {item.details.map((detail) => (
+                                      <li key={detail}>{detail}</li>
+                                    ))}
+                                  </ol>
+                                )}
+                              </div>
                             </div>
                           </div>
                         );

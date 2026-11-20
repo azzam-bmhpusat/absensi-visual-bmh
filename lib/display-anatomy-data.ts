@@ -40,8 +40,9 @@ export async function loadDisplayAnatomyData(querySesi?: string | string[]): Pro
     const [sessRes, guestsRes] = await Promise.all([
       supabase.from("sessions").select("id, slug, nama, tanggal, hari, is_active").order("id", { ascending: true }),
       supabase
-        .from("guests")
+        .from("profiles")
         .select(GUEST_COLUMNS)
+        .not("nama", "is", null)
         .order("perwakilan_daerah", { ascending: true })
         .order("nama", { ascending: true }),
     ]);

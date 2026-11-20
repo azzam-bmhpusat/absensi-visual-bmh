@@ -19,8 +19,9 @@ export async function GET(request: Request) {
     const supabase = createPublicServerClient();
     const start = (params.page - 1) * GUEST_SEARCH_PAGE_SIZE;
     const { data, count, error } = await supabase
-      .from("guests")
+      .from("profiles")
       .select("id, nama, perwakilan_daerah, jabatan, departemen", { count: "exact" })
+      .not("nama", "is", null)
       .or(buildGuestSearchFilter(params.query))
       .order("nama", { ascending: true })
       .order("id", { ascending: true })

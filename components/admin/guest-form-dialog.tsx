@@ -99,12 +99,12 @@ export function GuestFormDialog({
           <DialogTitle className="font-heading text-lg font-bold text-primary flex items-center gap-2">
             {isEdit ? (
               <>
-                <UserCheck className="w-5 h-5 text-brand-green" />
+                <UserCheck className="w-5 h-5 text-brand-green-text" />
                 Edit Data Tamu Undangan
               </>
             ) : (
               <>
-                <UserPlus className="w-5 h-5 text-brand-green" />
+                <UserPlus className="w-5 h-5 text-brand-green-text" />
                 Tambah Tamu Undangan
               </>
             )}
@@ -125,7 +125,7 @@ export function GuestFormDialog({
               id="nama-guest"
               {...form.register("nama")}
               placeholder="Contoh: Dr. H. Ahmad Dahlan, M.Ag"
-              className="h-10 rounded-xl border-line text-xs focus-visible:ring-brand-green"
+              className="h-10 rounded-xl border-line text-xs focus-visible:ring-ring"
               disabled={isPending}
             />
             {form.formState.errors.nama && (
@@ -143,7 +143,7 @@ export function GuestFormDialog({
               id="daerah-guest"
               {...form.register("perwakilan_daerah")}
               placeholder="Contoh: Jawa Timur, DKI Jakarta, atau Pusat"
-              className="h-10 rounded-xl border-line text-xs focus-visible:ring-brand-green"
+              className="h-10 rounded-xl border-line text-xs focus-visible:ring-ring"
               disabled={isPending}
             />
             {form.formState.errors.perwakilan_daerah && (
@@ -162,7 +162,7 @@ export function GuestFormDialog({
                 id="jabatan-guest"
                 {...form.register("jabatan")}
                 placeholder="Contoh: Ketua Departemen / Ketua Daerah"
-                className="h-10 rounded-xl border-line text-xs focus-visible:ring-brand-green"
+                className="h-10 rounded-xl border-line text-xs focus-visible:ring-ring"
                 disabled={isPending}
               />
             </div>
@@ -175,7 +175,7 @@ export function GuestFormDialog({
                 id="departemen-guest"
                 {...form.register("departemen")}
                 placeholder="Contoh: IT / Fundraising"
-                className="h-10 rounded-xl border-line text-xs focus-visible:ring-brand-green"
+                className="h-10 rounded-xl border-line text-xs focus-visible:ring-ring"
                 disabled={isPending}
               />
             </div>

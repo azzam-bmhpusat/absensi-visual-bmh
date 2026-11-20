@@ -1,9 +1,27 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdminLoginForm } from "@/components/admin/login-form";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { Suspense } from "react";
+import { AlertCircle, ArrowLeft } from "lucide-react";
 
-export default function AdminLoginPage() {
+type LoginSearchParams = Promise<{ error?: string | string[] }>;
+
+/** Pesan untuk akun yang login tetapi bukan admin. searchParams dibaca di sini (dalam Suspense) agar halaman tetap bisa diprerender. */
+async function ForbiddenNotice({ searchParams }: { searchParams: LoginSearchParams }) {
+  const { error } = await searchParams;
+  if (error !== "forbidden") return null;
+  return (
+    <div
+      role="alert"
+      className="mb-4 flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 p-3.5 text-xs leading-relaxed text-danger"
+    >
+      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+      <span>Akun Anda tidak memiliki akses admin. Masuk dengan akun admin.</span>
+    </div>
+  );
+}
+
+export default function AdminLoginPage({ searchParams }: { searchParams: LoginSearchParams }) {
   const eventName =
     process.env.NEXT_PUBLIC_EVENT_NAME || "Silaturahim & Rapat Kerja Nasional BMH 2027";
 
@@ -40,6 +58,9 @@ export default function AdminLoginPage() {
             </p>
           </CardHeader>
           <CardContent className="pt-2 pb-6 px-6">
+            <Suspense fallback={null}>
+              <ForbiddenNotice searchParams={searchParams} />
+            </Suspense>
             <AdminLoginForm />
           </CardContent>
         </Card>

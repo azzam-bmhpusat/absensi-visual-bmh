@@ -83,8 +83,9 @@ async function main() {
 
   // 4. Verifikasi keutuhan tabel guests & sessions
   const { count: guestCount } = await supabase
-    .from("guests")
-    .select("*", { count: "exact", head: true });
+    .from("profiles")
+    .select("*", { count: "exact", head: true })
+    .not("nama", "is", null);
 
   const { count: sessionCount } = await supabase
     .from("sessions")
@@ -92,7 +93,7 @@ async function main() {
 
   console.log(`\n📊 Status Sesudah Pembersihan:`);
   console.log(`   - Data kehadiran (attendances) : ${afterCount ?? 0} baris (BERSIH)`);
-  console.log(`   - Data tamu master (guests)    : ${guestCount ?? 0} baris (UTUH)`);
+  console.log(`   - Data peserta (profiles)        : ${guestCount ?? 0} baris (UTUH)`);
   console.log(`   - Data sesi acara (sessions)   : ${sessionCount ?? 0} baris (UTUH)`);
 
   if ((afterCount ?? 0) === 0 && (guestCount ?? 0) > 0 && (sessionCount ?? 0) >= 2) {

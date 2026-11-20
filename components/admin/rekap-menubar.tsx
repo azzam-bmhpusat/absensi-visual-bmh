@@ -160,7 +160,7 @@ export function RekapMenubar({ sessions, filter, filteredCount, onDeleted }: Rek
             {exporting ? (
               <Loader2 className="size-4 animate-spin" aria-hidden="true" />
             ) : (
-              <FileSpreadsheet className="size-4 text-brand-green" aria-hidden="true" />
+              <FileSpreadsheet className="size-4 text-brand-green-text" aria-hidden="true" />
             )}
             Ekspor Excel
             <ChevronDown className="size-3.5 opacity-60" aria-hidden="true" />
@@ -173,7 +173,7 @@ export function RekapMenubar({ sessions, filter, filteredCount, onDeleted }: Rek
                 disabled={!selectedSession}
                 onClick={() => selectedSession && runExport("session", sessionLabel(selectedSession))}
               >
-                <FileSpreadsheet className="text-brand-green" aria-hidden="true" />
+                <FileSpreadsheet className="text-brand-green-text" aria-hidden="true" />
                 <span className="flex flex-col">
                   <span>Sesi terpilih</span>
                   <span className="text-xs text-ink-muted">
@@ -182,7 +182,7 @@ export function RekapMenubar({ sessions, filter, filteredCount, onDeleted }: Rek
                 </span>
               </DropdownMenuItem>
               <DropdownMenuItem className={itemClassName} onClick={() => runExport("all", "semua sesi")}>
-                <Layers className="text-brand-green" aria-hidden="true" />
+                <Layers className="text-brand-green-text" aria-hidden="true" />
                 <span className="flex flex-col">
                   <span>Semua sesi</span>
                   <span className="text-xs text-ink-muted">Ringkasan, 1 sheet per sesi, matriks undangan</span>
@@ -193,7 +193,7 @@ export function RekapMenubar({ sessions, filter, filteredCount, onDeleted }: Rek
                 disabled={filteredCount === 0}
                 onClick={() => runExport("filter", "sesuai filter")}
               >
-                <Filter className="text-brand-green" aria-hidden="true" />
+                <Filter className="text-brand-green-text" aria-hidden="true" />
                 <span className="flex flex-col">
                   <span>Sesuai filter saat ini</span>
                   <span className="text-xs text-ink-muted">{filteredCount} baris yang tampil di tabel</span>

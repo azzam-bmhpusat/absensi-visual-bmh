@@ -70,16 +70,22 @@ describe("Fase 2 — Kerangka, Header, Hero (PRD Rakernas BMH)", () => {
       expect(headerContent).toContain('href="/"');
     });
 
-    it("memiliki DropdownMenu shadcn dengan trigger berukuran sentuh >= 44px (size-11)", () => {
-      expect(headerContent).toContain("DropdownMenu");
-      expect(headerContent).toContain("DropdownMenuTrigger");
-      expect(headerContent).toContain("DropdownMenuContent");
+    it("memiliki drawer (Sheet) untuk HP/tablet dengan trigger berukuran sentuh >= 44px (size-11)", () => {
+      expect(headerContent).toContain("<Sheet");
+      expect(headerContent).toContain("SheetTrigger");
+      expect(headerContent).toContain("SheetContent");
       expect(headerContent).toContain("size-11"); // 44px
     });
 
-    it("memiliki seluruh item menu dari NAV_ITEMS dengan tinggi minimal 44px", () => {
+    it("memiliki submenu Publikasi (DropdownMenu hover) di desktop", () => {
+      expect(headerContent).toContain("DropdownMenuTrigger");
+      expect(headerContent).toContain("DropdownMenuContent");
+      expect(headerContent).toContain("openOnHover");
+    });
+
+    it("memiliki seluruh item menu dari NAV_MENU dengan tinggi minimal 44px", () => {
       expect(headerContent).toContain("min-h-[44px]");
-      expect(headerContent).toContain("NAV_ITEMS.map");
+      expect(headerContent).toContain("NAV_MENU.map");
     });
   });
 

@@ -100,8 +100,9 @@ async function simulateSubmitAttendance(input: {
 
   if (guestId) {
     const { data: guest } = await supabase
-      .from("guests")
+      .from("profiles")
       .select("id, nama, perwakilan_daerah")
+      .not("nama", "is", null)
       .eq("id", guestId)
       .maybeSingle();
 
@@ -118,8 +119,9 @@ async function simulateSubmitAttendance(input: {
     const normDaerah = normalizeCompare(perwakilanDaerah);
 
     const { data: matchedGuests } = await supabase
-      .from("guests")
-      .select("id, nama, perwakilan_daerah");
+      .from("profiles")
+      .select("id, nama, perwakilan_daerah")
+      .not("nama", "is", null);
 
     const matched = (matchedGuests || []).find(
       (g) =>
@@ -182,8 +184,9 @@ async function main() {
   await supabase.from("attendances").delete().neq("id", "00000000-0000-0000-0000-000000000000");
 
   const { data: guestList, error: guestErr } = await supabase
-    .from("guests")
+    .from("profiles")
     .select("id, nama, perwakilan_daerah")
+    .not("nama", "is", null)
     .order("nama");
 
   if (guestErr || !guestList || guestList.length === 0) {

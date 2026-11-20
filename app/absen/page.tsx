@@ -56,7 +56,7 @@ function ScanGate({ reason }: { reason: ScanGateReason }) {
   return (
     <Reveal immediate className="w-full bg-white/90 backdrop-blur-md p-6 rounded-3xl border border-line shadow-sm space-y-4">
       <div className="w-16 h-16 mx-auto rounded-full bg-gold-50 flex items-center justify-center border border-brand-gold-soft">
-        <QrCode className="w-8 h-8 text-brand-gold" />
+        <QrCode className="w-8 h-8 text-brand-gold-text" />
       </div>
       <div className="space-y-1.5">
         <h2 className="font-heading text-lg font-bold text-primary">{text.title}</h2>
@@ -92,7 +92,7 @@ async function SessionPickerLoader({
     const supabase = createPublicServerClient();
     const [sessRes, guestsRes] = await Promise.all([
       supabase.from("sessions").select("id, slug, nama, tanggal, hari, is_active").order("id"),
-      supabase.from("guests").select("id, nama, perwakilan_daerah, jabatan, departemen, kategori").order("nama"),
+      supabase.from("profiles").select("id, nama, perwakilan_daerah, jabatan, departemen, kategori").not("nama", "is", null).order("nama"),
     ]);
 
     if (sessRes.data && sessRes.data.length > 0) {

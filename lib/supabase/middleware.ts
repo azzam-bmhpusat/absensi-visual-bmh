@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { checkAdmin } from "@/lib/auth/admin";
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({
@@ -31,10 +32,8 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // getUser() reads and refreshes the auth token securely
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // getUser() reads and refreshes the auth token securely; is_admin() memeriksa role di tabel profiles
+  const { user, isAdmin } = await checkAdmin(supabase);
 
   const { pathname } = request.nextUrl;
 
@@ -46,6 +45,7 @@ export async function updateSession(request: NextRequest) {
     "/kelola-sesi-acara",
     "/pengaturan",
     "/approval",
+    "/manajemen-user",
     "/admin",
   ];
 
@@ -65,10 +65,18 @@ export async function updateSession(request: NextRequest) {
       loginUrl.pathname = "/admin/login";
       return NextResponse.redirect(loginUrl);
     }
+    // Sudah login tetapi bukan admin: tolak (halaman login menampilkan pesannya)
+    if (!isAdmin) {
+      const forbiddenUrl = request.nextUrl.clone();
+      forbiddenUrl.pathname = "/admin/login";
+      forbiddenUrl.search = "?error=forbidden";
+      return NextResponse.redirect(forbiddenUrl);
+    }
   }
 
-  // Jika sudah terautentikasi dan membuka /admin/login, alihkan ke /dashboard
-  if (pathname.startsWith("/admin/login") && user) {
+  // Jika admin sudah terautentikasi dan membuka /admin/login, alihkan ke /dashboard.
+  // Akun non-admin tetap melihat halaman login (menghindari redirect loop).
+  if (pathname.startsWith("/admin/login") && user && isAdmin) {
     const dashboardUrl = request.nextUrl.clone();
     dashboardUrl.pathname = "/dashboard";
     return NextResponse.redirect(dashboardUrl);

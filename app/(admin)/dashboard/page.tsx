@@ -45,7 +45,7 @@ async function DashboardContent() {
       .from("sessions")
       .select("id, slug, nama, tanggal, hari, is_active")
       .order("id", { ascending: true }),
-    supabase.from("guests").select("id, nama, perwakilan_daerah"),
+    supabase.from("profiles").select("id, nama, perwakilan_daerah").not("nama", "is", null),
     supabase
       .from("attendances")
       .select("id, session_id, guest_id, nama, perwakilan_daerah, is_walk_in, checked_in_at")
@@ -116,27 +116,27 @@ async function DashboardContent() {
             href="/display"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-5 py-2.5 text-xs font-semibold text-primary shadow-sm transition-colors hover:border-brand-green"
+            className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-5 py-2.5 text-xs font-semibold text-primary shadow-sm transition-colors hover:border-ring"
           >
-            <Monitor className="h-4 w-4 text-brand-green" />
+            <Monitor className="h-4 w-4 text-brand-green-text" />
             Buka Videotron
           </Link>
           <Link
             href="/display-anatomy"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-5 py-2.5 text-xs font-semibold text-primary shadow-sm transition-colors hover:border-brand-green"
+            className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-5 py-2.5 text-xs font-semibold text-primary shadow-sm transition-colors hover:border-ring"
           >
-            <Boxes className="h-4 w-4 text-brand-green" />
+            <Boxes className="h-4 w-4 text-brand-green-text" />
             Videotron Anatomy
           </Link>
           <Link
             href="/display-absen"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-5 py-2.5 text-xs font-semibold text-primary shadow-sm transition-colors hover:border-brand-green"
+            className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-5 py-2.5 text-xs font-semibold text-primary shadow-sm transition-colors hover:border-ring"
           >
-            <Theater className="h-4 w-4 text-brand-green" />
+            <Theater className="h-4 w-4 text-brand-green-text" />
             Videotron Aula
           </Link>
         </div>
@@ -163,12 +163,12 @@ async function DashboardContent() {
           <Card className="rounded-3xl border-line bg-white shadow-sm">
             <CardHeader className="pb-3 flex flex-row items-center justify-between">
               <CardTitle className="font-heading text-base font-bold text-primary flex items-center gap-2">
-                <Activity className="h-4 w-4 text-brand-green" />
+                <Activity className="h-4 w-4 text-brand-green-text" />
                 Presensi Terkini
               </CardTitle>
               <Link
                 href="/rekap-kehadiran"
-                className="flex items-center gap-1 text-xs font-semibold text-primary transition-colors hover:text-brand-green"
+                className="flex items-center gap-1 text-xs font-semibold text-primary transition-colors hover:text-brand-green-text"
               >
                 Lihat Semua
                 <ArrowRight className="h-3.5 w-3.5" />
@@ -213,7 +213,7 @@ async function DashboardContent() {
                                   Tamu Baru
                                 </Badge>
                               ) : (
-                                <Badge className="border-green-300 bg-green-100 text-[10px] font-semibold text-brand-green-deep">
+                                <Badge className="border-brand-green/30 bg-green-100 text-[10px] font-semibold text-brand-green-deep">
                                   Terdaftar
                                 </Badge>
                               )}

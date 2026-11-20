@@ -13,21 +13,10 @@ import {
 
 describe("Fase 1 — Konten Bertipe (PRD Rakernas BMH)", () => {
   describe("Kuantitas Item (PRD A.5 & Fase 1 DoD)", () => {
-    it("memiliki tepat 10 baris rundown untuk Hari 1", () => {
-      expect(RUNDOWN_DATA.hari1).toHaveLength(10);
-      expect(RUNDOWN_DATA.hari1[0]).toEqual({ time: "10.00", title: "Check in" });
-      expect(RUNDOWN_DATA.hari1[9]).toEqual({
-        time: "22.30",
-        title: "Istirahat (tidur)",
-        note: "tidur",
-      });
-    });
-
-    it("memiliki fallback terdefinisi untuk Hari 2 dan Hari 3", () => {
-      expect(RUNDOWN_DATA.hari2.length).toBeGreaterThan(0);
-      expect(RUNDOWN_DATA.hari2[0].title).toBe("Rundown akan segera diumumkan");
-      expect(RUNDOWN_DATA.hari3.length).toBeGreaterThan(0);
-      expect(RUNDOWN_DATA.hari3[0].title).toBe("Rundown akan segera diumumkan");
+    it("rundown resmi: 26 agenda Hari 1, 14 agenda Hari 2, 8 agenda Hari 3", () => {
+      expect(RUNDOWN_DATA.hari1).toHaveLength(26);
+      expect(RUNDOWN_DATA.hari2).toHaveLength(14);
+      expect(RUNDOWN_DATA.hari3).toHaveLength(8);
     });
 
     it("memiliki tepat 5 item dress code", () => {
@@ -57,30 +46,37 @@ describe("Fase 1 — Konten Bertipe (PRD Rakernas BMH)", () => {
       });
     });
 
-    it("memiliki tepat 6 titik asal transportasi dengan masing-masing 3 moda/tarif (total 18 tarif)", () => {
-      expect(TRANSPORT_DATA.items).toHaveLength(6);
+    it("memiliki 8 titik asal transportasi dengan masing-masing jarak dan 3 moda/tarif (total 24 tarif)", () => {
+      expect(TRANSPORT_DATA.items).toHaveLength(8);
       let totalFares = 0;
       TRANSPORT_DATA.items.forEach((item) => {
+        expect(item.distance).toMatch(/^± \d+(-\d+)? km$/);
         expect(item.fares).toHaveLength(3);
         totalFares += item.fares.length;
         item.fares.forEach((fare) => {
           expect(fare.mode).toBeTruthy();
-          expect(fare.price).toMatch(/^Rp\.\s*[\d.,\s-]+$/);
+          expect(fare.price).toMatch(/^Rp \d{1,3}(\.\d{3})* - \d{1,3}(\.\d{3})*$/);
         });
       });
-      expect(totalFares).toBe(18);
+      expect(totalFares).toBe(24);
+    });
+
+    it("memiliki pengumuman tempat transit H-1 dengan tautan Google Maps Guest House YPPH Depok", () => {
+      const { announcement } = TRANSPORT_DATA;
+      expect(announcement.text).toBe("H-1 Panitia menyediakan tempat transit di: Guest House YPPH Depok, konfirmasi ke ");
+      expect(announcement.linkLabel).toBe("panitia");
+      expect(announcement.mapsUrl).toBe("https://maps.app.goo.gl/LrBzn1tPFqKaRFTTA");
     });
 
     it("menyediakan copywriting pencarian dan empat label detail tamu", () => {
-      expect(INVITED_GUESTS_CONTENT.title).toBe("Tamu Undangan");
-      expect(INVITED_GUESTS_CONTENT.detailsTitle).toBe("Detail Tamu Undangan");
+      expect(INVITED_GUESTS_CONTENT.title).toBe("Peserta Rakernas");
+      expect(INVITED_GUESTS_CONTENT.detailsTitle).toBe("Detail Peserta");
       expect(Object.keys(INVITED_GUESTS_CONTENT.fields)).toEqual(["nama", "perwakilan_daerah", "jabatan", "departemen"]);
     });
 
-    it("memiliki tepat 5 item navigasi header ke S3-S7", () => {
-      expect(NAV_ITEMS).toHaveLength(5);
-      const expectedHrefs = ["#rundown", "#dresscode", "#lokasi", "#transportasi", "#tamu-undangan"];
-      expect(NAV_ITEMS.map((n) => n.href)).toEqual(expectedHrefs);
+    it("memiliki 2 anchor section di navbar (Rundown Acara dan Dress Code)", () => {
+      expect(NAV_ITEMS).toHaveLength(2);
+      expect(NAV_ITEMS.map((n) => n.href)).toEqual(["#rundown", "#dresscode"]);
     });
   });
 

@@ -45,7 +45,7 @@ export function AdminLoginForm() {
           autoComplete="email"
           required
           placeholder="admin@bmh.or.id"
-          className="h-11 rounded-xl border-line focus-visible:ring-brand-green"
+          className="h-11 rounded-xl border-line focus-visible:ring-ring"
           disabled={isPending}
         />
       </div>
@@ -63,7 +63,7 @@ export function AdminLoginForm() {
           autoComplete="current-password"
           required
           placeholder="••••••••"
-          className="h-11 rounded-xl border-line focus-visible:ring-brand-green"
+          className="h-11 rounded-xl border-line focus-visible:ring-ring"
           disabled={isPending}
         />
       </div>

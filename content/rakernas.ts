@@ -24,6 +24,10 @@ export interface RundownItem {
   time: string;
   title: string;
   note?: string;
+  /** Judul bagian; baris berurutan dengan section sama dikelompokkan di tampilan. */
+  section?: string;
+  /** Sub-poin bernomor di bawah judul. */
+  details?: string[];
 }
 
 export interface DresscodeItem {
@@ -44,6 +48,8 @@ export interface TransportFare {
 
 export interface TransportItem {
   origin: string;
+  /** Perkiraan jarak ke lokasi acara, mis. "± 3-4 km". */
+  distance: string;
   icon: "plane" | "train" | "bus";
   fares: TransportFare[];
 }
@@ -92,50 +98,115 @@ export const EVENT_INFO: EventInfo = {
   logoAlt: "Logo Rakernas BMH 2027",
 };
 
+/** Anchor section beranda yang muncul di navbar (href "#id"). */
 export const NAV_ITEMS: NavItem[] = [
   { label: "Rundown Acara", href: "#rundown" },
   { label: "Dress Code", href: "#dresscode" },
-  { label: "Lokasi Rakernas", href: "#lokasi" },
-  { label: "Info Transportasi", href: "#transportasi" },
-  { label: "Tamu Undangan", href: "#tamu-undangan" },
 ];
 
+/** Tautan navbar: href "/path" = halaman, "#id" = section di beranda. */
+export interface NavMenuLink extends NavItem {
+  children?: undefined;
+}
+
+/** Menu bertingkat (muncul saat hover di desktop, accordion di HP/tablet). */
+export interface NavMenuGroup {
+  label: string;
+  href?: undefined;
+  children: NavItem[];
+}
+
+export type NavMenuEntry = NavMenuLink | NavMenuGroup;
+
+export const PUBLIKASI_MENU: NavItem[] = [
+  { label: "Foto Galeri Kegiatan", href: "/publikasi/foto-galeri-kegiatan" },
+  { label: "Materi Presentasi Rakernas", href: "/publikasi/materi-presentasi-rakernas" },
+  { label: "Notula Rapat", href: "/publikasi/notula-rapat" },
+];
+
+/** Satu sumber kebenaran menu navbar halaman publik (tombol Daftar berdiri sendiri). */
+export const NAV_MENU: NavMenuEntry[] = [
+  { label: "Beranda", href: "/" },
+  ...NAV_ITEMS,
+  { label: "Informasi Kamar Hotel", href: "/informasi-kamar-hotel" },
+  { label: "Publikasi", children: PUBLIKASI_MENU },
+];
+
+// Rundown resmi Rakernas BMH 2027. Tanggal tiap hari dihitung dari pengaturan acara (event_settings.starts_at).
+// `section` = judul bagian (dikelompokkan di tampilan), `details` = sub-poin bernomor.
 export const RUNDOWN_DATA: Record<"hari1" | "hari2" | "hari3", RundownItem[]> = {
   hari1: [
-    { time: "10.00", title: "Check in" },
-    { time: "11.00", title: "Makan Siang" },
-    { time: "11.30", title: "Sholat Dzuhur" },
-    { time: "13.00", title: "Pembukaan" },
-    { time: "15.00", title: "Break" },
-    {
-      time: "16.00",
-      title: "Rapat Pleno 1 (Presentasi Program Kerja Bidang Pendidikan)",
-      note: "Presentasi Program Kerja Bidang Pendidikan",
-    },
-    { time: "17.30", title: "Ishoma" },
-    {
-      time: "19.30",
-      title: "Rapat Pleno 2 (Presentasi Program Kerja Bidang Dakwah & Pelayanan Ummat)",
-      note: "Presentasi Program Kerja Bidang Dakwah & Pelayanan Ummat",
-    },
-    {
-      time: "21.00",
-      title: "Rapat Pleno 3 (Presentasi Program Bidang Rekrutmen, Pengkaderan & Pembinaan Anggota)",
-      note: "Presentasi Program Bidang Rekrutmen, Pengkaderan & Pembinaan Anggota",
-    },
-    {
-      time: "22.30",
-      title: "Istirahat (tidur)",
-      note: "tidur",
-    },
+    { section: "A. Registrasi Peserta", time: "10.00 - 12.00", title: "Panitia stand by di lobby utama hotel menyambut dan mengarahkan peserta menuju tempat registrasi" },
+    { section: "A. Registrasi Peserta", time: "10.00 - 12.00", title: "Panitia stand by di meja registrasi membantu registrasi dan menyerahkan goodybag berisi Rakernas Kit" },
+    { section: "A. Registrasi Peserta", time: "10.00 - 12.00", title: "Peserta diarahkan ke ruang transit/restoran untuk makan siang dan istirahat" },
+    { section: "A. Registrasi Peserta", time: "12.00 - 12.30", title: "Shalat berjamaah di musholla" },
+    { section: "A. Registrasi Peserta", time: "12.30 - 12.45", title: "Peserta memasuki ruang acara paling lambat pukul 12.45 WIB" },
+
+    { section: "B. Pembukaan", time: "12.30 - 12.45", title: "Ruang Zoom untuk peserta online dibuka" },
+    { section: "B. Pembukaan", time: "12.45 - 13.00", title: "Penampilan Tim Hadroh dari Santri Binaan BMH" },
+    { section: "B. Pembukaan", time: "13.00 - 13.10", title: "Pembukaan oleh MC" },
+    { section: "B. Pembukaan", time: "13.10 - 13.20", title: "Tilawah" },
+    { section: "B. Pembukaan", time: "13.20 - 13.30", title: "Menyanyikan Indonesia Raya & Mars BMH" },
+    { section: "B. Pembukaan", time: "13.30 - 13.40", title: "Penampilan Tim Hadroh" },
+    { section: "B. Pembukaan", time: "13.40 - 13.50", title: "Sambutan Ketua Panitia Rakernas BMH" },
+    { section: "B. Pembukaan", time: "13.50 - 14.00", title: "Sambutan Ketua Pengurus BMH" },
+    { section: "B. Pembukaan", time: "14.00 - 14.10", title: "Sambutan Ketua Pembina BMH" },
+    { section: "B. Pembukaan", time: "14.10 - 14.25", title: "Sambutan Dirzawa Kemenag RI dan pembukaan acara secara resmi" },
+    { section: "B. Pembukaan", time: "14.25 - 14.55", title: "Pengumuman dan penyerahan Apresiasi BMH Award 2026 + foto bersama" },
+    { section: "B. Pembukaan", time: "14.45 - 14.55", title: "Pembacaan doa" },
+    { section: "B. Pembukaan", time: "14.55 - 15.50", title: "Penutup acara oleh MC" },
+
+    { section: "C. Check-in Kamar Hotel", time: "15.00 - 16.00", title: "Check-in kamar hotel (kunci diambil di meja registrasi)" },
+
+    { section: "D. Orientasi Kelembagaan", time: "16.00 - 16.40", title: "Orientasi Kelembagaan" },
+    { section: "D. Orientasi Kelembagaan", time: "16.40 - 16.50", title: "Coffee Break" },
+
+    { section: "E. Laporan Kinerja BMH 2026", time: "16.50 - 17.45", title: "Laporan Kinerja BMH 2026" },
+    { section: "E. Laporan Kinerja BMH 2026", time: "17.45 - 19.30", title: "Ishoma" },
+
+    { section: "F. Sosialisasi Kebijakan", time: "19.30 - 20.25", title: "Sosialisasi Kebijakan" },
+    { section: "F. Sosialisasi Kebijakan", time: "20.25 - 20.30", title: "Coffee Break" },
+
+    { section: "G. Paparan Strategi 2027", time: "20.30 - 21.30", title: "Paparan Strategi 2027" },
   ],
-  // Rundown Hari 2 & 3: Sesuai PRD A.5 & A.9 serta keputusan Fase 0,
-  // diisi teks sementara sampai data resmi disalin dari panitia.
   hari2: [
-    { time: "-", title: "Rundown akan segera diumumkan" },
+    { time: "03.00 - 04.00", title: "Sholat Lail" },
+    { time: "04.00 - 04.30", title: "Sholat Shubuh & Wirid" },
+    { time: "04.30 - 06.00", title: "H. Tausiyah (1)" },
+    { time: "06.00 - 08.00", title: "Olahraga, sarapan dan persiapan" },
+    { time: "08.00 - 10.00", title: "I. Presentasi Direktorat Prodaya" },
+    { time: "10.00 - 12.00", title: "J. Presentasi Direktorat Marketing" },
+    { time: "12.00 - 13.00", title: "Ishoma" },
+    { time: "13.00 - 15.00", title: "K. Presentasi Direktorat Seklem" },
+    { time: "15.00 - 16.00", title: "Coffee Break" },
+    { time: "16.00 - 17.30", title: "L. Presentasi Direktorat Operasional" },
+    { time: "17.30 - 19.30", title: "Ishoma" },
+    { time: "19.30 - 20.25", title: "M. Presentasi Direktorat Jaringan" },
+    { time: "20.25 - 20.30", title: "Coffee Break" },
+    { time: "20.30 - 21.30", title: "N. Presentasi Pengawasan" },
   ],
   hari3: [
-    { time: "-", title: "Rundown akan segera diumumkan" },
+    { time: "03.00 - 04.00", title: "Sholat Lail" },
+    { time: "04.00 - 04.30", title: "Sholat Shubuh & Wirid" },
+    { time: "04.30 - 06.00", title: "O. Tausiyah (2)" },
+    { time: "06.00 - 07.00", title: "Olahraga, sarapan dan persiapan" },
+    { time: "07.00 - 08.30", title: "P. Workshop Project Manajemen" },
+    { time: "08.30 - 10.00", title: "W. Leadership Training" },
+    { time: "10.00 - 10.30", title: "X. Pembacaan Rekomendasi" },
+    {
+      time: "10.30 - 12.00",
+      title: "Y. Penutupan",
+      details: [
+        "Pembukaan",
+        "Tilawah Al Qur’an",
+        "Sambutan Ketua Panitia",
+        "Sambutan Ketua Pengurus",
+        "Sambutan Pembina BMH",
+        "Pembacaan SK Penugasan",
+        "Doa",
+        "Penutup",
+      ],
+    },
   ],
 };
 
@@ -212,77 +283,110 @@ export const TRANSPORT_DATA = {
   subtitle: "menuju Hotel Luminor",
   items: [
     {
-      origin: "Bandara Ahmad Yani",
+      origin: "Stasiun Pasar Senen",
+      distance: "± 3-4 km",
+      icon: "train" as const,
+      fares: [
+        { mode: "Taksi Konvensional", price: "Rp 30.000 - 50.000" },
+        { mode: "Taksi Online", price: "Rp 25.000 - 40.000" },
+        { mode: "Ojek Online", price: "Rp 12.000 - 20.000" },
+      ],
+    },
+    {
+      origin: "Stasiun Gambir",
+      distance: "± 5-6 km",
+      icon: "train" as const,
+      fares: [
+        { mode: "Taksi Konvensional", price: "Rp 40.000 - 60.000" },
+        { mode: "Taksi Online", price: "Rp 30.000 - 50.000" },
+        { mode: "Ojek Online", price: "Rp 15.000 - 25.000" },
+      ],
+    },
+    {
+      origin: "Terminal Tanjung Priok",
+      distance: "± 9-10 km",
+      icon: "bus" as const,
+      fares: [
+        { mode: "Taksi Konvensional", price: "Rp 60.000 - 90.000" },
+        { mode: "Taksi Online", price: "Rp 45.000 - 70.000" },
+        { mode: "Ojek Online", price: "Rp 25.000 - 40.000" },
+      ],
+    },
+    {
+      origin: "Terminal Pulogadung",
+      distance: "± 10-11 km",
+      icon: "bus" as const,
+      fares: [
+        { mode: "Taksi Konvensional", price: "Rp 60.000 - 90.000" },
+        { mode: "Taksi Online", price: "Rp 45.000 - 70.000" },
+        { mode: "Ojek Online", price: "Rp 25.000 - 40.000" },
+      ],
+    },
+    {
+      origin: "Bandara Halim Perdanakusuma",
+      distance: "± 14-16 km",
       icon: "plane" as const,
       fares: [
-        { mode: "Taksi Bandara", price: "Rp. 70.000 - 100.000" },
-        { mode: "Taksi Online", price: "Rp. 45.000 - 65.000" },
-        { mode: "Ojek Online", price: "Rp. 20.000 - 30.000" },
+        { mode: "Taksi Bandara", price: "Rp 90.000 - 140.000" },
+        { mode: "Taksi Online", price: "Rp 65.000 - 100.000" },
+        { mode: "Ojek Online", price: "Rp 40.000 - 60.000" },
       ],
     },
     {
-      origin: "Stasiun Tawang",
-      icon: "train" as const,
-      fares: [
-        { mode: "Taksi Stasiun", price: "Rp. 30.000 - 40.000" },
-        { mode: "Taksi Online", price: "Rp. 20.000 - 30.000" },
-        { mode: "Ojek Online", price: "Rp. 12.000 - 18.000" },
-      ],
-    },
-    {
-      origin: "Stasiun Poncol",
-      icon: "train" as const,
-      fares: [
-        { mode: "Taksi Stasiun", price: "Rp. 25.000 - 35.000" },
-        { mode: "Taksi Online", price: "Rp. 15.000 - 25.000" },
-        { mode: "Ojek Online", price: "Rp. 10.000 - 15.000" },
-      ],
-    },
-    {
-      origin: "Terminal Mangkang",
+      origin: "Terminal Kalideres",
+      distance: "± 17-19 km",
       icon: "bus" as const,
       fares: [
-        { mode: "Taksi Terminal", price: "Rp. 80.000 - 110.000" },
-        { mode: "Taksi Online", price: "Rp. 60.000 - 90.000" },
-        { mode: "Ojek Online", price: "Rp. 35.000 - 50.000" },
+        { mode: "Taksi Konvensional", price: "Rp 110.000 - 160.000" },
+        { mode: "Taksi Online", price: "Rp 80.000 - 120.000" },
+        { mode: "Ojek Online", price: "Rp 50.000 - 75.000" },
       ],
     },
     {
-      origin: "Terminal Terboyo",
+      origin: "Terminal Kampung Rambutan",
+      distance: "± 22-25 km",
       icon: "bus" as const,
       fares: [
-        { mode: "Taksi Terminal", price: "Rp. 45.000 - 60.000" },
-        { mode: "Taksi Online", price: "Rp. 30.000 - 45.000" },
-        { mode: "Ojek Online", price: "Rp. 18.000 - 25.000" },
+        { mode: "Taksi Konvensional", price: "Rp 120.000 - 180.000" },
+        { mode: "Taksi Online", price: "Rp 90.000 - 140.000" },
+        { mode: "Ojek Online", price: "Rp 60.000 - 90.000" },
       ],
     },
     {
-      origin: "Terminal Banyumanik",
-      icon: "bus" as const,
+      origin: "Bandara Soekarno-Hatta",
+      distance: "± 30 km",
+      icon: "plane" as const,
       fares: [
-        { mode: "Taksi Terminal", price: "Rp. 50.000 - 65.000" },
-        { mode: "Taksi Online", price: "Rp. 35.000 - 50.000" },
-        { mode: "Ojek Online", price: "Rp. 20.000 - 28.000" },
+        { mode: "Taksi Bandara", price: "Rp 200.000 - 300.000" },
+        { mode: "Taksi Online", price: "Rp 150.000 - 230.000" },
+        { mode: "Ojek Online", price: "Rp 100.000 - 150.000" },
       ],
     },
   ] as TransportItem[],
+  /** Pengumuman di bagian bawah section. Kata "panitia" ditautkan ke footer_url pada event settings. */
+  announcement: {
+    text: "H-1 Panitia menyediakan tempat transit di: Guest House YPPH Depok, konfirmasi ke ",
+    linkLabel: "panitia",
+    mapsLabel: "Lihat di Google Maps",
+    mapsUrl: "https://maps.app.goo.gl/LrBzn1tPFqKaRFTTA",
+  },
 };
 
 export const INVITED_GUESTS_CONTENT = {
   badge: "Informasi Tamu",
-  title: "Tamu Undangan",
-  description: "Temukan detail tamu undangan berdasarkan nama, perwakilan daerah, jabatan, atau departemen.",
+  title: "Peserta Rakernas",
+  description: "Temukan detail peserta berdasarkan nama, perwakilan daerah, jabatan, atau departemen.",
   registerCta: { label: "Daftar", href: "/registrasi" },
   statusAccepted: "Sudah diterima",
   statusPending: "Belum diterima",
   pendingNote: "Menunggu persetujuan panitia",
   acceptedGroupTitle: "Sudah diterima",
   pendingGroupTitle: "Belum diterima (menunggu persetujuan)",
-  searchLabel: "Cari tamu undangan",
+  searchLabel: "Cari peserta",
   searchPlaceholder: "Cari Nama Anda…",
   searchHint: "Ketik minimal 2 karakter. Hasil diperbarui otomatis saat Anda mengetik.",
   clearLabel: "Hapus pencarian",
-  detailsTitle: "Detail Tamu Undangan",
+  detailsTitle: "Detail Peserta",
   fields: {
     nama: "Nama",
     perwakilan_daerah: "Perwakilan daerah",
@@ -290,10 +394,10 @@ export const INVITED_GUESTS_CONTENT = {
     departemen: "Departemen",
   },
   missingValue: "Belum dicantumkan",
-  initialTitle: "Temukan tamu undangan Anda",
+  initialTitle: "Temukan Nama, Perwakilan Daerah, Jabatan, atau Departemen Anda",
   initialDescription: "Mulai dengan mengetik nama, perwakilan daerah, jabatan, atau departemen pada kolom pencarian.",
-  loading: "Sedang mencari tamu undangan…",
-  emptyTitle: "Tamu undangan belum ditemukan",
+  loading: "Sedang mencari peserta…",
+  emptyTitle: "Peserta belum ditemukan",
   emptyDescription: "Coba kata kunci lain atau periksa kembali ejaan Anda.",
   errorTitle: "Pencarian belum tersedia",
   errorDescription: "Data tamu belum dapat dimuat. Silakan coba lagi.",
@@ -301,15 +405,15 @@ export const INVITED_GUESTS_CONTENT = {
   retryLabel: "Coba lagi",
   previousLabel: "Sebelumnya",
   nextLabel: "Berikutnya",
-  paginationLabel: "Halaman hasil pencarian tamu",
-  resultsCount: (total: number) => `${total.toLocaleString("id-ID")} tamu undangan ditemukan`,
+  paginationLabel: "Halaman hasil pencarian peserta",
+  resultsCount: (total: number) => `${total.toLocaleString("id-ID")} peserta ditemukan`,
   pageLabel: (page: number, totalPages: number) => `Halaman ${page} dari ${totalPages}`,
 };
 
 export const FOOTER_DATA: FooterInfo = {
   logoSrc: "/logo.png",
   logoAlt: "Logo Rakernas BMH 2027",
-  text: "01-03 Desember 2026 | Hotel Luminor Kota Jakarta Barat @2026",
+  text: "08-10 Desember 2026 | Hotel Luminor Kota Jakarta Barat @2026",
   committee: {
     label: "Panitia Rakernas",
     url: "https://wa.me/6289517795206",

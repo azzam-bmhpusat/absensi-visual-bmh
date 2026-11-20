@@ -189,8 +189,9 @@ export function AttendanceBoard({
             .eq("session_id", currentSession.id)
             .order("checked_in_at", { ascending: false }),
           supabase
-            .from("guests")
+            .from("profiles")
             .select("id, nama, perwakilan_daerah, jabatan, departemen, kategori")
+            .not("nama", "is", null)
             .order("perwakilan_daerah", { ascending: true })
             .order("nama", { ascending: true }),
         ]);
@@ -373,7 +374,7 @@ export function AttendanceBoard({
           {connectionStatus === "connected" ? (
             <>
               <span className="w-3 h-3 rounded-full bg-brand-green animate-pulse shadow-[0_0_10px_#39BA87]" />
-              <Wifi className="w-4 h-4 text-brand-green" />
+              <Wifi className="w-4 h-4 text-brand-green-text" />
               <span className="text-white/80 font-medium">Terhubung ke sistem</span>
             </>
           ) : (

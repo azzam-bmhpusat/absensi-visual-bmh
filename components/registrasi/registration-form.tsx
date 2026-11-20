@@ -273,7 +273,7 @@ export function RegistrationForm({ footerUrl }: RegistrationFormProps) {
         <DialogContent className="max-w-md rounded-3xl p-6 sm:max-w-md">
           <DialogHeader className="items-center space-y-3 text-center">
             {success ? (
-              <CheckCircle2 className="size-12 text-brand-green" aria-hidden="true" />
+              <CheckCircle2 className="size-12 text-brand-green-text" aria-hidden="true" />
             ) : (
               <TriangleAlert className="size-12 text-danger" aria-hidden="true" />
             )}

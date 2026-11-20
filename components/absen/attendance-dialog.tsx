@@ -280,7 +280,7 @@ export function AttendanceDialog({
               </p>
             </div>
             <div className="pt-2 flex items-center justify-center gap-2 text-xs text-ink-muted">
-              <Loader2 className="w-4 h-4 animate-spin text-brand-green" />
+              <Loader2 className="w-4 h-4 animate-spin text-brand-green-text" />
               <span>Mengalihkan ke halaman selesai...</span>
             </div>
           </motion.div>
@@ -290,7 +290,7 @@ export function AttendanceDialog({
         {state === "already" && result?.status === "already" && (
           <motion.div key="already" {...STATE_MOTION} className="text-center space-y-4 py-4">
             <div className="w-16 h-16 mx-auto rounded-full bg-gold-50 flex items-center justify-center border border-brand-gold-soft shadow-sm">
-              <Info className="w-8 h-8 text-brand-gold stroke-[2.5]" />
+              <Info className="w-8 h-8 text-brand-gold-text stroke-[2.5]" />
             </div>
             <div className="space-y-1">
               <h3 className="font-heading text-xl font-bold text-primary">

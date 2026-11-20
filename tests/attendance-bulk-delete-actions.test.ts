@@ -2,12 +2,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   getUser: vi.fn(),
+  rpc: vi.fn(),
   adminFrom: vi.fn(),
   revalidatePath: vi.fn(),
 }));
 
 vi.mock("@/lib/supabase/server", () => ({
-  createClient: async () => ({ auth: { getUser: mocks.getUser } }),
+  createClient: async () => ({ auth: { getUser: mocks.getUser }, rpc: mocks.rpc }),
 }));
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient: () => ({ from: mocks.adminFrom }) }));
 vi.mock("next/cache", () => ({ revalidatePath: mocks.revalidatePath }));
@@ -38,6 +39,7 @@ describe("aksi hapus massal kehadiran", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.getUser.mockResolvedValue({ data: { user: { id: "admin" } }, error: null });
+    mocks.rpc.mockResolvedValue({ data: true, error: null });
   });
 
   it.each([
@@ -47,6 +49,14 @@ describe("aksi hapus massal kehadiran", () => {
   ])("%s menolak pengguna anonim sebelum menyentuh database", async (_name, run) => {
     mocks.getUser.mockResolvedValue({ data: { user: null }, error: null });
     expect(await run()).toMatchObject({ success: false, error: expect.stringContaining("admin") });
+    expect(mocks.adminFrom).not.toHaveBeenCalled();
+    expect(mocks.revalidatePath).not.toHaveBeenCalled();
+  });
+
+  it("menolak akun login yang bukan admin (role user) sebelum menyentuh database", async () => {
+    mocks.rpc.mockResolvedValue({ data: false, error: null });
+    expect(await deleteAllAttendancesAction("HAPUS SEMUA")).toMatchObject({ success: false, error: expect.stringContaining("admin") });
+    expect(mocks.rpc).toHaveBeenCalledWith("is_admin");
     expect(mocks.adminFrom).not.toHaveBeenCalled();
     expect(mocks.revalidatePath).not.toHaveBeenCalled();
   });

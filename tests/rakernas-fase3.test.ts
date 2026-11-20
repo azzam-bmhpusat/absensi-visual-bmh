@@ -6,6 +6,7 @@ import {
   getDefaultDay,
   parseRundownTitle,
 } from "../lib/rakernas-helpers";
+import { RUNDOWN_DATA } from "../content/rakernas";
 
 describe("Fase 3 — Hitung Mundur & Rundown (PRD Rakernas BMH)", () => {
   describe("Helper getTimeLeft (FR-04)", () => {
@@ -208,6 +209,21 @@ describe("Fase 3 — Hitung Mundur & Rundown (PRD Rakernas BMH)", () => {
     it("menampilkan pesan informatif jika rundown hari tersebut masih pending", () => {
       expect(rundownContent).toContain("isPending");
       expect(rundownContent).toContain("Belum dirilis");
+    });
+
+    it("memisahkan '(keterangan)' hanya bila ada note eksplisit agar 'Tausiyah (1)' tampil utuh", () => {
+      expect(rundownContent).toMatch(/item\.note\s*\?\s*parseRundownTitle\(item\.title, item\.note\)/);
+      // Pemecah otomatis akan salah memotong judul bernomor dalam kurung
+      expect(parseRundownTitle("H. Tausiyah (1)").mainTitle).toBe("H. Tausiyah");
+      expect(RUNDOWN_DATA.hari2[2].note).toBeUndefined();
+    });
+
+    it("mendukung judul bagian, waktu rentang, dan sub-poin bernomor", () => {
+      expect(rundownContent).toContain("item.section");
+      expect(rundownContent).toContain("sm:w-28");
+      expect(rundownContent).toContain("<ol");
+      expect(rundownContent).toContain("item.details");
+      expect(rundownContent).toContain("agenda");
     });
   });
 

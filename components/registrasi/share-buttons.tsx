@@ -88,7 +88,7 @@ export function ShareButtons() {
           aria-live="polite"
         >
           {copied ? (
-            <Check className="size-4 text-brand-green" aria-hidden="true" />
+            <Check className="size-4 text-brand-green-text" aria-hidden="true" />
           ) : (
             <Copy className="size-4" aria-hidden="true" />
           )}

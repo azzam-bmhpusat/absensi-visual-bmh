@@ -40,7 +40,7 @@ export default function AdminQrPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink-muted hover:text-primary transition-colors py-1.5 px-2.5 rounded-xl bg-white border border-line shadow-2xs hover:border-brand-green"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink-muted hover:text-primary transition-colors py-1.5 px-2.5 rounded-xl bg-white border border-line shadow-2xs hover:border-ring"
               title="Kembali ke Dashboard"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
@@ -61,7 +61,7 @@ export default function AdminQrPage() {
           </div>
 
           <div className="flex items-center gap-1.5 text-[11px] font-medium text-ink-muted bg-white/80 border border-line px-2.5 py-1 rounded-full shadow-2xs">
-            <ShieldCheck className="w-3 h-3 text-brand-green" />
+            <ShieldCheck className="w-3 h-3 text-brand-green-text" />
             <span className="hidden sm:inline">Sistem Presensi Resmi</span>
             <span className="font-semibold text-primary">{eventName}</span>
           </div>

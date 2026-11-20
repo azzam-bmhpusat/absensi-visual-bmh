@@ -72,7 +72,7 @@ export function GuestExportDialog({ open, onOpenChange, guests }: GuestExportDia
       <DialogContent className="max-w-md rounded-3xl p-6">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 font-heading text-lg font-bold text-primary">
-            <FileDown className="h-5 w-5 text-brand-green" />
+            <FileDown className="h-5 w-5 text-brand-green-text" />
             Export PDF Tamu Undangan
           </DialogTitle>
           <DialogDescription className="text-xs text-ink-muted">

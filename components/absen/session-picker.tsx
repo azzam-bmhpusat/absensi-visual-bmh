@@ -90,7 +90,7 @@ export function SessionPicker({
             value="hari-1"
             className="rounded-xl text-xs font-semibold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-2xs transition-all flex items-center justify-center gap-1.5"
           >
-            <CalendarDays className="w-3.5 h-3.5 text-brand-green" />
+            <CalendarDays className="w-3.5 h-3.5 text-brand-green-text" />
             Hari 1
           </TabsTrigger>
           <TabsTrigger
@@ -129,7 +129,7 @@ export function SessionPicker({
                     onClick={() => handleCardClick(session)}
                     className={`group p-4 sm:p-5 rounded-2xl sm:rounded-3xl border transition-all flex items-center justify-between gap-3 min-h-[92px] sm:min-h-[104px] select-none ${
                       isActive
-                        ? "bg-card border-line hover:border-brand-green hover:shadow-xs active:scale-[0.98] cursor-pointer"
+                        ? "bg-card border-line hover:border-ring hover:shadow-xs active:scale-[0.98] cursor-pointer"
                         : "bg-surface/80 border-dashed border-line/80 opacity-75 cursor-not-allowed"
                     }`}
                   >
@@ -156,7 +156,7 @@ export function SessionPicker({
                             {session.nama}
                           </h2>
                           {isActive ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-green-50 text-brand-green-deep border border-brand-green/20">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-secondary text-brand-green-deep border border-brand-green/20">
                               <span className="w-1.5 h-1.5 rounded-full bg-brand-green animate-pulse" />
                               Buka
                             </span>

@@ -3,7 +3,7 @@ import { buildGuestSearchFilter } from "@/lib/guest-search";
 
 const mock = vi.hoisted(() => ({
   create: vi.fn(),
-  query: { from: vi.fn(), select: vi.fn(), or: vi.fn(), order: vi.fn(), range: vi.fn(), abortSignal: vi.fn() },
+  query: { from: vi.fn(), select: vi.fn(), not: vi.fn(), or: vi.fn(), order: vi.fn(), range: vi.fn(), abortSignal: vi.fn() },
 }));
 vi.mock("@/lib/supabase/server", () => ({ createPublicServerClient: mock.create }));
 
@@ -13,7 +13,7 @@ describe("GET /api/guests/search", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     mock.create.mockReturnValue(mock.query);
-    for (const method of ["from", "select", "or", "order", "range"] as const) mock.query[method].mockReturnValue(mock.query);
+    for (const method of ["from", "select", "not", "or", "order", "range"] as const) mock.query[method].mockReturnValue(mock.query);
     mock.query.abortSignal.mockResolvedValue({ data: [], count: 0, error: null });
   });
 
@@ -26,7 +26,9 @@ describe("GET /api/guests/search", () => {
     expect(response.status).toBe(200);
     expect(response.headers.get("Cache-Control")).toBe("no-store");
     expect(await response.json()).toEqual({ guests: [{ id: "guest-1", nama: "Ali", perwakilan_daerah: "Jawa Barat", jabatan: null, departemen: "Dakwah" }], total: 23, page: 2, pageSize: 10 });
-    expect(mock.query.from).toHaveBeenCalledWith("guests");
+    expect(mock.query.from).toHaveBeenCalledWith("profiles");
+    // hanya profil peserta (punya nama), bukan akun admin
+    expect(mock.query.not).toHaveBeenCalledWith("nama", "is", null);
     expect(mock.query.select).toHaveBeenCalledWith("id, nama, perwakilan_daerah, jabatan, departemen", { count: "exact" });
     expect(mock.query.or).toHaveBeenCalledWith(buildGuestSearchFilter("Jawa Barat"));
     expect(mock.query.order.mock.calls).toEqual([["nama", { ascending: true }], ["id", { ascending: true }]]);

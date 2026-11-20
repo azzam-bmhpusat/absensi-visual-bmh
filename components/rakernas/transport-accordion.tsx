@@ -1,13 +1,16 @@
 "use client";
 
-import { Plane, TrainFront, Bus, MapPin } from "lucide-react";
+import { Plane, TrainFront, Bus, MapPin, Megaphone } from "lucide-react";
+import { cn } from "cn";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { buttonVariants } from "@/components/ui/button";
 import { TRANSPORT_DATA, EVENT_INFO } from "@/content/rakernas";
+import { DEFAULT_EVENT_SETTINGS } from "@/lib/event-settings";
 import { Reveal, RevealItem, RevealStagger } from "@/components/motion/reveal";
 
 function getOriginIcon(iconType: "plane" | "train" | "bus") {
@@ -23,7 +26,11 @@ function getOriginIcon(iconType: "plane" | "train" | "bus") {
   }
 }
 
-export function TransportSection({ venueName = EVENT_INFO.hotel }: { venueName?: string } = {}) {
+export function TransportSection({
+  venueName = EVENT_INFO.hotel,
+  footerUrl = DEFAULT_EVENT_SETTINGS.footerUrl,
+}: { venueName?: string; footerUrl?: string } = {}) {
+  const { announcement } = TRANSPORT_DATA;
   return (
     <div className="mx-auto w-full max-w-screen-xl px-5 md:px-8">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
@@ -46,7 +53,7 @@ export function TransportSection({ venueName = EVENT_INFO.hotel }: { venueName?:
           </p>
         </Reveal>
 
-        {/* Kolom Kanan: Accordion 6 Titik Asal */}
+        {/* Kolom Kanan: Accordion Titik Asal */}
         <RevealStagger className="lg:col-span-7" stagger={0.07}>
           <Accordion
             defaultValue={["origin-0"]}
@@ -67,8 +74,13 @@ export function TransportSection({ venueName = EVENT_INFO.hotel }: { venueName?:
                       <div className="h-10 w-10 rounded-full bg-green-100 text-primary flex items-center justify-center shrink-0">
                         <Icon className="h-5 w-5" aria-hidden="true" />
                       </div>
-                      <span className="font-heading font-semibold text-ink text-base md:text-lg">
-                        {item.origin}
+                      <span className="flex min-w-0 flex-col">
+                        <span className="font-heading font-semibold text-ink text-base md:text-lg">
+                          {item.origin}
+                        </span>
+                        <span className="text-xs md:text-sm font-normal text-ink-muted tabular-nums">
+                          {item.distance}
+                        </span>
                       </span>
                     </div>
                   </AccordionTrigger>
@@ -96,6 +108,45 @@ export function TransportSection({ venueName = EVENT_INFO.hotel }: { venueName?:
           </Accordion>
         </RevealStagger>
       </div>
+
+      {/* Pengumuman di bagian paling bawah: tempat transit H-1 */}
+      <Reveal y={16} className="mt-8 md:mt-12">
+        <div
+          role="note"
+          className="flex flex-col gap-4 rounded-2xl border border-brand-gold/40 bg-gold-50 p-5 md:flex-row md:items-center md:justify-between md:p-6"
+        >
+          <div className="flex items-start gap-3.5">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gold-100 text-brand-gold-text">
+              <Megaphone className="h-5 w-5" aria-hidden="true" />
+            </div>
+            <p className="pt-1.5 text-sm md:text-base leading-relaxed text-ink">
+              {announcement.text}
+              <a
+                href={footerUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-primary underline underline-offset-4 transition-colors hover:text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+              >
+                {announcement.linkLabel}
+              </a>
+              .
+            </p>
+          </div>
+          <a
+            href={announcement.mapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Buka lokasi Guest House YPPH Depok di Google Maps"
+            className={cn(
+              buttonVariants({ variant: "outline" }),
+              "h-11 shrink-0 gap-2 rounded-xl border-brand-gold/50 bg-white px-5 text-sm font-semibold text-primary hover:bg-secondary"
+            )}
+          >
+            <MapPin className="h-4 w-4" aria-hidden="true" />
+            {announcement.mapsLabel}
+          </a>
+        </div>
+      </Reveal>
     </div>
   );
 }

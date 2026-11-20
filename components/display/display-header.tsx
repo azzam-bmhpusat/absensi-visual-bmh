@@ -108,7 +108,7 @@ export function DisplayHeader({
           {isFullscreen ? (
             <Minimize2 className="w-5 h-5 xl:w-6 xl:h-6 text-brand-gold-soft" />
           ) : (
-            <Maximize2 className="w-5 h-5 xl:w-6 xl:h-6 text-brand-green" />
+            <Maximize2 className="w-5 h-5 xl:w-6 xl:h-6 text-brand-green-text" />
           )}
         </button>
       </div>

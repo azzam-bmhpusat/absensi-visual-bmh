@@ -82,6 +82,12 @@ NEXT_PUBLIC_EVENT_NAME=Silaturahim & Rapat Kerja Nasional BMH
 ### 3. Migrasi Skema Database & Verifikasi RLS
 Jalankan file migrasi SQL di Supabase SQL Editor:
 - Lokasi skema awal: [`supabase/migrations/0001_init.sql`](file:///c:/Users/muhaz/Downloads/absensi-visual-bmh/supabase/migrations/0001_init.sql)
+- Tabel `profiles` (role `admin`/`user`, terisi otomatis dari Supabase Auth; akun yang sudah ada menjadi admin): [`supabase/migrations/0008_profiles.sql`](supabase/migrations/0008_profiles.sql)
+- Role admin pada akses (RLS `public.is_admin()`): [`supabase/migrations/0009_admin_role_policies.sql`](supabase/migrations/0009_admin_role_policies.sql)
+  **Urutan wajib: `0008` → `0009` → baru deploy aplikasi.** Bila ada admin yang terkunci:
+  `update public.profiles set role = 'admin' where email = 'email@anda';`
+- Kolom peserta di `profiles` (pengganti tabel `guests`): [`supabase/migrations/0010_profiles_participant_columns.sql`](supabase/migrations/0010_profiles_participant_columns.sql)
+  → pindahkan data: `npx tsx scripts/migrate-guests-to-profiles.ts` (dry-run) lalu `--apply` → deploy aplikasi → hapus `guests`: [`0011_drop_guests.sql`](supabase/migrations/0011_drop_guests.sql) (**tidak dapat dibatalkan**; ekspor `attendances`/`registrations` dulu).
 
 Untuk memastikan hak akses Row Level Security (RLS) berjalan aman:
 ```bash
