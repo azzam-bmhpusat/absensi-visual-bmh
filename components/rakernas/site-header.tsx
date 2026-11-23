@@ -3,9 +3,25 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { createElement, useEffect, useState } from "react";
 import { cn } from "cn";
-import { ChevronDown, Menu, X } from "lucide-react";
+import {
+  BedDouble,
+  CalendarClock,
+  ChevronDown,
+  ChevronRight,
+  FileText,
+  House,
+  Images,
+  Link2,
+  Menu,
+  Newspaper,
+  Presentation,
+  Shirt,
+  X,
+  type LucideIcon,
+} from "lucide-react";
+import { motion, useReducedMotion, type Variants } from "motion/react";
 import { useLenis } from "lenis/react";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,7 +56,11 @@ const linkBase =
 const linkActive =
   "text-primary after:absolute after:inset-x-3 after:bottom-1 after:h-0.5 after:rounded-full after:bg-brand-gold";
 
-export function SiteHeader({ account }: { account?: React.ReactNode }) {
+/**
+ * @param account Slot menu akun (server).
+ * @param drawerFooter Slot kartu info acara di bawah drawer HP (server, mengikuti event settings).
+ */
+export function SiteHeader({ account, drawerFooter }: { account?: React.ReactNode; drawerFooter?: React.ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const lenis = useLenis();
   const pathname = usePathname();
@@ -165,58 +185,18 @@ export function SiteHeader({ account }: { account?: React.ReactNode }) {
             <SheetContent
               side="right"
               showCloseButton={false}
-              className="gap-0 p-0 data-[side=right]:w-[88%] data-[side=right]:sm:max-w-sm"
+              className="gap-0 overflow-hidden rounded-l-2xl border-line p-0 data-[side=right]:w-[88%] data-[side=right]:sm:max-w-sm"
             >
-              <SheetHeader className="h-16 flex-row items-center justify-between gap-2 border-b border-line px-5 py-0">
-                <SheetTitle className="text-base font-semibold text-primary">Menu navigasi</SheetTitle>
-                <SheetClose
-                  render={
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="-mr-2 size-11 rounded-lg text-ink hover:bg-secondary hover:text-primary"
-                      aria-label="Tutup menu navigasi"
-                    />
-                  }
-                >
-                  <X className="size-5" />
-                </SheetClose>
-              </SheetHeader>
-
-              <nav aria-label="Navigasi seluler" className="flex-1 overflow-y-auto p-3">
-                <ul className="flex flex-col gap-1">
-                  {NAV_MENU.map((entry) =>
-                    entry.children ? (
-                      <li key={entry.label}>
-                        <MobileGroup
-                          group={entry}
-                          defaultOpen={isGroupActive(entry)}
-                          resolveHref={resolveHref}
-                          isActive={isActive}
-                          onNavigate={(event, href) => {
-                            setDrawerOpen(false);
-                            handleLinkClick(event, href, DRAWER_CLOSE_MS);
-                          }}
-                        />
-                      </li>
-                    ) : (
-                      <li key={entry.href}>
-                        <Link
-                          href={resolveHref(entry.href)}
-                          aria-current={isActive(entry.href) ? "page" : undefined}
-                          onClick={(event) => {
-                            setDrawerOpen(false);
-                            handleLinkClick(event, entry.href, DRAWER_CLOSE_MS);
-                          }}
-                          className={cn(mobileLink, isActive(entry.href) && mobileLinkActive)}
-                        >
-                          {entry.label}
-                        </Link>
-                      </li>
-                    ),
-                  )}
-                </ul>
-              </nav>
+              <MobileDrawerBody
+                footer={drawerFooter}
+                resolveHref={resolveHref}
+                isActive={isActive}
+                isGroupActive={isGroupActive}
+                onNavigate={(event, href) => {
+                  setDrawerOpen(false);
+                  handleLinkClick(event, href, DRAWER_CLOSE_MS);
+                }}
+              />
             </SheetContent>
           </Sheet>
         </div>
@@ -264,9 +244,152 @@ function useActiveSection(enabled: boolean): string | null {
   return active;
 }
 
-const mobileLink =
-  "flex min-h-[44px] w-full items-center rounded-lg px-3 py-2 text-base font-medium text-ink transition-colors hover:bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
-const mobileLinkActive = "bg-secondary text-primary font-semibold";
+/** Ikon menu drawer, dipetakan dari href (data konten tetap bebas UI). */
+const NAV_ICONS: Record<string, LucideIcon> = {
+  "/": House,
+  "#rundown": CalendarClock,
+  "#dresscode": Shirt,
+  "/informasi-kamar-hotel": BedDouble,
+  "/publikasi/foto-galeri-kegiatan": Images,
+  "/publikasi/materi-presentasi-rakernas": Presentation,
+  "/publikasi/notula-rapat": FileText,
+};
+const iconFor = (href: string) => NAV_ICONS[href] ?? Link2;
+
+const mobileRow =
+  "group/row relative flex min-h-12 w-full items-center gap-3 rounded-xl px-2.5 py-1.5 text-[15px] font-medium text-ink transition-colors hover:bg-secondary/70 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+const mobileRowActive =
+  "bg-secondary font-semibold text-primary before:absolute before:inset-y-2.5 before:left-0 before:w-1 before:rounded-full before:bg-brand-gold";
+const iconTile =
+  "flex size-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary transition-colors group-hover/row:bg-background";
+const iconTileActive = "bg-primary text-primary-foreground group-hover/row:bg-primary";
+
+const listVariants: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.04, delayChildren: 0.08 } },
+};
+const itemVariants: Variants = {
+  hidden: { opacity: 0, x: 12 },
+  show: { opacity: 1, x: 0, transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] } },
+};
+
+type Navigate = (event: React.MouseEvent, href: string) => void;
+
+/** Isi drawer HP/tablet: header bermerek, daftar menu berikon, kartu info acara. */
+function MobileDrawerBody({
+  footer,
+  resolveHref,
+  isActive,
+  isGroupActive,
+  onNavigate,
+}: {
+  footer?: React.ReactNode;
+  resolveHref: (href: string) => string;
+  isActive: (href: string) => boolean;
+  isGroupActive: (group: NavMenuGroup) => boolean;
+  onNavigate: Navigate;
+}) {
+  const reduceMotion = useReducedMotion();
+  return (
+    <>
+      <SheetHeader className="relative flex-row items-center justify-between gap-3 border-b border-line bg-linear-to-br from-secondary via-background to-background px-5 py-4">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-background shadow-sm ring-1 ring-line">
+            <Image src={EVENT_INFO.logoSrc} alt="" width={30} height={28} className="h-7 w-auto object-contain" />
+          </span>
+          <div className="min-w-0">
+            <SheetTitle className="truncate text-base font-bold text-primary">{EVENT_INFO.name}</SheetTitle>
+            <p className="truncate text-xs text-muted-foreground">Menu navigasi</p>
+          </div>
+        </div>
+        <SheetClose
+          render={
+            <Button
+              variant="ghost"
+              size="icon"
+              className="-mr-2 size-11 shrink-0 rounded-xl text-ink hover:bg-secondary hover:text-primary"
+              aria-label="Tutup menu navigasi"
+            />
+          }
+        >
+          <X className="size-5" />
+        </SheetClose>
+        <span aria-hidden="true" className="absolute inset-x-5 bottom-0 h-0.5 rounded-full bg-brand-gold/70" />
+      </SheetHeader>
+
+      <nav aria-label="Navigasi seluler" className="flex-1 overflow-y-auto px-3 pt-4 pb-3">
+        <p className="px-2.5 pb-2 text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase">Menu</p>
+        <motion.ul
+          className="flex flex-col gap-1"
+          variants={listVariants}
+          initial={reduceMotion ? false : "hidden"}
+          animate="show"
+        >
+          {NAV_MENU.map((entry) => (
+            <motion.li key={entry.label} variants={reduceMotion ? undefined : itemVariants}>
+              {entry.children ? (
+                <MobileGroup
+                  group={entry}
+                  defaultOpen={isGroupActive(entry)}
+                  active={isGroupActive(entry)}
+                  resolveHref={resolveHref}
+                  isActive={isActive}
+                  onNavigate={onNavigate}
+                />
+              ) : (
+                <MobileLinkRow
+                  href={entry.href}
+                  label={entry.label}
+                  resolveHref={resolveHref}
+                  active={isActive(entry.href)}
+                  onNavigate={onNavigate}
+                />
+              )}
+            </motion.li>
+          ))}
+        </motion.ul>
+      </nav>
+
+      {footer ? (
+        <div className="border-t border-line p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">{footer}</div>
+      ) : null}
+    </>
+  );
+}
+
+function MobileLinkRow({
+  href,
+  label,
+  resolveHref,
+  active,
+  onNavigate,
+  compact = false,
+}: {
+  href: string;
+  label: string;
+  resolveHref: (href: string) => string;
+  active: boolean;
+  onNavigate: Navigate;
+  compact?: boolean;
+}) {
+  return (
+    <Link
+      href={resolveHref(href)}
+      aria-current={active ? "page" : undefined}
+      onClick={(event) => onNavigate(event, href)}
+      className={cn(mobileRow, compact && "min-h-11 text-sm font-normal", active && mobileRowActive)}
+    >
+      <span className={cn(iconTile, compact && "size-8 rounded-md bg-background", active && iconTileActive)}>
+        {createElement(iconFor(href), { "aria-hidden": true, className: compact ? "size-4" : "size-[18px]" })}
+      </span>
+      <span className={cn("min-w-0 flex-1", compact ? "leading-snug" : "truncate")}>{label}</span>
+      <ChevronRight
+        aria-hidden="true"
+        className="size-4 shrink-0 text-muted-foreground/60 transition-transform group-hover/row:translate-x-0.5"
+      />
+    </Link>
+  );
+}
 
 /** Menu "Publikasi" di desktop: submenu terbuka saat hover (juga klik/keyboard untuk layar sentuh). */
 function DesktopGroup({
@@ -327,15 +450,17 @@ function DesktopGroup({
 function MobileGroup({
   group,
   defaultOpen,
+  active,
   resolveHref,
   isActive,
   onNavigate,
 }: {
   group: NavMenuGroup;
   defaultOpen: boolean;
+  active: boolean;
   resolveHref: (href: string) => string;
   isActive: (href: string) => boolean;
-  onNavigate: (event: React.MouseEvent, href: string) => void;
+  onNavigate: Navigate;
 }) {
   // Terkontrol (bukan defaultValue berupa array baru tiap render, yang memicu peringatan Base UI).
   // Isi drawer di-mount ulang setiap dibuka, jadi nilai awal selalu mengikuti halaman aktif.
@@ -343,21 +468,30 @@ function MobileGroup({
   return (
     <Accordion value={openItems} onValueChange={setOpenItems}>
       <AccordionItem value={group.label} className="border-b-0">
-        <AccordionTrigger className="min-h-[44px] items-center px-3 py-2 text-base font-medium text-ink hover:bg-secondary hover:text-primary hover:no-underline">
-          {group.label}
+        <AccordionTrigger
+          className={cn(
+            mobileRow,
+            "items-center hover:no-underline **:data-[slot=accordion-trigger-icon]:mr-0.5",
+            active && "font-semibold text-primary",
+          )}
+        >
+          <span className={cn(iconTile, active && iconTileActive)}>
+            <Newspaper aria-hidden="true" className="size-[18px]" />
+          </span>
+          <span className="min-w-0 flex-1 truncate">{group.label}</span>
         </AccordionTrigger>
-        <AccordionContent className="[&_a]:no-underline [&_a]:hover:text-primary">
-          <ul className="ml-4 flex flex-col gap-1 border-l border-line pl-2">
+        <AccordionContent className="pt-1 pb-1 [&_a]:no-underline [&_a]:hover:text-primary">
+          <ul className="ml-6 flex flex-col gap-0.5 rounded-xl border border-line bg-muted/40 p-1.5">
             {group.children.map((child: NavItem) => (
               <li key={child.href}>
-                <Link
-                  href={resolveHref(child.href)}
-                  aria-current={isActive(child.href) ? "page" : undefined}
-                  onClick={(event) => onNavigate(event, child.href)}
-                  className={cn(mobileLink, "text-[15px] font-normal", isActive(child.href) && mobileLinkActive)}
-                >
-                  {child.label}
-                </Link>
+                <MobileLinkRow
+                  href={child.href}
+                  label={child.label}
+                  resolveHref={resolveHref}
+                  active={isActive(child.href)}
+                  onNavigate={onNavigate}
+                  compact
+                />
               </li>
             ))}
           </ul>

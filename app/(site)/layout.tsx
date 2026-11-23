@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { SiteHeader } from "@/components/rakernas/site-header";
+import { DrawerEventCard } from "@/components/rakernas/drawer-event-card";
 import { WhatsAppFloatSlot } from "@/components/rakernas/whatsapp-float-slot";
 import { AccountMenu, LoginLink } from "@/components/auth/account-menu";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
@@ -18,6 +19,11 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
           account={
             <Suspense fallback={<LoginLink />}>
               <AccountMenu />
+            </Suspense>
+          }
+          drawerFooter={
+            <Suspense fallback={null}>
+              <DrawerEventCard />
             </Suspense>
           }
         />
