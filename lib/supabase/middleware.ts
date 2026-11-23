@@ -48,12 +48,10 @@ export async function updateSession(request: NextRequest) {
   // Daftar rute admin yang wajib login
   const protectedAdminPaths = [
     "/dashboard",
-    "/guest",
     "/rekap-kehadiran",
     "/kelola-sesi-acara",
     "/pengaturan",
     "/manajemen-user",
-    "/data-peserta",
     "/admin",
   ];
 

@@ -12,12 +12,10 @@ export const config = {
      */
     "/admin/:path*",
     "/dashboard/:path*",
-    "/guest/:path*",
     "/rekap-kehadiran/:path*",
     "/kelola-sesi-acara/:path*",
     "/pengaturan/:path*",
     "/manajemen-user/:path*",
-    "/data-peserta/:path*",
     "/profile/:path*",
     "/informasi-kamar-hotel/:path*",
     "/publikasi/foto-galeri-kegiatan/:path*",

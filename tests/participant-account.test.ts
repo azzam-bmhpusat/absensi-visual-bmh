@@ -55,7 +55,7 @@ describe("createParticipantAccount", () => {
     expect(res).toEqual({ ok: true, id: "uid-abdul@bmh.or.id", email: "abdul@bmh.or.id" });
     expect(mocks.createUser).toHaveBeenCalledWith({ email: "abdul@bmh.or.id", password: "rahasia123", email_confirm: true });
     expect(mocks.upsert).toHaveBeenCalledWith(
-      expect.objectContaining({ id: "uid-abdul@bmh.or.id", email: "abdul@bmh.or.id", role: "user", nama: "Abdul Wali" }),
+      expect.objectContaining({ id: "uid-abdul@bmh.or.id", email: "abdul@bmh.or.id", role: "peserta", nama: "Abdul Wali" }),
       { onConflict: "id" }
     );
   });
@@ -143,19 +143,11 @@ describe("migrasi 0010 & 0011 dan pemasangan di aplikasi", () => {
     for (const f of [
       ["app", "absen", "page.tsx"],
       ["app", "display", "page.tsx"],
-      ["app", "(admin)", "guest", "page.tsx"],
       ["app", "api", "guests", "search", "route.ts"],
       ["components", "display", "attendance-board.tsx"],
     ]) {
       expect(read(...f), f.join("/")).toContain('.not("nama", "is", null)');
     }
-  });
-
-  it("tambah/hapus tamu membuat/menghapus akun Auth", () => {
-    const admin = read("app", "admin", "actions.ts");
-    expect(admin).toContain("createParticipantAccount(");
-    expect(admin).toContain("admin.auth.admin.deleteUser(guestId)");
-    expect(admin).toContain("Akun admin tidak dapat dihapus dari daftar peserta");
   });
 
   it("password default sesuai permintaan dan dapat diganti lewat env", () => {

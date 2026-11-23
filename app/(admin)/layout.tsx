@@ -32,13 +32,11 @@ export default async function AdminLayout({
   await connection();
   const supabase = createPublicServerClient();
 
-  const [guestsRes, attendancesRes, sessionsRes] = await Promise.all([
-    supabase.from("profiles").select("id").not("nama", "is", null),
+  const [attendancesRes, sessionsRes] = await Promise.all([
     supabase.from("attendances").select("id"),
     supabase.from("sessions").select("id, nama, is_active").order("id", { ascending: true }),
   ]);
 
-  const guestsCount = (guestsRes.data || []).length;
   const attendancesCount = (attendancesRes.data || []).length;
   const activeSessionsCount = (sessionsRes.data || []).filter(
     (s) => s.is_active !== false
@@ -47,7 +45,6 @@ export default async function AdminLayout({
   return (
     <SidebarProvider>
       <AppSidebar
-        guestsCount={guestsCount}
         attendancesCount={attendancesCount}
         activeSessionsCount={activeSessionsCount}
         sessions={(sessionsRes.data || []).map((s) => ({

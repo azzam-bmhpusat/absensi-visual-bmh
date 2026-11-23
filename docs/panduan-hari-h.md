@@ -24,7 +24,7 @@ npm run cleanup:test-data
 ```
 Jika ada update daftar tamu undangan resmi dari panitia:
 1. Login ke panel admin di `${NEXT_PUBLIC_SITE_URL}/admin/login`.
-2. Buka **Daftar Tamu Undangan** (`/guest`) dan klik **Tambah Tamu**. Daftar tamu dapat dicetak lewat **Export PDF** (filter Offline / Online).
+2. Buka **Manajemen User** (`/manajemen-user`) dan klik **Tambah User**.
 
 ### 2.2 Pencetakan QR Code & Cadangan Fisik
 1. Buka `${NEXT_PUBLIC_SITE_URL}/admin/qr`.

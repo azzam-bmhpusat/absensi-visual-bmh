@@ -94,9 +94,10 @@ const SeatView = memo(function SeatView({ off, tagPlane, entry, present, fresh }
       <use href="#ab-chair-k" />
       {present && entry ? (
         <g transform={tagPlane}>
-          <rect className="ab-tag" x={-6.7} y={-13.7} width={13.4} height={4.4} rx={0.8} />
-          <text className="da-ink ab-tag-t" x={0} y={-10.5} fontSize={2.9} textAnchor="middle">
-            {firstWords(entry.nama, 9)}
+          {/* plat selebar sandaran; 8 karakter monospace 2.6 ≈ 12.9 unit, muat di plat 14.4 */}
+          <rect className="ab-tag" x={-7.2} y={-13.7} width={14.4} height={4.4} rx={0.8} />
+          <text className="da-ink ab-tag-t" x={0} y={-10.6} fontSize={2.6} textAnchor="middle">
+            {firstWords(entry.nama, 8)}
           </text>
         </g>
       ) : null}
@@ -246,8 +247,9 @@ function Callout({ world, entry, index }: { world: World; entry: SeatEntry; inde
   const anchor = world.at([s.x, s.y, s.z + 31]);
   const width = 250;
   const height = 92;
-  const x = Math.min(world.W - width - 12, Math.max(12, anchor[0] - width / 2));
-  const y = Math.max(12, anchor[1] - height - 34);
+  const SAFE = 24; // jarak aman dari tepi layar
+  const x = Math.min(world.W - width - SAFE, Math.max(SAFE, anchor[0] - width / 2));
+  const y = Math.max(SAFE, anchor[1] - height - 34);
   const aff = formatGuestAffiliation({ perwakilan_daerah: entry.daerah, jabatan: entry.jabatan, departemen: entry.departemen, kategori: entry.kategori });
   // batas karakter dari lebar kartu (font monospace ≈ 0.62em per karakter) agar teks tidak keluar bingkai
   const maxChars = (size: number) => Math.max(6, Math.floor((width - 28) / (size * 0.62)));

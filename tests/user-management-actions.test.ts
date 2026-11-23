@@ -8,12 +8,12 @@ const TARGET = "33333333-3333-4333-8333-333333333333";
 
 interface Profile {
   id: string;
-  role: "admin" | "user";
+  role: "admin" | "peserta" | "user";
 }
 
 const state = vi.hoisted(() => ({
   isAdmin: true,
-  profiles: [] as { id: string; role: "admin" | "user" }[],
+  profiles: [] as { id: string; role: "admin" | "peserta" | "user" }[],
   banned: {} as Record<string, string | null>,
   profileUpdateError: null as null | { code: string; message: string },
   createError: null as null | { code?: string; message: string },
@@ -91,7 +91,7 @@ beforeEach(() => {
   state.profiles = [
     { id: ME, role: "admin" },
     { id: OTHER_ADMIN, role: "admin" },
-    { id: TARGET, role: "user" },
+    { id: TARGET, role: "peserta" },
   ];
   state.banned = {};
 
@@ -137,11 +137,11 @@ describe("otorisasi", () => {
 });
 
 describe("createUserAction", () => {
-  it("membuat user biasa tanpa menaikkan peran", async () => {
-    const res = await createUserAction({ email: "  Baru@BMH.or.id ", password: "rahasia123", role: "user" });
-    expect(res).toMatchObject({ success: true });
+  it("membuat peserta: peran profil ditetapkan sesuai pilihan", async () => {
+    const res = await createUserAction({ email: "  Baru@BMH.or.id ", password: "rahasia123", role: "peserta" });
+    expect(res).toMatchObject({ success: true, message: expect.stringContaining("Peserta") });
     expect(mocks.createUser).toHaveBeenCalledWith({ email: "baru@bmh.or.id", password: "rahasia123", email_confirm: true });
-    expect(mocks.profileUpdates).toHaveLength(0);
+    expect(mocks.profileUpdates).toEqual([{ values: { role: "peserta" }, id: TARGET }]);
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/manajemen-user");
   });
 
@@ -157,6 +157,28 @@ describe("createUserAction", () => {
     expect(res).toMatchObject({ success: false, error: expect.stringContaining("dibatalkan") });
     expect(mocks.deleteUser).toHaveBeenCalledWith(TARGET);
     expect(mocks.revalidatePath).not.toHaveBeenCalled();
+  });
+
+  it("menyimpan data profil bersama akun baru", async () => {
+    const res = await createUserAction(
+      { email: "baru@bmh.or.id", password: "rahasia123", role: "user" },
+      { nama: "Budi Santoso", no_whatsapp: "0812-3456-7890" }
+    );
+    expect(res).toMatchObject({ success: true });
+    expect(mocks.profileUpdates).toEqual([
+      { values: { nama: "Budi Santoso", no_whatsapp: "081234567890", role: "user" }, id: TARGET },
+    ]);
+  });
+
+  it("profil tidak valid ditolak sebelum akun dibuat; gagal simpan profil membatalkan akun", async () => {
+    const bad = await createUserAction({ email: "a@b.co", password: "rahasia123", role: "user" }, { ukuran_baju: "XS" });
+    expect(bad.success).toBe(false);
+    expect(mocks.createUser).not.toHaveBeenCalled();
+
+    state.profileUpdateError = { code: "23505", message: "duplicate key" };
+    const dup = await createUserAction({ email: "a@b.co", password: "rahasia123", role: "user" }, { nama: "Budi" });
+    expect(dup).toMatchObject({ success: false, error: expect.stringContaining("Akun dibatalkan") });
+    expect(mocks.deleteUser).toHaveBeenCalledWith(TARGET);
   });
 
   it("email duplikat → pesan jelas", async () => {
@@ -227,6 +249,32 @@ describe("updateUserAction", () => {
     expect(await updateUserAction(TARGET, { role: "admin" })).toMatchObject({ success: false, error: "Pengguna tidak ditemukan." });
     expect((await updateUserAction("bukan-uuid", { role: "admin" })).success).toBe(false);
     expect((await updateUserAction(TARGET, {})).success).toBe(false);
+  });
+
+  it("hanya data profil yang berubah: tidak menyentuh Auth, kosong -> null", async () => {
+    const res = await updateUserAction(TARGET, {}, { departemen: "  Keuangan  ", jabatan: "" });
+    expect(res).toMatchObject({ success: true });
+    expect(mocks.updateUserById).not.toHaveBeenCalled();
+    expect(mocks.profileUpdates).toEqual([{ values: { departemen: "Keuangan", jabatan: null }, id: TARGET }]);
+  });
+
+  it("peran dan profil disimpan dalam satu update", async () => {
+    expect(await updateUserAction(TARGET, { role: "admin" }, { ukuran_baju: "XL" })).toMatchObject({ success: true });
+    expect(mocks.profileUpdates).toEqual([{ values: { ukuran_baju: "XL", role: "admin" }, id: TARGET }]);
+  });
+
+  it("profil tidak valid / field asing ditolak sebelum menyimpan", async () => {
+    expect(await updateUserAction(TARGET, {}, { no_whatsapp: "12ab" })).toMatchObject({ success: false });
+    expect(await updateUserAction(TARGET, {}, { role: "admin" } as never)).toMatchObject({ success: false });
+    expect(mocks.profileUpdates).toHaveLength(0);
+  });
+
+  it("nama + perwakilan duplikat (23505) → pesan jelas", async () => {
+    state.profileUpdateError = { code: "23505", message: "duplicate key" };
+    expect(await updateUserAction(TARGET, {}, { nama: "Budi" })).toEqual({
+      success: false,
+      error: "Peserta dengan nama dan perwakilan daerah ini sudah terdaftar.",
+    });
   });
 
   it("email duplikat saat mengubah → pesan jelas dan peran tidak diubah", async () => {

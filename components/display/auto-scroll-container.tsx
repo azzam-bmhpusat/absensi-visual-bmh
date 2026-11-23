@@ -19,15 +19,16 @@ interface AutoScrollContainerProps<T> {
   itemMotion?: HTMLMotionProps<"div">;
   columns?: number;
   className?: string;
-  speed?: number; // pixels per second (default 28)
+  speed?: number; // pixels per second (default 24)
   pauseOnHover?: boolean; // jeda saat kursor mouse di-hover
 }
 
+/** Jeda gulir setelah daftar berubah, agar animasi kartu baru selesai dulu. */
+const SETTLE_MS = 1800;
+
 function findCell(grid: HTMLElement | null, key: string | null) {
   if (!grid || !key) return null;
-  return grid.querySelector<HTMLElement>(
-    `:scope > [data-loop-key="${CSS.escape(key)}"]`
-  );
+  return grid.querySelector<HTMLElement>(`:scope > [data-loop-key="${CSS.escape(key)}"]`);
 }
 
 function gcd(a: number, b: number): number {
@@ -51,13 +52,19 @@ function getReducedMotionServerSnapshot() {
 }
 
 /**
- * Grid yang bergulir terus-menerus (seamless loop).
+ * Grid yang bergulir terus-menerus (seamless loop) untuk videotron.
  *
- * Semua salinan daftar berada di SATU grid, sehingga sel kosong di baris
- * terakhir (jumlah item ganjil) langsung terisi item pertama salinan
- * berikutnya dan jarak antar baris di sambungan sama dengan jarak biasa.
- * Titik ulang (anchor) adalah item pertama dari salinan ke-k, dengan k
- * salinan = jumlah terkecil agar susunan kolom kembali sama persis.
+ * - Loop HANYA bila satu salinan daftar lebih tinggi dari container; daftar
+ *   yang muat ditampilkan diam (tidak ada nama yang terlihat dobel).
+ * - Gulir memakai transform translate3d pada grid (dikerjakan GPU, posisi
+ *   subpiksel), bukan scrollTop yang dibulatkan ke piksel sehingga tersendat.
+ * - Hanya salinan pertama yang memakai animasi layout/masuk/keluar; salinan
+ *   loop berikutnya adalah kartu biasa agar tidak mengukur ulang ratusan sel.
+ *
+ * Semua salinan berada di SATU grid, sehingga sel kosong di baris terakhir
+ * langsung terisi item pertama salinan berikutnya. Titik ulang (anchor) adalah
+ * item pertama salinan ke-k, k = jumlah salinan terkecil agar susunan kolom
+ * kembali sama persis.
  */
 export function AutoScrollContainer<T>({
   items,
@@ -67,35 +74,39 @@ export function AutoScrollContainer<T>({
   itemMotion,
   columns = 2,
   className = "",
-  speed = 28,
+  speed = 24,
   pauseOnHover = true,
 }: AutoScrollContainerProps<T>) {
   const containerRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
-  // Kunci sel pertama & sel anchor. Node-nya dicari langsung di DOM (lewat
-  // data-loop-key) setiap kali dibutuhkan, bukan disimpan lewat ref, karena
-  // kartu yang sedang animasi keluar saat pindah sesi bisa meninggalkan ref
-  // basi sehingga loop berhenti.
-  const loopKeysRef = useRef<{ first: string | null; anchor: string | null }>({
-    first: null,
-    anchor: null,
-  });
+  const loopKeysRef = useRef<{ first: string | null; anchor: string | null }>({ first: null, anchor: null });
   const isHoveredRef = useRef(false);
+  const settleUntilRef = useRef(0);
 
   // Total salinan daftar di grid (1 = tanpa loop)
   const [copies, setCopies] = useState(1);
   const n = items.length;
-  // Jumlah salinan per periode agar posisi kolom kembali sama
   const periodCopies = n > 0 ? columns / gcd(n, columns) : 1;
-  const isLooping = copies > periodCopies;
+  const isLooping = copies > 1;
   const firstItemKey = n > 0 ? getKey(items[0]) : null;
   const firstKey = firstItemKey !== null ? `0:${firstItemKey}` : null;
-  const anchorKey =
-    firstItemKey !== null ? `${periodCopies}:${firstItemKey}` : null;
+  const anchorKey = firstItemKey !== null ? `${periodCopies}:${firstItemKey}` : null;
+  const itemsSignature = items.map(getKey).join("|");
 
   useEffect(() => {
     loopKeysRef.current = { first: firstKey, anchor: anchorKey };
   }, [firstKey, anchorKey]);
+
+  // Daftar berubah (absen baru / pindah sesi) → beri waktu animasi kartu selesai
+  useEffect(() => {
+    settleUntilRef.current = performance.now() + SETTLE_MS;
+  }, [itemsSignature]);
+
+  // Item teratas berganti (absen terbaru) → gulir kembali ke atas agar kartu baru terlihat
+  const resetRef = useRef(false);
+  useEffect(() => {
+    resetRef.current = true;
+  }, [firstItemKey]);
 
   const isReducedMotion = useSyncExternalStore(
     subscribeReducedMotion,
@@ -113,14 +124,11 @@ export function AutoScrollContainer<T>({
         setCopies(1);
         return;
       }
-
       const container = containerRef.current;
       const grid = gridRef.current;
       const first = findCell(grid, firstKey);
       if (!container || !grid || !first) {
         // AnimatePresence bisa memasang kartu baru satu render lebih lambat
-        // (mis. saat pindah sesi). Jangan matikan loop; ukur ulang di frame
-        // berikutnya sampai kartu pertama tersedia.
         if (retries++ < 120) {
           cancelAnimationFrame(retryId);
           retryId = requestAnimationFrame(measure);
@@ -134,8 +142,15 @@ export function AutoScrollContainer<T>({
       const rowPitch = rowH + gap;
       if (rowPitch <= 0) return;
 
-      // Selalu loop selama daftar berisi (konsisten di semua sesi & zoom)
-      // Baris satu periode + baris yang terlihat di container + cadangan
+      // Tinggi satu salinan daftar; bila muat di container, tampilkan diam
+      const listRows = Math.ceil(n / columns);
+      const listH = listRows * rowPitch - gap;
+      if (listH <= containerH) {
+        setCopies(1);
+        return;
+      }
+
+      // Baris satu periode + baris yang terlihat + cadangan
       const periodRows = (periodCopies * n) / columns;
       const visibleRows = Math.ceil(containerH / rowPitch) + 1;
       const needed = Math.ceil(((periodRows + visibleRows) * columns) / n);
@@ -146,7 +161,6 @@ export function AutoScrollContainer<T>({
 
     const resizeObserver = new ResizeObserver(measure);
     if (containerRef.current) resizeObserver.observe(containerRef.current);
-    if (gridRef.current) resizeObserver.observe(gridRef.current);
 
     return () => {
       cancelAnimationFrame(retryId);
@@ -154,19 +168,18 @@ export function AutoScrollContainer<T>({
     };
   }, [n, columns, periodCopies, firstKey, isReducedMotion]);
 
-  // Animasi Continuous Seamless Scroll (Looping Unlimited)
+  // Gulir kontinu dengan transform (GPU), posisi subpiksel
   useEffect(() => {
-    if (isReducedMotion || !isLooping) return;
+    const grid = gridRef.current;
+    if (!grid) return;
+    if (isReducedMotion || !isLooping) {
+      grid.style.transform = "";
+      return;
+    }
 
-    const el = containerRef.current;
-    if (!el) return;
-
-    let animId: number;
+    let animId = 0;
     let lastTime = performance.now();
-    // Posisi scroll pecahan disimpan sendiri. Browser membulatkan scrollTop ke
-    // piksel perangkat; pada zoom 80% (atau DPR 1) langkah per frame (~0,47 px)
-    // selalu dibulatkan kembali ke posisi semula sehingga scroll macet.
-    let position = el.scrollTop;
+    let position = 0;
 
     const tick = (now: number) => {
       // Batasi delta agar tidak melompat jauh setelah tab tidak aktif
@@ -176,40 +189,30 @@ export function AutoScrollContainer<T>({
       const { first: fk, anchor: ak } = loopKeysRef.current;
       const first = findCell(gridRef.current, fk);
       const anchor = findCell(gridRef.current, ak);
+      const paused = isHoveredRef.current || now < settleUntilRef.current;
 
-      // Jalankan animasi jika tidak sedang di-pause oleh hover kursor
-      if (!isHoveredRef.current && first && anchor) {
-        // Jarak satu periode: dari item pertama ke item pertama salinan ke-k.
-        // Pakai getBoundingClientRect (subpiksel), bukan offsetTop yang
-        // dibulatkan, agar tidak ada lompatan ~0,5 px saat reset.
-        const loopThreshold =
-          anchor.getBoundingClientRect().top - first.getBoundingClientRect().top;
-
+      if (first && anchor) {
+        // Jarak satu periode diukur di dalam grid (offsetTop tidak terpengaruh transform)
+        const loopThreshold = anchor.offsetTop - first.offsetTop;
         if (loopThreshold > 0) {
-          // Sinkronkan jika posisi diubah dari luar (mis. scroll manual)
-          if (Math.abs(el.scrollTop - position) > 2) {
-            position = el.scrollTop;
+          if (resetRef.current) {
+            resetRef.current = false;
+            position = 0;
           }
-
-          position += speed * delta;
-
-          while (position >= loopThreshold) {
-            // Seamless instant reset: kurangi dengan loopThreshold persis
-            position -= loopThreshold;
-          }
-
-          el.scrollTop = position;
+          if (!paused) position += speed * delta;
+          while (position >= loopThreshold) position -= loopThreshold;
+          grid.style.transform = `translate3d(0, ${(-position).toFixed(2)}px, 0)`;
         }
-      } else {
-        position = el.scrollTop;
       }
 
       animId = requestAnimationFrame(tick);
     };
 
     animId = requestAnimationFrame(tick);
-
-    return () => cancelAnimationFrame(animId);
+    return () => {
+      cancelAnimationFrame(animId);
+      grid.style.transform = "";
+    };
   }, [speed, isReducedMotion, isLooping]);
 
   const totalCopies = n > 0 ? copies : 1;
@@ -223,7 +226,7 @@ export function AutoScrollContainer<T>({
       onMouseLeave={() => {
         if (pauseOnHover) isHoveredRef.current = false;
       }}
-      className={`overflow-y-auto no-scrollbar ${className}`}
+      className={`overflow-hidden ${className}`}
     >
       {n === 0 ? (
         empty
@@ -231,27 +234,30 @@ export function AutoScrollContainer<T>({
         // Padding agar ring/glow sorotan kartu tidak terpotong oleh overflow container
         <div
           ref={gridRef}
-          className="grid gap-3.5 px-1.5 pt-1.5 pb-0.5"
+          className="grid gap-3.5 px-1.5 pt-1.5 pb-0.5 will-change-transform"
           style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
         >
           <AnimatePresence initial={false}>
-            {Array.from({ length: totalCopies }, (_, copy) =>
-              items.map((item, idx) => {
-                const key = `${copy}:${getKey(item)}`;
-                return (
-                  <motion.div
-                    key={key}
-                    data-loop-key={idx === 0 ? key : undefined}
-                    aria-hidden={copy > 0 ? true : undefined}
-                    layout
-                    {...itemMotion}
-                  >
-                    {renderItem(item)}
-                  </motion.div>
-                );
-              })
-            )}
+            {items.map((item, idx) => {
+              const key = `0:${getKey(item)}`;
+              return (
+                <motion.div key={key} data-loop-key={idx === 0 ? key : undefined} layout {...itemMotion}>
+                  {renderItem(item)}
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
+          {/* Salinan loop: kartu biasa tanpa animasi layout */}
+          {Array.from({ length: totalCopies - 1 }, (_, i) =>
+            items.map((item, idx) => {
+              const key = `${i + 1}:${getKey(item)}`;
+              return (
+                <div key={key} data-loop-key={idx === 0 ? key : undefined} aria-hidden>
+                  {renderItem(item)}
+                </div>
+              );
+            })
+          )}
         </div>
       )}
     </div>

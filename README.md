@@ -119,8 +119,7 @@ Akses aplikasi di browser:
 
 ### A. Persiapan Sebelum Acara (Pra-Kegiatan)
 1. **Siapkan Daftar Tamu Undangan**:
-   - Tamu ditambahkan manual lewat tombol **Tambah Tamu** di halaman `/guest`.
-   - Gunakan **Export PDF** di `/guest` (dengan filter Offline / Online) untuk mencetak daftar tamu.
+   - Peserta ditambahkan lewat tombol **Tambah User** di halaman `/manajemen-user`.
 2. **Cetak QR Code Registrasi**:
    - Buka `/admin/qr` pada browser komputer panitia.
    - Tekan `Ctrl + P` (atau `Cmd + P`). Halaman sudah dioptimasi khusus untuk cetak kertas A4/A5 tanpa header/footer browser yang mengganggu.

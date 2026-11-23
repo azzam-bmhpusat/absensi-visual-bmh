@@ -1,10 +1,34 @@
 import type { UserRole } from "@/lib/user-schema";
 
+/** Kolom profiles yang dimuat untuk Manajemen User (email & role ada di UserRow). */
+export const USER_PROFILE_COLUMNS = [
+  "nama",
+  "perwakilan_daerah",
+  "jabatan",
+  "departemen",
+  "kategori",
+  "ukuran_baju",
+  "no_whatsapp",
+  "rencana_kedatangan",
+  "keterangan_kehadiran",
+  "mode_kehadiran",
+  "legacy_guest_id",
+  "updated_at",
+] as const;
+
+export type UserProfile = Record<(typeof USER_PROFILE_COLUMNS)[number], string | null>;
+
+export const EMPTY_PROFILE: UserProfile = Object.fromEntries(
+  USER_PROFILE_COLUMNS.map((c) => [c, null])
+) as UserProfile;
+
 /** Satu baris pada tabel Manajemen User (gabungan auth.users + profiles). */
 export interface UserRow {
   id: string;
   email: string;
   role: UserRole;
+  /** Data peserta dari tabel profiles; kolom kosong bernilai null. */
+  profile: UserProfile;
   /** true bila akun dinonaktifkan (diblokir) di Supabase Auth. */
   banned: boolean;
   lastSignInAt: string | null;

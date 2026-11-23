@@ -5,16 +5,19 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   AlertTriangle,
+  Briefcase,
   Copy,
   Eye,
   EyeOff,
   Loader2,
+  MoreHorizontal,
   Pencil,
   Plus,
   Power,
   Search,
   Shuffle,
   Trash2,
+  UserRound,
 } from "lucide-react";
 import { cn } from "cn";
 import { Input } from "@/components/ui/input";
@@ -37,20 +40,56 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   createUserAction,
   deleteUserAction,
   setUserActiveAction,
   updateUserAction,
   type UserActionResult,
 } from "@/app/(admin)/manajemen-user/actions";
-import { formatUserDate, type UserRow } from "@/lib/user-row";
-import { generatePassword, ROLE_LABEL, USER_ROLES, type UserRole } from "@/lib/user-schema";
+import { formatUserDate, type UserProfile, type UserRow } from "@/lib/user-row";
+import {
+  ADMIN_PROFILE_FIELDS,
+  formatArrival,
+  isoToWibLocal,
+  isProfileComplete,
+  whatsappLink,
+  wibLocalToIso,
+  type AdminProfileInput,
+} from "@/lib/profile-contact";
+import { MODE_KEHADIRAN, MODE_KEHADIRAN_LABEL, UKURAN_BAJU } from "@/lib/participant-options";
+import { DEFAULT_ROLE, generatePassword, ROLE_LABEL, USER_ROLES, type UserRole } from "@/lib/user-schema";
 
 type Filter = "all" | UserRole | "inactive";
 
+/** Nilai filter jabatan: "all", NO_JABATAN, atau teks jabatan. */
+const ALL_JABATAN = "all";
+const NO_JABATAN = "__none__";
+
+const menuItemClassName =
+  "flex min-h-11 cursor-pointer items-center gap-2 rounded-lg px-3 text-sm font-medium text-ink focus:bg-secondary focus:text-primary";
+const selectItemClassName =
+  "min-h-10 rounded-lg py-2 pr-9 pl-3 text-sm text-ink focus:bg-secondary focus:text-primary data-highlighted:bg-secondary data-highlighted:text-primary data-[selected]:font-semibold data-[selected]:text-primary [&_svg]:text-brand-green-text *:[span]:first:min-w-0 *:[span]:first:truncate *:[span]:first:block";
+
 const ROLE_STYLE: Record<UserRole, string> = {
   admin: "bg-secondary text-brand-green-deep border-brand-green/30",
-  user: "bg-gold-100 text-brand-gold-text border-brand-gold/40",
+  peserta: "bg-gold-100 text-brand-gold-text border-brand-gold/40",
+  user: "bg-white text-ink-muted border-line",
 };
 
 interface UserManagementProps {
@@ -62,9 +101,11 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
+  const [jabatanFilter, setJabatanFilter] = useState<string>(ALL_JABATAN);
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<UserRow | null>(null);
   const [toDelete, setToDelete] = useState<UserRow | null>(null);
+  const [viewing, setViewing] = useState<UserRow | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -72,19 +113,35 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
     () => ({
       all: users.length,
       admin: users.filter((u) => u.role === "admin").length,
+      peserta: users.filter((u) => u.role === "peserta").length,
       user: users.filter((u) => u.role === "user").length,
       inactive: users.filter((u) => u.banned).length,
     }),
     [users]
   );
 
+  const jabatanList = useMemo(
+    () => [...new Set(users.flatMap((u) => (u.profile.jabatan ? [u.profile.jabatan] : [])))].sort((a, b) => a.localeCompare(b, "id")),
+    [users]
+  );
+  const hasNoJabatan = useMemo(() => users.some((u) => !u.profile.jabatan), [users]);
+  const jabatanItems = useMemo(
+    () => [
+      { value: ALL_JABATAN, label: "Semua Jabatan" },
+      ...jabatanList.map((j) => ({ value: j, label: j })),
+      ...(hasNoJabatan ? [{ value: NO_JABATAN, label: "Tanpa jabatan" }] : []),
+    ],
+    [jabatanList, hasNoJabatan]
+  );
+
   const visible = useMemo(() => {
     const q = search.trim().toLowerCase();
     return users.filter((u) => {
       if (filter === "inactive" ? !u.banned : filter !== "all" && u.role !== filter) return false;
+      if (jabatanFilter === NO_JABATAN ? u.profile.jabatan : jabatanFilter !== ALL_JABATAN && u.profile.jabatan !== jabatanFilter) return false;
       return !q || u.email.toLowerCase().includes(q);
     });
-  }, [users, filter, search]);
+  }, [users, filter, jabatanFilter, search]);
 
   const finish = (res: UserActionResult, onSuccess?: () => void) => {
     if (res.success) {
@@ -119,6 +176,7 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
   const filters: { value: Filter; label: string }[] = [
     { value: "all", label: "Semua" },
     { value: "admin", label: "Admin" },
+    { value: "peserta", label: "Peserta" },
     { value: "user", label: "User" },
     { value: "inactive", label: "Nonaktif" },
   ];
@@ -126,15 +184,48 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
   return (
     <div className="space-y-4">
       <div className="flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-center">
-        <div className="relative max-w-sm flex-1">
-          <Search className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-ink-muted" aria-hidden="true" />
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Cari email..."
-            aria-label="Cari email pengguna"
-            className="h-10 rounded-xl border-line pl-9 text-xs focus-visible:ring-ring"
-          />
+        <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="relative max-w-sm flex-1">
+            <Search className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-ink-muted" aria-hidden="true" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Cari email..."
+              aria-label="Cari email pengguna"
+              className="h-10 rounded-xl border-line pl-9 text-xs focus-visible:ring-ring"
+            />
+          </div>
+          <Select items={jabatanItems} value={jabatanFilter} onValueChange={(v) => setJabatanFilter(v ?? ALL_JABATAN)}>
+            <SelectTrigger
+              aria-label="Filter jabatan"
+              className="w-full min-w-0 gap-2 rounded-xl border-line bg-white text-xs data-[size=default]:h-10 sm:w-56 *:data-[slot=select-value]:block *:data-[slot=select-value]:min-w-0"
+            >
+              <Briefcase className="size-4 text-brand-gold-text" aria-hidden="true" />
+              <SelectValue className="truncate" placeholder="Semua Jabatan" />
+            </SelectTrigger>
+            <SelectContent
+              side="bottom"
+              align="start"
+              alignItemWithTrigger={false}
+              className="max-h-[min(20rem,var(--available-height))] rounded-xl border border-line bg-popover p-1.5 shadow-lg ring-0"
+            >
+              <SelectGroup className="p-0">
+                <SelectItem value={ALL_JABATAN} className={selectItemClassName}>
+                  Semua Jabatan
+                </SelectItem>
+              </SelectGroup>
+              {jabatanItems.length > 1 && (
+                <SelectGroup className="p-0">
+                  <SelectSeparator className="mx-0 my-1.5" />
+                  {jabatanItems.slice(1).map((item) => (
+                    <SelectItem key={item.value} value={item.value} title={item.label} className={selectItemClassName}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              )}
+            </SelectContent>
+          </Select>
         </div>
         <Button
           type="button"
@@ -176,27 +267,31 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
         <Table>
           <TableHeader>
             <TableRow className="bg-surface hover:bg-surface">
+              <TableHead className="w-12 text-xs font-semibold text-primary">No.</TableHead>
               <TableHead className="text-xs font-semibold text-primary">Email</TableHead>
+              <TableHead className="text-xs font-semibold text-primary">Nama</TableHead>
+              <TableHead className="text-xs font-semibold text-primary">Jabatan</TableHead>
+              <TableHead className="text-xs font-semibold text-primary">Perwakilan daerah</TableHead>
               <TableHead className="text-xs font-semibold text-primary">Peran</TableHead>
               <TableHead className="text-xs font-semibold text-primary">Status</TableHead>
               <TableHead className="text-xs font-semibold text-primary">Terakhir masuk</TableHead>
-              <TableHead className="text-xs font-semibold text-primary">Dibuat</TableHead>
               <TableHead className="text-right text-xs font-semibold text-primary">Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {visible.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="py-10 text-center text-sm text-ink-muted">
+                <TableCell colSpan={9} className="py-10 text-center text-sm text-ink-muted">
                   Tidak ada pengguna yang cocok.
                 </TableCell>
               </TableRow>
             ) : (
-              visible.map((u) => {
+              visible.map((u, index) => {
                 const isSelf = u.id === currentUserId;
                 const busy = busyId === u.id && isPending;
                 return (
                   <TableRow key={u.id}>
+                    <TableCell className="text-xs tabular-nums text-ink-muted">{index + 1}</TableCell>
                     <TableCell className="min-w-56 text-sm font-medium text-ink">
                       <span className="break-all">{u.email}</span>
                       {isSelf && (
@@ -204,6 +299,15 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
                           Anda
                         </span>
                       )}
+                    </TableCell>
+                    <TableCell className={cn("min-w-40 text-sm", u.profile.nama ? "text-ink" : "text-ink-muted")}>
+                      {u.profile.nama ?? "—"}
+                    </TableCell>
+                    <TableCell className={cn("min-w-32 text-xs", u.profile.jabatan ? "text-ink" : "text-ink-muted")}>
+                      {u.profile.jabatan ?? "—"}
+                    </TableCell>
+                    <TableCell className={cn("min-w-32 text-xs", u.profile.perwakilan_daerah ? "text-ink" : "text-ink-muted")}>
+                      {u.profile.perwakilan_daerah ?? "—"}
                     </TableCell>
                     <TableCell>
                       <span className={cn("inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-semibold", ROLE_STYLE[u.role])}>
@@ -221,44 +325,62 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
                       </span>
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-xs text-ink-muted">{formatUserDate(u.lastSignInAt)}</TableCell>
-                    <TableCell className="whitespace-nowrap text-xs text-ink-muted">{formatUserDate(u.createdAt)}</TableCell>
                     <TableCell>
-                      <div className="flex items-center justify-end gap-1">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="size-11 rounded-lg text-primary hover:bg-secondary"
-                          aria-label={`Edit ${u.email}`}
-                          onClick={() => setEditing(u)}
-                          disabled={busy}
-                        >
-                          <Pencil className="h-4 w-4" aria-hidden="true" />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="size-11 rounded-lg text-primary hover:bg-secondary"
-                          aria-label={u.banned ? `Aktifkan ${u.email}` : `Nonaktifkan ${u.email}`}
-                          title={isSelf ? "Tidak dapat menonaktifkan akun sendiri" : u.banned ? "Aktifkan akun" : "Nonaktifkan akun"}
-                          onClick={() => toggleActive(u)}
-                          disabled={busy || (isSelf && !u.banned)}
-                        >
-                          {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Power className="h-4 w-4" aria-hidden="true" />}
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="size-11 rounded-lg text-danger hover:bg-red-50"
-                          aria-label={`Hapus ${u.email}`}
-                          title={isSelf ? "Tidak dapat menghapus akun sendiri" : "Hapus akun"}
-                          onClick={() => setToDelete(u)}
-                          disabled={busy || isSelf}
-                        >
-                          <Trash2 className="h-4 w-4" aria-hidden="true" />
-                        </Button>
+                      <div className="flex items-center justify-end">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger
+                            disabled={busy}
+                            render={
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="size-11 rounded-lg text-primary hover:bg-secondary"
+                                aria-label={`Aksi untuk ${u.email}`}
+                              />
+                            }
+                          >
+                            {busy ? (
+                              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                            ) : (
+                              <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
+                            )}
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent
+                            align="end"
+                            sideOffset={4}
+                            className="w-64 rounded-xl border border-line bg-popover p-1.5 shadow-lg [&_[data-slot=dropdown-menu-item]]:whitespace-nowrap"
+                          >
+                            <DropdownMenuItem className={menuItemClassName} onClick={() => setViewing(u)}>
+                              <UserRound className="size-4" aria-hidden="true" />
+                              Lihat Detail Profil
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className={menuItemClassName} onClick={() => setEditing(u)}>
+                              <Pencil className="size-4" aria-hidden="true" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className={menuItemClassName}
+                              disabled={isSelf && !u.banned}
+                              onClick={() => toggleActive(u)}
+                            >
+                              <Power className="size-4" aria-hidden="true" />
+                              {u.banned ? "Aktifkan akun" : "Nonaktifkan akun"}
+                              {isSelf && !u.banned && <span className="ml-auto text-[11px] text-ink-muted">akun Anda</span>}
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              variant="destructive"
+                              className="flex min-h-11 cursor-pointer items-center gap-2 rounded-lg px-3 text-sm font-medium"
+                              disabled={isSelf}
+                              onClick={() => setToDelete(u)}
+                            >
+                              <Trash2 className="size-4" aria-hidden="true" />
+                              Hapus akun
+                              {isSelf && <span className="ml-auto text-[11px] text-ink-muted">akun Anda</span>}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -276,6 +398,14 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
         isSelf={editing?.id === currentUserId}
         onClose={() => setEditing(null)}
         finish={finish}
+      />
+      <ProfileDetailDialog
+        user={viewing}
+        onClose={() => setViewing(null)}
+        onEdit={(u) => {
+          setViewing(null);
+          setEditing(u);
+        }}
       />
 
       <Dialog open={Boolean(toDelete)} onOpenChange={(open) => !open && setToDelete(null)}>
@@ -322,7 +452,7 @@ function RoleChoice({
   disabled?: boolean;
 }) {
   return (
-    <div role="radiogroup" aria-label="Peran" className="grid grid-cols-2 gap-2">
+    <div role="radiogroup" aria-label="Peran" className="grid grid-cols-3 gap-2">
       {USER_ROLES.map((r) => (
         <button
           key={r}
@@ -396,16 +526,136 @@ function PasswordField({
   );
 }
 
+type ProfileField = (typeof ADMIN_PROFILE_FIELDS)[number];
+/** Nilai form profil (semua string; rencana_kedatangan dalam format datetime-local WIB). */
+type ProfileDraft = Record<ProfileField, string>;
+
+function profileToDraft(profile: UserProfile | null | undefined): ProfileDraft {
+  return Object.fromEntries(
+    ADMIN_PROFILE_FIELDS.map((f) => [
+      f,
+      f === "rencana_kedatangan" ? isoToWibLocal(profile?.[f]) : (profile?.[f] ?? ""),
+    ])
+  ) as ProfileDraft;
+}
+
+/** Field yang nilainya berbeda dari `base` (untuk create: base kosong -> hanya field yang diisi). */
+function profileChanges(draft: ProfileDraft, base: ProfileDraft): Partial<AdminProfileInput> {
+  return Object.fromEntries(
+    ADMIN_PROFILE_FIELDS.filter((f) => draft[f].trim() !== base[f].trim()).map((f) => [f, draft[f]])
+  ) as Partial<AdminProfileInput>;
+}
+
+const EMPTY_DRAFT = profileToDraft(null);
+const dialogClassName = "max-h-[90vh] overflow-y-auto rounded-3xl p-6 sm:max-w-2xl";
+const fieldInputClassName = "h-11 rounded-xl border-line focus-visible:ring-ring";
+
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return <h3 className="border-b border-line pb-1.5 text-xs font-bold tracking-wide text-ink-muted uppercase">{children}</h3>;
+}
+
+function ProfileFields({
+  idPrefix,
+  value,
+  onChange,
+  disabled,
+}: {
+  idPrefix: string;
+  value: ProfileDraft;
+  onChange: (next: ProfileDraft) => void;
+  disabled?: boolean;
+}) {
+  const set = (field: ProfileField) => (v: string) => onChange({ ...value, [field]: v });
+  const text = (field: ProfileField, label: string, props: React.ComponentProps<typeof Input> = {}) => (
+    <div className="space-y-1.5">
+      <Label htmlFor={`${idPrefix}-${field}`} className="text-xs font-semibold text-primary">{label}</Label>
+      <Input
+        id={`${idPrefix}-${field}`}
+        value={value[field]}
+        onChange={(e) => set(field)(e.target.value)}
+        maxLength={100}
+        disabled={disabled}
+        className={fieldInputClassName}
+        {...props}
+      />
+    </div>
+  );
+  const arrival = formatArrival(wibLocalToIso(value.rencana_kedatangan));
+
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-4 sm:grid-cols-2">
+        {text("nama", "Nama lengkap (beserta gelar)")}
+        {text("perwakilan_daerah", "Perwakilan Daerah")}
+        {text("jabatan", "Jabatan")}
+        {text("departemen", "Departemen")}
+        {text("kategori", "Kategori", { placeholder: "mis. daerah / pusat" })}
+        <div className="space-y-1.5">
+          <Label htmlFor={`${idPrefix}-ukuran_baju`} className="text-xs font-semibold text-primary">Ukuran Baju</Label>
+          <select
+            id={`${idPrefix}-ukuran_baju`}
+            value={value.ukuran_baju}
+            onChange={(e) => set("ukuran_baju")(e.target.value)}
+            disabled={disabled}
+            className="h-11 w-full rounded-xl border border-line bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
+          >
+            <option value="">Belum diisi</option>
+            {UKURAN_BAJU.map((size) => (
+              <option key={size} value={size}>{size}</option>
+            ))}
+          </select>
+        </div>
+        {text("no_whatsapp", "No WhatsApp", { type: "tel", inputMode: "tel", placeholder: "081234567890", maxLength: 20 })}
+        <div className="space-y-1.5">
+          <Label htmlFor={`${idPrefix}-rencana_kedatangan`} className="text-xs font-semibold text-primary">Rencana Kedatangan (WIB)</Label>
+          <Input
+            id={`${idPrefix}-rencana_kedatangan`}
+            type="datetime-local"
+            value={value.rencana_kedatangan}
+            onChange={(e) => set("rencana_kedatangan")(e.target.value)}
+            disabled={disabled}
+            className={fieldInputClassName}
+          />
+          {arrival && <p className="text-[11px] text-ink-muted">{arrival}</p>}
+        </div>
+      </div>
+      <fieldset className="space-y-1.5" disabled={disabled}>
+        <legend className="text-xs font-semibold text-primary">Keterangan Kehadiran</legend>
+        <div className="grid gap-2 sm:grid-cols-3">
+          {(["", ...MODE_KEHADIRAN] as const).map((mode) => (
+            <label
+              key={mode || "none"}
+              className="flex h-11 cursor-pointer items-center gap-2.5 rounded-xl border border-line px-3 text-sm has-[:checked]:border-primary has-[:checked]:bg-primary/5"
+            >
+              <input
+                type="radio"
+                name={`${idPrefix}-keterangan_kehadiran`}
+                value={mode}
+                checked={value.keterangan_kehadiran === mode}
+                onChange={() => set("keterangan_kehadiran")(mode)}
+                className="accent-primary"
+              />
+              {mode ? MODE_KEHADIRAN_LABEL[mode] : "Belum diisi"}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+    </div>
+  );
+}
+
 function CreateUserDialog({ open, onClose, finish }: { open: boolean; onClose: () => void; finish: FinishFn }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<UserRole>("user");
+  const [role, setRole] = useState<UserRole>(DEFAULT_ROLE);
+  const [profile, setProfile] = useState<ProfileDraft>(EMPTY_DRAFT);
   const [isPending, startTransition] = useTransition();
 
   const reset = () => {
     setEmail("");
     setPassword("");
-    setRole("user");
+    setRole(DEFAULT_ROLE);
+    setProfile(EMPTY_DRAFT);
   };
   const close = () => {
     reset();
@@ -415,40 +665,45 @@ function CreateUserDialog({ open, onClose, finish }: { open: boolean; onClose: (
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     startTransition(async () => {
-      const res = await createUserAction({ email, password, role });
+      const res = await createUserAction({ email, password, role }, profileChanges(profile, EMPTY_DRAFT));
       finish(res, close);
     });
   };
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && close()}>
-      <DialogContent className="max-w-md rounded-3xl p-6">
+      <DialogContent className={dialogClassName}>
         <form onSubmit={submit} className="space-y-4">
           <DialogHeader>
             <DialogTitle className="font-heading text-lg font-bold text-primary">Tambah User</DialogTitle>
             <DialogDescription className="text-xs leading-relaxed text-ink-muted">
               Buat akun baru. Bagikan kata sandi kepada pengguna secara aman; akun langsung aktif tanpa verifikasi email.
+              Data profil boleh dikosongkan dan dilengkapi peserta sendiri di halaman Profil.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-1.5">
-            <Label htmlFor="new-user-email" className="text-xs font-semibold text-primary">Email</Label>
-            <Input
-              id="new-user-email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="off"
-              placeholder="nama@bmh.or.id"
-              required
-              className="h-11 rounded-xl border-line focus-visible:ring-ring"
-            />
+          <SectionTitle>Akun</SectionTitle>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="new-user-email" className="text-xs font-semibold text-primary">Email</Label>
+              <Input
+                id="new-user-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="off"
+                placeholder="nama@bmh.or.id"
+                required
+                className={fieldInputClassName}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold text-primary">Peran</Label>
+              <RoleChoice value={role} onChange={setRole} />
+            </div>
           </div>
           <PasswordField id="new-user-password" value={password} onChange={setPassword} />
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-primary">Peran</Label>
-            <RoleChoice value={role} onChange={setRole} />
-            <p className="text-[11px] text-ink-muted">Admin dapat mengelola seluruh panel, termasuk akun lain.</p>
-          </div>
+          <SectionTitle>Data Profil</SectionTitle>
+          <ProfileFields idPrefix="new-user" value={profile} onChange={setProfile} disabled={isPending} />
           <DialogFooter className="flex items-center justify-end gap-2">
             <Button type="button" variant="outline" className="h-11 rounded-xl" onClick={close}>Batal</Button>
             <Button type="submit" className="h-11 gap-2 rounded-xl bg-primary text-primary-foreground hover:bg-brand-green-night" disabled={isPending}>
@@ -474,8 +729,10 @@ function EditUserDialog({
   finish: FinishFn;
 }) {
   const [email, setEmail] = useState(user?.email ?? "");
-  const [role, setRole] = useState<UserRole>(user?.role ?? "user");
+  const [role, setRole] = useState<UserRole>(user?.role ?? DEFAULT_ROLE);
   const [password, setPassword] = useState("");
+  const [initialProfile] = useState(() => profileToDraft(user?.profile));
+  const [profile, setProfile] = useState<ProfileDraft>(initialProfile);
   const [isPending, startTransition] = useTransition();
 
   const submit = (e: React.FormEvent) => {
@@ -485,43 +742,49 @@ function EditUserDialog({
     if (email.trim().toLowerCase() !== user.email) changes.email = email;
     if (role !== user.role) changes.role = role;
     if (password) changes.password = password;
-    if (Object.keys(changes).length === 0) {
+    const profileDiff = profileChanges(profile, initialProfile);
+    if (Object.keys(changes).length === 0 && Object.keys(profileDiff).length === 0) {
       toast.info("Tidak ada perubahan.");
       return;
     }
     startTransition(async () => {
-      const res = await updateUserAction(user.id, changes);
+      const res = await updateUserAction(user.id, changes, profileDiff);
       finish(res, onClose);
     });
   };
 
   return (
     <Dialog open={Boolean(user)} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-md rounded-3xl p-6">
+      <DialogContent className={dialogClassName}>
         <form onSubmit={submit} className="space-y-4">
           <DialogHeader>
             <DialogTitle className="font-heading text-lg font-bold text-primary">Edit pengguna</DialogTitle>
             <DialogDescription className="text-xs leading-relaxed text-ink-muted">
-              Ubah email, peran, atau atur ulang kata sandi. Kosongkan kata sandi bila tidak ingin mengubahnya.
+              Ubah akun dan data profil. Kosongkan kata sandi bila tidak ingin mengubahnya; kosongkan field profil untuk menghapus isinya.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-1.5">
-            <Label htmlFor="edit-user-email" className="text-xs font-semibold text-primary">Email</Label>
-            <Input
-              id="edit-user-email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="h-11 rounded-xl border-line focus-visible:ring-ring"
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-primary">Peran</Label>
-            <RoleChoice value={role} onChange={setRole} disabled={isSelf} />
-            {isSelf && <p className="text-[11px] text-ink-muted">Anda tidak dapat mengubah peran akun Anda sendiri.</p>}
+          <SectionTitle>Akun</SectionTitle>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-user-email" className="text-xs font-semibold text-primary">Email</Label>
+              <Input
+                id="edit-user-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className={fieldInputClassName}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold text-primary">Peran</Label>
+              <RoleChoice value={role} onChange={setRole} disabled={isSelf} />
+              {isSelf && <p className="text-[11px] text-ink-muted">Anda tidak dapat mengubah peran akun Anda sendiri.</p>}
+            </div>
           </div>
           <PasswordField id="edit-user-password" value={password} onChange={setPassword} optional />
+          <SectionTitle>Data Profil</SectionTitle>
+          <ProfileFields idPrefix="edit-user" value={profile} onChange={setProfile} disabled={isPending} />
           <DialogFooter className="flex items-center justify-end gap-2">
             <Button type="button" variant="outline" className="h-11 rounded-xl" onClick={onClose}>Batal</Button>
             <Button type="submit" className="h-11 gap-2 rounded-xl bg-primary text-primary-foreground hover:bg-brand-green-night" disabled={isPending}>
@@ -530,6 +793,115 @@ function EditUserDialog({
             </Button>
           </DialogFooter>
         </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function DetailItem({ label, children, wide }: { label: string; children: React.ReactNode; wide?: boolean }) {
+  return (
+    <div className={cn("space-y-0.5", wide && "sm:col-span-2")}>
+      <dt className="text-[11px] font-semibold text-ink-muted">{label}</dt>
+      <dd className="text-sm break-words text-ink">{children}</dd>
+    </div>
+  );
+}
+
+const EMPTY_VALUE = <span className="text-ink-muted">—</span>;
+
+function ProfileDetailDialog({
+  user,
+  onClose,
+  onEdit,
+}: {
+  user: UserRow | null;
+  onClose: () => void;
+  onEdit: (user: UserRow) => void;
+}) {
+  const p = user?.profile;
+  const show = (v: string | null | undefined) => (v ? v : EMPTY_VALUE);
+  const wa = whatsappLink(p?.no_whatsapp);
+  const complete = isProfileComplete(p);
+  const modeLabel = (v: string | null | undefined) =>
+    v ? (MODE_KEHADIRAN_LABEL[v as (typeof MODE_KEHADIRAN)[number]] ?? v) : EMPTY_VALUE;
+
+  return (
+    <Dialog open={Boolean(user)} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className={dialogClassName}>
+        <DialogHeader>
+          <DialogTitle className="font-heading text-lg font-bold text-primary">Detail Profil</DialogTitle>
+          <DialogDescription className="flex flex-wrap items-center gap-2 text-xs text-ink-muted">
+            <span className="break-all">{user?.email}</span>
+            <span
+              className={cn(
+                "inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold",
+                complete ? "border-brand-green/30 bg-secondary text-brand-green-deep" : "border-brand-gold/40 bg-gold-100 text-brand-gold-text"
+              )}
+            >
+              {complete ? "Profil lengkap" : "Profil belum lengkap"}
+            </span>
+          </DialogDescription>
+        </DialogHeader>
+        {user && p && (
+          <div className="space-y-5">
+            <section className="space-y-3">
+              <SectionTitle>Akun</SectionTitle>
+              <dl className="grid gap-3 sm:grid-cols-2">
+                <DetailItem label="Email">{user.email}</DetailItem>
+                <DetailItem label="Peran">{ROLE_LABEL[user.role]}</DetailItem>
+                <DetailItem label="Status">{user.banned ? "Nonaktif" : "Aktif"}</DetailItem>
+                <DetailItem label="Terakhir masuk">{formatUserDate(user.lastSignInAt)}</DetailItem>
+                <DetailItem label="Dibuat">{formatUserDate(user.createdAt)}</DetailItem>
+                <DetailItem label="Profil diperbarui">{p.updated_at ? formatUserDate(p.updated_at) : EMPTY_VALUE}</DetailItem>
+              </dl>
+            </section>
+            <section className="space-y-3">
+              <SectionTitle>Data Profil</SectionTitle>
+              <dl className="grid gap-3 sm:grid-cols-2">
+                <DetailItem label="Nama lengkap" wide>{show(p.nama)}</DetailItem>
+                <DetailItem label="Perwakilan Daerah">{show(p.perwakilan_daerah)}</DetailItem>
+                <DetailItem label="Jabatan">{show(p.jabatan)}</DetailItem>
+                <DetailItem label="Departemen">{show(p.departemen)}</DetailItem>
+                <DetailItem label="Kategori">{show(p.kategori)}</DetailItem>
+                <DetailItem label="Ukuran Baju">{show(p.ukuran_baju)}</DetailItem>
+                <DetailItem label="No WhatsApp">
+                  {p.no_whatsapp && wa ? (
+                    <a href={wa} target="_blank" rel="noopener noreferrer" className="font-medium text-primary underline-offset-2 hover:underline">
+                      {p.no_whatsapp}
+                    </a>
+                  ) : (
+                    EMPTY_VALUE
+                  )}
+                </DetailItem>
+                <DetailItem label="Rencana Kedatangan">{formatArrival(p.rencana_kedatangan) ?? EMPTY_VALUE}</DetailItem>
+                <DetailItem label="Keterangan Kehadiran">{modeLabel(p.keterangan_kehadiran)}</DetailItem>
+                <DetailItem label="Mode Kehadiran (data lama)">{modeLabel(p.mode_kehadiran)}</DetailItem>
+              </dl>
+            </section>
+            <section className="space-y-3">
+              <SectionTitle>Teknis</SectionTitle>
+              <dl className="grid gap-3 sm:grid-cols-2">
+                <DetailItem label="ID pengguna"><span className="font-mono text-xs break-all">{user.id}</span></DetailItem>
+                <DetailItem label="ID tamu lama">
+                  {p.legacy_guest_id ? <span className="font-mono text-xs break-all">{p.legacy_guest_id}</span> : EMPTY_VALUE}
+                </DetailItem>
+              </dl>
+            </section>
+          </div>
+        )}
+        <DialogFooter className="flex items-center justify-end gap-2">
+          <Button type="button" variant="outline" className="h-11 rounded-xl" onClick={onClose}>Tutup</Button>
+          {user && (
+            <Button
+              type="button"
+              className="h-11 gap-2 rounded-xl bg-primary text-primary-foreground hover:bg-brand-green-night"
+              onClick={() => onEdit(user)}
+            >
+              <Pencil className="h-4 w-4" aria-hidden="true" />
+              Edit
+            </Button>
+          )}
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

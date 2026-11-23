@@ -25,8 +25,9 @@ describe("skema pengguna", () => {
     expect(passwordSchema.safeParse("x".repeat(73)).success).toBe(false);
   });
 
-  it("peran hanya admin atau user", () => {
+  it("peran hanya admin, peserta, atau user", () => {
     expect(roleSchema.safeParse("admin").success).toBe(true);
+    expect(roleSchema.safeParse("peserta").success).toBe(true);
     expect(roleSchema.safeParse("user").success).toBe(true);
     expect(roleSchema.safeParse("superadmin").success).toBe(false);
     expect(roleSchema.safeParse("").success).toBe(false);

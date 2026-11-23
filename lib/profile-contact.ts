@@ -116,6 +116,47 @@ export const profileSchema = profileContactSchema.extend({
   keterangan_kehadiran: z.enum(MODE_KEHADIRAN, { error: "Keterangan kehadiran wajib dipilih" }),
 });
 
+/** Teks opsional: kosong -> null; selain itu dinormalkan dan dibatasi panjangnya. */
+function optionalText(label: string, min: number, max: number) {
+  return z
+    .string()
+    .transform((v) => normalizeString(v) || null)
+    .pipe(
+      z
+        .string()
+        .min(min, `${label} minimal ${min} karakter`)
+        .max(max, `${label} maksimal ${max} karakter`)
+        .nullable()
+    );
+}
+
+function optionalEnum<T extends readonly [string, ...string[]]>(values: T, message: string) {
+  return z
+    .string()
+    .transform((v) => v.trim() || null)
+    .pipe(z.enum(values, { error: message }).nullable());
+}
+
+/**
+ * Data profil yang diisi admin dari Manajemen User. Semua field opsional (kosong -> null),
+ * karena admin bisa membuat akun sebelum peserta melengkapi datanya lewat /profile.
+ */
+export const adminProfileSchema = z.object({
+  nama: optionalText("Nama", 2, 100),
+  perwakilan_daerah: optionalText("Perwakilan daerah", 2, 100),
+  jabatan: optionalText("Jabatan", 2, 100),
+  departemen: optionalText("Departemen", 1, 100),
+  kategori: optionalText("Kategori", 1, 100),
+  ukuran_baju: optionalEnum(UKURAN_BAJU, "Ukuran baju tidak valid"),
+  no_whatsapp: profileContactSchema.shape.no_whatsapp,
+  rencana_kedatangan: profileContactSchema.shape.rencana_kedatangan,
+  keterangan_kehadiran: optionalEnum(MODE_KEHADIRAN, "Keterangan kehadiran tidak valid"),
+});
+
+export const ADMIN_PROFILE_FIELDS = Object.keys(adminProfileSchema.shape) as (keyof typeof adminProfileSchema.shape)[];
+
+export type AdminProfileInput = z.input<typeof adminProfileSchema>;
+
 /** Link chat WhatsApp: 0812... -> https://wa.me/62812... ; null bila nomor kosong. */
 export function whatsappLink(no: string | null | undefined): string | null {
   const digits = (no ?? "").replace(/\D/g, "");

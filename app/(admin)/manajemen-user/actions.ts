@@ -5,12 +5,15 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getAdminUser } from "@/lib/auth/admin";
 import { isBanned } from "@/lib/user-row";
+import { adminProfileSchema, type AdminProfileInput } from "@/lib/profile-contact";
 import {
   createUserSchema,
   updateUserSchema,
   userIdSchema,
   type CreateUserInput,
   type UpdateUserInput,
+  toUserRole,
+  ROLE_LABEL,
   type UserRole,
 } from "@/lib/user-schema";
 
@@ -42,7 +45,7 @@ function firstIssue(error: { issues: { message: string }[] }): string {
 
 async function getRole(db: AdminDb, id: string): Promise<UserRole> {
   const { data } = await db.from("profiles").select("role").eq("id", id).maybeSingle();
-  return data?.role === "admin" ? "admin" : "user";
+  return toUserRole(data?.role);
 }
 
 /** Apakah masih ada admin LAIN yang aktif (tidak diblokir)? Mencegah terkunci dari panel. */
@@ -64,18 +67,39 @@ function mapAuthError(error: { code?: string; status?: number; message: string }
   return "Operasi gagal. Coba lagi.";
 }
 
+/** Pesan untuk 23505 pada profiles (indeks unik nama + perwakilan daerah). */
+const DUPLICATE_PARTICIPANT = "Peserta dengan nama dan perwakilan daerah ini sudah terdaftar.";
+
+type ProfileFields = Partial<ReturnType<typeof adminProfileSchema.parse>>;
+
+/** Validasi sebagian data profil (hanya field yang dikirim). null bila tidak ada field. */
+function parseProfile(
+  profile: Partial<AdminProfileInput> | undefined
+): { ok: true; data: ProfileFields | null } | { ok: false; error: string } {
+  if (!profile || Object.keys(profile).length === 0) return { ok: true, data: null };
+  const parsed = adminProfileSchema.partial().strict().safeParse(profile);
+  if (!parsed.success) return { ok: false, error: firstIssue(parsed.error) };
+  return { ok: true, data: parsed.data };
+}
+
 function done(message: string): UserActionResult {
   revalidatePath("/manajemen-user");
   return { success: true, message };
 }
 
-export async function createUserAction(input: CreateUserInput): Promise<UserActionResult> {
+export async function createUserAction(
+  input: CreateUserInput,
+  profile?: Partial<AdminProfileInput>
+): Promise<UserActionResult> {
   const me = await requireAdmin();
   if (!me) return DENIED;
 
   const parsed = createUserSchema.safeParse(input);
   if (!parsed.success) return { success: false, error: firstIssue(parsed.error) };
   const { email, password, role } = parsed.data;
+  // Validasi profil sebelum akun dibuat agar tidak ada akun setengah jadi.
+  const profileParsed = parseProfile(profile);
+  if (!profileParsed.ok) return { success: false, error: profileParsed.error };
 
   const db = createAdminClient();
   const { data, error } = await db.auth.admin.createUser({ email, password, email_confirm: true });
@@ -84,32 +108,45 @@ export async function createUserAction(input: CreateUserInput): Promise<UserActi
     return { success: false, error: error ? mapAuthError(error) : "Gagal membuat akun." };
   }
 
-  // Trigger database mengisi profiles dengan role 'user'; naikkan bila diminta admin.
-  if (role === "admin") {
-    const { error: roleError } = await db.from("profiles").update({ role: "admin" }).eq("id", data.user.id);
-    if (roleError) {
-      console.error("createUserAction set role gagal:", roleError.code, roleError.message);
-      // Batalkan akun agar tidak ada akun setengah jadi dengan peran yang salah.
-      await db.auth.admin.deleteUser(data.user.id);
-      return {
-        success: false,
-        error: "Gagal menetapkan peran admin, akun dibatalkan. Pastikan migrasi 0008_profiles.sql sudah dijalankan.",
-      };
-    }
+  // Trigger database membuat baris profiles (role default); tetapkan peran pilihan admin dan data profil.
+  const values = { ...(profileParsed.data ?? {}), role };
+  const { error: profileError } = await db.from("profiles").update(values).eq("id", data.user.id);
+  if (profileError) {
+    console.error("createUserAction set profil gagal:", profileError.code, profileError.message);
+    // Batalkan akun agar tidak ada akun setengah jadi dengan peran/profil yang salah.
+    await db.auth.admin.deleteUser(data.user.id);
+    return {
+      success: false,
+      error:
+        profileError.code === "23505"
+          ? `${DUPLICATE_PARTICIPANT} Akun dibatalkan.`
+          : "Gagal menyimpan peran/profil, akun dibatalkan. Pastikan migrasi profiles sudah dijalankan.",
+    };
   }
 
-  return done(`Akun ${email} berhasil dibuat sebagai ${role === "admin" ? "Admin" : "User"}.`);
+  return done(`Akun ${email} berhasil dibuat sebagai ${ROLE_LABEL[role]}.`);
 }
 
-export async function updateUserAction(id: string, input: UpdateUserInput): Promise<UserActionResult> {
+export async function updateUserAction(
+  id: string,
+  input: UpdateUserInput,
+  profile?: Partial<AdminProfileInput>
+): Promise<UserActionResult> {
   const me = await requireAdmin();
   if (!me) return DENIED;
 
   const idParsed = userIdSchema.safeParse(id);
   if (!idParsed.success) return { success: false, error: firstIssue(idParsed.error) };
-  const parsed = updateUserSchema.safeParse(input);
+  const profileParsed = parseProfile(profile);
+  if (!profileParsed.ok) return { success: false, error: profileParsed.error };
+  const profileFields = profileParsed.data;
+  // Bila hanya profil yang berubah, data akun boleh kosong; selain itu updateUserSchema menolak perubahan kosong.
+  const parsed =
+    profileFields && Object.keys(input).length === 0
+      ? ({ success: true, data: {} } as const)
+      : updateUserSchema.safeParse(input);
   if (!parsed.success) return { success: false, error: firstIssue(parsed.error) };
-  const { email, role, password } = parsed.data;
+  const { email, role, password } = parsed.data as { email?: string; role?: UserRole; password?: string };
 
   const db = createAdminClient();
   const { data: found, error: findError } = await db.auth.admin.getUserById(idParsed.data);
@@ -142,11 +179,13 @@ export async function updateUserAction(id: string, input: UpdateUserInput): Prom
     }
   }
 
-  if (role !== undefined) {
-    const { error } = await db.from("profiles").update({ role }).eq("id", idParsed.data);
+  if (role !== undefined || profileFields) {
+    const values = { ...(profileFields ?? {}), ...(role !== undefined ? { role } : {}) };
+    const { error } = await db.from("profiles").update(values).eq("id", idParsed.data);
     if (error) {
-      console.error("updateUserAction role gagal:", error.code, error.message);
-      return { success: false, error: "Gagal mengubah peran pengguna." };
+      console.error("updateUserAction profil gagal:", error.code, error.message);
+      if (error.code === "23505") return { success: false, error: DUPLICATE_PARTICIPANT };
+      return { success: false, error: profileFields ? "Gagal menyimpan data profil." : "Gagal mengubah peran pengguna." };
     }
   }
 

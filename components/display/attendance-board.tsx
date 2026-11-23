@@ -16,11 +16,12 @@ import { AutoScrollContainer } from "./auto-scroll-container";
 import { Wifi, WifiOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+// Kartu absen baru: turun dari atas dengan pegas; kartu lain bergeser lewat `layout`
 const HADIR_MOTION = {
-  initial: { opacity: 0, y: -16, scale: 0.95 },
+  initial: { opacity: 0, y: -40, scale: 0.85 },
   animate: { opacity: 1, y: 0, scale: 1 },
   exit: { opacity: 0, scale: 0.95 },
-  transition: { duration: 0.35, ease: [0.2, 0.8, 0.2, 1] as const },
+  transition: { type: "spring" as const, stiffness: 260, damping: 22, mass: 0.9 },
 };
 
 const BELUM_MOTION = {

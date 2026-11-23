@@ -37,3 +37,20 @@ describe("Migrasi 0008_profiles.sql", () => {
     expect(sql).not.toMatch(/create policy[^;]*for (insert|update|delete|all)/i);
   });
 });
+
+describe("Migrasi role peserta (0015, 0016)", () => {
+  const dir = path.join(__dirname, "..", "supabase", "migrations");
+  const add = fs.readFileSync(path.join(dir, "0015_add_peserta_role.sql"), "utf-8").replace(/--.*$/gm, "");
+  const move = fs.readFileSync(path.join(dir, "0016_users_to_peserta.sql"), "utf-8").replace(/--.*$/gm, "");
+
+  it("menambah 'peserta' tanpa menghapus 'user', di file terpisah dari pemakaiannya", () => {
+    expect(add).toMatch(/alter type public\.app_role add value if not exists 'peserta'/);
+    expect(add).not.toMatch(/drop|rename/i);
+    expect(add).not.toMatch(/update public\.profiles/);
+  });
+
+  it("memindah semua role 'user' ke 'peserta' dan menjadikannya default", () => {
+    expect(move).toMatch(/update public\.profiles set role = 'peserta' where role = 'user'/);
+    expect(move).toMatch(/alter column role set default 'peserta'/);
+  });
+});

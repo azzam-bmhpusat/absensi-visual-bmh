@@ -7,7 +7,6 @@ import { useTransition } from "react";
 import { logoutAdmin } from "@/app/admin/actions";
 import {
   LayoutDashboard,
-  Users,
   ClipboardList,
   CalendarClock,
   Settings,
@@ -17,7 +16,6 @@ import {
   Theater,
   LogOut,
   UserCog,
-  Contact,
 } from "lucide-react";
 import {
   Sidebar,
@@ -35,14 +33,12 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface AppSidebarProps {
-  guestsCount?: number;
   attendancesCount?: number;
   activeSessionsCount?: number;
   sessions?: { id: number; nama: string }[];
 }
 
 export function AppSidebar({
-  guestsCount,
   attendancesCount,
   activeSessionsCount,
   sessions = [],
@@ -58,14 +54,6 @@ export function AppSidebar({
       badge: null as string | null,
       badgeColor: "",
     },
-    {
-      label: "Daftar Tamu Undangan",
-      href: "/guest",
-      icon: Users,
-      badge: guestsCount !== undefined ? `${guestsCount}` : null,
-      badgeColor: "bg-secondary text-primary",
-    },
-    { label: "Data Peserta", href: "/data-peserta", icon: Contact, badge: null, badgeColor: "" },
     {
       label: "Rekap Kehadiran",
       href: "/rekap-kehadiran",

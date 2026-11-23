@@ -50,7 +50,7 @@ export function participantRow(fields: ParticipantFields) {
 }
 
 /**
- * Membuat akun Supabase Auth (email terkonfirmasi) + mengisi profil peserta, role `user`.
+ * Membuat akun Supabase Auth (email terkonfirmasi) + mengisi profil peserta, role `peserta`.
  * Email: `email` bila diberikan, jika tidak dari nama depan; bila sudah dipakai, nomor berurutan dicoba.
  * Bila pengisian profil gagal, akun yang baru dibuat dihapus kembali (tanpa akun setengah jadi).
  * `db` HARUS klien service role.
@@ -80,10 +80,10 @@ export async function createParticipantAccount(
   }
   if (!created) return { ok: false, error: "Tidak menemukan email yang tersedia.", code: "email" };
 
-  // Trigger database sudah membuat baris profil (role user); lengkapi dengan data peserta.
+  // Trigger database sudah membuat baris profil (role peserta); lengkapi dengan data peserta.
   const { error: profileError } = await db
     .from("profiles")
-    .upsert({ id: created.id, email, role: "user", ...participantRow(input.fields) }, { onConflict: "id" });
+    .upsert({ id: created.id, email, role: "peserta", ...participantRow(input.fields) }, { onConflict: "id" });
   if (profileError) {
     await db.auth.admin.deleteUser(created.id);
     return profileError.code === "23505"

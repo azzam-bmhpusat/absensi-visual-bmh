@@ -307,8 +307,9 @@ export function buildWorld(plan: HallPlan): World {
     // menara pengeras suara di samping panggung
     props.push({ y: STAGE.y + 24, html: speaker(xc, STAGE.y + 24, 54) });
     props.push({ y: STAGE.y + 60, html: crate(xc, STAGE.y + 60, 22, 14, 12) + crate(xc, STAGE.y + 60, 16, 10, 9, 12) });
-    // tanaman penghias
-    props.push({ y: depthAt(0.62), html: fan(xc + side * (wingW * 0.22), depthAt(0.62), 36) });
+    // di depan meja mixer (kiri) / meja registrasi (kanan), di tepi luar sayap
+    const fanY = depthAt(0.8);
+    props.push({ y: fanY, html: fan(xc + side * (wingW * 0.4), fanY, 36) });
     // sisi kiri: gerbang & tangga ada di dekat tribun, jadi kipas & peti digeser ke tepi luar sayap
     props.push(
       side < 0

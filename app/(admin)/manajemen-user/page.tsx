@@ -7,7 +7,8 @@ import { getAdminUser } from "@/lib/auth/admin";
 import { UserManagement } from "@/components/admin/user-management";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { isBanned, type UserRow } from "@/lib/user-row";
+import { DEFAULT_ROLE, toUserRole } from "@/lib/user-schema";
+import { EMPTY_PROFILE, isBanned, USER_PROFILE_COLUMNS, type UserProfile, type UserRow } from "@/lib/user-row";
 
 function UsersSkeleton() {
   return (
@@ -26,18 +27,33 @@ async function loadUsers(): Promise<UserRow[] | null> {
     const db = createAdminClient();
     const [listRes, profilesRes] = await Promise.all([
       db.auth.admin.listUsers({ page: 1, perPage: 1000 }),
-      db.from("profiles").select("id, role"),
+      db.from("profiles").select(["id", "role", ...USER_PROFILE_COLUMNS].join(", ")),
     ]);
     if (listRes.error || profilesRes.error) {
       console.error("Gagal memuat pengguna:", listRes.error?.message, profilesRes.error?.message);
       return null;
     }
-    const roles = new Map((profilesRes.data ?? []).map((p) => [p.id as string, p.role === "admin" ? "admin" : "user"] as const));
+    const rows = (profilesRes.data ?? []) as unknown as Record<string, unknown>[];
+    const profiles = new Map(
+      rows.map((p) => [
+        p.id as string,
+        {
+          role: toUserRole(p.role),
+          profile: Object.fromEntries(
+            USER_PROFILE_COLUMNS.map((c) => {
+              const v = p[c];
+              return [c, typeof v === "string" && v.trim() ? v.trim() : null];
+            })
+          ) as UserProfile,
+        },
+      ])
+    );
     return listRes.data.users
       .map<UserRow>((u) => ({
         id: u.id,
         email: u.email ?? "(tanpa email)",
-        role: roles.get(u.id) ?? "user",
+        role: profiles.get(u.id)?.role ?? DEFAULT_ROLE,
+        profile: profiles.get(u.id)?.profile ?? EMPTY_PROFILE,
         banned: isBanned(u.banned_until),
         lastSignInAt: u.last_sign_in_at ?? null,
         createdAt: u.created_at,
