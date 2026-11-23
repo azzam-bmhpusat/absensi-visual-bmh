@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
+import { BadgeCheck, CalendarClock, CircleAlert, MapPin, Phone, Shirt, Video, type LucideIcon } from "lucide-react";
+import { cn } from "cn";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { PublicFooter } from "@/components/rakernas/public-page";
 import { ProfileForm } from "@/components/profile/profile-form";
-import { isoToWibLocal } from "@/lib/profile-contact";
+import { formatArrival, isoToWibLocal, isProfileComplete } from "@/lib/profile-contact";
+import { MODE_KEHADIRAN_LABEL } from "@/lib/participant-options";
 import { mustChangePassword } from "@/lib/password-policy";
 import { ChangePasswordDialog } from "@/components/auth/change-password-dialog";
 import { AvatarUpload } from "@/components/profile/avatar-upload";
@@ -17,6 +19,33 @@ export const metadata: Metadata = {
   title: "Profil Saya",
   robots: { index: false, follow: false },
 };
+
+/** Field yang sama dengan isProfileComplete (lib/profile-contact.ts), untuk bar progres. */
+const PROGRESS_FIELDS = [
+  "nama",
+  "perwakilan_daerah",
+  "jabatan",
+  "ukuran_baju",
+  "no_whatsapp",
+  "rencana_kedatangan",
+  "keterangan_kehadiran",
+] as const;
+
+function SummaryRow({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: string | null }) {
+  return (
+    <li className="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary">
+        <Icon className="size-[18px]" aria-hidden="true" />
+      </span>
+      <div className="min-w-0">
+        <p className="text-xs font-medium text-ink-muted">{label}</p>
+        <p className={cn("wrap-anywhere text-sm", value ? "font-semibold text-ink" : "text-ink-muted italic")}>
+          {value || "Belum diisi"}
+        </p>
+      </div>
+    </li>
+  );
+}
 
 async function ProfileContent() {
   await connection();
@@ -37,14 +66,93 @@ async function ProfileContent() {
   // Peserta dengan kata sandi awal: data profil tidak dirender sampai kata sandi diganti.
   if (mustChangePassword(user, profile?.role)) return <ChangePasswordDialog />;
 
+  const complete = isProfileComplete(profile);
+  const filled = PROGRESS_FIELDS.filter((key) => {
+    const value = profile?.[key];
+    return typeof value === "string" && value.trim().length > 0;
+  }).length;
+  const percent = Math.round((filled / PROGRESS_FIELDS.length) * 100);
+  const displayName = profile?.nama?.trim() || "Peserta Rakernas";
+  const subtitle = [profile?.jabatan?.trim(), profile?.perwakilan_daerah?.trim()].filter(Boolean).join(" · ");
+  const mode = profile?.keterangan_kehadiran as keyof typeof MODE_KEHADIRAN_LABEL | null | undefined;
+
   return (
-    <div className="mx-auto w-full max-w-2xl">
-      <Card className="rounded-3xl border-line bg-white/95 shadow-sm">
-        <CardHeader>
-          <h1 className="font-heading text-xl font-bold text-primary">Profil Saya</h1>
-        </CardHeader>
-        <CardContent className="space-y-6">
+    <div className="mx-auto w-full max-w-6xl space-y-6">
+      {/* Hero profil */}
+      <section className="relative overflow-hidden rounded-3xl bg-linear-to-br from-primary via-brand-green-deep to-brand-green-night px-5 py-8 text-white shadow-lg shadow-brand-green-deep/20 sm:px-8 md:py-10">
+        <span aria-hidden="true" className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-brand-green via-brand-gold to-brand-green" />
+        <span aria-hidden="true" className="pointer-events-none absolute -top-24 -right-16 size-72 rounded-full bg-brand-green/25 blur-3xl" />
+        <span aria-hidden="true" className="pointer-events-none absolute -bottom-28 -left-20 size-64 rounded-full bg-brand-gold/15 blur-3xl" />
+
+        <div className="relative flex flex-col items-center gap-6 text-center md:flex-row md:items-center md:text-left">
           <AvatarUpload src={avatarPublicUrl(profile?.avatar_url)} name={profile?.nama || user.email || ""} />
+
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-semibold tracking-[0.16em] text-brand-gold-soft uppercase">Profil Saya</p>
+            <h1 className="mt-1 wrap-anywhere font-heading text-2xl font-bold text-balance sm:text-3xl">{displayName}</h1>
+            {subtitle && <p className="mt-1 wrap-anywhere text-sm text-white/80 sm:text-base">{subtitle}</p>}
+            {user.email && <p className="mt-1 wrap-anywhere text-sm text-white/60">{user.email}</p>}
+          </div>
+
+          <div className="w-full max-w-xs rounded-2xl bg-white/10 p-4 text-left ring-1 ring-white/15 backdrop-blur-sm md:w-64">
+            <span
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold",
+                complete ? "bg-brand-green text-brand-green-night" : "bg-brand-gold text-brand-green-night",
+              )}
+            >
+              {complete ? <BadgeCheck className="size-3.5" aria-hidden="true" /> : <CircleAlert className="size-3.5" aria-hidden="true" />}
+              {complete ? "Profil lengkap" : "Belum lengkap"}
+            </span>
+            <div
+              className="mt-3 h-2 overflow-hidden rounded-full bg-white/15"
+              role="progressbar"
+              aria-label="Kelengkapan profil"
+              aria-valuemin={0}
+              aria-valuemax={PROGRESS_FIELDS.length}
+              aria-valuenow={filled}
+            >
+              <div
+                className={cn("h-full rounded-full", complete ? "bg-brand-green" : "bg-brand-gold")}
+                style={{ width: `${percent}%` }}
+              />
+            </div>
+            <p className="mt-2 text-xs text-white/75">
+              {filled} dari {PROGRESS_FIELDS.length} data terisi
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <div className="grid gap-6 lg:grid-cols-12 lg:items-start">
+        {/* Ringkasan kehadiran */}
+        <aside className="space-y-4 lg:sticky lg:top-24 lg:col-span-4">
+          <div className="rounded-3xl border border-line bg-white p-5 shadow-sm sm:p-6">
+            <h2 className="font-heading text-base font-semibold text-primary">Ringkasan Kehadiran</h2>
+            <ul className="mt-4 divide-y divide-line">
+              <SummaryRow
+                icon={mode === "online" ? Video : MapPin}
+                label="Keterangan kehadiran"
+                value={mode ? MODE_KEHADIRAN_LABEL[mode] ?? null : null}
+              />
+              <SummaryRow icon={CalendarClock} label="Rencana kedatangan" value={formatArrival(profile?.rencana_kedatangan)} />
+              <SummaryRow icon={Shirt} label="Ukuran baju" value={profile?.ukuran_baju ?? null} />
+              <SummaryRow icon={Phone} label="No WhatsApp" value={profile?.no_whatsapp ?? null} />
+            </ul>
+          </div>
+          {!complete && (
+            <div className="flex gap-3 rounded-2xl border border-brand-gold/50 bg-gold-50 p-4 text-sm text-ink">
+              <CircleAlert className="mt-0.5 size-5 shrink-0 text-brand-gold-text" aria-hidden="true" />
+              <p>
+                <span className="font-semibold">Lengkapi profil Anda</span> untuk membuka halaman Informasi Kamar Hotel dan
+                Publikasi.
+              </p>
+            </div>
+          )}
+        </aside>
+
+        {/* Form */}
+        <div className="rounded-3xl border border-line bg-white shadow-sm lg:col-span-8">
           <ProfileForm
             key={`${user.email}-${profile?.nama}-${profile?.rencana_kedatangan}`}
             initial={{
@@ -58,8 +166,8 @@ async function ProfileContent() {
               keteranganKehadiran: profile?.keterangan_kehadiran ?? "",
             }}
           />
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
@@ -67,7 +175,7 @@ async function ProfileContent() {
 export default function ProfilePage() {
   return (
     <>
-      <main className="page-bg flex-1 px-4 py-10 sm:px-6">
+      <main className="page-bg flex-1 px-4 py-8 sm:px-6 md:py-12">
         <Suspense fallback={null}>
           <ProfileContent />
         </Suspense>

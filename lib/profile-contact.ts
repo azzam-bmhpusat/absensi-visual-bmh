@@ -116,6 +116,12 @@ export const profileSchema = profileContactSchema.extend({
   keterangan_kehadiran: z.enum(MODE_KEHADIRAN, { error: "Keterangan kehadiran wajib dipilih" }),
 });
 
+/**
+ * Data yang boleh diubah peserta sendiri di /profile. Email (akun login) dan jabatan
+ * dikunci: hanya admin yang mengubahnya lewat Manajemen User.
+ */
+export const selfProfileSchema = profileSchema.omit({ email: true, jabatan: true });
+
 /** Teks opsional: kosong -> null; selain itu dinormalkan dan dibatasi panjangnya. */
 function optionalText(label: string, min: number, max: number) {
   return z

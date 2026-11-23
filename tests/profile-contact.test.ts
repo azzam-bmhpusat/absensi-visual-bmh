@@ -9,6 +9,7 @@ import {
   profileContactSchema,
   profileSchema,
   safeNextPath,
+  selfProfileSchema,
   whatsappLink,
   wibLocalToIso,
 } from "@/lib/profile-contact";
@@ -65,6 +66,33 @@ describe("profile-contact", () => {
     expect(profileSchema.safeParse({ ...base, nama: " " }).success).toBe(false);
     expect(profileSchema.safeParse({ ...base, ukuran_baju: "XXXL" }).success).toBe(false);
     expect(profileSchema.safeParse({ ...base, email: "bukan-email" }).success).toBe(false);
+  });
+
+  it("selfProfileSchema: email & jabatan dikunci (dibuang walau dikirim)", () => {
+    const sent = {
+      email: "penyusup@contoh.id",
+      jabatan: "Ketua Umum",
+      nama: "Budi Santoso",
+      perwakilan_daerah: "BMH Pusat",
+      ukuran_baju: "XL",
+      no_whatsapp: "0812 3456 7890",
+      rencana_kedatangan: "2026-11-20T14:00",
+      keterangan_kehadiran: "offline",
+    };
+    const parsed = selfProfileSchema.safeParse(sent);
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+    expect(parsed.data).not.toHaveProperty("email");
+    expect(parsed.data).not.toHaveProperty("jabatan");
+    expect(parsed.data).toMatchObject({ nama: "Budi Santoso", ukuran_baju: "XL" });
+  });
+
+  it("updateProfile tidak membaca email/jabatan dari form dan tidak mengubah email akun", () => {
+    const src = fs.readFileSync(path.join(process.cwd(), "app", "(site)", "profile", "actions.ts"), "utf-8");
+    const fields = src.match(/const FIELDS = \[([\s\S]*?)\]/)?.[1] ?? "";
+    expect(fields).not.toMatch(/"email"|"jabatan"/);
+    expect(src).toContain("selfProfileSchema");
+    expect(src).not.toContain("updateUserById");
   });
 
   it("isProfileComplete: semua field harus terisi", () => {

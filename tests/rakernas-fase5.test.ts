@@ -153,7 +153,9 @@ describe("Fase 5 — Transportasi, Tamu Undangan, Footer", () => {
     });
 
     it("menampilkan teks resmi tanggal, hotel, dan tahun", () => {
-      expect(footerContent).toContain("getEventSummary(settings)");
+      // Tanggal & hotel dari event settings, ditampilkan sebagai baris terpisah di kolom Informasi Acara
+      expect(footerContent).toContain("formatEventDateRange(settings.startsAt)");
+      expect(footerContent).toContain("settings.venueName");
       expect(FOOTER_DATA.text).toBe(
         "08-10 Desember 2026 | Hotel Luminor Kota Jakarta Barat @2026"
       );

@@ -3,11 +3,27 @@
 import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { AlertCircle, CalendarClock, Loader2, Save } from "lucide-react";
+import {
+  AlertCircle,
+  Briefcase,
+  CalendarClock,
+  CheckCircle2,
+  Loader2,
+  LockKeyhole,
+  Mail,
+  MapPin,
+  MapPinned,
+  Phone,
+  Save,
+  User,
+  Video,
+  type LucideIcon,
+} from "lucide-react";
+import { cn } from "cn";
 import { updateProfile, type ProfileActionResult } from "@/app/(site)/profile/actions";
 import { formatArrival, wibLocalToIso } from "@/lib/profile-contact";
 import { MODE_KEHADIRAN, MODE_KEHADIRAN_LABEL, UKURAN_BAJU } from "@/lib/participant-options";
-import { Input } from "@/components/ui/input";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
@@ -23,18 +39,108 @@ export interface ProfileInitial {
   keteranganKehadiran: string;
 }
 
-const inputClass = "h-11 rounded-xl border-line";
+const MODE_ICON: Record<(typeof MODE_KEHADIRAN)[number], LucideIcon> = { offline: MapPin, online: Video };
+const MODE_HINT: Record<(typeof MODE_KEHADIRAN)[number], string> = {
+  offline: "Hadir di lokasi acara",
+  online: "Mengikuti dari jarak jauh",
+};
 
-function Field({ id, label, children }: { id: string; label: string; children: React.ReactNode }) {
+const groupClass =
+  "h-12 rounded-xl border-line bg-white has-[input:focus-visible]:border-primary has-[input:focus-visible]:ring-3 has-[input:focus-visible]:ring-primary/15";
+const labelClass = "text-[13px] font-semibold text-ink";
+const optionCard =
+  "relative flex cursor-pointer items-center rounded-xl border border-line bg-white transition-colors hover:border-primary/40 has-[:checked]:border-primary has-[:checked]:bg-secondary has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-primary/20";
+
+function Section({
+  step,
+  title,
+  description,
+  children,
+}: {
+  step: number;
+  title: string;
+  description: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="border-b border-line px-5 py-6 last:border-b-0 sm:px-7" aria-labelledby={`profile-step-${step}`}>
+      <div className="mb-5 flex items-start gap-3">
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
+          {step}
+        </span>
+        <div>
+          <h2 id={`profile-step-${step}`} className="font-heading text-base font-semibold text-primary">
+            {title}
+          </h2>
+          <p className="text-sm text-ink-muted">{description}</p>
+        </div>
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function IconField({
+  id,
+  label,
+  icon: Icon,
+  children,
+}: {
+  id: string;
+  label: string;
+  icon: LucideIcon;
+  children: React.ReactNode;
+}) {
   return (
     <div className="space-y-1.5">
-      <Label htmlFor={id} className="text-xs font-semibold text-primary">
+      <Label htmlFor={id} className={labelClass}>
         {label}
       </Label>
-      {children}
+      <InputGroup className={groupClass}>
+        <InputGroupAddon className="pl-3.5 text-ink-muted">
+          <Icon className="size-[18px]" aria-hidden="true" />
+        </InputGroupAddon>
+        {children}
+      </InputGroup>
     </div>
   );
 }
+
+const LOCKED_HINT = "Dikunci. Hubungi panitia untuk mengubahnya.";
+
+/**
+ * Field terkunci (email, jabatan): read-only dan tanpa `name`, jadi tidak ikut terkirim.
+ * Server (updateProfile) juga tidak membaca field ini.
+ */
+function LockedField({ id, label, icon: Icon, value }: { id: string; label: string; icon: LucideIcon; value: string }) {
+  return (
+    <div className="space-y-1.5">
+      <Label htmlFor={id} className={labelClass}>
+        {label}
+      </Label>
+      <InputGroup className="h-12 cursor-not-allowed rounded-xl border-dashed border-line bg-surface">
+        <InputGroupAddon className="pl-3.5 text-ink-muted">
+          <Icon className="size-[18px]" aria-hidden="true" />
+        </InputGroupAddon>
+        <InputGroupInput
+          id={id}
+          readOnly
+          value={value}
+          aria-describedby={`${id}-locked`}
+          className="h-12 cursor-not-allowed text-[15px] text-ink-muted"
+        />
+        <InputGroupAddon align="inline-end" className="pr-3.5 text-ink-muted">
+          <LockKeyhole className="size-4" aria-hidden="true" />
+        </InputGroupAddon>
+      </InputGroup>
+      <p id={`${id}-locked`} className="text-xs text-ink-muted">
+        {LOCKED_HINT}
+      </p>
+    </div>
+  );
+}
+
+const inputClass = "h-12 text-[15px] text-ink";
 
 export function ProfileForm({ initial }: { initial: ProfileInitial }) {
   const router = useRouter();
@@ -51,127 +157,165 @@ export function ProfileForm({ initial }: { initial: ProfileInitial }) {
   const preview = formatArrival(wibLocalToIso(arrival));
 
   return (
-    <form action={formAction} className="space-y-4">
-      {state?.error && (
-        <div
-          role="alert"
-          className="flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 p-3.5 text-xs leading-relaxed text-danger"
-        >
-          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-          <span>{state.error}</span>
-        </div>
-      )}
+    <form action={formAction}>
+      <Section step={1} title="Akun" description="Email yang dipakai untuk masuk.">
+        <LockedField id="email" label="Email" icon={Mail} value={initial.email} />
+      </Section>
 
-      <Field id="email" label="Email">
-        <Input id="email" name="email" type="email" autoComplete="email" required defaultValue={initial.email} className={inputClass} disabled={isPending} />
-      </Field>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field id="nama" label="Nama lengkap (beserta gelar akademik)">
-          <Input id="nama" name="nama" required maxLength={100} defaultValue={initial.nama} className={inputClass} disabled={isPending} />
-        </Field>
-        <Field id="perwakilan_daerah" label="Perwakilan Daerah">
-          <Input
-            id="perwakilan_daerah"
-            name="perwakilan_daerah"
-            required
-            maxLength={100}
-            defaultValue={initial.perwakilanDaerah}
-            className={inputClass}
-            disabled={isPending}
-          />
-        </Field>
-        <Field id="jabatan" label="Jabatan">
-          <Input id="jabatan" name="jabatan" required maxLength={100} defaultValue={initial.jabatan} className={inputClass} disabled={isPending} />
-        </Field>
-        <Field id="ukuran_baju" label="Ukuran Baju">
-          <select
-            id="ukuran_baju"
-            name="ukuran_baju"
-            required
-            defaultValue={initial.ukuranBaju}
-            disabled={isPending}
-            className="h-11 w-full rounded-xl border border-line bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
-          >
-            <option value="" disabled>
-              Pilih ukuran
-            </option>
-            {UKURAN_BAJU.map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <Field id="no_whatsapp" label="No WhatsApp">
-          <Input
-            id="no_whatsapp"
-            name="no_whatsapp"
-            type="tel"
-            inputMode="tel"
-            autoComplete="tel"
-            required
-            defaultValue={initial.noWhatsapp}
-            placeholder="081234567890"
-            className={inputClass}
-            disabled={isPending}
-          />
-        </Field>
-        <Field id="rencana_kedatangan" label="Rencana Kedatangan (WIB)">
-          <Input
-            id="rencana_kedatangan"
-            name="rencana_kedatangan"
-            type="datetime-local"
-            required
-            value={arrival}
-            onChange={(e) => setArrival(e.target.value)}
-            className={inputClass}
-            disabled={isPending}
-          />
-          {preview && (
-            <p className="flex items-center gap-1.5 text-xs text-ink-muted">
-              <CalendarClock className="h-3.5 w-3.5" />
-              {preview}
-            </p>
-          )}
-        </Field>
-      </div>
-
-      <fieldset className="space-y-1.5" disabled={isPending}>
-        <legend className="text-xs font-semibold text-primary">Keterangan Kehadiran</legend>
-        <div className="grid gap-2 sm:grid-cols-2">
-          {MODE_KEHADIRAN.map((mode) => (
-            <label
-              key={mode}
-              className="flex h-11 cursor-pointer items-center gap-2.5 rounded-xl border border-line px-3 text-sm has-[:checked]:border-primary has-[:checked]:bg-primary/5"
-            >
-              <input
-                type="radio"
-                name="keterangan_kehadiran"
-                value={mode}
+      <Section step={2} title="Data Peserta" description="Ditampilkan pada daftar peserta Rakernas.">
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="md:col-span-2">
+            <IconField id="nama" label="Nama lengkap (beserta gelar akademik)" icon={User}>
+              <InputGroupInput
+                id="nama"
+                name="nama"
                 required
-                defaultChecked={initial.keteranganKehadiran === mode}
-                className="size-4 shrink-0 accent-primary"
+                maxLength={100}
+                autoComplete="name"
+                defaultValue={initial.nama}
+                className={inputClass}
+                disabled={isPending}
               />
-              {MODE_KEHADIRAN_LABEL[mode]}
-            </label>
-          ))}
+            </IconField>
+          </div>
+          <IconField id="perwakilan_daerah" label="Perwakilan Daerah" icon={MapPinned}>
+            <InputGroupInput
+              id="perwakilan_daerah"
+              name="perwakilan_daerah"
+              required
+              maxLength={100}
+              defaultValue={initial.perwakilanDaerah}
+              className={inputClass}
+              disabled={isPending}
+            />
+          </IconField>
+          <LockedField id="jabatan" label="Jabatan" icon={Briefcase} value={initial.jabatan || "Belum diatur panitia"} />
         </div>
-      </fieldset>
 
-      <Button type="submit" disabled={isPending} className="h-11 rounded-xl bg-primary px-6 font-medium text-white hover:bg-brand-green-deep">
-        {isPending ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Menyimpan...
-          </>
-        ) : (
-          <>
-            <Save className="mr-2 h-4 w-4" />
-            Simpan
-          </>
+        <fieldset className="mt-5 space-y-2" disabled={isPending}>
+          <legend className={cn(labelClass, "mb-2")}>Ukuran Baju</legend>
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+            {UKURAN_BAJU.map((size) => (
+              <label key={size} className={cn(optionCard, "h-12 justify-center text-sm font-semibold text-ink has-[:checked]:text-primary")}>
+                <input
+                  type="radio"
+                  name="ukuran_baju"
+                  value={size}
+                  required
+                  defaultChecked={initial.ukuranBaju === size}
+                  className="sr-only"
+                />
+                {size}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      </Section>
+
+      <Section step={3} title="Kontak & Kedatangan" description="Dipakai panitia untuk koordinasi selama acara.">
+        <div className="grid gap-4 md:grid-cols-2">
+          <IconField id="no_whatsapp" label="No WhatsApp" icon={Phone}>
+            <InputGroupInput
+              id="no_whatsapp"
+              name="no_whatsapp"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              required
+              defaultValue={initial.noWhatsapp}
+              placeholder="081234567890"
+              className={inputClass}
+              disabled={isPending}
+            />
+          </IconField>
+          <div className="space-y-1.5">
+            <IconField id="rencana_kedatangan" label="Rencana Kedatangan (WIB)" icon={CalendarClock}>
+              <InputGroupInput
+                id="rencana_kedatangan"
+                name="rencana_kedatangan"
+                type="datetime-local"
+                required
+                value={arrival}
+                onChange={(e) => setArrival(e.target.value)}
+                className={inputClass}
+                disabled={isPending}
+              />
+            </IconField>
+            {preview && (
+              <p className="flex items-center gap-1.5 text-xs font-medium text-primary">
+                <CalendarClock className="size-3.5" aria-hidden="true" />
+                {preview}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <fieldset className="mt-5" disabled={isPending}>
+          <legend className={cn(labelClass, "mb-2")}>Keterangan Kehadiran</legend>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {MODE_KEHADIRAN.map((mode) => {
+              const Icon = MODE_ICON[mode];
+              return (
+                <label key={mode} className={cn(optionCard, "group/mode min-h-16 gap-3 px-4 py-3")}>
+                  <input
+                    type="radio"
+                    name="keterangan_kehadiran"
+                    value={mode}
+                    required
+                    defaultChecked={initial.keteranganKehadiran === mode}
+                    className="sr-only"
+                  />
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary transition-colors group-has-[:checked]/mode:bg-primary group-has-[:checked]/mode:text-primary-foreground">
+                    <Icon className="size-5" aria-hidden="true" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-semibold text-ink">{MODE_KEHADIRAN_LABEL[mode]}</span>
+                    <span className="block text-xs text-ink-muted">{MODE_HINT[mode]}</span>
+                  </span>
+                  <CheckCircle2
+                    aria-hidden="true"
+                    className="size-5 shrink-0 text-primary opacity-0 transition-opacity group-has-[:checked]/mode:opacity-100"
+                  />
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
+      </Section>
+
+      {/* Bar simpan: menempel di bawah layar pada HP, biasa di akhir form pada layar lebar */}
+      <div className="sticky bottom-0 z-10 rounded-b-3xl border-t border-line bg-white/90 px-5 py-4 backdrop-blur-md sm:px-7 md:static md:bg-surface md:backdrop-blur-none">
+        {state?.error && (
+          <div
+            role="alert"
+            className="mb-3 flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 p-3.5 text-sm leading-relaxed text-danger"
+          >
+            <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+            <span>{state.error}</span>
+          </div>
         )}
-      </Button>
+        {/* pr-16 di HP: sisakan ruang untuk tombol WhatsApp melayang di kanan bawah */}
+        <div className="flex flex-col gap-2 pr-16 md:flex-row md:items-center md:justify-between md:pr-0">
+          <p className="hidden text-sm text-ink-muted md:block">Perubahan langsung disimpan ke profil Anda.</p>
+          <Button
+            type="submit"
+            disabled={isPending}
+            className="h-12 w-full rounded-xl bg-primary px-6 text-[15px] font-semibold text-white hover:bg-brand-green-deep md:w-auto"
+          >
+            {isPending ? (
+              <>
+                <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                Menyimpan...
+              </>
+            ) : (
+              <>
+                <Save className="size-4" aria-hidden="true" />
+                Simpan Perubahan
+              </>
+            )}
+          </Button>
+        </div>
+      </div>
     </form>
   );
 }

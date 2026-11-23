@@ -57,24 +57,55 @@ export function AvatarUpload({ src, name }: { src: string | null; name: string }
     });
   }
 
+  const pickLabel = src ? "Ganti foto" : "Unggah foto";
+  const pick = () => inputRef.current?.click();
+
   return (
-    <div className="flex items-center gap-4">
-      <UserAvatar src={src} name={name} className="size-20 text-2xl" />
-      <div className="flex flex-wrap gap-2">
-        <input ref={inputRef} type="file" accept={AVATAR_MIME.join(",")} className="sr-only" onChange={onPick} tabIndex={-1} aria-hidden="true" />
-        <Button type="button" variant="outline" className="h-11 rounded-xl" disabled={isPending} onClick={() => inputRef.current?.click()}>
-          {isPending ? <Loader2 className="size-4 animate-spin" /> : <Camera className="size-4" />}
-          {src ? "Ganti foto" : "Unggah foto"}
+    <div className="flex flex-col items-center gap-3">
+      <div className="relative">
+        <UserAvatar
+          src={src}
+          name={name}
+          className="size-24 text-3xl ring-4 ring-white/90 shadow-lg shadow-black/20 md:size-28 md:text-4xl"
+        />
+        <span aria-hidden="true" className="pointer-events-none absolute -inset-1.5 rounded-full ring-2 ring-brand-gold/60" />
+        {isPending && (
+          <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/45">
+            <Loader2 className="size-7 animate-spin text-white" aria-hidden="true" />
+            <span className="sr-only">Memproses foto…</span>
+          </span>
+        )}
+        <button
+          type="button"
+          onClick={pick}
+          disabled={isPending}
+          aria-label={pickLabel}
+          className="absolute -right-1 -bottom-1 flex size-10 items-center justify-center rounded-full bg-brand-gold text-brand-green-night shadow-md ring-3 ring-white transition-colors hover:bg-brand-gold-soft focus-visible:outline-none focus-visible:ring-brand-gold-soft disabled:opacity-60"
+        >
+          <Camera className="size-5" aria-hidden="true" />
+        </button>
+      </div>
+      <input ref={inputRef} type="file" accept={AVATAR_MIME.join(",")} className="sr-only" onChange={onPick} tabIndex={-1} aria-hidden="true" />
+      <div className="flex flex-wrap justify-center gap-2">
+        <Button
+          type="button"
+          variant="ghost"
+          className="h-11 rounded-xl bg-white/10 px-4 text-white hover:bg-white/20 hover:text-white"
+          disabled={isPending}
+          onClick={pick}
+        >
+          <Camera className="size-4" aria-hidden="true" />
+          {pickLabel}
         </Button>
         {src && (
           <Button
             type="button"
             variant="ghost"
-            className="h-11 rounded-xl text-danger hover:text-danger"
+            className="h-11 rounded-xl px-4 text-red-200 hover:bg-red-500/15 hover:text-red-100"
             disabled={isPending}
             onClick={() => startTransition(async () => report(await removeAvatar()))}
           >
-            <Trash2 className="size-4" />
+            <Trash2 className="size-4" aria-hidden="true" />
             Hapus
           </Button>
         )}
