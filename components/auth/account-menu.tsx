@@ -12,8 +12,8 @@ export function LoginLink() {
     <Link
       href="/login"
       className={cn(
-        buttonVariants({ variant: "ghost" }),
-        "h-11 rounded-lg px-4 text-sm font-semibold text-primary hover:bg-secondary"
+        buttonVariants(),
+        "h-11 rounded-lg bg-brand-green-deep px-4 text-sm font-semibold text-white hover:bg-brand-green-deep/90"
       )}
     >
       Masuk

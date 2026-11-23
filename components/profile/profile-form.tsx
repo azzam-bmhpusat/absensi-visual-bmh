@@ -151,7 +151,7 @@ export function ProfileForm({ initial }: { initial: ProfileInitial }) {
                 value={mode}
                 required
                 defaultChecked={initial.keteranganKehadiran === mode}
-                className="accent-primary"
+                className="size-4 shrink-0 accent-primary"
               />
               {MODE_KEHADIRAN_LABEL[mode]}
             </label>

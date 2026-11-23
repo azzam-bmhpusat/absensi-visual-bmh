@@ -195,7 +195,7 @@ export function AttendanceDialog({
                     Perwakilan Daerah / Asal <span className="text-danger">*</span>
                   </Label>
                   {(watchedJabatan || watchedDepartemen) && (
-                    <span className="text-[11px] font-semibold text-brand-gold-text bg-gold-50 px-2 py-0.5 rounded-full border border-brand-gold-soft">
+                    <span className="text-xs font-semibold text-brand-gold-text bg-gold-50 px-2 py-0.5 rounded-full border border-brand-gold-soft">
                       {watchedJabatan}
                       {watchedDepartemen ? `: ${watchedDepartemen}` : ""}
                     </span>
@@ -210,7 +210,7 @@ export function AttendanceDialog({
                   disabled={isPending || (!!selectedGuestId && selectedGuestId.length > 0)}
                 />
                 {selectedGuestId && (
-                  <p className="text-[11px] text-ink-muted">
+                  <p className="text-xs text-ink-muted">
                     {watchedJabatan
                       ? `Terverifikasi sebagai ${watchedJabatan}${watchedDepartemen ? `: ${watchedDepartemen}` : ""}`
                       : "Terisi otomatis dari database tamu terdaftar."}

@@ -53,7 +53,6 @@ describe("Fase 1 — Konten Bertipe (PRD Rakernas BMH)", () => {
       LOCATION_DATA.gallery.forEach((item, idx) => {
         expect(item.caption).toBe(expectedCaptions[idx]);
         expect(item.src).toMatch(/^\/rakernas\/galeri-/);
-        expect(item.alt).toBeTruthy();
       });
     });
 

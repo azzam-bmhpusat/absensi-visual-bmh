@@ -106,7 +106,7 @@ export function SiteHeader({ account }: { account?: React.ReactNode }) {
         {/* Logo Kiri (Tautan ke /) */}
         <Link
           href="/"
-          className="flex shrink-0 items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex min-h-11 min-w-11 shrink-0 items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           aria-label={EVENT_INFO.name}
         >
           <Image

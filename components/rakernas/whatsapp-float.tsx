@@ -9,9 +9,39 @@ const LOGO_MS = 2000;
 const IMAGE_MS = 1000;
 const POPUP_SRC = "/whatsapp-popup.jpeg";
 
+/** Pesan pembuka untuk penanggung jawab acara; bagian "..." diisi sendiri oleh pengunjung. */
+export const WHATSAPP_TEMPLATE = [
+  "Assalamu'alaikum warahmatullahi wabarakatuh.",
+  "",
+  "Yth. Bapak/Ibu Penanggung Jawab Acara Rakernas BMH,",
+  "perkenalkan saya ... dari BMH Perwakilan ...",
+  "Saya ingin bertanya terkait ...",
+  "",
+  "Jazakumullahu khairan.",
+].join("\n");
+
+/**
+ * Tambahkan template ke tautan WhatsApp (wa.me / api.whatsapp.com) bila belum punya `text`.
+ * Tautan non-WhatsApp atau yang sudah berisi pesan dari admin dibiarkan apa adanya.
+ */
+export function withWhatsAppTemplate(href: string, text = WHATSAPP_TEMPLATE): string {
+  let url: URL;
+  try {
+    url = new URL(href);
+  } catch {
+    return href;
+  }
+  const isWhatsApp = url.hostname === "wa.me" || url.hostname === "api.whatsapp.com";
+  if (!isWhatsApp || url.searchParams.has("text")) return href;
+  // encodeURIComponent (spasi -> %20); "+" dari URLSearchParams bisa tampil apa adanya di WhatsApp.
+  const sep = url.search ? "&" : "?";
+  return `${url.toString()}${sep}text=${encodeURIComponent(text)}`;
+}
+
 /**
  * Popup WhatsApp yang ter-pin di pojok kanan bawah. Logo WhatsApp tampil 2 detik,
- * lalu gambar popup 1 detik, bergantian terus. Klik membuka `href` (footer_url event settings).
+ * lalu gambar popup 1 detik, bergantian terus. Klik membuka `href` (footer_url event settings)
+ * dengan template pesan untuk penanggung jawab acara.
  * Kedua state berukuran sama (lingkaran 56 px) sehingga tombol tidak berubah ukuran. Gambar di-crop
  * ke wajah dan diberi badge WhatsApp mini agar tetap jelas bahwa ini tombol WhatsApp.
  * Kedua lapisan selalu dirender (gambar ikut ter-preload); pergantian hanya lewat opacity/scale CSS,
@@ -30,7 +60,7 @@ export function WhatsAppFloat({ href }: { href: string }) {
 
   return (
     <a
-      href={href}
+      href={withWhatsAppTemplate(href)}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Hubungi panitia via WhatsApp"

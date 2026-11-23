@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { Presentation } from "lucide-react";
+import { ComingSoon } from "@/components/rakernas/coming-soon";
 import { ProfileGate } from "@/components/rakernas/profile-gate";
 import { PublicPage } from "@/components/rakernas/public-page";
 import { buildSocialMetadata } from "@/lib/og-metadata";
@@ -17,7 +19,13 @@ export default function MateriPresentasiRakernasPage() {
   return (
     <PublicPage title={TITLE}>
       <Suspense fallback={null}>
-        <ProfileGate path="/publikasi/materi-presentasi-rakernas" />
+        <ProfileGate path="/publikasi/materi-presentasi-rakernas">
+          <ComingSoon
+            icon={Presentation}
+            title="Materi presentasi sedang disiapkan"
+            description="Materi presentasi dari setiap sesi Rakernas akan tersedia untuk diunduh di sini."
+          />
+        </ProfileGate>
       </Suspense>
     </PublicPage>
   );

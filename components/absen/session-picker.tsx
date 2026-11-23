@@ -156,12 +156,12 @@ export function SessionPicker({
                             {session.nama}
                           </h2>
                           {isActive ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-secondary text-brand-green-deep border border-brand-green/20">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-secondary text-brand-green-deep border border-brand-green/20">
                               <span className="w-1.5 h-1.5 rounded-full bg-brand-green animate-pulse" />
                               Buka
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-muted text-ink-muted border border-line">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-muted text-ink-muted border border-line">
                               <Lock className="w-2.5 h-2.5" />
                               Ditutup
                             </span>

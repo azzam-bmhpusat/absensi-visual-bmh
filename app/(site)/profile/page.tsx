@@ -4,7 +4,8 @@ import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { PublicFooter } from "@/components/rakernas/public-page";
 import { ProfileForm } from "@/components/profile/profile-form";
 import { isoToWibLocal } from "@/lib/profile-contact";
 
@@ -33,7 +34,7 @@ async function ProfileContent() {
     <div className="mx-auto w-full max-w-2xl">
       <Card className="rounded-3xl border-line bg-white/95 shadow-sm">
         <CardHeader>
-          <CardTitle className="font-heading text-xl font-bold text-primary">Profil Saya</CardTitle>
+          <h1 className="font-heading text-xl font-bold text-primary">Profil Saya</h1>
         </CardHeader>
         <CardContent>
           <ProfileForm
@@ -57,10 +58,15 @@ async function ProfileContent() {
 
 export default function ProfilePage() {
   return (
-    <main className="flex-1 px-4 py-10 sm:px-6">
+    <>
+      <main className="page-bg flex-1 px-4 py-10 sm:px-6">
+        <Suspense fallback={null}>
+          <ProfileContent />
+        </Suspense>
+      </main>
       <Suspense fallback={null}>
-        <ProfileContent />
+        <PublicFooter />
       </Suspense>
-    </main>
+    </>
   );
 }

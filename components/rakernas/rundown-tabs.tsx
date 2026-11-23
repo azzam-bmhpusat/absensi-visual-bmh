@@ -105,8 +105,8 @@ export function RundownSection({ startsAt = DEFAULT_EVENT_SETTINGS.startsAt }: {
                   </span>
                   <span
                     className={cn(
-                      "relative z-10 mt-0.5 text-[10px] sm:text-xs transition-colors duration-200",
-                      isActive ? "text-ink-muted font-medium" : "text-ink-muted/70"
+                      "relative z-10 mt-0.5 text-xs transition-colors duration-200",
+                      isActive ? "text-ink-muted font-medium" : "text-ink-muted"
                     )}
                   >
                     <span className="inline sm:hidden">
@@ -216,7 +216,7 @@ export function RundownSection({ startsAt = DEFAULT_EVENT_SETTINGS.startsAt }: {
                               {/* Badge Waktu (rentang, mis. 10.00 - 12.00) */}
                               <Badge
                                 variant="secondary"
-                                className="w-fit shrink-0 justify-center font-mono text-[11px] sm:w-28 sm:text-xs font-semibold tabular-nums bg-green-100 text-primary border border-line"
+                                className="w-fit shrink-0 justify-center font-mono text-xs sm:w-28 font-semibold tabular-nums bg-green-100 text-primary border border-line"
                               >
                                 {item.time}
                               </Badge>

@@ -147,14 +147,15 @@
   --chart-4: color-mix(in oklab, var(--brand-green) 55%, white);
   --chart-5: color-mix(in oklab, var(--brand-gold) 60%, white);
 
-  --sidebar: var(--surface);
-  --sidebar-foreground: var(--ink);
-  --sidebar-primary: var(--brand-green-deep);
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: var(--secondary);
-  --sidebar-accent-foreground: var(--brand-green-deep);
-  --sidebar-border: var(--line);
-  --sidebar-ring: var(--brand-green-text);
+  /* Sidebar admin gelap: teks terang di atas hijau malam (13:1), aktif = hijau terang */
+  --sidebar: var(--brand-green-night);
+  --sidebar-foreground: color-mix(in oklab, var(--brand-green) 6%, white);
+  --sidebar-primary: var(--brand-green);
+  --sidebar-primary-foreground: var(--brand-green-night);
+  --sidebar-accent: color-mix(in oklab, var(--brand-green) 16%, var(--brand-green-night));
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: color-mix(in oklab, var(--brand-green) 22%, var(--brand-green-night));
+  --sidebar-ring: var(--brand-gold-soft);
 }
 
 /* Tema videotron: tambahkan class "display-theme" pada wrapper /display */

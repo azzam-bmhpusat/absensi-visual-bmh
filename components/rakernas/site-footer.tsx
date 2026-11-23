@@ -8,7 +8,7 @@ export function SiteFooter({ className, settings = DEFAULT_EVENT_SETTINGS }: { c
   return (
     <footer
       id="footer"
-      className={cn("bg-brand-green-night text-white py-12 md:py-16", className)}
+      className={cn("bg-brand-green-night text-white pt-12 pb-24 md:py-16", className)}
     >
       <div className="mx-auto w-full max-w-screen-xl px-5 md:px-8 text-center flex flex-col items-center justify-center space-y-6">
         {/* Satu Logo Tunggal (maksimal tinggi 40 px) */}

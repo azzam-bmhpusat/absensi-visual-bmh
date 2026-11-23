@@ -143,7 +143,7 @@ export default function AbsenPage({
       <div className="w-full max-w-md mx-auto text-center space-y-5 my-auto py-2">
         {/* Header Acara (Mobile First) */}
         <RevealStagger immediate stagger={0.08} className="space-y-2">
-          <RevealItem><span className="inline-block text-[11px] font-semibold px-3 py-1 rounded-full bg-secondary text-primary border border-brand-green/20">
+          <RevealItem><span className="inline-block text-xs font-semibold px-3 py-1 rounded-full bg-secondary text-primary border border-brand-green/20">
             Sistem Presensi Kehadiran
           </span></RevealItem>
           <RevealItem><h1 className="font-heading text-xl sm:text-2xl font-bold text-primary tracking-tight leading-snug">
@@ -161,7 +161,7 @@ export default function AbsenPage({
 
         {/* Footer Identitas BMH */}
         <Reveal immediate delay={0.4} y={8} className="text-center pt-2">
-          <p className="text-[11px] text-ink-muted/80">
+          <p className="text-xs text-ink-muted">
             Baitul Maal Hidayatullah &bull; Kehadiran Realtime
           </p>
         </Reveal>

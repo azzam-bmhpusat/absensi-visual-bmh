@@ -47,7 +47,8 @@ describe("Navbar halaman publik", () => {
       const content = fs.readFileSync(file, "utf-8");
       expect(content).toContain(`const TITLE = "${title}"`);
       expect(content).toContain("<PublicPage title={TITLE}>");
-      expect(content).toContain(`<ProfileGate path="/${route}" />`);
+      expect(content).toContain(`<ProfileGate path="/${route}">`);
+      expect(content).toContain("<ComingSoon");
       expect(content).toContain(`path: "/${route}"`);
     }
   });

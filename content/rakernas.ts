@@ -40,7 +40,6 @@ export interface DresscodeItem {
 export interface GalleryItem {
   src: string;
   caption: string;
-  alt: string;
 }
 
 export interface TransportFare {
@@ -238,7 +237,7 @@ export const LOCATION_DATA = {
   map: {
     // [longitude, latitude], dari tautan Maps pada situs resmi Hotel Luminor Kota.
     coordinates: [106.823191, -6.148531] as [number, number],
-    zoom: 7,
+    zoom: 15,
     styleUrl: "https://tiles.openfreemap.org/styles/positron",
   },
   banner: {
@@ -253,42 +252,34 @@ export const LOCATION_DATA = {
     {
       src: "/rakernas/galeri-gedung-utama.webp",
       caption: "Gedung Utama",
-      alt: "Hotel Luminor — Gedung Utama",
     },
     {
       src: "/rakernas/galeri-ruang-acara.webp",
       caption: "Ruang Acara",
-      alt: "Hotel Luminor — Ruang Acara",
     },
     {
       src: "/rakernas/galeri-masjid.jpg",
       caption: "Masjid",
-      alt: "Hotel Luminor — Masjid",
     },
     {
       src: "/rakernas/galeri-restaurant.webp",
       caption: "Restaurant",
-      alt: "Hotel Luminor — Restaurant",
     },
     {
       src: "/rakernas/galeri-kamar-1.jpg",
       caption: "Kamar",
-      alt: "Hotel Luminor — Kamar 1",
     },
     {
       src: "/rakernas/galeri-kamar-2.webp",
       caption: "Kamar",
-      alt: "Hotel Luminor — Kamar 2",
     },
     {
       src: "/rakernas/galeri-kolam-renang.webp",
       caption: "Kolam Renang",
-      alt: "Hotel Luminor — Kolam Renang",
     },
     {
       src: "/rakernas/galeri-area-parkir.webp",
       caption: "Area Parkir",
-      alt: "Hotel Luminor — Area Parkir",
     },
   ] as GalleryItem[],
 };

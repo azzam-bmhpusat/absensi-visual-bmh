@@ -89,7 +89,7 @@ export function CountdownSection({
                   </span>
                 )}
               </div>
-              <span className="mt-1 md:mt-2 block text-[10px] sm:text-xs md:text-sm font-medium uppercase tracking-wider text-muted-foreground">
+              <span className="mt-1 md:mt-2 block text-xs md:text-sm font-medium uppercase tracking-wider text-muted-foreground">
                 {label}
               </span>
             </Card>

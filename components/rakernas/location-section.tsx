@@ -93,10 +93,11 @@ export function LocationSection({ settings = DEFAULT_EVENT_SETTINGS }: { setting
                   rel="noopener noreferrer"
                 />
               }
-              className="h-12 px-6 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-heading font-medium shadow-md w-full sm:w-auto text-base transition-colors inline-flex items-center justify-center gap-2"
+              aria-label={`Buka ${settings.venueName} di Google Maps (tab baru)`}
+              className="h-auto min-h-12 py-3 px-6 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-heading font-medium shadow-md w-full sm:w-auto text-base whitespace-normal text-center transition-colors inline-flex items-center justify-center gap-2"
             >
               <MapPin className="size-5 shrink-0" />
-              <span>Google Maps {settings.venueName}</span>
+              <span>Buka di Google Maps</span>
               <ExternalLink className="size-4 shrink-0 opacity-80" />
             </Button>
           </div>
@@ -134,12 +135,12 @@ export function LocationSection({ settings = DEFAULT_EVENT_SETTINGS }: { setting
                     type="button"
                     onClick={() => setSelectedPhoto(photo)}
                     className="group w-full text-left rounded-2xl border border-line bg-card overflow-hidden shadow-[0_8px_24px_-8px_rgba(19,75,64,0.18)] transition-all duration-300 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring flex flex-col cursor-pointer"
-                    aria-label={`Perbesar foto ${photo.caption}: ${photo.alt}`}
+                    aria-label={`Perbesar foto ${photo.caption} — ${settings.venueName}`}
                   >
                     <div className="relative aspect-[4/3] w-full bg-muted/40 overflow-hidden">
                       <Image
                         src={photo.src}
-                        alt={photo.alt}
+                        alt={`${photo.caption} — ${settings.venueName}`}
                         fill
                         sizes="(max-width: 640px) 85vw, (max-width: 1024px) 50vw, 33vw"
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -213,7 +214,7 @@ export function LocationSection({ settings = DEFAULT_EVENT_SETTINGS }: { setting
               {selectedPhoto?.caption}
             </DialogTitle>
             <DialogDescription className="text-sm text-ink-muted">
-              {selectedPhoto?.alt} &bull; {settings.venueName}
+              Foto fasilitas {settings.venueName}
             </DialogDescription>
           </DialogHeader>
 
@@ -221,7 +222,7 @@ export function LocationSection({ settings = DEFAULT_EVENT_SETTINGS }: { setting
             <div className="relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-muted/40 border border-line">
               <Image
                 src={selectedPhoto.src}
-                alt={selectedPhoto.alt}
+                alt={`${selectedPhoto.caption} — ${settings.venueName}`}
                 fill
                 sizes="(max-width: 768px) 95vw, 800px"
                 className="object-contain"

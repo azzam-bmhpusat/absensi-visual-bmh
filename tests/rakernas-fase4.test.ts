@@ -81,7 +81,7 @@ describe("Fase 4 — Dress Code & Lokasi (PRD Rakernas BMH)", () => {
       expect(locationContent).toContain("<LocationMap location={settings} />");
       expect(locationContent).not.toContain("LOCATION_DATA.banner.src");
       expect(LOCATION_DATA.map.coordinates).toEqual([106.823191, -6.148531]);
-      expect(LOCATION_DATA.map.zoom).toBe(7);
+      expect(LOCATION_DATA.map.zoom).toBe(15);
       expect(LOCATION_DATA.map.styleUrl).toBe("https://tiles.openfreemap.org/styles/positron");
     });
 
@@ -94,7 +94,7 @@ describe("Fase 4 — Dress Code & Lokasi (PRD Rakernas BMH)", () => {
 
     it("memiliki tombol aksi Google Map dengan tautan eksternal yang benar dan tab baru", () => {
       expect(locationContent).toContain("settings.mapsUrl");
-      expect(locationContent).toContain("Google Maps {settings.venueName}");
+      expect(locationContent).toContain("Buka di Google Maps");
       expect(locationContent).toContain('target="_blank"');
       expect(locationContent).toContain('rel="noopener noreferrer"');
       expect(LOCATION_DATA.mapsUrl).toBe("https://maps.app.goo.gl/d4RQdTwK9jbx4qZD8");
