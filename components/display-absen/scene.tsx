@@ -109,7 +109,6 @@ const SeatView = memo(function SeatView({ off, tagPlane, entry, present, fresh }
 interface LedProps {
   world: World;
   eventName: string;
-  sessionName: string;
   hadir: number;
   total: number;
   pct: number;
@@ -117,7 +116,7 @@ interface LedProps {
   ticker: Array<{ id: string; nama: string; time: string }>;
 }
 
-function Led({ world, eventName, sessionName, hadir, total, pct, welcome, ticker }: LedProps) {
+function Led({ world, eventName, hadir, total, pct, welcome, ticker }: LedProps) {
   const { x0, x1, z0, z1 } = world.led;
   const w = x1 - x0;
   const fit = (text: string, size: number, width = w - 16) => fitText(text, Math.max(6, Math.floor(width / (size * 0.62))));
@@ -125,11 +124,8 @@ function Led({ world, eventName, sessionName, hadir, total, pct, welcome, ticker
   const track = w - 16;
   return (
     <g transform={world.led.plane}>
-      <text className="da-ink-gold ab-led-head" x={0} y={Y(8)} fontSize={5.2} textAnchor="middle">
+      <text className="da-ink-gold ab-led-head" x={0} y={Y(11)} fontSize={5.2} textAnchor="middle">
         {fit(eventName.toUpperCase(), 5.2, w - 24)}
-      </text>
-      <text className="da-ink-dim" x={0} y={Y(14.4)} fontSize={3.9} textAnchor="middle">
-        {fit(sessionName.toUpperCase(), 3.9, w - 24)}
       </text>
       <rect className="ab-led-rule" x={-w * 0.18} y={Y(17.6)} width={w * 0.36} height={0.5} />
       {welcome ? (
@@ -588,7 +584,6 @@ function Hall({ eventName, live }: { eventName: string; live: LiveData }) {
       <Led
         world={world}
         eventName={eventName}
-        sessionName={live.session.nama}
         hadir={live.hadirCount}
         total={live.totalGuests}
         pct={live.percentage}
@@ -636,7 +631,6 @@ function Hall({ eventName, live }: { eventName: string; live: LiveData }) {
         <Led
           world={world}
           eventName={eventName}
-          sessionName={live.session.nama}
           hadir={live.hadirCount}
           total={live.totalGuests}
           pct={live.percentage}
