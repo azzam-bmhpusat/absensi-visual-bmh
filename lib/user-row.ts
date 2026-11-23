@@ -13,6 +13,7 @@ export const USER_PROFILE_COLUMNS = [
   "keterangan_kehadiran",
   "mode_kehadiran",
   "legacy_guest_id",
+  "avatar_url",
   "updated_at",
 ] as const;
 
@@ -52,4 +53,30 @@ export function isBanned(bannedUntil: string | null | undefined, now = Date.now(
   if (!bannedUntil) return false;
   const t = Date.parse(bannedUntil);
   return Number.isFinite(t) && t > now;
+}
+
+/** Filter status Manajemen User: semua, per role, atau akun nonaktif. */
+export type UserStatusFilter = "all" | UserRole | "inactive";
+
+/** Nilai filter jabatan: ALL_JABATAN, NO_JABATAN, atau teks jabatan. */
+export const ALL_JABATAN = "all";
+export const NO_JABATAN = "__none__";
+
+export interface UserFilter {
+  status: UserStatusFilter;
+  jabatan: string;
+  q: string;
+}
+
+/** Filter yang sama dipakai tabel (client) dan ekspor Excel (server). */
+export function filterUsers<T extends Pick<UserRow, "email" | "role" | "banned" | "profile">>(
+  users: T[],
+  { status, jabatan, q }: UserFilter
+): T[] {
+  const needle = q.trim().toLowerCase();
+  return users.filter((u) => {
+    if (status === "inactive" ? !u.banned : status !== "all" && u.role !== status) return false;
+    if (jabatan === NO_JABATAN ? u.profile.jabatan : jabatan !== ALL_JABATAN && u.profile.jabatan !== jabatan) return false;
+    return !needle || u.email.toLowerCase().includes(needle);
+  });
 }

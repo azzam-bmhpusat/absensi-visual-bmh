@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { logoutAdmin } from "@/app/admin/actions";
 import {
   LayoutDashboard,
@@ -16,6 +16,8 @@ import {
   Theater,
   LogOut,
   UserCog,
+  ScanLine,
+  ChevronRight,
 } from "lucide-react";
 import {
   Sidebar,
@@ -51,6 +53,12 @@ const menuButtonClass =
   "data-active:before:absolute data-active:before:inset-y-1.5 data-active:before:left-0 data-active:before:w-[3px] " +
   "data-active:before:rounded-full data-active:before:bg-brand-gold-soft group-data-[collapsible=icon]:before:hidden";
 
+// Item di dalam dropdown Absensi: area sentuh 44px di mobile, aktif = blok hijau terang.
+const subButtonClass =
+  "max-md:h-11 [&>svg]:text-sidebar-foreground/80 hover:[&>svg]:text-sidebar-accent-foreground " +
+  "data-active:bg-sidebar-primary data-active:font-semibold data-active:text-sidebar-primary-foreground " +
+  "data-active:[&>svg]:text-sidebar-primary-foreground";
+
 const groupLabelClass =
   "text-[10px] font-bold uppercase tracking-[0.12em] text-sidebar-foreground/60";
 
@@ -65,7 +73,9 @@ export function AppSidebar({
 }: AppSidebarProps) {
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
-  const { isMobile, setOpenMobile } = useSidebar();
+  const { isMobile, setOpenMobile, state, setOpen } = useSidebar();
+  // Dropdown Absensi terbuka otomatis bila halaman aktif ada di dalamnya.
+  const [absensiOpen, setAbsensiOpen] = useState(() => pathname.startsWith("/admin/qr"));
 
   // Di mobile sidebar berupa Sheet: tutup setelah memilih menu
   const closeMobile = () => {
@@ -127,9 +137,19 @@ export function AppSidebar({
     });
   };
 
+  // Mode ikon (sidebar diciutkan) menyembunyikan submenu: klik Absensi melebarkan sidebar dulu.
+  const toggleAbsensi = () => {
+    if (!isMobile && state === "collapsed") {
+      setOpen(true);
+      setAbsensiOpen(true);
+      return;
+    }
+    setAbsensiOpen((open) => !open);
+  };
+
   const videotronAulaButton = (
-    <SidebarMenuButton
-      className={menuButtonClass}
+    <SidebarMenuSubButton
+      className={subButtonClass}
       render={
         <Link
           href="/display-absen"
@@ -138,11 +158,10 @@ export function AppSidebar({
           onClick={closeMobile}
         />
       }
-      tooltip="Videotron Aula"
     >
       <Theater />
       <span>Videotron Aula</span>
-    </SidebarMenuButton>
+    </SidebarMenuSubButton>
   );
 
   return (
@@ -206,106 +225,125 @@ export function AppSidebar({
           <SidebarGroupLabel className={groupLabelClass}>General</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {generalItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton
-                      className={menuButtonClass}
-                      render={
-                        <Link
-                          href={item.href}
-                          target={item.external ? "_blank" : undefined}
-                          rel={item.external ? "noopener noreferrer" : undefined}
-                          onClick={closeMobile}
-                        />
-                      }
-                      isActive={!item.external && pathname === item.href}
-                      tooltip={item.label}
-                    >
-                      <Icon />
-                      <span>{item.label}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
               <SidebarMenuItem>
-                {sessions.length === 0 ? (
-                  videotronAulaButton
-                ) : isMobile ? (
-                  // Layar sentuh tidak punya hover: tampilkan daftar sesi langsung
-                  <>
-                    {videotronAulaButton}
-                    <SidebarMenuSub>
-                      {sessions.map((s) => (
-                        <SidebarMenuSubItem key={s.id}>
+                <SidebarMenuButton
+                  className={menuButtonClass}
+                  onClick={toggleAbsensi}
+                  aria-expanded={absensiOpen}
+                  aria-controls="sidebar-absensi-menu"
+                  tooltip="Absensi"
+                >
+                  <ScanLine />
+                  <span>Absensi</span>
+                  <ChevronRight
+                    aria-hidden="true"
+                    className={`ml-auto transition-transform duration-200 ${absensiOpen ? "rotate-90" : ""}`}
+                  />
+                </SidebarMenuButton>
+                {absensiOpen && (
+                  <SidebarMenuSub id="sidebar-absensi-menu">
+                    {generalItems.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <SidebarMenuSubItem key={item.href}>
                           <SidebarMenuSubButton
-                            className="h-auto py-2"
+                            className={subButtonClass}
                             render={
                               <Link
-                                href={`/display-absen?sesi=${s.id}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
+                                href={item.href}
+                                target={item.external ? "_blank" : undefined}
+                                rel={item.external ? "noopener noreferrer" : undefined}
                                 onClick={closeMobile}
                               />
                             }
+                            isActive={!item.external && pathname === item.href}
                           >
-                            <span className="flex min-w-0 flex-col">
-                              <span className="font-medium">Sesi {s.id}</span>
-                              <span className="truncate text-[11px] text-sidebar-foreground/70">
-                                {s.nama}
-                              </span>
-                            </span>
+                            <Icon />
+                            <span>{item.label}</span>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
-                      ))}
-                    </SidebarMenuSub>
-                  </>
-                ) : (
-                  <Popover>
-                    <PopoverTrigger
-                      nativeButton={false}
-                      openOnHover
-                      delay={80}
-                      closeDelay={150}
-                      render={
-                        <SidebarMenuButton
-                          className={menuButtonClass}
-                          render={
-                            <Link
-                              href="/display-absen"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            />
-                          }
-                        />
-                      }
-                    >
-                      <Theater />
-                      <span>Videotron Aula</span>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      side="right"
-                      align="start"
-                      sideOffset={8}
-                      className="w-56 gap-0.5 p-1.5"
-                    >
-                      {sessions.map((s) => (
-                        <Link
-                          key={s.id}
-                          href={`/display-absen?sesi=${s.id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex flex-col rounded-md px-2.5 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-                        >
-                          <span className="font-medium">Sesi {s.id}</span>
-                          <span className="truncate text-[11px] text-muted-foreground">
-                            {s.nama}
-                          </span>
-                        </Link>
-                      ))}
-                    </PopoverContent>
-                  </Popover>
+                      );
+                    })}
+                    <SidebarMenuSubItem>
+                      {sessions.length === 0 ? (
+                        videotronAulaButton
+                      ) : isMobile ? (
+                        // Layar sentuh tidak punya hover: tampilkan daftar sesi langsung
+                        <>
+                          {videotronAulaButton}
+                          <SidebarMenuSub>
+                            {sessions.map((s) => (
+                              <SidebarMenuSubItem key={s.id}>
+                                <SidebarMenuSubButton
+                                  className="h-auto py-2"
+                                  render={
+                                    <Link
+                                      href={`/display-absen?sesi=${s.id}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      onClick={closeMobile}
+                                    />
+                                  }
+                                >
+                                  <span className="flex min-w-0 flex-col">
+                                    <span className="font-medium">Sesi {s.id}</span>
+                                    <span className="truncate text-[11px] text-sidebar-foreground/70">
+                                      {s.nama}
+                                    </span>
+                                  </span>
+                                </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
+                            ))}
+                          </SidebarMenuSub>
+                        </>
+                      ) : (
+                        <Popover>
+                          <PopoverTrigger
+                            nativeButton={false}
+                            openOnHover
+                            delay={80}
+                            closeDelay={150}
+                            render={
+                              <SidebarMenuSubButton
+                                className={subButtonClass}
+                                render={
+                                  <Link
+                                    href="/display-absen"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  />
+                                }
+                              />
+                            }
+                          >
+                            <Theater />
+                            <span>Videotron Aula</span>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            side="right"
+                            align="start"
+                            sideOffset={8}
+                            className="w-56 gap-0.5 p-1.5"
+                          >
+                            {sessions.map((s) => (
+                              <Link
+                                key={s.id}
+                                href={`/display-absen?sesi=${s.id}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex flex-col rounded-md px-2.5 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+                              >
+                                <span className="font-medium">Sesi {s.id}</span>
+                                <span className="truncate text-[11px] text-muted-foreground">
+                                  {s.nama}
+                                </span>
+                              </Link>
+                            ))}
+                          </PopoverContent>
+                        </Popover>
+                      )}
+                    </SidebarMenuSubItem>
+                  </SidebarMenuSub>
                 )}
               </SidebarMenuItem>
               <SidebarMenuItem>

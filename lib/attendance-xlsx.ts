@@ -33,9 +33,9 @@ const BRAND_GREEN = "FF0F5132";
 const HEADER_FONT = { bold: true, color: { argb: "FFFFFFFF" } } as const;
 const DATE_FORMAT = "dd/mm/yyyy hh:mm:ss";
 
-type Column = { header: string; key: string; width: number; numFmt?: string };
+export type Column = { header: string; key: string; width: number; numFmt?: string };
 
-function addTableSheet(
+export function addTableSheet(
   wb: ExcelJS.Workbook,
   name: string,
   columns: Column[],

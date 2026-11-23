@@ -31,7 +31,7 @@ describe("tabel guests sudah dihapus: semua kode memakai profiles", () => {
   it("setiap pembacaan peserta dari profiles di kode aplikasi dibatasi pada profil yang punya nama", () => {
     // Pengecualian: pengelolaan akun (Manajemen User, pagar admin) memang membaca semua profil (role/email).
     const allowAllProfiles = new Set([
-      "app/(admin)/manajemen-user/page.tsx",
+      "lib/user-list.ts",
       "app/(admin)/manajemen-user/actions.ts",
       "lib/participant-account.ts",
       "app/admin/actions.ts",

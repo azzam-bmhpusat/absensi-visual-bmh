@@ -1,0 +1,21 @@
+{
+  "diekspor_pada": "2026-11-20T13:49:08+00:00",
+  "catatan": "Cadangan sebelum menghapus tabel guests (migrasi 0011). guests_tidak_ada_di_csv = baris guests yang tidak ada di guests_rows.csv.",
+  "attendances": [
+    {"id": "8104b01f-2dcf-4b8d-ba58-fdd8145928dd", "nama": "Abdul Wali", "jabatan": "Kepala Perwakilan", "guest_id": "4dfdd6bc-56d4-4b86-b4f3-3a7909d64295", "kategori": "daerah", "departemen": null, "is_walk_in": false, "session_id": 1, "device_hash": "BbC5imouUVVU6ku36BxNSKeWulIPufCtpXhBp6Yg53U", "ticket_nonce": "bb4679b6-b36b-4cb3-8e90-1a95a6acb7bd", "checked_in_at": "2026-11-20T08:43:52.883361+00:00", "perwakilan_daerah": "BMH Kalimantan Selatan"},
+    {"id": "71a2604e-8d87-4d8d-a421-5825022f8b99", "nama": "Asdar", "jabatan": "Kepala Perwakilan", "guest_id": "df34c913-d632-4436-90b3-2e4144f7f1fc", "kategori": "daerah", "departemen": null, "is_walk_in": false, "session_id": 1, "device_hash": "JY4Ati4x-x2Jd35JhmqrZfD3njpeUzIVOkarlty87TY", "ticket_nonce": "65960d9e-9b9d-42f1-b149-53577582648a", "checked_in_at": "2026-11-20T08:45:08.352239+00:00", "perwakilan_daerah": "BMH Papua Barat"}
+  ],
+  "registrations": [
+    {"id": "11fdbc8d-1ab1-4747-a903-85072ea273f2", "nama": "Tes1", "status": "pending", "jabatan": "Kepala Departemen", "guest_id": null, "created_at": "2026-11-20T04:29:13.987346+00:00", "departemen": "SDM", "reviewed_at": null, "ukuran_baju": "XL", "mode_kehadiran": "offline", "perwakilan_bmh": "BMH Jawa"},
+    {"id": "e5e3d1f8-92db-489f-9260-314a5a544336", "nama": "Muhammad Azzam Azhari Madali", "status": "approved", "jabatan": "Kepala Perwakilan", "guest_id": null, "created_at": "2026-11-20T04:44:18.67624+00:00", "departemen": null, "reviewed_at": "2026-11-20T04:45:44.571207+00:00", "ukuran_baju": "L", "mode_kehadiran": "offline", "perwakilan_bmh": "BMH Kallimantan Timuur"},
+    {"id": "5d3bc90c-bf49-42cc-a505-27d7149c1448", "nama": "Muhammad", "status": "pending", "jabatan": "Kepala Perwakilan", "guest_id": null, "created_at": "2026-11-20T04:45:02.12437+00:00", "departemen": null, "reviewed_at": null, "ukuran_baju": "XXL", "mode_kehadiran": "offline", "perwakilan_bmh": "BMH Kallimantan Barat"},
+    {"id": "61acca8b-c910-4dc2-8b67-2fedc8248b37", "nama": "Rijall", "status": "pending", "jabatan": "Kepala Perwakilan", "guest_id": null, "created_at": "2026-11-20T04:50:32.073425+00:00", "departemen": null, "reviewed_at": null, "ukuran_baju": "XXL", "mode_kehadiran": "online", "perwakilan_bmh": "BMH Kallimantan Barat"},
+    {"id": "75fc6ec4-33f5-47a6-83e2-501f0e9a5ed3", "nama": "Gilaang", "status": "approved", "jabatan": "Kepala Perwakilan", "guest_id": null, "created_at": "2026-11-20T04:50:52.962901+00:00", "departemen": null, "reviewed_at": "2026-11-20T04:57:40.647468+00:00", "ukuran_baju": "XL", "mode_kehadiran": "online", "perwakilan_bmh": "BMH Kallimantan Timuur"},
+    {"id": "14332231-435c-46fd-9e8c-541105485399", "nama": "Admin", "status": "approved", "jabatan": "jbtan", "guest_id": "45b47430-f273-4d5b-8476-97c4d9b90501", "created_at": "2026-11-20T05:32:35.777237+00:00", "departemen": null, "reviewed_at": "2026-11-20T07:55:51.199978+00:00", "ukuran_baju": "XL", "mode_kehadiran": "offline", "perwakilan_bmh": "khhkjkj"},
+    {"id": "4a587fbe-535e-4844-ae3d-20f806547d29", "nama": "Azzamm", "status": "pending", "jabatan": "Kepala Perwakilan", "guest_id": null, "created_at": "2026-11-20T08:09:57.919645+00:00", "departemen": null, "reviewed_at": null, "ukuran_baju": "XXL", "mode_kehadiran": "offline", "perwakilan_bmh": "BMH Pusat"},
+    {"id": "69072678-cf0c-4596-ab90-ecfdffc1477f", "nama": "Luqman", "status": "pending", "jabatan": "Kepala", "guest_id": null, "created_at": "2026-11-20T08:32:14.33618+00:00", "departemen": null, "reviewed_at": null, "ukuran_baju": "XL", "mode_kehadiran": "offline", "perwakilan_bmh": "BMH Pusat"}
+  ],
+  "guests_tidak_ada_di_csv": [
+    {"id": "45b47430-f273-4d5b-8476-97c4d9b90501", "nama": "Admin", "jabatan": "jbtan", "kategori": "daerah", "created_at": "2026-11-20T07:55:51.199978+00:00", "departemen": null, "ukuran_baju": "XL", "mode_kehadiran": "offline", "perwakilan_daerah": "khhkjkj"}
+  ]
+}

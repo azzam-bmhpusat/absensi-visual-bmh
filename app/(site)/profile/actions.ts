@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { profileSchema } from "@/lib/profile-contact";
+import { mustChangePassword } from "@/lib/password-policy";
+import { AVATAR_BUCKET, avatarFileError, avatarObjectPath } from "@/lib/avatar";
 
 export interface ProfileActionResult {
   success: boolean;
@@ -43,6 +45,12 @@ export async function updateProfile(
   try {
     const admin = createAdminClient();
 
+    // Dialog di UI bisa dilewati lewat request langsung; tolak juga di server.
+    const { data: current } = await admin.from("profiles").select("role").eq("id", user.id).maybeSingle();
+    if (mustChangePassword(user, current?.role)) {
+      return { success: false, error: "Ganti kata sandi awal Anda terlebih dahulu." };
+    }
+
     // Profil dulu; bila gagal, email tidak ikut berubah.
     const { error } = await admin.from("profiles").update(fields).eq("id", user.id);
     if (error) {
@@ -74,4 +82,63 @@ export async function updateProfile(
 
   revalidatePath("/profile");
   return { success: true, message: "Profil berhasil disimpan." };
+}
+
+/** Sesi + aturan ganti kata sandi awal, sama seperti updateProfile. */
+async function avatarOwner(): Promise<{ userId: string } | { error: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Sesi berakhir. Silakan masuk kembali." };
+  const { data: current } = await createAdminClient().from("profiles").select("role").eq("id", user.id).maybeSingle();
+  if (mustChangePassword(user, current?.role)) return { error: "Ganti kata sandi awal Anda terlebih dahulu." };
+  return { userId: user.id };
+}
+
+/**
+ * Mengunggah foto profil ke bucket 'avatars' (menimpa foto lama).
+ * profiles.avatar_url diisi trigger storage.objects (migrasi 0017), bukan di sini.
+ */
+export async function uploadAvatar(formData: FormData): Promise<ProfileActionResult> {
+  const file = formData.get("avatar");
+  const invalid = avatarFileError(file);
+  if (invalid) return { success: false, error: invalid };
+
+  try {
+    const owner = await avatarOwner();
+    if ("error" in owner) return { success: false, error: owner.error };
+
+    const { error } = await createAdminClient()
+      .storage.from(AVATAR_BUCKET)
+      .upload(avatarObjectPath(owner.userId), file as File, {
+        upsert: true,
+        contentType: (file as File).type,
+        cacheControl: "3600",
+      });
+    if (error) return { success: false, error: "Gagal mengunggah foto: " + error.message };
+  } catch (err) {
+    console.error("Error uploadAvatar:", err);
+    return { success: false, error: "Terjadi kesalahan saat mengunggah foto." };
+  }
+
+  revalidatePath("/", "layout");
+  return { success: true, message: "Foto profil diperbarui." };
+}
+
+/** Menghapus foto profil; trigger mengosongkan profiles.avatar_url. */
+export async function removeAvatar(): Promise<ProfileActionResult> {
+  try {
+    const owner = await avatarOwner();
+    if ("error" in owner) return { success: false, error: owner.error };
+
+    const { error } = await createAdminClient().storage.from(AVATAR_BUCKET).remove([avatarObjectPath(owner.userId)]);
+    if (error) return { success: false, error: "Gagal menghapus foto: " + error.message };
+  } catch (err) {
+    console.error("Error removeAvatar:", err);
+    return { success: false, error: "Terjadi kesalahan saat menghapus foto." };
+  }
+
+  revalidatePath("/", "layout");
+  return { success: true, message: "Foto profil dihapus." };
 }

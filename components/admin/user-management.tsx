@@ -6,9 +6,13 @@ import { toast } from "sonner";
 import {
   AlertTriangle,
   Briefcase,
+  ChevronDown,
   Copy,
   Eye,
   EyeOff,
+  FileSpreadsheet,
+  Filter as FilterIcon,
+  Layers,
   Loader2,
   MoreHorizontal,
   Pencil,
@@ -62,7 +66,19 @@ import {
   updateUserAction,
   type UserActionResult,
 } from "@/app/(admin)/manajemen-user/actions";
-import { formatUserDate, type UserProfile, type UserRow } from "@/lib/user-row";
+import {
+  ALL_JABATAN,
+  filterUsers,
+  formatUserDate,
+  NO_JABATAN,
+  type UserFilter,
+  type UserProfile,
+  type UserRow,
+  type UserStatusFilter,
+} from "@/lib/user-row";
+import { downloadFromEndpoint } from "@/lib/download-file";
+import { avatarPublicUrl } from "@/lib/avatar";
+import { UserAvatar } from "@/components/auth/user-avatar";
 import {
   ADMIN_PROFILE_FIELDS,
   formatArrival,
@@ -75,11 +91,19 @@ import {
 import { MODE_KEHADIRAN, MODE_KEHADIRAN_LABEL, UKURAN_BAJU } from "@/lib/participant-options";
 import { DEFAULT_ROLE, generatePassword, ROLE_LABEL, USER_ROLES, type UserRole } from "@/lib/user-schema";
 
-type Filter = "all" | UserRole | "inactive";
+type Filter = UserStatusFilter;
 
-/** Nilai filter jabatan: "all", NO_JABATAN, atau teks jabatan. */
-const ALL_JABATAN = "all";
-const NO_JABATAN = "__none__";
+const EXPORT_ENDPOINT = "/api/admin/manajemen-user/export";
+
+function buildUserExportUrl(mode: "all" | "filter", filter: UserFilter): string {
+  const params = new URLSearchParams({ mode });
+  if (mode === "filter") {
+    params.set("status", filter.status);
+    params.set("jabatan", filter.jabatan);
+    if (filter.q.trim()) params.set("q", filter.q.trim());
+  }
+  return `${EXPORT_ENDPOINT}?${params.toString()}`;
+}
 
 const menuItemClassName =
   "flex min-h-11 cursor-pointer items-center gap-2 rounded-lg px-3 text-sm font-medium text-ink focus:bg-secondary focus:text-primary";
@@ -134,14 +158,27 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
     [jabatanList, hasNoJabatan]
   );
 
-  const visible = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    return users.filter((u) => {
-      if (filter === "inactive" ? !u.banned : filter !== "all" && u.role !== filter) return false;
-      if (jabatanFilter === NO_JABATAN ? u.profile.jabatan : jabatanFilter !== ALL_JABATAN && u.profile.jabatan !== jabatanFilter) return false;
-      return !q || u.email.toLowerCase().includes(q);
-    });
-  }, [users, filter, jabatanFilter, search]);
+  const visible = useMemo(
+    () => filterUsers(users, { status: filter, jabatan: jabatanFilter, q: search }),
+    [users, filter, jabatanFilter, search]
+  );
+
+  const [exporting, setExporting] = useState<"all" | "filter" | null>(null);
+  const runExport = async (mode: "all" | "filter") => {
+    if (exporting) return;
+    setExporting(mode);
+    try {
+      await downloadFromEndpoint(
+        buildUserExportUrl(mode, { status: filter, jabatan: jabatanFilter, q: search }),
+        "manajemen-user-bmh.xlsx"
+      );
+      toast.success(`Excel ${mode === "all" ? "semua user" : "sesuai filter"} berhasil diunduh.`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Gagal mengekspor Excel.");
+    } finally {
+      setExporting(null);
+    }
+  };
 
   const finish = (res: UserActionResult, onSuccess?: () => void) => {
     if (res.success) {
@@ -227,14 +264,56 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
             </SelectContent>
           </Select>
         </div>
-        <Button
-          type="button"
-          onClick={() => setCreating(true)}
-          className="h-11 gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-brand-green-night"
-        >
-          <Plus className="h-4 w-4" aria-hidden="true" />
-          Tambah User
-        </Button>
+        <div className="flex gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              disabled={exporting !== null}
+              render={
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-11 gap-2 rounded-xl border-line bg-white px-4 text-sm font-semibold text-primary hover:bg-secondary data-popup-open:bg-secondary"
+                />
+              }
+            >
+              {exporting ? (
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+              ) : (
+                <FileSpreadsheet className="h-4 w-4" aria-hidden="true" />
+              )}
+              Export Excel
+              <ChevronDown className="h-4 w-4" aria-hidden="true" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              sideOffset={4}
+              className="w-64 rounded-xl border border-line bg-popover p-1.5 shadow-lg"
+            >
+              <DropdownMenuItem className={menuItemClassName} onClick={() => runExport("all")}>
+                <Layers className="size-4" aria-hidden="true" />
+                Semua user
+                <span className="ml-auto tabular-nums text-ink-muted">{users.length}</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className={menuItemClassName}
+                disabled={visible.length === 0}
+                onClick={() => runExport("filter")}
+              >
+                <FilterIcon className="size-4" aria-hidden="true" />
+                Sesuai filter
+                <span className="ml-auto tabular-nums text-ink-muted">{visible.length}</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button
+            type="button"
+            onClick={() => setCreating(true)}
+            className="h-11 gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-brand-green-night"
+          >
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            Tambah User
+          </Button>
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-2" role="tablist" aria-label="Filter pengguna">
@@ -300,8 +379,11 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
                         </span>
                       )}
                     </TableCell>
-                    <TableCell className={cn("min-w-40 text-sm", u.profile.nama ? "text-ink" : "text-ink-muted")}>
-                      {u.profile.nama ?? "—"}
+                    <TableCell className={cn("min-w-48 text-sm", u.profile.nama ? "text-ink" : "text-ink-muted")}>
+                      <span className="flex items-center gap-2.5">
+                        <UserAvatar src={avatarPublicUrl(u.profile.avatar_url)} name={u.profile.nama ?? u.email} />
+                        {u.profile.nama ?? "—"}
+                      </span>
                     </TableCell>
                     <TableCell className={cn("min-w-32 text-xs", u.profile.jabatan ? "text-ink" : "text-ink-muted")}>
                       {u.profile.jabatan ?? "—"}

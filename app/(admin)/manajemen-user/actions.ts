@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getAdminUser } from "@/lib/auth/admin";
 import { isBanned } from "@/lib/user-row";
+import { PASSWORD_CHANGED_AT } from "@/lib/password-policy";
 import { adminProfileSchema, type AdminProfileInput } from "@/lib/profile-contact";
 import {
   createUserSchema,
@@ -166,12 +167,21 @@ export async function updateUserAction(
   }
 
   if (email !== undefined || password !== undefined) {
-    const attrs: { email?: string; password?: string; email_confirm?: boolean } = {};
+    const attrs: {
+      email?: string;
+      password?: string;
+      email_confirm?: boolean;
+      app_metadata?: Record<string, null>;
+    } = {};
     if (email !== undefined) {
       attrs.email = email;
       attrs.email_confirm = true;
     }
-    if (password !== undefined) attrs.password = password;
+    if (password !== undefined) {
+      attrs.password = password;
+      // Kata sandi dari admin = kata sandi awal lagi: peserta wajib menggantinya saat login berikutnya.
+      attrs.app_metadata = { [PASSWORD_CHANGED_AT]: null };
+    }
     const { error } = await db.auth.admin.updateUserById(idParsed.data, attrs);
     if (error) {
       console.error("updateUserAction auth gagal:", error.code, error.message);

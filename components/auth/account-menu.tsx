@@ -2,8 +2,10 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { checkAdmin } from "@/lib/auth/admin";
 import { cn } from "cn";
 import { buttonVariants } from "@/components/ui/button";
+import { avatarPublicUrl } from "@/lib/avatar";
 import { AccountDropdown } from "./account-dropdown";
 
 /** Tombol Masuk (belum login) — juga dipakai sebagai fallback Suspense. */
@@ -25,17 +27,17 @@ export function LoginLink() {
 export async function AccountMenu() {
   await connection();
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, isAdmin } = await checkAdmin(supabase);
   if (!user) return <LoginLink />;
 
   let nama = "";
+  let avatarUrl: string | null = null;
   try {
-    const { data } = await createAdminClient().from("profiles").select("nama").eq("id", user.id).maybeSingle();
+    const { data } = await createAdminClient().from("profiles").select("nama, avatar_url").eq("id", user.id).maybeSingle();
     nama = data?.nama ?? "";
+    avatarUrl = avatarPublicUrl(data?.avatar_url);
   } catch {
-    // nama opsional; email tetap ditampilkan
+    // nama & foto opsional; inisial email tetap ditampilkan
   }
-  return <AccountDropdown name={nama} email={user.email ?? ""} />;
+  return <AccountDropdown name={nama} email={user.email ?? ""} avatarUrl={avatarUrl} isAdmin={isAdmin} />;
 }

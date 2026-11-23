@@ -8,6 +8,10 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { PublicFooter } from "@/components/rakernas/public-page";
 import { ProfileForm } from "@/components/profile/profile-form";
 import { isoToWibLocal } from "@/lib/profile-contact";
+import { mustChangePassword } from "@/lib/password-policy";
+import { ChangePasswordDialog } from "@/components/auth/change-password-dialog";
+import { AvatarUpload } from "@/components/profile/avatar-upload";
+import { avatarPublicUrl } from "@/lib/avatar";
 
 export const metadata: Metadata = {
   title: "Profil Saya",
@@ -26,9 +30,12 @@ async function ProfileContent() {
   const admin = createAdminClient();
   const { data: profile } = await admin
     .from("profiles")
-    .select("nama, perwakilan_daerah, jabatan, ukuran_baju, no_whatsapp, rencana_kedatangan, keterangan_kehadiran")
+    .select("role, nama, perwakilan_daerah, jabatan, ukuran_baju, no_whatsapp, rencana_kedatangan, keterangan_kehadiran, avatar_url")
     .eq("id", user.id)
     .maybeSingle();
+
+  // Peserta dengan kata sandi awal: data profil tidak dirender sampai kata sandi diganti.
+  if (mustChangePassword(user, profile?.role)) return <ChangePasswordDialog />;
 
   return (
     <div className="mx-auto w-full max-w-2xl">
@@ -36,7 +43,8 @@ async function ProfileContent() {
         <CardHeader>
           <h1 className="font-heading text-xl font-bold text-primary">Profil Saya</h1>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
+          <AvatarUpload src={avatarPublicUrl(profile?.avatar_url)} name={profile?.nama || user.email || ""} />
           <ProfileForm
             key={`${user.email}-${profile?.nama}-${profile?.rencana_kedatangan}`}
             initial={{

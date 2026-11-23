@@ -21,6 +21,7 @@ import {
   type AttendanceCountResult,
 } from "@/app/admin/actions";
 import { sessionLabel, type ExportSession } from "@/lib/attendance-export";
+import { downloadFromEndpoint } from "@/lib/download-file";
 import { DeleteAttendancesDialog, type DeleteTarget } from "@/components/admin/delete-attendances-dialog";
 
 export const EXPORT_ENDPOINT = "/api/admin/rekap-kehadiran/export";
@@ -55,11 +56,6 @@ export function buildExportUrl(
   return `${EXPORT_ENDPOINT}?${params.toString()}`;
 }
 
-function filenameFromDisposition(header: string | null): string | null {
-  const match = header?.match(/filename="?([^";]+)"?/i);
-  return match?.[1] ?? null;
-}
-
 const triggerClassName =
   "h-10 gap-1.5 rounded-xl border-line bg-white px-3 text-sm font-semibold text-primary shadow-2xs hover:bg-secondary data-popup-open:bg-secondary";
 const itemClassName = "min-h-9 cursor-pointer rounded-lg px-2.5 py-2 text-sm";
@@ -81,20 +77,7 @@ export function RekapMenubar({ sessions, filter, filteredCount, onDeleted }: Rek
     if (exporting) return;
     setExporting(mode);
     try {
-      const res = await fetch(buildExportUrl(mode, filter), { cache: "no-store" });
-      if (!res.ok) {
-        const body = (await res.json().catch(() => null)) as { error?: string } | null;
-        throw new Error(body?.error || `Gagal mengekspor (HTTP ${res.status}).`);
-      }
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = filenameFromDisposition(res.headers.get("Content-Disposition")) ?? "rekap-kehadiran-bmh.xlsx";
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      URL.revokeObjectURL(url);
+      await downloadFromEndpoint(buildExportUrl(mode, filter), "rekap-kehadiran-bmh.xlsx");
       toast.success(`Excel ${label} berhasil diunduh.`);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Gagal mengekspor Excel.");

@@ -1,11 +1,12 @@
 import { ArrowUpRight, CalendarDays, ChevronDown, MapPin } from "lucide-react";
 import { EVENT_INFO } from "@/content/rakernas";
 import { DEFAULT_EVENT_SETTINGS, formatEventDateRange, type EventSettings } from "@/lib/event-settings";
+import { splitEventTitle } from "@/lib/event-title";
 import { RevealItem, RevealStagger } from "@/components/motion/reveal";
 import styles from "./hero.module.css";
 
 export function HeroSection({ settings = DEFAULT_EVENT_SETTINGS }: { settings?: EventSettings } = {}) {
-  const titleParts = EVENT_INFO.title.match(/^(.*)\s+(\S+)\s+(\d{4})$/);
+  const titleParts = splitEventTitle(EVENT_INFO.title);
 
   return (
     <section className={styles.hero} aria-labelledby="hero-title">
@@ -18,10 +19,10 @@ export function HeroSection({ settings = DEFAULT_EVENT_SETTINGS }: { settings?: 
         <h1 className={styles.title} id="hero-title">
           {titleParts ? (
             <>
-              {titleParts[1]}{" "}
+              {titleParts.lead}{" "}
               <span className={styles.titleLine}>
-                {titleParts[2]}{" "}
-                <span className={styles.year}>{titleParts[3]}</span>
+                {titleParts.word}{" "}
+                <span className={styles.year}>{titleParts.year}</span>
               </span>
             </>
           ) : (

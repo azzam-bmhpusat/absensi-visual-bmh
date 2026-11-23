@@ -48,7 +48,12 @@ export function SiteHeader({ account }: { account?: React.ReactNode }) {
   // "/#section" lewat navigasi client-side; navbar ini tetap terpasang.
   const isHome = pathname === "/";
   const resolveHref = (href: string) => (href.startsWith("#") && !isHome ? `/${href}` : href);
-  const isActive = (href: string) => !href.startsWith("#") && href === pathname;
+  const activeSection = useActiveSection(isHome);
+  // Di beranda: tautan "#section" aktif saat section-nya terlihat; "Beranda" aktif bila tidak ada.
+  const isActive = (href: string) =>
+    href.startsWith("#")
+      ? isHome && href === activeSection
+      : href === pathname && !(isHome && activeSection);
   const isGroupActive = (group: NavMenuGroup) => group.children.some((child) => isActive(child.href));
 
   // Setelah berpindah ke "/#section" dari halaman lain (atau memuat URL ber-hash),
@@ -218,6 +223,45 @@ export function SiteHeader({ account }: { account?: React.ReactNode }) {
       </div>
     </header>
   );
+}
+
+/** Href "#section" di navbar yang dipantau scroll-spy beranda. */
+const SECTION_HREFS = NAV_MENU.flatMap((entry) => (entry.children ? entry.children : [entry]))
+  .map((item) => item.href)
+  .filter((href) => HASH_PATTERN.test(href));
+/** Garis baca di bawah navbar (64px) + scroll-mt-20; section dianggap aktif bila melintasinya. */
+const SPY_LINE_PX = 96;
+
+/** Scroll-spy: "#id" section beranda yang sedang melintasi garis baca, atau null. */
+function useActiveSection(enabled: boolean): string | null {
+  const [active, setActive] = useState<string | null>(null);
+  useEffect(() => {
+    if (!enabled) {
+      setActive(null);
+      return;
+    }
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const current = SECTION_HREFS.find((href) => {
+        const rect = document.getElementById(href.slice(1))?.getBoundingClientRect();
+        return rect && rect.top <= SPY_LINE_PX && rect.bottom > SPY_LINE_PX;
+      });
+      setActive(current ?? null);
+    };
+    const schedule = () => {
+      if (!frame) frame = window.requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+  }, [enabled]);
+  return active;
 }
 
 const mobileLink =
