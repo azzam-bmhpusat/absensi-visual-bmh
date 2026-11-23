@@ -154,8 +154,8 @@ export function deriveAttendanceData(
   const belumHadir = guests
     .filter((g) => !checkedInGuestIds.has(g.id))
     .sort((a, b) => {
-      const cmpDaerah = a.perwakilan_daerah.localeCompare(
-        b.perwakilan_daerah,
+      const cmpDaerah = (a.perwakilan_daerah ?? "").localeCompare(
+        b.perwakilan_daerah ?? "",
         "id"
       );
       if (cmpDaerah !== 0) return cmpDaerah;

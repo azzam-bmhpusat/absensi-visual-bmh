@@ -45,7 +45,7 @@ export function buildSeats(guests: GuestData[], attendances: AttendanceData[]): 
   const byGuest = new Map<string, AttendanceData>();
   for (const a of attendances) if (a.guest_id && !byGuest.has(a.guest_id)) byGuest.set(a.guest_id, a);
   const sorted = [...guests].sort((a, b) => {
-    const d = a.perwakilan_daerah.localeCompare(b.perwakilan_daerah, "id");
+    const d = (a.perwakilan_daerah ?? "").localeCompare(b.perwakilan_daerah ?? "", "id");
     return d !== 0 ? d : a.nama.localeCompare(b.nama, "id");
   });
   const known = new Set(guests.map((g) => g.id));

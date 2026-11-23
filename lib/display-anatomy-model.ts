@@ -38,7 +38,7 @@ export function seatColumnsFor(count: number): number {
 /** Kursi per tamu, berurutan menurut perwakilan daerah lalu nama (sama seperti kolom Belum Hadir). */
 export function seatLayout(guests: SeatGuest[]): SeatLayout {
   const sorted = [...guests].sort((a, b) => {
-    const byDaerah = a.perwakilan_daerah.localeCompare(b.perwakilan_daerah, "id");
+    const byDaerah = (a.perwakilan_daerah ?? "").localeCompare(b.perwakilan_daerah ?? "", "id");
     return byDaerah !== 0 ? byDaerah : a.nama.localeCompare(b.nama, "id");
   });
   const cols = seatColumnsFor(sorted.length);
