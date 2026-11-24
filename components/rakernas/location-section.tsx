@@ -104,7 +104,7 @@ export function LocationSection({ settings = DEFAULT_EVENT_SETTINGS }: { setting
         </div>
       </div>
 
-      {/* Galeri Foto Lokasi (8 Foto) */}
+      {/* Galeri Foto Lokasi: foto potret kecil (224x298), jadi kartu 3:4 dan sempit agar tidak buram */}
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
@@ -112,7 +112,7 @@ export function LocationSection({ settings = DEFAULT_EVENT_SETTINGS }: { setting
               Galeri Fasilitas Hotel
             </h3>
             <p className="text-sm text-ink-muted mt-1">
-              Ketuk foto untuk melihat dalam resolusi penuh
+              Ketuk foto untuk memperbesar
             </p>
           </div>
         </div>
@@ -129,7 +129,7 @@ export function LocationSection({ settings = DEFAULT_EVENT_SETTINGS }: { setting
               {LOCATION_DATA.gallery.map((photo, index) => (
                 <CarouselItem
                   key={`${photo.src}-${index}`}
-                  className="basis-[85%] sm:basis-1/2 lg:basis-1/3 pl-4"
+                  className="basis-[70%] sm:basis-1/3 lg:basis-1/5 pl-4"
                 >
                   <button
                     type="button"
@@ -137,12 +137,12 @@ export function LocationSection({ settings = DEFAULT_EVENT_SETTINGS }: { setting
                     className="group w-full text-left rounded-2xl border border-line bg-card overflow-hidden shadow-[0_8px_24px_-8px_rgba(19,75,64,0.18)] transition-all duration-300 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring flex flex-col cursor-pointer"
                     aria-label={`Perbesar foto ${photo.caption} — ${settings.venueName}`}
                   >
-                    <div className="relative aspect-[4/3] w-full bg-muted/40 overflow-hidden">
+                    <div className="relative aspect-[3/4] w-full bg-muted/40 overflow-hidden">
                       <Image
                         src={photo.src}
                         alt={`${photo.caption} — ${settings.venueName}`}
                         fill
-                        sizes="(max-width: 640px) 85vw, (max-width: 1024px) 50vw, 33vw"
+                        sizes="(max-width: 640px) 70vw, (max-width: 1024px) 33vw, 20vw"
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                         loading="lazy"
                       />
@@ -169,9 +169,9 @@ export function LocationSection({ settings = DEFAULT_EVENT_SETTINGS }: { setting
             <CarouselNext className="hidden md:inline-flex -right-4 lg:-right-6 bg-card hover:bg-muted text-primary border-line shadow-md" />
           </Carousel>
 
-          {/* Titik Indikator Pagination Galeri */}
+          {/* Titik Indikator Pagination Galeri (disembunyikan bila semua foto sudah terlihat) */}
           <div
-            className="flex items-center justify-center gap-1 mt-6 md:mt-8"
+            className={cn("flex items-center justify-center gap-1 mt-6 md:mt-8", count === 1 && "hidden")}
             role="tablist"
             aria-label="Navigasi galeri foto lokasi"
           >
@@ -208,7 +208,7 @@ export function LocationSection({ settings = DEFAULT_EVENT_SETTINGS }: { setting
           if (!open) setSelectedPhoto(null);
         }}
       >
-        <DialogContent className="max-w-3xl p-4 sm:p-6 overflow-hidden rounded-2xl border border-line bg-card text-foreground">
+        <DialogContent className="max-w-sm p-4 sm:p-6 overflow-hidden rounded-2xl border border-line bg-card text-foreground">
           <DialogHeader className="mb-2">
             <DialogTitle className="text-lg md:text-xl font-heading font-semibold text-primary">
               {selectedPhoto?.caption}
@@ -219,12 +219,12 @@ export function LocationSection({ settings = DEFAULT_EVENT_SETTINGS }: { setting
           </DialogHeader>
 
           {selectedPhoto && (
-            <div className="relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-muted/40 border border-line">
+            <div className="relative aspect-[3/4] w-full rounded-xl overflow-hidden bg-muted/40 border border-line">
               <Image
                 src={selectedPhoto.src}
                 alt={`${selectedPhoto.caption} — ${settings.venueName}`}
                 fill
-                sizes="(max-width: 768px) 95vw, 800px"
+                sizes="(max-width: 640px) 90vw, 384px"
                 className="object-contain"
                 priority
               />

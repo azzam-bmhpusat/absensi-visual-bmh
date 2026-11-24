@@ -80,18 +80,9 @@ describe("Fase 6 — QA & Penyelesaian: Landing Page Rakernas BMH", () => {
       expect(DRESSCODE_DATA.map((i) => i.day)).toEqual(["Hari Pertama", "Hari Kedua", "Hari Ketiga"]);
     });
 
-    it("Galeri lokasi memuat 8 foto fasilitas terurut dengan keterangan persis", () => {
-      const expectedCaptions = [
-        "Gedung Utama",
-        "Ruang Acara",
-        "Masjid",
-        "Restaurant",
-        "Kamar",
-        "Kamar",
-        "Kolam Renang",
-        "Area Parkir",
-      ];
-      expect(LOCATION_DATA.gallery).toHaveLength(8);
+    it("Galeri lokasi memuat 5 foto fasilitas terurut dengan keterangan persis", () => {
+      const expectedCaptions = ["Gedung", "Ruang Acara", "Ruang Makan", "Kamar", "Belakang Gedung"];
+      expect(LOCATION_DATA.gallery).toHaveLength(5);
       LOCATION_DATA.gallery.forEach((item, idx) => {
         expect(item.caption).toBe(expectedCaptions[idx]);
         expect(item.src).toBeTruthy();
