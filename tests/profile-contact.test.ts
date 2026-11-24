@@ -115,7 +115,6 @@ describe("profile-contact", () => {
 
   it("halaman peserta diproteksi middleware dan ProfileGate", () => {
     const mw = fs.readFileSync(path.join(__dirname, "..", "lib", "supabase", "middleware.ts"), "utf-8");
-    const cfg = fs.readFileSync(path.join(__dirname, "..", "middleware.ts"), "utf-8");
     for (const p of [
       "/informasi-kamar-hotel",
       "/publikasi/foto-galeri-kegiatan",
@@ -123,7 +122,6 @@ describe("profile-contact", () => {
       "/publikasi/notula-rapat",
     ]) {
       expect(mw).toContain(`"${p}"`);
-      expect(cfg).toContain(`"${p}/:path*"`);
     }
   });
 

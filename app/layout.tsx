@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Poppins } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { RegisterServiceWorker } from "@/components/pwa/register-service-worker";
 import "./globals.css";
 
 const inter = Inter({
@@ -39,9 +40,16 @@ export const metadata: Metadata = {
     template: "%s | Absensi Visual BMH",
   },
   description: "Sistem kehadiran visual cepat dan realtime untuk acara Baitul Maal Hidayatullah (BMH)",
+  applicationName: "Rakernas BMH",
   icons: {
     icon: "/icon.svg",
-    apple: "/icon.svg",
+    apple: "/icons/apple-touch-icon.png",
+  },
+  // Saat dipasang ke layar utama iPhone (PWA)
+  appleWebApp: {
+    capable: true,
+    title: "Rakernas BMH",
+    statusBarStyle: "default",
   },
 };
 
@@ -56,6 +64,7 @@ export default function RootLayout({
         <TooltipProvider>
           {children}
           <Toaster position="top-center" richColors />
+          <RegisterServiceWorker />
         </TooltipProvider>
       </body>
     </html>

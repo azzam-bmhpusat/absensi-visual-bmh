@@ -40,22 +40,42 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // getUser() reads and refreshes the auth token securely; is_admin() memeriksa role di tabel profiles
-  const { user, isAdmin } = await checkAdmin(supabase);
-
   const { pathname } = request.nextUrl;
 
-  // Daftar rute admin yang wajib login
-  const protectedAdminPaths = [
-    "/dashboard",
-    "/rekap-kehadiran",
-    "/kelola-sesi-acara",
-    "/pengaturan",
-    "/manajemen-user",
-    "/admin",
-  ];
+  // Sesi login disegarkan di SETIAP halaman (bukan hanya rute terproteksi). Bila token disegarkan
+  // dari Server Component (mis. navbar), cookie baru tidak bisa disimpan; refresh token lama lalu
+  // dianggap dipakai ulang oleh Supabase dan sesi dicabut (user ter-logout sendiri).
+  // Pengunjung tanpa cookie sesi dilewati tanpa panggilan jaringan.
+  if (!hasSessionCookie(request)) {
+    return guard(request, response, pathname, { user: null, isAdmin: false });
+  }
 
-  const isProtectedPath = protectedAdminPaths.some((p) => pathname.startsWith(p));
+  // getUser() membaca & menyegarkan token; is_admin() (role di profiles) hanya dicek di rute admin.
+  const needsAdminCheck = ADMIN_PATHS.some((p) => pathname.startsWith(p));
+  const auth = needsAdminCheck
+    ? await checkAdmin(supabase)
+    : { user: (await supabase.auth.getUser()).data.user, isAdmin: false };
+
+  return guard(request, response, pathname, auth);
+}
+
+/** Cookie sesi Supabase: sb-<ref>-auth-token (bisa terpecah jadi .0, .1, ...). */
+function hasSessionCookie(request: NextRequest) {
+  return request.cookies.getAll().some((c) => c.name.startsWith("sb-") && c.name.includes("-auth-token"));
+}
+
+/** Rute admin yang wajib login sebagai admin. */
+const ADMIN_PATHS = ["/dashboard", "/rekap-kehadiran", "/kelola-sesi-acara", "/pengaturan", "/manajemen-user", "/admin"];
+
+/** Aturan akses per rute. `response` membawa cookie sesi yang baru disegarkan. */
+function guard(
+  request: NextRequest,
+  response: NextResponse,
+  pathname: string,
+  { user, isAdmin }: { user: unknown; isAdmin: boolean }
+) {
+
+  const isProtectedPath = ADMIN_PATHS.some((p) => pathname.startsWith(p));
 
   // /profile wajib login; /login untuk yang sudah login langsung ke /profile
   if (pathname === "/profile" || pathname.startsWith("/profile/")) {

@@ -52,25 +52,20 @@ describe("Guardrail: Rute Beranda (/) Bebas dari Redirect ke /absen", () => {
     expect(pageContent).toContain("<SiteFooter");
   });
 
-  it("middleware.ts TIDAK mencocokkan rute beranda (/)", () => {
-    const matchedPaths = middlewareConfig.matcher;
-    expect(matchedPaths).toBeDefined();
-    // Pastikan tidak ada matcher yang mencakup root "/"
-    expect(matchedPaths).not.toContain("/");
-    expect(matchedPaths).not.toContain("/:path*");
-    // Matcher hanya boleh mengamankan rute admin / dashboard
-    matchedPaths.forEach((routePattern: string) => {
-      expect(routePattern.startsWith("/admin") ||
-        routePattern.startsWith("/dashboard") ||
-        routePattern.startsWith("/rekap-kehadiran") ||
-        routePattern.startsWith("/kelola-sesi-acara") ||
-        routePattern.startsWith("/pengaturan") ||
-        routePattern.startsWith("/manajemen-user") ||
-        routePattern.startsWith("/profile") ||
-        routePattern.startsWith("/informasi-kamar-hotel") ||
-        routePattern.startsWith("/publikasi/") ||
-        routePattern.startsWith("/login")).toBe(true);
-    });
+  it("middleware berjalan di semua halaman (sesi login tetap segar) kecuali API & file statis", () => {
+    const [source] = middlewareConfig.matcher;
+    const matches = (pathname: string) => new RegExp(`^${source}$`).test(pathname);
+    for (const p of ["/", "/rundown", "/form", "/login", "/profile", "/informasi-kamar-hotel", "/manajemen-user/x"]) {
+      expect(matches(p), p).toBe(true);
+    }
+    for (const p of ["/_next/static/chunk.js", "/_next/image", "/logo.png", "/favicon.ico", "/api/admin/absen-qr", "/sw.js", "/offline.html", "/manifest.webmanifest", "/icons/icon-192.png"]) {
+      expect(matches(p), p).toBe(false);
+    }
+  });
+
+  it("beranda tetap publik: tidak ada redirect untuk /", () => {
+    const mw = fs.readFileSync(path.join(__dirname, "..", "lib", "supabase", "middleware.ts"), "utf-8");
+    expect(mw).not.toMatch(/pathname === "\/"[^/]/);
   });
 
   it("next.config.ts TIDAK memiliki aturan redirect untuk rute /", async () => {

@@ -340,7 +340,6 @@ describe("pemasangan rute & navigasi", () => {
 
   it("rute dilindungi middleware dan matcher serta ada di sidebar", () => {
     expect(read("lib", "supabase", "middleware.ts")).toContain('"/manajemen-user"');
-    expect(read("middleware.ts")).toContain('"/manajemen-user/:path*"');
     expect(read("components", "admin", "app-sidebar.tsx")).toContain('href: "/manajemen-user"');
   });
 

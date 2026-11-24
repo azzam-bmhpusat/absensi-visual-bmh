@@ -2,7 +2,7 @@
 
 import { useActionState, useState, useTransition } from "react";
 import Link from "next/link";
-import { Check, CheckCircle2, CircleAlert, KeyRound, Loader2, LogIn, Mail, MapPinned, Search, Send, X } from "lucide-react";
+import { Check, CheckCircle2, CircleAlert, KeyRound, Loader2, LogIn, Mail, MapPinned, RefreshCw, Search, Send, X } from "lucide-react";
 import { cn } from "cn";
 import {
   loadParticipant,
@@ -39,16 +39,45 @@ function ParticipantPicker({
   participants,
   selected,
   onSelect,
+  onClear,
   disabled,
 }: {
   participants: ParticipantOption[];
   selected: ParticipantOption | null;
   onSelect: (p: ParticipantOption) => void;
+  onClear: () => void;
   disabled?: boolean;
 }) {
   const [search, setSearch] = useState("");
   const q = search.trim().toLowerCase();
   const results = q ? participants.filter((p) => (p.perwakilan_daerah ?? "").toLowerCase().includes(q)) : [];
+
+  if (selected) {
+    return (
+      <div className="space-y-2">
+        <p className="text-[13px] font-semibold text-ink">Peserta dipilih</p>
+        <div className="flex min-h-14 w-full items-center gap-3 rounded-xl border border-primary bg-secondary px-3.5 py-2.5">
+          <Check className="size-5 shrink-0 text-primary" aria-hidden="true" />
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-sm font-semibold text-ink">{selected.nama}</span>
+            <span className="flex items-center gap-1 truncate text-xs text-ink-muted">
+              <MapPinned className="size-3.5 shrink-0" aria-hidden="true" />
+              {selected.perwakilan_daerah}
+            </span>
+          </span>
+          <button
+            type="button"
+            onClick={onClear}
+            disabled={disabled}
+            className="inline-flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-line bg-white px-3 text-xs font-semibold text-primary hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <RefreshCw className="size-3.5" aria-hidden="true" />
+            Ganti
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3">
@@ -112,17 +141,14 @@ function ParticipantPicker({
             )}
             <ul data-lenis-prevent className="max-h-80 space-y-1.5 overflow-y-auto">
               {results.map((p) => {
-                const active = selected?.id === p.id;
                 return (
                   <li key={p.id}>
                     <button
                       type="button"
                       onClick={() => onSelect(p)}
-                      aria-pressed={active}
                       disabled={disabled || p.complete}
                       className={cn(
                         "flex min-h-14 w-full cursor-pointer items-center gap-3 rounded-xl border border-line bg-white px-3.5 py-2.5 text-left transition-colors hover:border-primary/40 hover:bg-secondary/50 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-60",
-                        active && "border-primary bg-secondary",
                         p.complete && "border-dashed bg-surface hover:border-line hover:bg-surface"
                       )}
                     >
@@ -133,13 +159,11 @@ function ParticipantPicker({
                           {p.perwakilan_daerah}
                         </span>
                       </span>
-                      {p.complete ? (
+                      {p.complete && (
                         <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-xs font-semibold text-primary">
                           <CheckCircle2 className="size-3.5" aria-hidden="true" />
                           Sudah diisi
                         </span>
-                      ) : (
-                        active && <Check className="size-5 shrink-0 text-primary" aria-hidden="true" />
                       )}
                     </button>
                   </li>
@@ -219,6 +243,12 @@ export function ParticipantForm({
     });
   }
 
+  function handleClear() {
+    setSelected(null);
+    setInitial(null);
+    setLoadError(null);
+  }
+
   return (
     <div className="rounded-3xl border border-line bg-white shadow-sm">
       <section className="border-b border-line px-5 py-6 sm:px-7" aria-labelledby="form-step-1">
@@ -248,6 +278,7 @@ export function ParticipantForm({
           participants={participants}
           selected={selected}
           onSelect={handleSelect}
+          onClear={handleClear}
           disabled={isPending}
         />
         {isLoading && (

@@ -8,19 +8,11 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Cocokkan semua path request admin dan dashboard
+     * Semua halaman, agar sesi login selalu disegarkan dan disimpan ke cookie (tetap login sampai
+     * menekan Keluar). Dikecualikan: API, aset Next.js, file statis, serta file PWA
+     * (/sw.js, /offline.html, /manifest.webmanifest, /icons/*.png).
+     * Aturan akses per rute ada di lib/supabase/middleware.ts.
      */
-    "/admin/:path*",
-    "/dashboard/:path*",
-    "/rekap-kehadiran/:path*",
-    "/kelola-sesi-acara/:path*",
-    "/pengaturan/:path*",
-    "/manajemen-user/:path*",
-    "/profile/:path*",
-    "/informasi-kamar-hotel/:path*",
-    "/publikasi/foto-galeri-kegiatan/:path*",
-    "/publikasi/materi-presentasi-rakernas/:path*",
-    "/publikasi/notula-rapat/:path*",
-    "/login",
+    "/((?!api/|_next/static|_next/image|sw\\.js$|offline\\.html$|.*\\.(?:ico|png|jpg|jpeg|gif|webp|svg|txt|xml|webmanifest|mp4|pdf)$).*)",
   ],
 };
