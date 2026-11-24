@@ -24,7 +24,12 @@ vi.mock("next/navigation", () => ({
   },
 }));
 
+vi.mock("@supabase/ssr", () => ({
+  createServerClient: () => ({ auth: { getUser: async () => ({ data: { user: null } }) } }),
+}));
+
 import { GET } from "@/app/auth/callback/route";
+import { updateSession } from "@/lib/supabase/middleware";
 import { loginWithGoogle } from "@/app/(site)/login/actions";
 
 function callback(query: string) {
@@ -78,6 +83,21 @@ describe("/auth/callback (login Google)", () => {
     expect(failed.headers.get("location")).toBe(
       "http://localhost:3000/login?error=google&next=%2Fpublikasi%2Fnotula-rapat"
     );
+  });
+});
+
+describe("middleware: code login Google yang mendarat di Site URL", () => {
+  it("/?code= diteruskan ke /auth/callback (next bawaan /profile)", async () => {
+    const res = await updateSession(new NextRequest("http://localhost:3000/?code=351b4227"));
+    expect(res.status).toBe(307);
+    expect(res.headers.get("location")).toBe("http://localhost:3000/auth/callback?code=351b4227");
+  });
+
+  it("halaman lain dengan ?code= dan beranda tanpa code tidak dialihkan", async () => {
+    expect((await updateSession(new NextRequest("http://localhost:3000/"))).headers.get("location")).toBeNull();
+    expect(
+      (await updateSession(new NextRequest("http://localhost:3000/absen?code=abc"))).headers.get("location")
+    ).toBeNull();
   });
 });
 
