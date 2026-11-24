@@ -2,9 +2,9 @@ import { SiteFooter } from "@/components/rakernas/site-footer";
 import { getEventSettings } from "@/lib/event-settings-server";
 
 /** Footer situs publik dengan data acara terkini (tanggal & venue dari event settings). */
-export async function PublicFooter() {
+export async function PublicFooter({ showNav }: { showNav?: boolean } = {}) {
   const settings = await getEventSettings();
-  return <SiteFooter className="bg-brand-green-night" settings={settings} />;
+  return <SiteFooter className="bg-brand-green-night" settings={settings} showNav={showNav} />;
 }
 
 /**

@@ -227,6 +227,25 @@
     @apply bg-background text-foreground;
   }
 
+  /* Tinggi tab bar bawah navbar HP/tablet (site-header.tsx); 0 di desktop dan halaman tanpa tab bar.
+     Dipakai elemen yang menempel di bawah layar (tombol WhatsApp, bar simpan profil). */
+  :root {
+    --bottom-nav-offset: 0px;
+  }
+  @media (max-width: 639.98px) {
+    body:has([data-bottom-nav]) {
+      --bottom-nav-offset: calc(4.125rem + env(safe-area-inset-bottom));
+    }
+  }
+  @media (min-width: 640px) and (max-width: 1023.98px) {
+    body:has([data-bottom-nav]) {
+      --bottom-nav-offset: 5.5rem;
+    }
+  }
+  body:has([data-bottom-nav]) {
+    padding-bottom: var(--bottom-nav-offset);
+  }
+
   html {
     @apply font-sans;
   }

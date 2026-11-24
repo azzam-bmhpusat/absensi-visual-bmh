@@ -53,14 +53,22 @@ describe("Navbar halaman publik", () => {
     }
   });
 
-  it("header: slot akun di luar drawer, Publikasi hover di desktop, drawer di HP/tablet", () => {
+  it("header: slot akun di bar atas, Publikasi hover di desktop, tab bar bawah di HP/tablet", () => {
     const header = read("components", "rakernas", "site-header.tsx");
     expect(header).not.toContain("/registrasi");
     expect(header).toContain("{account}");
     expect(header).toContain("openOnHover");
-    expect(header).toContain("<Accordion");
+    // Tab bar bawah (HP/tablet) + sheet "Lainnya" dari bawah untuk grup Publikasi
+    expect(header).toContain("data-bottom-nav");
+    expect(header).toContain('side="bottom"');
     expect(header).toContain("lg:hidden");
     expect(header).toContain("hidden min-w-0 flex-1 items-center justify-center");
     expect(header).toContain("lg:flex");
+  });
+
+  it("elemen yang menempel di bawah layar memberi ruang untuk tab bar", () => {
+    expect(read("app", "globals.css")).toContain("body:has([data-bottom-nav])");
+    expect(read("components", "rakernas", "whatsapp-float.tsx")).toContain("var(--bottom-nav-offset)");
+    expect(read("components", "profile", "profile-form.tsx")).toContain("bottom-(--bottom-nav-offset)");
   });
 });

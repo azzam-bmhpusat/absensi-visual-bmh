@@ -65,7 +65,7 @@ export function WhatsAppFloat({ href }: { href: string }) {
       rel="noopener noreferrer"
       aria-label="Hubungi panitia via WhatsApp"
       data-state={showImage ? "image" : "logo"}
-      className="fixed bottom-4 right-4 z-50 block size-14 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:bottom-6 md:right-6 md:size-16"
+      className="fixed bottom-[calc(1rem+var(--bottom-nav-offset))] right-4 z-50 block size-14 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:right-6 md:bottom-[calc(1.5rem+var(--bottom-nav-offset))] md:size-16"
     >
       <span
         aria-hidden="true"

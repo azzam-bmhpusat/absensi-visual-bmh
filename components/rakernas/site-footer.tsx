@@ -17,7 +17,12 @@ const focusRing =
 const yearOf = (instant: string) =>
   new Intl.DateTimeFormat("id-ID", { year: "numeric", timeZone: "Asia/Jakarta" }).format(new Date(instant));
 
-export function SiteFooter({ className, settings = DEFAULT_EVENT_SETTINGS }: { className?: string; settings?: EventSettings } = {}) {
+/** @param showNav false untuk halaman tanpa navigasi situs (mis. /form). */
+export function SiteFooter({
+  className,
+  settings = DEFAULT_EVENT_SETTINGS,
+  showNav = true,
+}: { className?: string; settings?: EventSettings; showNav?: boolean } = {}) {
   return (
     <footer
       id="footer"
@@ -61,31 +66,33 @@ export function SiteFooter({ className, settings = DEFAULT_EVENT_SETTINGS }: { c
           </div>
 
           {/* Navigasi */}
-          <nav aria-label="Navigasi footer" className="lg:col-span-3">
-            <p className={headingLabel}>Navigasi</p>
-            <ul className="mt-3 grid grid-cols-2 gap-x-4 md:grid-cols-1">
-              {FOOTER_LINKS.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className={cn(
-                      "group inline-flex min-h-11 items-center rounded-md text-sm text-white/80 transition-colors hover:text-white md:min-h-9",
-                      focusRing,
-                    )}
-                  >
-                    <span
-                      aria-hidden="true"
-                      className="h-px w-0 bg-brand-gold transition-all duration-200 group-hover:mr-1.5 group-hover:w-3"
-                    />
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          {showNav && (
+            <nav aria-label="Navigasi footer" className="lg:col-span-3">
+              <p className={headingLabel}>Navigasi</p>
+              <ul className="mt-3 grid grid-cols-2 gap-x-4 md:grid-cols-1">
+                {FOOTER_LINKS.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        "group inline-flex min-h-11 items-center rounded-md text-sm text-white/80 transition-colors hover:text-white md:min-h-9",
+                        focusRing,
+                      )}
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="h-px w-0 bg-brand-gold transition-all duration-200 group-hover:mr-1.5 group-hover:w-3"
+                      />
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
 
           {/* Informasi acara */}
-          <div className="lg:col-span-4">
+          <div className={showNav ? "lg:col-span-4" : "md:col-span-2 lg:col-span-7"}>
             <p className={headingLabel}>Informasi Acara</p>
             <ul className="mt-4 flex flex-col gap-4 text-sm">
               <li className="flex gap-3">

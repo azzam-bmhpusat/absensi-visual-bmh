@@ -314,7 +314,7 @@ export function SubmitBar({
   icon: LucideIcon;
 }) {
   return (
-    <div className="sticky bottom-0 z-10 rounded-b-3xl border-t border-line bg-white/90 px-5 py-4 backdrop-blur-md sm:px-7 md:static md:bg-surface md:backdrop-blur-none">
+    <div className="sticky bottom-(--bottom-nav-offset) z-10 rounded-b-3xl border-t border-line bg-white/90 px-5 py-4 backdrop-blur-md sm:px-7 md:static md:bg-surface md:backdrop-blur-none">
       {error && (
         <div
           role="alert"

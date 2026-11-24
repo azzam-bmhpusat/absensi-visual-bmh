@@ -21,6 +21,8 @@ export const viewport: Viewport = {
   themeColor: "#095046",
   width: "device-width",
   initialScale: 1,
+  // Konten sampai tepi layar iPhone berponi; tab bar bawah memakai env(safe-area-inset-bottom).
+  viewportFit: "cover",
 };
 
 // Dasar URL absolut untuk og:image dll. (wajib untuk preview WhatsApp)

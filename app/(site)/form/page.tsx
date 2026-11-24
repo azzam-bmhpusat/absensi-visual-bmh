@@ -53,7 +53,7 @@ export default function FormPage() {
         </div>
       </main>
       <Suspense fallback={null}>
-        <PublicFooter />
+        <PublicFooter showNav={false} />
       </Suspense>
     </>
   );

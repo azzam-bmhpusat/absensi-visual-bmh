@@ -21,7 +21,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
               <AccountMenu />
             </Suspense>
           }
-          drawerFooter={
+          sheetFooter={
             <Suspense fallback={null}>
               <DrawerEventCard />
             </Suspense>

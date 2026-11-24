@@ -3,7 +3,7 @@ import { EVENT_INFO } from "@/content/rakernas";
 import { formatEventDateRange } from "@/lib/event-settings";
 import { getEventSettings } from "@/lib/event-settings-server";
 
-/** Server component: kartu info acara di bawah drawer navigasi HP, mengikuti event settings (sama dengan hero). */
+/** Server component: kartu info acara di sheet "Lainnya" navigasi HP, mengikuti event settings (sama dengan hero). */
 export async function DrawerEventCard() {
   const settings = await getEventSettings();
   return (
