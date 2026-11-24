@@ -9,10 +9,24 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { GoogleLoginButton } from "@/components/auth/google-login-button";
 
-export function LoginForm({ next, defaultEmail }: { next?: string; defaultEmail?: string }) {
+const GOOGLE_ERROR = "Login dengan Google gagal atau dibatalkan. Silakan coba lagi.";
+
+export function LoginForm({
+  next,
+  defaultEmail,
+  googleError,
+}: {
+  next?: string;
+  defaultEmail?: string;
+  /** true saat kembali dari /auth/callback dengan ?error=google. */
+  googleError?: boolean;
+}) {
   const router = useRouter();
   const [state, formAction, isPending] = useActionState<LoginResult | null, FormData>(loginUser, null);
+  // Error login email/kata sandi menggantikan pesan error Google.
+  const error = state?.error ?? (googleError ? GOOGLE_ERROR : undefined);
 
   useEffect(() => {
     if (state?.success) {
@@ -23,68 +37,79 @@ export function LoginForm({ next, defaultEmail }: { next?: string; defaultEmail?
   }, [state, router]);
 
   return (
-    <form action={formAction} className="space-y-4">
-      {next ? <input type="hidden" name="next" value={next} /> : null}
-      {state?.error && (
+    <div className="space-y-4">
+      {error && (
         <div
           role="alert"
           className="flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 p-3.5 text-xs leading-relaxed text-danger"
         >
           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-          <span>{state.error}</span>
+          <span>{error}</span>
         </div>
       )}
 
-      <div className="space-y-1.5">
-        <Label htmlFor="email" className="text-xs font-semibold text-primary">
-          Email
-        </Label>
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          required
-          defaultValue={defaultEmail}
-          placeholder="nama@bmh.or.id"
-          className="h-11 rounded-xl border-line"
-          disabled={isPending}
-        />
+      <GoogleLoginButton next={next} />
+
+      <div className="flex items-center gap-3 text-xs text-ink-muted" aria-hidden="true">
+        <span className="h-px flex-1 bg-line" />
+        atau dengan email
+        <span className="h-px flex-1 bg-line" />
       </div>
 
-      <div className="space-y-1.5">
-        <Label htmlFor="password" className="text-xs font-semibold text-primary">
-          Kata Sandi
-        </Label>
-        <PasswordInput
-          id="password"
-          name="password"
-          autoComplete="current-password"
-          required
-          autoFocus={!!defaultEmail}
-          placeholder="••••••••"
-          className="h-11 rounded-xl border-line"
-          disabled={isPending}
-        />
-      </div>
+      <form action={formAction} className="space-y-4">
+        {next ? <input type="hidden" name="next" value={next} /> : null}
 
-      <Button
-        type="submit"
-        disabled={isPending}
-        className="h-11 w-full rounded-xl bg-primary font-medium text-white shadow-sm hover:bg-brand-green-deep"
-      >
-        {isPending ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Memverifikasi...
-          </>
-        ) : (
-          <>
-            <LogIn className="mr-2 h-4 w-4 text-brand-gold-soft" />
-            Masuk
-          </>
-        )}
-      </Button>
-    </form>
+        <div className="space-y-1.5">
+          <Label htmlFor="email" className="text-xs font-semibold text-primary">
+            Email
+          </Label>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            defaultValue={defaultEmail}
+            placeholder="nama@bmh.or.id"
+            className="h-11 rounded-xl border-line"
+            disabled={isPending}
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="password" className="text-xs font-semibold text-primary">
+            Kata Sandi
+          </Label>
+          <PasswordInput
+            id="password"
+            name="password"
+            autoComplete="current-password"
+            required
+            autoFocus={!!defaultEmail}
+            placeholder="••••••••"
+            className="h-11 rounded-xl border-line"
+            disabled={isPending}
+          />
+        </div>
+
+        <Button
+          type="submit"
+          disabled={isPending}
+          className="h-11 w-full rounded-xl bg-primary font-medium text-white shadow-sm hover:bg-brand-green-deep"
+        >
+          {isPending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Memverifikasi...
+            </>
+          ) : (
+            <>
+              <LogIn className="mr-2 h-4 w-4 text-brand-gold-soft" />
+              Masuk
+            </>
+          )}
+        </Button>
+      </form>
+    </div>
   );
 }

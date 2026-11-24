@@ -382,7 +382,7 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
                     <TableCell className={cn("min-w-48 text-sm", u.profile.nama ? "text-ink" : "text-ink-muted")}>
                       <span className="flex items-center gap-2.5">
                         <UserAvatar src={avatarPublicUrl(u.profile.avatar_url)} name={u.profile.nama ?? u.email} />
-                        {u.profile.nama ?? "—"}
+                        {u.profile.nama ?? (u.profile.nama_google ? `${u.profile.nama_google} (Google)` : "—")}
                       </span>
                     </TableCell>
                     <TableCell className={cn("min-w-32 text-xs", u.profile.jabatan ? "text-ink" : "text-ink-muted")}>

@@ -3,6 +3,8 @@ import type { UserRole } from "@/lib/user-schema";
 /** Kolom profiles yang dimuat untuk Manajemen User (email & role ada di UserRow). */
 export const USER_PROFILE_COLUMNS = [
   "nama",
+  /** Nama dari akun Google (privat, migrasi 0018); dipakai bila `nama` belum diisi. */
+  "nama_google",
   "perwakilan_daerah",
   "jabatan",
   "departemen",

@@ -57,7 +57,7 @@ async function ProfileContent() {
   const admin = createAdminClient();
   const { data: profile } = await admin
     .from("profiles")
-    .select("nama, perwakilan_daerah, jabatan, ukuran_baju, no_whatsapp, rencana_kedatangan, keterangan_kehadiran, avatar_url")
+    .select("nama, nama_google, perwakilan_daerah, jabatan, ukuran_baju, no_whatsapp, rencana_kedatangan, keterangan_kehadiran, avatar_url")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -67,7 +67,10 @@ async function ProfileContent() {
     return typeof value === "string" && value.trim().length > 0;
   }).length;
   const percent = Math.round((filled / PROGRESS_FIELDS.length) * 100);
-  const displayName = profile?.nama?.trim() || "Peserta Rakernas";
+  // Akun dari Google: nama Google (privat) hanya sebagai sapaan & isian awal; baru menjadi `nama`
+  // (dan tampil publik sebagai peserta) setelah user menyimpan profilnya sendiri.
+  const googleName = profile?.nama_google?.trim() || "";
+  const displayName = profile?.nama?.trim() || googleName || "Peserta Rakernas";
   const subtitle = [profile?.jabatan?.trim(), profile?.perwakilan_daerah?.trim()].filter(Boolean).join(" · ");
   const mode = profile?.keterangan_kehadiran as keyof typeof MODE_KEHADIRAN_LABEL | null | undefined;
 
@@ -152,7 +155,7 @@ async function ProfileContent() {
             key={`${user.email}-${profile?.nama}-${profile?.rencana_kedatangan}`}
             initial={{
               email: user.email ?? "",
-              nama: profile?.nama ?? "",
+              nama: profile?.nama || googleName,
               perwakilanDaerah: profile?.perwakilan_daerah ?? "",
               jabatan: profile?.jabatan ?? "",
               ukuranBaju: profile?.ukuran_baju ?? "",

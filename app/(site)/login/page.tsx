@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-type SearchParams = Promise<{ next?: string | string[]; email?: string | string[] }>;
+type SearchParams = Promise<{ next?: string | string[]; email?: string | string[]; error?: string | string[] }>;
 
 const DEFAULT_SUBTITLE = "Masuk untuk melihat dan melengkapi profil Anda";
 
@@ -80,7 +80,11 @@ async function LoginCard({ searchParams }: { searchParams: SearchParams }) {
         }
       >
         <LoginTransitionItem>
-          <LoginForm next={next} defaultEmail={parsedEmail.success ? parsedEmail.data : undefined} />
+          <LoginForm
+            next={next}
+            defaultEmail={parsedEmail.success ? parsedEmail.data : undefined}
+            googleError={first(params.error) === "google"}
+          />
         </LoginTransitionItem>
       </LoginCardShell>
     </LoginTransition>
