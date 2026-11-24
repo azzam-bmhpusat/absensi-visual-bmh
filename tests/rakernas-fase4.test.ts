@@ -101,26 +101,18 @@ describe("Fase 4 — Dress Code & Lokasi (PRD Rakernas BMH)", () => {
       expect(LOCATION_DATA.mapsButtonLabel).toBe("Google Map Hotel Luminor");
     });
 
-    it("menampilkan 8 foto galeri dari LOCATION_DATA dengan urutan keterangan persis sesuai PRD A.5", () => {
-      expect(LOCATION_DATA.gallery).toHaveLength(8);
-      const expectedCaptions = [
-        "Gedung Utama",
-        "Ruang Acara",
-        "Masjid",
-        "Restaurant",
-        "Kamar",
-        "Kamar",
-        "Kolam Renang",
-        "Area Parkir",
-      ];
+    it("menampilkan 5 foto galeri dari LOCATION_DATA dengan urutan keterangan persis", () => {
+      expect(LOCATION_DATA.gallery).toHaveLength(5);
+      const expectedCaptions = ["Gedung", "Ruang Acara", "Ruang Makan", "Kamar", "Belakang Gedung"];
       expect(LOCATION_DATA.gallery.map((g) => g.caption)).toEqual(expectedCaptions);
       expect(locationContent).toContain("LOCATION_DATA.gallery.map");
     });
 
-    it("menerapkan galeri Carousel dengan basis-[85%] sm:basis-1/2 lg:basis-1/3", () => {
-      expect(locationContent).toContain("basis-[85%]");
-      expect(locationContent).toContain("sm:basis-1/2");
-      expect(locationContent).toContain("lg:basis-1/3");
+    it("menerapkan galeri Carousel potret 3:4 dengan basis-[70%] sm:basis-1/3 lg:basis-1/5", () => {
+      expect(locationContent).toContain("basis-[70%]");
+      expect(locationContent).toContain("sm:basis-1/3");
+      expect(locationContent).toContain("lg:basis-1/5");
+      expect(locationContent).toContain("aspect-[3/4]");
     });
 
     it("memiliki modal Dialog pembesaran foto dengan DialogTitle dan DialogDescription", () => {
@@ -133,10 +125,8 @@ describe("Fase 4 — Dress Code & Lokasi (PRD Rakernas BMH)", () => {
     });
 
     it("mengatur image sizes responsif pada galeri dan dialog foto", () => {
-      expect(locationContent).toContain("(max-width: 640px) 85vw");
-      expect(locationContent).toContain("(max-width: 1024px) 50vw");
-      expect(locationContent).toContain("33vw");
-      expect(locationContent).toContain("(max-width: 768px) 95vw");
+      expect(locationContent).toContain("(max-width: 640px) 70vw, (max-width: 1024px) 33vw, 20vw");
+      expect(locationContent).toContain("(max-width: 640px) 90vw, 384px");
     });
   });
 

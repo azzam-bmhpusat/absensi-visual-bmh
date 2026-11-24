@@ -62,6 +62,8 @@ export interface FooterInfo {
   committee: {
     label: string;
     url: string;
+    /** Nomor WhatsApp panitia dalam format lokal (sama dengan `url`). */
+    phone: string;
   };
 }
 
@@ -248,39 +250,13 @@ export const LOCATION_DATA = {
   address: EVENT_INFO.address,
   mapsUrl: EVENT_INFO.mapsUrl,
   mapsButtonLabel: "Google Map Hotel Luminor",
+  // Foto potret 224x298 di public/galeri-fasilitas-hotel (kartu galeri berasio 3:4).
   gallery: [
-    {
-      src: "/rakernas/galeri-gedung-utama.webp",
-      caption: "Gedung Utama",
-    },
-    {
-      src: "/rakernas/galeri-ruang-acara.webp",
-      caption: "Ruang Acara",
-    },
-    {
-      src: "/rakernas/galeri-masjid.jpg",
-      caption: "Masjid",
-    },
-    {
-      src: "/rakernas/galeri-restaurant.webp",
-      caption: "Restaurant",
-    },
-    {
-      src: "/rakernas/galeri-kamar-1.jpg",
-      caption: "Kamar",
-    },
-    {
-      src: "/rakernas/galeri-kamar-2.webp",
-      caption: "Kamar",
-    },
-    {
-      src: "/rakernas/galeri-kolam-renang.webp",
-      caption: "Kolam Renang",
-    },
-    {
-      src: "/rakernas/galeri-area-parkir.webp",
-      caption: "Area Parkir",
-    },
+    { src: "/galeri-fasilitas-hotel/gedung.jpg", caption: "Gedung" },
+    { src: "/galeri-fasilitas-hotel/ruang-acara.jpg", caption: "Ruang Acara" },
+    { src: "/galeri-fasilitas-hotel/ruang-makan.jpg", caption: "Ruang Makan" },
+    { src: "/galeri-fasilitas-hotel/kamar.jpg", caption: "Kamar" },
+    { src: "/galeri-fasilitas-hotel/belakang-gedung.jpg", caption: "Belakang Gedung" },
   ] as GalleryItem[],
 };
 
@@ -419,5 +395,6 @@ export const FOOTER_DATA: FooterInfo = {
   committee: {
     label: "Panitia Rakernas",
     url: "https://wa.me/6289517795206",
+    phone: "089517795206",
   },
 };

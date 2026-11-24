@@ -42,6 +42,16 @@ export async function updateSession(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
+  // Login Google kembali ke Site URL (/?code=...) bila redirect_to tidak cocok dengan daftar
+  // Redirect URLs Supabase: teruskan ke /auth/callback agar code ditukar menjadi sesi.
+  const strayCode = pathname === "/" ? request.nextUrl.searchParams.get("code") : null;
+  if (strayCode) {
+    const callbackUrl = request.nextUrl.clone();
+    callbackUrl.pathname = "/auth/callback";
+    callbackUrl.search = `?code=${encodeURIComponent(strayCode)}`;
+    return NextResponse.redirect(callbackUrl);
+  }
+
   // Sesi login disegarkan di SETIAP halaman (bukan hanya rute terproteksi). Bila token disegarkan
   // dari Server Component (mis. navbar), cookie baru tidak bisa disimpan; refresh token lama lalu
   // dianggap dipakai ulang oleh Supabase dan sesi dicabut (user ter-logout sendiri).

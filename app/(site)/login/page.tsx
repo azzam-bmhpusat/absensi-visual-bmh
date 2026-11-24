@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { LockKeyhole } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { LoginForm } from "@/components/auth/login-form";
+import { LoginForm, type GoogleLoginError } from "@/components/auth/login-form";
 import { LoginTransition, LoginTransitionItem } from "@/components/auth/login-transition";
 import { PublicFooter } from "@/components/rakernas/public-page";
 import { NAV_MENU } from "@/content/rakernas";
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-type SearchParams = Promise<{ next?: string | string[]; email?: string | string[] }>;
+type SearchParams = Promise<{ next?: string | string[]; email?: string | string[]; error?: string | string[] }>;
 
 const DEFAULT_SUBTITLE = "Masuk untuk melihat dan melengkapi profil Anda";
 
@@ -22,6 +22,12 @@ const DEFAULT_SUBTITLE = "Masuk untuk melihat dan melengkapi profil Anda";
 const PAGE_LABELS = new Map(
   NAV_MENU.flatMap((entry) => (entry.children ? entry.children : [entry])).map((item) => [item.href, item.label])
 );
+
+/** Nilai ?error= dari alur login Google -> jenis pesan di LoginForm. */
+const GOOGLE_ERROR_PARAMS: Record<string, GoogleLoginError | undefined> = {
+  google: "failed",
+  google_disabled: "disabled",
+};
 
 function first(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
@@ -80,7 +86,11 @@ async function LoginCard({ searchParams }: { searchParams: SearchParams }) {
         }
       >
         <LoginTransitionItem>
-          <LoginForm next={next} defaultEmail={parsedEmail.success ? parsedEmail.data : undefined} />
+          <LoginForm
+            next={next}
+            defaultEmail={parsedEmail.success ? parsedEmail.data : undefined}
+            googleError={GOOGLE_ERROR_PARAMS[first(params.error) ?? ""]}
+          />
         </LoginTransitionItem>
       </LoginCardShell>
     </LoginTransition>

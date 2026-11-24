@@ -38,21 +38,12 @@ describe("Fase 1 — Konten Bertipe (PRD Rakernas BMH)", () => {
       ]);
     });
 
-    it("memiliki tepat 8 foto galeri lokasi dengan urutan keterangan sesuai A.5", () => {
-      expect(LOCATION_DATA.gallery).toHaveLength(8);
-      const expectedCaptions = [
-        "Gedung Utama",
-        "Ruang Acara",
-        "Masjid",
-        "Restaurant",
-        "Kamar",
-        "Kamar",
-        "Kolam Renang",
-        "Area Parkir",
-      ];
+    it("memiliki tepat 5 foto galeri fasilitas hotel dengan urutan keterangan", () => {
+      expect(LOCATION_DATA.gallery).toHaveLength(5);
+      const expectedCaptions = ["Gedung", "Ruang Acara", "Ruang Makan", "Kamar", "Belakang Gedung"];
       LOCATION_DATA.gallery.forEach((item, idx) => {
         expect(item.caption).toBe(expectedCaptions[idx]);
-        expect(item.src).toMatch(/^\/rakernas\/galeri-/);
+        expect(item.src).toMatch(/^\/galeri-fasilitas-hotel\/[a-z-]+\.jpg$/);
       });
     });
 

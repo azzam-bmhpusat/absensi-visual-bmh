@@ -65,7 +65,11 @@ describe("Guardrail: Rute Beranda (/) Bebas dari Redirect ke /absen", () => {
 
   it("beranda tetap publik: tidak ada redirect untuk /", () => {
     const mw = fs.readFileSync(path.join(__dirname, "..", "lib", "supabase", "middleware.ts"), "utf-8");
-    expect(mw).not.toMatch(/pathname === "\/"[^/]/);
+    // Satu-satunya pengecualian: /?code= (login Google yang jatuh ke Site URL) diteruskan ke
+    // /auth/callback; beranda tanpa code tetap publik (diuji perilakunya di google-login.test.ts).
+    const codeForward = 'pathname === "/" ? request.nextUrl.searchParams.get("code") : null';
+    expect(mw).toContain(codeForward);
+    expect(mw.replace(codeForward, "")).not.toMatch(/pathname === "\/"[^/]/);
   });
 
   it("next.config.ts TIDAK memiliki aturan redirect untuk rute /", async () => {
