@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: "/",
-    name: "Absensi Visual BMH – Rakernas BMH",
+    name: "Rakernas BMH 2027",
     short_name: "Rakernas BMH",
     description: "Sistem kehadiran visual cepat dan realtime untuk acara Baitul Maal Hidayatullah (BMH)",
     lang: "id",

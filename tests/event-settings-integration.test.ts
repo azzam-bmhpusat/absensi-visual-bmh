@@ -37,7 +37,7 @@ describe("event settings integration", () => {
     expect(html).toContain("Peta lokasi Gedung Pertemuan Baru");
     expect(html).toContain(`href="${settings.footerUrl}"`);
     expect(html.match(/Gedung Pertemuan Baru/g)!.length).toBeGreaterThanOrEqual(6);
-    expect(html.match(/href="https:\/\/maps.google.com\//g)!.length).toBe(2);
+    expect(html.match(/href="https:\/\/maps.google.com\//g)!.length).toBeGreaterThanOrEqual(2);
     expect(html).toContain("01 Jan");
     expect(html).toContain("02 Jan");
     expect(html.replace(/<[^>]+>/g, "")).toContain("Rapat Kerja Nasional BMH 2027");

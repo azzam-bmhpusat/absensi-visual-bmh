@@ -84,7 +84,7 @@ describe("Fase 2 — Kerangka, Header, Hero (PRD Rakernas BMH)", () => {
     });
 
     it("memiliki seluruh item menu dari NAV_MENU dengan tinggi minimal 44px", () => {
-      expect(headerContent).toContain("min-h-[44px]");
+      expect(headerContent).toMatch(/min-h-(?:11|14|\[44px\])/);
       expect(headerContent).toContain("NAV_MENU.map");
     });
   });

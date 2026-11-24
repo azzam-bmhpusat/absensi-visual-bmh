@@ -36,8 +36,8 @@ const siteUrl =
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Sistem Absensi Visual QR BMH",
-    template: "%s | Absensi Visual BMH",
+    default: "Rakernas BMH 2027",
+    template: "%s | Rakernas BMH 2027",
   },
   description: "Sistem kehadiran visual cepat dan realtime untuk acara Baitul Maal Hidayatullah (BMH)",
   applicationName: "Rakernas BMH",
