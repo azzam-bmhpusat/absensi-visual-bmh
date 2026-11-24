@@ -154,32 +154,21 @@ export function SiteHeader({
     <>
       <header className="sticky top-0 z-50 w-full border-b border-line bg-background/90 backdrop-blur">
         <div className="mx-auto flex h-14 w-full max-w-screen-xl items-center justify-between gap-3 px-4 sm:px-5 md:px-8 lg:h-16">
-          {/* Logo Kiri (Tautan ke /); nama acara hanya di HP/tablet karena desktop memuat menu */}
+          {/* Logo Kiri (Tautan ke /); logo sudah memuat nama acara */}
           <Link
             href="/"
-            className="flex min-h-11 min-w-11 shrink-0 items-center gap-2.5 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="flex min-h-11 min-w-11 shrink-0 items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label={EVENT_INFO.name}
             onClick={(event) => handleLinkClick(event, "/")}
           >
             <Image
               src={EVENT_INFO.logoSrc}
               alt={EVENT_INFO.logoAlt}
-              width={38}
-              height={36}
+              width={600}
+              height={223}
               priority
-              className="h-8 w-auto object-contain lg:h-9"
+              className="h-9 w-auto object-contain lg:h-10"
             />
-            <span
-              aria-hidden="true"
-              className="flex flex-col leading-none max-[359px]:hidden lg:hidden"
-            >
-              <span className="font-heading text-[15px] font-bold text-primary">
-                {EVENT_INFO.name}
-              </span>
-              <span className="mt-1 text-[10px] font-semibold tracking-[0.14em] text-brand-gold-text uppercase">
-                Rapat Kerja Nasional
-              </span>
-            </span>
           </Link>
 
           {/* Navigasi langsung pada laptop dan desktop */}

@@ -95,7 +95,7 @@ export const EVENT_INFO: EventInfo = {
   address: "Jl. Raya Mangga Besar No.73 1, RT.1/RW.2, Tangki, Kec. Taman Sari, Kota Jakarta Barat, Daerah Khusus Ibukota Jakarta 11170",
   mapsUrl: "https://maps.app.goo.gl/d4RQdTwK9jbx4qZD8",
   countdownTarget: "2026-12-01T10:00:00+07:00",
-  logoSrc: "/logo.png",
+  logoSrc: "/logo-rakernas-nav.png",
   logoAlt: "Logo Rakernas BMH 2027",
 };
 
