@@ -5,6 +5,7 @@ import { connection } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { FORM_ACCESS_COOKIE, verifyFormAccessToken } from "@/lib/form-access";
 import { getParticipantPassword } from "@/lib/participant-account";
+import { PROFILE_COMPLETE_COLUMNS, isProfileComplete } from "@/lib/profile-contact";
 import { PublicFooter } from "@/components/rakernas/public-page";
 import { FormAccessDialog } from "@/components/form/access-dialog";
 import { ParticipantForm, type ParticipantOption } from "@/components/form/participant-form";
@@ -19,10 +20,11 @@ async function FormContent() {
   const access = verifyFormAccessToken((await cookies()).get(FORM_ACCESS_COOKIE)?.value);
   if (!access) return <FormAccessDialog />;
 
-  // Daftar peserta hanya dimuat setelah kata sandi akses benar.
+  // Daftar peserta hanya dimuat setelah kata sandi akses benar. Kolom privat hanya dipakai
+  // di server untuk menandai profil lengkap; ke browser hanya dikirim id, nama, daerah, dan status.
   const { data } = await createAdminClient()
     .from("profiles")
-    .select("id, nama, perwakilan_daerah")
+    .select(`id, ${PROFILE_COMPLETE_COLUMNS}`)
     .eq("role", "peserta")
     .not("nama", "is", null)
     .order("nama", { ascending: true });
@@ -30,6 +32,7 @@ async function FormContent() {
     id: p.id,
     nama: p.nama,
     perwakilan_daerah: p.perwakilan_daerah,
+    complete: isProfileComplete(p),
   }));
 
   return <ParticipantForm participants={participants} loginPassword={getParticipantPassword()} />;

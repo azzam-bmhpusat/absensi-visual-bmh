@@ -175,6 +175,10 @@ export function whatsappLink(no: string | null | undefined): string | null {
 
 export type ProfileInput = z.input<typeof profileSchema>;
 
+/** Kolom profiles yang diperiksa isProfileComplete (untuk .select). */
+export const PROFILE_COMPLETE_COLUMNS =
+  "nama, perwakilan_daerah, jabatan, ukuran_baju, no_whatsapp, rencana_kedatangan, keterangan_kehadiran";
+
 /** Profil dianggap lengkap bila seluruh field peserta terisi. */
 export function isProfileComplete(
   p:

@@ -7,6 +7,8 @@ const mocks = vi.hoisted(() => ({
   setCookie: vi.fn(),
   update: vi.fn(),
   updateResult: { data: { email: "budi@bmh.or.id" }, error: null } as { data: unknown; error: unknown },
+  /** Profil saat ini (dibaca sebelum update); default belum lengkap. */
+  currentRow: { nama: "Budi", perwakilan_daerah: "BMH Jawa Timur" } as Record<string, string> | null,
   ip: "10.0.0.1",
 }));
 
@@ -21,14 +23,16 @@ vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("@/lib/supabase/admin", () => ({
   createAdminClient: () => ({
     from: () => {
+      let isUpdate = false;
       const b: Record<string, unknown> = {};
       b.update = (row: unknown) => {
+        isUpdate = true;
         mocks.update(row);
         return b;
       };
       b.eq = () => b;
       b.select = () => b;
-      b.maybeSingle = async () => mocks.updateResult;
+      b.maybeSingle = async () => (isUpdate ? mocks.updateResult : { data: mocks.currentRow, error: null });
       return b;
     },
   }),
@@ -41,7 +45,7 @@ import {
   isFormAccessPassword,
   verifyFormAccessToken,
 } from "@/lib/form-access";
-import { submitParticipantForm, unlockForm } from "@/app/(site)/form/actions";
+import { loadParticipant, submitParticipantForm, unlockForm } from "@/app/(site)/form/actions";
 
 const ID = "3f2b8c1e-4a5d-4e6f-8a9b-0c1d2e3f4a5b";
 const VALID = {
@@ -71,6 +75,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   mocks.cookieValues.clear();
   mocks.updateResult = { data: { email: "budi@bmh.or.id" }, error: null };
+  mocks.currentRow = { nama: "Budi", perwakilan_daerah: "BMH Jawa Timur" };
   ipSeq += 1;
   mocks.ip = `10.0.1.${ipSeq}`;
 });
@@ -136,6 +141,22 @@ describe("submitParticipantForm", () => {
     expect(mocks.update).toHaveBeenCalledWith(
       expect.objectContaining({ jabatan: "Kepala Cabang", no_whatsapp: "081234567890" })
     );
+  });
+
+  it("profil yang sudah lengkap tidak bisa diisi ulang lewat /form", async () => {
+    mocks.cookieValues.set(FORM_ACCESS_COOKIE, createFormAccessToken());
+    mocks.currentRow = {
+      nama: "Budi",
+      perwakilan_daerah: "BMH Jawa Timur",
+      jabatan: "Kepala",
+      ukuran_baju: "L",
+      no_whatsapp: "081234567890",
+      rencana_kedatangan: "2026-12-08T03:00:00.000Z",
+      keterangan_kehadiran: "offline",
+    };
+    expect((await submitParticipantForm(null, form(VALID))).error).toMatch(/sudah diisi lengkap/);
+    expect((await loadParticipant(ID)).success).toBe(false);
+    expect(mocks.update).not.toHaveBeenCalled();
   });
 
   it("peserta tidak ditemukan (id bukan peserta) ditolak", async () => {

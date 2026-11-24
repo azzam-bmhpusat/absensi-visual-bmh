@@ -5,7 +5,12 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit } from "@/lib/rate-limit";
-import { isoToWibLocal, participantFormSchema } from "@/lib/profile-contact";
+import {
+  PROFILE_COMPLETE_COLUMNS,
+  isProfileComplete,
+  isoToWibLocal,
+  participantFormSchema,
+} from "@/lib/profile-contact";
 import {
   FORM_ACCESS_COOKIE,
   createFormAccessToken,
@@ -31,6 +36,19 @@ const FIELDS = [
 ] as const;
 
 const idSchema = z.uuid();
+
+/** Profil yang sudah lengkap dikunci dari /form; perubahan lewat halaman Profil setelah login. */
+const ALREADY_FILLED = "Data peserta ini sudah diisi lengkap. Untuk mengubahnya, masuk lalu buka halaman Profil.";
+
+/** Satu profil peserta (role peserta) beserta kolom kelengkapannya. */
+async function readParticipant(id: string) {
+  return createAdminClient()
+    .from("profiles")
+    .select(PROFILE_COMPLETE_COLUMNS)
+    .eq("id", id)
+    .eq("role", "peserta")
+    .maybeSingle();
+}
 
 async function clientIp(): Promise<string> {
   const forwardedFor = (await headers()).get("x-forwarded-for");
@@ -68,14 +86,10 @@ export async function loadParticipant(id: string): Promise<LoadParticipantResult
   if (!(await hasAccess())) return { success: false, error: NO_ACCESS };
   if (!idSchema.safeParse(id).success) return { success: false, error: "Peserta tidak ditemukan." };
 
-  const { data, error } = await createAdminClient()
-    .from("profiles")
-    .select("nama, perwakilan_daerah, jabatan, ukuran_baju, no_whatsapp, rencana_kedatangan, keterangan_kehadiran")
-    .eq("id", id)
-    .eq("role", "peserta")
-    .maybeSingle();
+  const { data, error } = await readParticipant(id);
   if (error) return { success: false, error: "Gagal memuat data peserta. Coba lagi." };
   if (!data) return { success: false, error: "Peserta tidak ditemukan." };
+  if (isProfileComplete(data)) return { success: false, error: ALREADY_FILLED };
 
   return {
     success: true,
@@ -117,6 +131,12 @@ export async function submitParticipantForm(
   }
 
   try {
+    // Tolak juga di server: daftar di browser bisa saja sudah usang atau dilewati.
+    const current = await readParticipant(id);
+    if (current.error) return { success: false, error: "Gagal memeriksa data peserta. Coba lagi." };
+    if (!current.data) return { success: false, error: "Peserta tidak ditemukan." };
+    if (isProfileComplete(current.data)) return { success: false, error: ALREADY_FILLED };
+
     const { data, error } = await createAdminClient()
       .from("profiles")
       .update(parsed.data)
