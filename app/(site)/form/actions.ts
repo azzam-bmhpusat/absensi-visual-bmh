@@ -25,8 +25,8 @@ const UNLOCK_LIMIT = 10;
 const SUBMIT_LIMIT = 30;
 const WINDOW_MS = 15 * 60_000;
 
+/** Field yang boleh diisi lewat /form (email dan nama dikunci, tidak dibaca dari form). */
 const FIELDS = [
-  "nama",
   "perwakilan_daerah",
   "jabatan",
   "ukuran_baju",
@@ -44,7 +44,7 @@ const ALREADY_FILLED = "Data peserta ini sudah diisi lengkap. Untuk mengubahnya,
 async function readParticipant(id: string) {
   return createAdminClient()
     .from("profiles")
-    .select(PROFILE_COMPLETE_COLUMNS)
+    .select(`email, ${PROFILE_COMPLETE_COLUMNS}`)
     .eq("id", id)
     .eq("role", "peserta")
     .maybeSingle();
@@ -78,7 +78,7 @@ export async function unlockForm(_prev: UnlockResult | null, formData: FormData)
 }
 
 export type LoadParticipantResult =
-  | { success: true; initial: Omit<ProfileInitial, "email"> }
+  | { success: true; initial: ProfileInitial }
   | { success: false; error: string };
 
 /** Data profil satu peserta untuk mengisi formulir. */
@@ -94,6 +94,7 @@ export async function loadParticipant(id: string): Promise<LoadParticipantResult
   return {
     success: true,
     initial: {
+      email: data.email ?? "",
       nama: data.nama ?? "",
       perwakilanDaerah: data.perwakilan_daerah ?? "",
       jabatan: data.jabatan ?? "",

@@ -143,6 +143,14 @@ describe("submitParticipantForm", () => {
     );
   });
 
+  it("nama dan email dikunci: nilai dari browser diabaikan", async () => {
+    mocks.cookieValues.set(FORM_ACCESS_COOKIE, createFormAccessToken());
+    await submitParticipantForm(null, form({ ...VALID, nama: "Nama Palsu", email: "lain@bmh.or.id" }));
+    const row = mocks.update.mock.calls[0][0] as Record<string, unknown>;
+    expect(row).not.toHaveProperty("nama");
+    expect(row).not.toHaveProperty("email");
+  });
+
   it("profil yang sudah lengkap tidak bisa diisi ulang lewat /form", async () => {
     mocks.cookieValues.set(FORM_ACCESS_COOKIE, createFormAccessToken());
     mocks.currentRow = {

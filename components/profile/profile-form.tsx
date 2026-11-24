@@ -109,8 +109,8 @@ function IconField({
 const LOCKED_HINT = "Dikunci. Hubungi panitia untuk mengubahnya.";
 
 /**
- * Field terkunci (email, jabatan): read-only dan tanpa `name`, jadi tidak ikut terkirim.
- * Server (updateProfile) juga tidak membaca field ini.
+ * Field terkunci (email, jabatan, nama di /form): read-only dan tanpa `name`, jadi tidak ikut terkirim.
+ * Server (updateProfile, submitParticipantForm) juga tidak membaca field ini.
  */
 function LockedField({ id, label, icon: Icon, value }: { id: string; label: string; icon: LucideIcon; value: string }) {
   return (
@@ -148,11 +148,14 @@ export function ProfileFields({
   isPending,
   firstStep,
   jabatanEditable = false,
+  lockedEmail,
 }: {
   initial: Omit<ProfileInitial, "email">;
   isPending: boolean;
   firstStep: number;
   jabatanEditable?: boolean;
+  /** Dipakai /form: email ditampilkan terkunci dan nama ikut dikunci (tidak terkirim). */
+  lockedEmail?: string;
 }) {
   const [arrival, setArrival] = useState(initial.rencanaKedatangan);
   const preview = formatArrival(wibLocalToIso(arrival));
@@ -161,19 +164,28 @@ export function ProfileFields({
     <>
       <Section step={firstStep} title="Data Peserta" description="Ditampilkan pada daftar peserta Rakernas.">
         <div className="grid gap-4 md:grid-cols-2">
+          {lockedEmail !== undefined && (
+            <div className="md:col-span-2">
+              <LockedField id="email" label="Email" icon={Mail} value={lockedEmail} />
+            </div>
+          )}
           <div className="md:col-span-2">
-            <IconField id="nama" label="Nama lengkap (beserta gelar akademik)" icon={User}>
-              <InputGroupInput
-                id="nama"
-                name="nama"
-                required
-                maxLength={100}
-                autoComplete="name"
-                defaultValue={initial.nama}
-                className={inputClass}
-                disabled={isPending}
-              />
-            </IconField>
+            {lockedEmail !== undefined ? (
+              <LockedField id="nama" label="Nama lengkap (beserta gelar akademik)" icon={User} value={initial.nama} />
+            ) : (
+              <IconField id="nama" label="Nama lengkap (beserta gelar akademik)" icon={User}>
+                <InputGroupInput
+                  id="nama"
+                  name="nama"
+                  required
+                  maxLength={100}
+                  autoComplete="name"
+                  defaultValue={initial.nama}
+                  className={inputClass}
+                  disabled={isPending}
+                />
+              </IconField>
+            )}
           </div>
           <IconField id="perwakilan_daerah" label="Perwakilan Daerah" icon={MapPinned}>
             <InputGroupInput

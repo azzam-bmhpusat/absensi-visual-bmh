@@ -200,7 +200,7 @@ export function ParticipantForm({
   loginPassword: string;
 }) {
   const [selected, setSelected] = useState<ParticipantOption | null>(null);
-  const [initial, setInitial] = useState<Omit<ProfileInitial, "email"> | null>(null);
+  const [initial, setInitial] = useState<ProfileInitial | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isLoading, startLoading] = useTransition();
   const [state, formAction, isPending] = useActionState<SubmitParticipantResult | null, FormData>(
@@ -266,7 +266,13 @@ export function ParticipantForm({
       {selected && initial && !isLoading && (
         <form action={formAction} key={selected.id}>
           <input type="hidden" name="id" value={selected.id} />
-          <ProfileFields initial={initial} isPending={isPending} firstStep={2} jabatanEditable />
+          <ProfileFields
+            initial={initial}
+            isPending={isPending}
+            firstStep={2}
+            jabatanEditable
+            lockedEmail={initial.email}
+          />
           <SubmitBar
             error={state?.success ? undefined : state?.error}
             isPending={isPending}
