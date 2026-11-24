@@ -1,6 +1,6 @@
 "use client";
 
-import { Plane, TrainFront, Bus, MapPin, Megaphone } from "lucide-react";
+import { TrainFront, Bus, Plane, Car, Footprints, MapPin, Megaphone } from "lucide-react";
 import { cn } from "cn";
 import {
   Accordion,
@@ -9,97 +9,111 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { buttonVariants } from "@/components/ui/button";
-import { TRANSPORT_DATA, EVENT_INFO } from "@/content/rakernas";
+import { TRANSPORT_DATA, type TransportItem } from "@/content/rakernas";
 import { DEFAULT_EVENT_SETTINGS } from "@/lib/event-settings";
+import { buildTransportDirectionsUrl } from "@/lib/transport-directions";
 import { Reveal, RevealItem, RevealStagger } from "@/components/motion/reveal";
 
-function getOriginIcon(iconType: "plane" | "train" | "bus") {
-  switch (iconType) {
-    case "plane":
-      return Plane;
-    case "train":
-      return TrainFront;
-    case "bus":
-      return Bus;
-    default:
-      return MapPin;
-  }
+function getStopIcon(iconType: TransportItem["icon"]) {
+  if (iconType === "train") return TrainFront;
+  return iconType === "plane" ? Plane : Bus;
 }
 
 export function TransportSection({
-  venueName = EVENT_INFO.hotel,
+  venueName = TRANSPORT_DATA.destination.name,
   footerUrl = DEFAULT_EVENT_SETTINGS.footerUrl,
 }: { venueName?: string; footerUrl?: string } = {}) {
   const { announcement } = TRANSPORT_DATA;
   return (
-    <div className="mx-auto w-full max-w-screen-xl px-5 md:px-8">
+    <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-5 md:px-8">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
         {/* Kolom Kiri: Judul & Subjudul (Sticky di layar besar) */}
         <Reveal x={-24} y={0} className="lg:col-span-5 lg:sticky lg:top-28 space-y-4">
           <div className="inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-primary">
             <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
-            <span>Panduan Rute & Tarif</span>
+            <span>{TRANSPORT_DATA.badge}</span>
           </div>
           <h2 className="text-2xl md:text-4xl font-heading font-semibold text-primary tracking-tight">
             {TRANSPORT_DATA.title}
           </h2>
           <p className="text-base md:text-lg text-ink-muted leading-relaxed">
-            menuju{" "}
+            {TRANSPORT_DATA.subtitle}{" "}
             <span className="font-semibold text-ink">{venueName}</span>
           </p>
-          <p className="text-sm text-ink-muted leading-relaxed hidden sm:block">
-            Perkiraan tarif moda transportasi umum dari berbagai titik kedatangan
-            utama (Bandara, Stasiun, dan Terminal) menuju ke lokasi acara.
+          <p className="text-sm text-ink-muted leading-relaxed">
+            {TRANSPORT_DATA.description}
+          </p>
+          <p className="text-xs text-ink-muted leading-relaxed">
+            {TRANSPORT_DATA.travelNote}
+          </p>
+          <p className="text-xs text-ink-muted leading-relaxed">
+            {TRANSPORT_DATA.fareNote}
           </p>
         </Reveal>
 
-        {/* Kolom Kanan: Accordion Titik Asal */}
+        {/* Kolom Kanan: pemberhentian lokal, bandara, dan rute menuju hotel */}
         <RevealStagger className="lg:col-span-7" stagger={0.07}>
           <Accordion
             defaultValue={["origin-0"]}
             className="w-full space-y-3"
           >
             {TRANSPORT_DATA.items.map((item, index) => {
-              const Icon = getOriginIcon(item.icon);
+              const Icon = getStopIcon(item.icon);
               const value = `origin-${index}`;
+              const isDriving = item.travelMode === "driving";
+              const RouteIcon = isDriving ? Car : Footprints;
+              const routeLabel = isDriving ? TRANSPORT_DATA.drivingLinkLabel : TRANSPORT_DATA.walkingLinkLabel;
 
               return (
-                <RevealItem key={item.origin} y={16}>
+                <RevealItem key={item.name} y={16}>
                 <AccordionItem
                   value={value}
                   className="rounded-2xl border border-line bg-card shadow-[0_8px_24px_-8px_rgba(19,75,64,0.18)] px-5 md:px-6 transition-all data-open:border-primary/40 data-open:shadow-md"
                 >
                   <AccordionTrigger className="items-center py-4 hover:no-underline gap-4 text-left font-heading font-semibold text-ink text-base md:text-lg min-h-[44px]">
-                    <div className="flex items-center gap-3.5 flex-1">
+                    <div className="flex min-w-0 items-center gap-3.5 flex-1">
                       <div className="h-10 w-10 rounded-full bg-green-100 text-primary flex items-center justify-center shrink-0">
                         <Icon className="h-5 w-5" aria-hidden="true" />
                       </div>
                       <span className="flex min-w-0 flex-col">
                         <span className="font-heading font-semibold text-ink text-base md:text-lg">
-                          {item.origin}
+                          {item.name}
                         </span>
                         <span className="text-xs md:text-sm font-normal text-ink-muted tabular-nums">
-                          {item.distance}
+                          {item.accessInfo}
                         </span>
                       </span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="pt-1 pb-4">
-                    <ul className="divide-y divide-line/60">
-                      {item.fares.map((fare, fIndex) => (
-                        <li
-                          key={fIndex}
-                          className="flex items-center justify-between py-3 text-sm md:text-base gap-4"
-                        >
-                          <span className="text-ink-muted font-normal">
-                            {fare.mode}
-                          </span>
-                          <span className="font-semibold text-ink tabular-nums text-right shrink-0">
-                            {fare.price}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
+                    <p className="text-sm leading-relaxed text-ink-muted md:text-base">{item.description}</p>
+                    <dl className="mt-4 divide-y divide-line rounded-xl border border-line bg-secondary/40 px-4 text-sm">
+                      <div className="grid grid-cols-1 gap-1 py-3 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-4">
+                        <dt className="text-ink-muted">Jarak ke hotel</dt>
+                        <dd className="min-w-0 leading-relaxed text-ink">{item.distanceInfo}</dd>
+                      </div>
+                      <div className="grid grid-cols-1 gap-1 py-3 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-4">
+                        <dt className="text-ink-muted">Moda yang cocok</dt>
+                        <dd className="min-w-0 text-ink">{item.transportMode}</dd>
+                      </div>
+                      <div className="grid grid-cols-1 gap-1 py-3 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-4">
+                        <dt className="text-ink-muted">Estimasi harga</dt>
+                        <dd className="min-w-0 font-semibold text-primary tabular-nums">{item.estimatedFare}</dd>
+                      </div>
+                    </dl>
+                    <a
+                      href={buildTransportDirectionsUrl(item)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${isDriving ? "Rute berkendara" : "Jalan kaki"} dari ${item.name} ke ${TRANSPORT_DATA.destination.name} di Google Maps`}
+                      className={cn(
+                        buttonVariants({ variant: "outline" }),
+                        "mt-4 h-auto min-h-11 w-full gap-2 whitespace-normal rounded-xl border-line bg-white px-4 py-2.5 text-sm font-semibold text-primary hover:bg-secondary sm:w-auto",
+                      )}
+                    >
+                      <RouteIcon className="size-4 shrink-0" aria-hidden="true" />
+                      {routeLabel}
+                    </a>
                   </AccordionContent>
                 </AccordionItem>
                 </RevealItem>

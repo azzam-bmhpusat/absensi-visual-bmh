@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import fs from "fs";
 import path from "path";
 import nextConfig from "../next.config";
-import { config as middlewareConfig } from "../middleware";
+import { config as proxyConfig } from "../proxy";
 
 vi.mock("@/lib/event-settings-server", () => ({
   getEventSettings: async () => ({
@@ -52,8 +52,8 @@ describe("Guardrail: Rute Beranda (/) Bebas dari Redirect ke /absen", () => {
     expect(pageContent).toContain("<SiteFooter");
   });
 
-  it("middleware berjalan di semua halaman (sesi login tetap segar) kecuali API & file statis", () => {
-    const [source] = middlewareConfig.matcher;
+  it("proxy berjalan di semua halaman (sesi login tetap segar) kecuali API & file statis", () => {
+    const [source] = proxyConfig.matcher;
     const matches = (pathname: string) => new RegExp(`^${source}$`).test(pathname);
     for (const p of ["/", "/rundown", "/form", "/login", "/profile", "/informasi-kamar-hotel", "/manajemen-user/x"]) {
       expect(matches(p), p).toBe(true);

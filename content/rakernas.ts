@@ -42,17 +42,17 @@ export interface GalleryItem {
   caption: string;
 }
 
-export interface TransportFare {
-  mode: string;
-  price: string;
-}
-
 export interface TransportItem {
-  origin: string;
-  /** Perkiraan jarak ke lokasi acara, mis. "± 3-4 km". */
-  distance: string;
-  icon: "plane" | "train" | "bus";
-  fares: TransportFare[];
+  name: string;
+  icon: "train" | "bus" | "plane";
+  accessInfo: string;
+  distanceInfo: string;
+  transportMode: string;
+  estimatedFare: string;
+  travelMode: "walking" | "driving";
+  description: string;
+  /** Nama titik asal yang digunakan Google Maps untuk rute menuju hotel. */
+  mapsQuery: string;
 }
 
 export interface FooterInfo {
@@ -262,87 +262,74 @@ export const LOCATION_DATA = {
 
 export const TRANSPORT_DATA = {
   title: "Info Transportasi",
-  subtitle: "menuju Hotel Luminor",
+  badge: "Panduan Transportasi",
+  subtitle: "Akses menuju",
+  description: "Pilih halte, terminal, stasiun MRT, atau bandara kedatangan, lalu buka rute menuju hotel pada peta.",
+  travelNote: "Waktu perjalanan bersifat perkiraan. Akses jalan kaki mengikuti pintu keluar dan penyeberangan; waktu berkendara bergantung pada lalu lintas.",
+  fareNote: "Harga merupakan perkiraan dan dapat berubah sesuai layanan, waktu pemesanan, serta biaya tambahan.",
+  walkingLinkLabel: "Jalan kaki ke hotel",
+  drivingLinkLabel: "Rute berkendara ke hotel",
+  destination: {
+    name: "Ambhara Hotel Jakarta",
+    address: "Jl. Iskandarsyah I No.1, RT.5/RW.2, Melawai, Kec. Kby. Baru, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12160",
+  },
+  // Informasi jarak, moda, dan kisaran harga mengikuti data yang diberikan panitia.
   items: [
     {
-      origin: "Stasiun Pasar Senen",
-      distance: "± 3-4 km",
-      icon: "train" as const,
-      fares: [
-        { mode: "Taksi Konvensional", price: "Rp 30.000 - 50.000" },
-        { mode: "Taksi Online", price: "Rp 25.000 - 40.000" },
-        { mode: "Ojek Online", price: "Rp 12.000 - 20.000" },
-      ],
+      name: "Halte Hotel Ambhara Blok M",
+      icon: "bus",
+      accessInfo: "Di dekat hotel",
+      distanceInfo: "Sangat dekat, bisa jalan kaki",
+      transportMode: "Ojek Online",
+      estimatedFare: "Rp 40.000 – 60.000",
+      travelMode: "walking",
+      description: "Pilihan utama untuk turun di dekat Ambhara Hotel Jakarta. Periksa posisi halte dan penyeberangan pada peta sebelum berjalan ke pintu masuk hotel.",
+      mapsQuery: "Halte Hotel Ambhara Blok M, Jalan Iskandarsyah, Jakarta Selatan",
     },
     {
-      origin: "Stasiun Gambir",
-      distance: "± 5-6 km",
-      icon: "train" as const,
-      fares: [
-        { mode: "Taksi Konvensional", price: "Rp 40.000 - 60.000" },
-        { mode: "Taksi Online", price: "Rp 30.000 - 50.000" },
-        { mode: "Ojek Online", price: "Rp 15.000 - 25.000" },
-      ],
+      name: "Terminal Blok M / Halte Transjakarta Blok M",
+      icon: "bus",
+      accessInfo: "Jalan kaki ±7 menit",
+      distanceInfo: "Terminal Blok M dan MRT Blok M BCA berjarak sekitar 7 menit jalan kaki dari hotel",
+      transportMode: "Ojek Online",
+      estimatedFare: "Rp 40.000 – 60.000",
+      travelMode: "walking",
+      description: "Turun di kawasan Terminal Blok M atau halte Transjakarta Blok M, lalu lanjutkan berjalan kaki menuju Ambhara Hotel di Jalan Iskandarsyah. Ikuti jalur pejalan kaki dan penyeberangan pada peta.",
+      mapsQuery: "Terminal Blok M, Jakarta Selatan",
     },
     {
-      origin: "Terminal Tanjung Priok",
-      distance: "± 9-10 km",
-      icon: "bus" as const,
-      fares: [
-        { mode: "Taksi Konvensional", price: "Rp 60.000 - 90.000" },
-        { mode: "Taksi Online", price: "Rp 45.000 - 70.000" },
-        { mode: "Ojek Online", price: "Rp 25.000 - 40.000" },
-      ],
+      name: "Stasiun MRT Blok M BCA",
+      icon: "train",
+      accessInfo: "Sekitar 660 m dari hotel",
+      distanceInfo: "Sekitar 660 m dari hotel",
+      transportMode: "Ojek Online",
+      estimatedFare: "Rp 40.000 – 60.000",
+      travelMode: "walking",
+      description: "Setelah keluar dari Stasiun MRT Blok M BCA, lanjutkan berjalan kaki menuju Ambhara Hotel di Jalan Iskandarsyah. Pilih pintu keluar dan jalur penyeberangan sesuai petunjuk peta.",
+      mapsQuery: "Stasiun MRT Blok M BCA, Jakarta Selatan",
+    },
+    // Halim terdekat dan CGK alternatif: turkishairlinesholidays.com/en-om/ambhara-hotel.
+    {
+      name: "Bandara Halim Perdanakusuma (HLP)",
+      icon: "plane",
+      accessInfo: "Bandara terdekat · Taksi/mobil ke hotel",
+      distanceInfo: "Sekitar 11 km",
+      transportMode: "Taksi Online",
+      estimatedFare: "Rp 65.000 – 100.000",
+      travelMode: "driving",
+      description: "Bandara terdekat dari Ambhara Hotel Jakarta. Dari area kedatangan, lanjutkan dengan taksi atau mobil menuju hotel. Buka peta untuk rute berkendara dan estimasi waktu terkini.",
+      mapsQuery: "Bandara Halim Perdanakusuma (HLP), Jakarta Timur",
     },
     {
-      origin: "Terminal Pulogadung",
-      distance: "± 10-11 km",
-      icon: "bus" as const,
-      fares: [
-        { mode: "Taksi Konvensional", price: "Rp 60.000 - 90.000" },
-        { mode: "Taksi Online", price: "Rp 45.000 - 70.000" },
-        { mode: "Ojek Online", price: "Rp 25.000 - 40.000" },
-      ],
-    },
-    {
-      origin: "Bandara Halim Perdanakusuma",
-      distance: "± 14-16 km",
-      icon: "plane" as const,
-      fares: [
-        { mode: "Taksi Bandara", price: "Rp 90.000 - 140.000" },
-        { mode: "Taksi Online", price: "Rp 65.000 - 100.000" },
-        { mode: "Ojek Online", price: "Rp 40.000 - 60.000" },
-      ],
-    },
-    {
-      origin: "Terminal Kalideres",
-      distance: "± 17-19 km",
-      icon: "bus" as const,
-      fares: [
-        { mode: "Taksi Konvensional", price: "Rp 110.000 - 160.000" },
-        { mode: "Taksi Online", price: "Rp 80.000 - 120.000" },
-        { mode: "Ojek Online", price: "Rp 50.000 - 75.000" },
-      ],
-    },
-    {
-      origin: "Terminal Kampung Rambutan",
-      distance: "± 22-25 km",
-      icon: "bus" as const,
-      fares: [
-        { mode: "Taksi Konvensional", price: "Rp 120.000 - 180.000" },
-        { mode: "Taksi Online", price: "Rp 90.000 - 140.000" },
-        { mode: "Ojek Online", price: "Rp 60.000 - 90.000" },
-      ],
-    },
-    {
-      origin: "Bandara Soekarno-Hatta",
-      distance: "± 30 km",
-      icon: "plane" as const,
-      fares: [
-        { mode: "Taksi Bandara", price: "Rp 200.000 - 300.000" },
-        { mode: "Taksi Online", price: "Rp 150.000 - 230.000" },
-        { mode: "Ojek Online", price: "Rp 100.000 - 150.000" },
-      ],
+      name: "Bandara Soekarno–Hatta (CGK)",
+      icon: "plane",
+      accessInfo: "Alternatif bandara · Taksi/mobil ke hotel",
+      distanceInfo: "Sekitar 30 km",
+      transportMode: "Taksi Bandara",
+      estimatedFare: "Rp 90.000 – 140.000",
+      travelMode: "driving",
+      description: "Alternatif bandara kedatangan menuju Ambhara Hotel Jakarta. Lanjutkan dengan taksi atau mobil dan sesuaikan titik awal pada peta dengan terminal kedatangan Anda.",
+      mapsQuery: "Bandara Internasional Soekarno-Hatta (CGK), Tangerang, Banten",
     },
   ] as TransportItem[],
   /** Pengumuman di bagian bawah section. Kata "panitia" ditautkan ke footer_url pada event settings. */

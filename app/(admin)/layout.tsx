@@ -4,10 +4,9 @@ import { createPublicServerClient } from "@/lib/supabase/server";
 import {
   SidebarProvider,
   SidebarInset,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/admin/app-sidebar";
-import { Search, Bell, Mail } from "lucide-react";
+import { AdminHeader } from "@/components/admin/admin-header";
 
 // Admin routes depend on live Supabase data; allow a blocking render
 // instead of requiring every data access to be wrapped in Suspense.
@@ -43,7 +42,7 @@ export default async function AdminLayout({
   ).length;
 
   return (
-    <SidebarProvider>
+    <SidebarProvider style={{ "--sidebar-width": "18rem" } as React.CSSProperties}>
       <AppSidebar
         attendancesCount={attendancesCount}
         activeSessionsCount={activeSessionsCount}
@@ -52,52 +51,10 @@ export default async function AdminLayout({
           nama: (s.nama as string | null) ?? `Sesi ${s.id}`,
         }))}
       />
-      <SidebarInset className="page-bg">
-        <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-line/60 bg-white/80 px-4 backdrop-blur md:px-6">
-          <SidebarTrigger className="shrink-0 text-ink-muted hover:text-primary" />
-          <div className="flex h-10 w-full max-w-md items-center gap-2.5 rounded-full bg-surface px-4">
-            <Search className="h-4 w-4 shrink-0 text-ink-muted" />
-            <input
-              type="text"
-              placeholder="Cari tamu atau presensi..."
-              className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-ink-muted"
-            />
-            <kbd className="hidden shrink-0 rounded-md border border-line bg-white px-1.5 py-0.5 text-[10px] font-medium text-ink-muted sm:block">
-              Ctrl K
-            </kbd>
-          </div>
-          <div className="ml-auto flex shrink-0 items-center gap-2">
-            <button
-              type="button"
-              aria-label="Notifikasi"
-              className="hidden h-9 w-9 items-center justify-center rounded-full border border-line bg-white text-ink-muted transition-colors hover:text-primary sm:flex"
-            >
-              <Bell className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              aria-label="Pesan"
-              className="hidden h-9 w-9 items-center justify-center rounded-full border border-line bg-white text-ink-muted transition-colors hover:text-primary sm:flex"
-            >
-              <Mail className="h-4 w-4" />
-            </button>
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-green-100 font-heading text-xs font-bold text-primary">
-                AB
-              </span>
-              <span className="hidden flex-col leading-tight lg:flex">
-                <span className="text-xs font-semibold text-foreground">
-                  Admin BMH
-                </span>
-                <span className="text-[10px] text-ink-muted">
-                  admin@bmh.or.id
-                </span>
-              </span>
-            </div>
-          </div>
-        </header>
-        <div className="flex-1 p-4 sm:p-6 lg:p-8">
-          <div className="mx-auto max-w-7xl space-y-6">{children}</div>
+      <SidebarInset className="page-bg min-w-0">
+        <AdminHeader />
+        <div className="min-w-0 w-full flex-1 px-4 py-4 sm:py-6 lg:py-8">
+          <div className="min-w-0 w-full space-y-6">{children}</div>
         </div>
       </SidebarInset>
     </SidebarProvider>

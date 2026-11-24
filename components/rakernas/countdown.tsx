@@ -60,7 +60,7 @@ export function CountdownSection({
   const timeLeft = isMounted ? getTimeLeft(target, now) : INITIAL_TIME_LEFT;
 
   return (
-    <div className="mx-auto w-full max-w-screen-xl px-5 md:px-8">
+    <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-5 md:px-8">
       <div className="mx-auto max-w-3xl text-center">
         <h2 className="text-xl md:text-3xl font-heading font-semibold text-brand-gold-soft">
           Hitung Mundur Acara

@@ -98,7 +98,7 @@ export function EventSettingsForm({ initialSettings, loadError }: Props) {
   }
 
   return (
-    <form onSubmit={submit} noValidate className="mx-auto w-full max-w-5xl space-y-6">
+    <form onSubmit={submit} noValidate className="min-w-0 w-full space-y-6">
       <div className="space-y-2">
         <Badge variant="secondary">Beranda</Badge>
         <h1 className="font-heading text-2xl font-semibold text-primary md:text-3xl">Pengaturan Acara</h1>

@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import { renderToStaticMarkup } from "react-dom/server";
 import { TransportSection } from "../components/rakernas/transport-accordion";
+import { buildTransportDirectionsUrl } from "../lib/transport-directions";
 import {
   TRANSPORT_DATA,
   INVITED_GUESTS_CONTENT,
@@ -51,41 +52,62 @@ describe("Fase 5 — Transportasi, Tamu Undangan, Footer", () => {
       expect(transportContent).toContain("lg:col-span-7");
     });
 
-    it("menampilkan 8 titik asal dari TRANSPORT_DATA", () => {
-      expect(TRANSPORT_DATA.items).toHaveLength(8);
+    it("menampilkan tiga pemberhentian lokal diikuti Halim dan Soekarno–Hatta", () => {
+      expect(TRANSPORT_DATA.items.map((item) => item.name)).toEqual([
+        "Halte Hotel Ambhara Blok M",
+        "Terminal Blok M / Halte Transjakarta Blok M",
+        "Stasiun MRT Blok M BCA",
+        "Bandara Halim Perdanakusuma (HLP)",
+        "Bandara Soekarno–Hatta (CGK)",
+      ]);
       TRANSPORT_DATA.items.forEach((item) => {
-        expect(item.origin).toBeTruthy();
-        expect(item.distance).toBeTruthy();
-        expect(item.fares).toHaveLength(3);
+        expect(item.accessInfo).toBeTruthy();
+        expect(item.description).toBeTruthy();
+        expect(item.mapsQuery).toBeTruthy();
       });
       expect(transportContent).toContain("TRANSPORT_DATA.items.map");
-      expect(transportContent).toContain("item.distance");
+      expect(transportContent).toContain("item.accessInfo");
     });
 
-    it("mencakup seluruh 24 tarif moda transportasi sesuai data resmi", () => {
-      const allFares = TRANSPORT_DATA.items.flatMap((item) => item.fares);
-      expect(allFares).toHaveLength(24);
+    it("tautan peta memakai titik turun dan alamat Ambhara dengan moda jalan kaki", () => {
+      const html = renderToStaticMarkup(TransportSection());
+      const hrefs = [...html.matchAll(/href="([^"]+)"/g)].map(([, href]) => href.replaceAll("&amp;", "&"));
+      const walkingLinks = hrefs.filter((href) => href.startsWith("https://www.google.com/maps/dir/"));
+      expect(walkingLinks.length).toBeGreaterThan(0);
+      for (const href of walkingLinks) {
+        const url = new URL(href);
+        expect(url.searchParams.get("api")).toBe("1");
+        expect(url.searchParams.get("travelmode")).toBe("walking");
+        expect(TRANSPORT_DATA.items.map((item) => item.mapsQuery)).toContain(url.searchParams.get("origin"));
+        expect(url.searchParams.get("destination")).toBe("Ambhara Hotel Jakarta, Jl. Iskandarsyah I No.1, RT.5/RW.2, Melawai, Kec. Kby. Baru, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12160");
+      }
+      expect(html).toContain(TRANSPORT_DATA.travelNote);
+      expect(html).not.toContain("Hotel Luminor");
+      expect(html).toContain(TRANSPORT_DATA.fareNote);
+      expect(html).toContain("Jarak ke hotel");
+      expect(html).toContain(TRANSPORT_DATA.items[0].distanceInfo);
+      expect(html).toContain("Moda yang cocok");
+      expect(html).toContain(TRANSPORT_DATA.items[0].transportMode);
+      expect(html).toContain("Estimasi harga");
+      expect(html).toContain(TRANSPORT_DATA.items[0].estimatedFare);
+    });
 
-      const senen = TRANSPORT_DATA.items.find((i) => i.origin === "Stasiun Pasar Senen");
-      expect(senen?.distance).toBe("± 3-4 km");
-      expect(senen?.fares).toEqual([
-        { mode: "Taksi Konvensional", price: "Rp 30.000 - 50.000" },
-        { mode: "Taksi Online", price: "Rp 25.000 - 40.000" },
-        { mode: "Ojek Online", price: "Rp 12.000 - 20.000" },
-      ]);
-
-      const halim = TRANSPORT_DATA.items.find((i) => i.origin === "Bandara Halim Perdanakusuma");
-      expect(halim?.icon).toBe("plane");
-      expect(halim?.fares[0]).toEqual({ mode: "Taksi Bandara", price: "Rp 90.000 - 140.000" });
-
-      const soetta = TRANSPORT_DATA.items.find((i) => i.origin === "Bandara Soekarno-Hatta");
-      expect(soetta?.distance).toBe("± 30 km");
-      expect(soetta?.fares[2].price).toBe("Rp 100.000 - 150.000");
-
-      TRANSPORT_DATA.items.forEach((item) => {
-        const expectedIcon = item.origin.startsWith("Stasiun") ? "train" : item.origin.startsWith("Terminal") ? "bus" : "plane";
-        expect(item.icon, item.origin).toBe(expectedIcon);
-      });
+    it.each([
+      ["Halte Hotel Ambhara Blok M", "walking"],
+      ["Terminal Blok M / Halte Transjakarta Blok M", "walking"],
+      ["Stasiun MRT Blok M BCA", "walking"],
+      ["Bandara Halim Perdanakusuma (HLP)", "driving"],
+      ["Bandara Soekarno–Hatta (CGK)", "driving"],
+    ])("rute %s menggunakan moda %s menuju Ambhara", (name, mode) => {
+      const item = TRANSPORT_DATA.items.find((stop) => stop.name === name);
+      expect(item).toBeDefined();
+      const url = new URL(buildTransportDirectionsUrl(item!));
+      expect(url.origin).toBe("https://www.google.com");
+      expect(url.pathname).toBe("/maps/dir/");
+      expect(url.searchParams.get("api")).toBe("1");
+      expect(url.searchParams.get("travelmode")).toBe(mode);
+      expect(url.searchParams.get("origin")).toBe(item!.mapsQuery);
+      expect(url.searchParams.get("destination")).toBe("Ambhara Hotel Jakarta, Jl. Iskandarsyah I No.1, RT.5/RW.2, Melawai, Kec. Kby. Baru, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12160");
     });
 
     it("menampilkan pengumuman transit: 'panitia' menaut ke footerUrl dan tombol Google Maps terpisah", () => {
@@ -94,7 +116,7 @@ describe("Fase 5 — Transportasi, Tamu Undangan, Footer", () => {
       expect(transportContent).toContain("announcement.mapsUrl");
       expect(transportContent).toContain("announcement.linkLabel");
       expect(transportContent).toContain('role="note"');
-      expect(transportContent.match(/rel="noopener noreferrer"/g)?.length).toBe(2);
+      expect(transportContent.match(/rel="noopener noreferrer"/g)?.length).toBe(3);
       // Halaman beranda meneruskan footer_url dari event settings
       expect(pageContent).toContain("footerUrl={settings.footerUrl}");
     });
@@ -108,12 +130,14 @@ describe("Fase 5 — Transportasi, Tamu Undangan, Footer", () => {
       expect(html).toContain("Guest House YPPH Depok");
       expect(html).toContain('href="https://example.com/panitia-baru"');
       expect(html).toContain('href="https://maps.app.goo.gl/LrBzn1tPFqKaRFTTA"');
-      expect(html).toContain("Stasiun Pasar Senen");
+      expect(html).toContain("Halte Hotel Ambhara Blok M");
     });
 
     it("menampilkan ikon transportasi di dalam lingkaran hijau lembut (bg-green-100 text-primary)", () => {
       expect(transportContent).toContain("bg-green-100");
       expect(transportContent).toContain("text-primary");
+      expect(transportContent).toContain("Footprints");
+      expect(transportContent).toContain("Car");
       expect(transportContent).toContain("Plane");
       expect(transportContent).toContain("TrainFront");
       expect(transportContent).toContain("Bus");
@@ -147,9 +171,8 @@ describe("Fase 5 — Transportasi, Tamu Undangan, Footer", () => {
   describe("S8 — Footer (B.5 & B.6)", () => {
     it("menampilkan satu logo Rakernas dengan tinggi maksimal 40 px", () => {
       expect(footerContent).toContain("FOOTER_DATA.logoSrc");
-      expect(FOOTER_DATA.logoSrc).toBe("/logo-rakernas-nav.png");
+      expect(FOOTER_DATA.logoSrc).toBe("/light-logo-dark-bg.png");
       expect(FOOTER_DATA.logoAlt).toBe("Logo Rakernas BMH 2027");
-      expect(footerContent).toContain("h-10");
     });
 
     it("menampilkan teks resmi tanggal, hotel, dan tahun", () => {

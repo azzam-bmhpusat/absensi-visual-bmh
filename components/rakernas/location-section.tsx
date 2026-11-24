@@ -50,9 +50,9 @@ export function LocationSection({ settings = DEFAULT_EVENT_SETTINGS }: { setting
   }, [api]);
 
   return (
-    <div className="mx-auto w-full max-w-screen-xl px-5 md:px-8">
+    <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-5 md:px-8">
       {/* Header Bagian */}
-      <div className="text-center mb-8 md:mb-12">
+      <div className="text-center mb-6 md:mb-8">
         <h2 className="text-2xl md:text-4xl font-heading font-semibold text-primary">
           {LOCATION_DATA.title}
         </h2>
@@ -67,7 +67,7 @@ export function LocationSection({ settings = DEFAULT_EVENT_SETTINGS }: { setting
       </div>
 
       {/* Kartu Informasi Alamat & Tombol Google Map */}
-      <div className="mb-12 md:mb-16">
+      <div className="mb-8 md:mb-12">
         <div className="rounded-2xl border border-line bg-card p-6 md:p-8 shadow-[0_8px_24px_-8px_rgba(19,75,64,0.18)] flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="flex items-start gap-4">
             <div className="size-12 shrink-0 rounded-full bg-green-100 text-primary flex items-center justify-center">

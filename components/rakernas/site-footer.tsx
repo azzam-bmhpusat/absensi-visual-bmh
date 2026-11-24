@@ -20,9 +20,10 @@ const yearOf = (instant: string) =>
 /** @param showNav false untuk halaman tanpa navigasi situs (mis. /form). */
 export function SiteFooter({
   className,
+  contentClassName,
   settings = DEFAULT_EVENT_SETTINGS,
   showNav = true,
-}: { className?: string; settings?: EventSettings; showNav?: boolean } = {}) {
+}: { className?: string; contentClassName?: string; settings?: EventSettings; showNav?: boolean } = {}) {
   return (
     <footer
       id="footer"
@@ -42,7 +43,7 @@ export function SiteFooter({
         className="pointer-events-none absolute -bottom-40 -left-32 -z-10 size-80 rounded-full bg-brand-gold/10 blur-3xl"
       />
 
-      <div className="mx-auto w-full max-w-screen-xl px-5 pt-14 pb-28 md:px-8 md:pt-16 md:pb-10">
+      <div className={cn("mx-auto w-full max-w-screen-xl px-5 pt-14 pb-28 md:px-8 md:pt-16 md:pb-10", contentClassName)}>
         <div className="grid gap-10 md:grid-cols-2 md:gap-x-10 md:gap-y-12 lg:grid-cols-12 lg:gap-8">
           {/* Brand */}
           <div className="md:col-span-2 lg:col-span-5">

@@ -1,13 +1,14 @@
 "use client";
 
-import { useRef, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Camera, Loader2, Trash2 } from "lucide-react";
+import { ArrowLeft, Camera, Eye, Loader2, Trash2 } from "lucide-react";
 import { removeAvatar, uploadAvatar, type ProfileActionResult } from "@/app/(site)/profile/actions";
 import { AVATAR_MIME } from "@/lib/avatar";
 import { UserAvatar } from "@/components/auth/user-avatar";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const SIZE = 512;
 
@@ -29,11 +30,21 @@ async function toSquareWebp(file: File): Promise<File> {
 export function AvatarUpload({ src, name }: { src: string | null; name: string }) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
+  const viewRef = useRef<HTMLButtonElement>(null);
+  const backRef = useRef<HTMLButtonElement>(null);
+  const [open, setOpen] = useState(false);
+  const [isPreview, setIsPreview] = useState(false);
   const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    if (isPreview) backRef.current?.focus();
+    else viewRef.current?.focus();
+  }, [isPreview]);
 
   function report(result: ProfileActionResult) {
     if (result.success) {
       toast.success(result.message);
+      setOpen(false);
       router.refresh();
     } else {
       toast.error(result.error ?? "Terjadi kesalahan.");
@@ -43,7 +54,7 @@ export function AvatarUpload({ src, name }: { src: string | null; name: string }
   function onPick(event: React.ChangeEvent<HTMLInputElement>) {
     const picked = event.target.files?.[0];
     event.target.value = "";
-    if (!picked) return;
+    if (!picked || isPending) return;
     startTransition(async () => {
       let file = picked;
       try {
@@ -53,16 +64,41 @@ export function AvatarUpload({ src, name }: { src: string | null; name: string }
       }
       const fd = new FormData();
       fd.set("avatar", file);
-      report(await uploadAvatar(fd));
+      try {
+        report(await uploadAvatar(fd));
+      } catch {
+        toast.error("Terjadi kesalahan saat mengunggah foto.");
+      }
     });
   }
 
-  const pickLabel = src ? "Ganti foto" : "Unggah foto";
-  const pick = () => inputRef.current?.click();
+  function onRemove() {
+    if (!src || isPending) return;
+    startTransition(async () => {
+      try {
+        report(await removeAvatar());
+      } catch {
+        toast.error("Terjadi kesalahan saat menghapus foto.");
+      }
+    });
+  }
 
   return (
-    <div className="flex flex-col items-center gap-3">
-      <div className="relative">
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (nextOpen && isPending) return;
+        if (nextOpen) setIsPreview(false);
+        setOpen(nextOpen);
+      }}
+    >
+      <DialogTrigger
+        type="button"
+        aria-label="Kelola foto profil"
+        aria-disabled={isPending}
+        aria-busy={isPending}
+        className="relative shrink-0 cursor-pointer rounded-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-gold-soft focus-visible:ring-offset-4 focus-visible:ring-offset-primary aria-disabled:cursor-wait"
+      >
         <UserAvatar
           src={src}
           name={name}
@@ -75,41 +111,57 @@ export function AvatarUpload({ src, name }: { src: string | null; name: string }
             <span className="sr-only">Memproses foto…</span>
           </span>
         )}
-        <button
-          type="button"
-          onClick={pick}
-          disabled={isPending}
-          aria-label={pickLabel}
-          className="absolute -right-1 -bottom-1 flex size-10 items-center justify-center rounded-full bg-brand-gold text-brand-green-night shadow-md ring-3 ring-white transition-colors hover:bg-brand-gold-soft focus-visible:outline-none focus-visible:ring-brand-gold-soft disabled:opacity-60"
+        <span
+          aria-hidden="true"
+          className="absolute -right-1 -bottom-1 flex size-10 items-center justify-center rounded-full bg-brand-gold text-brand-green-night shadow-md ring-3 ring-white"
         >
           <Camera className="size-5" aria-hidden="true" />
-        </button>
-      </div>
+        </span>
+      </DialogTrigger>
       <input ref={inputRef} type="file" accept={AVATAR_MIME.join(",")} className="sr-only" onChange={onPick} tabIndex={-1} aria-hidden="true" />
-      <div className="flex flex-wrap justify-center gap-2">
-        <Button
-          type="button"
-          variant="ghost"
-          className="h-11 rounded-xl bg-white/10 px-4 text-white hover:bg-white/20 hover:text-white"
-          disabled={isPending}
-          onClick={pick}
-        >
-          <Camera className="size-4" aria-hidden="true" />
-          {pickLabel}
-        </Button>
-        {src && (
-          <Button
-            type="button"
-            variant="ghost"
-            className="h-11 rounded-xl px-4 text-red-200 hover:bg-red-500/15 hover:text-red-100"
-            disabled={isPending}
-            onClick={() => startTransition(async () => report(await removeAvatar()))}
-          >
-            <Trash2 className="size-4" aria-hidden="true" />
-            Hapus
-          </Button>
+      <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl p-6 sm:max-w-md">
+        <DialogHeader className="pr-6">
+          <DialogTitle>{isPreview && src ? "Lihat foto" : "Foto profil"}</DialogTitle>
+          <DialogDescription>
+            {isPreview && src ? "Foto profil Anda saat ini." : "Lihat, unggah, atau hapus foto profil Anda."}
+          </DialogDescription>
+        </DialogHeader>
+        {isPreview && src ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element -- foto Supabase Storage, mengikuti UserAvatar tanpa remotePatterns */}
+            <img src={src} alt={`Foto profil ${name}`} className="max-h-[60dvh] w-full rounded-xl object-contain" />
+            <Button ref={backRef} type="button" variant="outline" className="h-11 rounded-xl" onClick={() => setIsPreview(false)}>
+              <ArrowLeft className="size-4" aria-hidden="true" />
+              Kembali
+            </Button>
+          </>
+        ) : (
+          <div className="grid gap-2" aria-busy={isPending}>
+            {src && (
+              <Button ref={viewRef} type="button" variant="ghost" className="h-12 justify-start rounded-xl px-4" disabled={isPending} onClick={() => setIsPreview(true)}>
+                <Eye className="size-4" aria-hidden="true" />
+                Lihat foto
+              </Button>
+            )}
+            <Button type="button" variant="ghost" className="h-12 justify-start rounded-xl px-4" disabled={isPending} onClick={() => inputRef.current?.click()}>
+              <Camera className="size-4" aria-hidden="true" />
+              Unggah foto
+            </Button>
+            {src && (
+              <Button type="button" variant="destructive" className="h-12 justify-start rounded-xl px-4" disabled={isPending} onClick={onRemove}>
+                <Trash2 className="size-4" aria-hidden="true" />
+                Hapus foto
+              </Button>
+            )}
+            {isPending && (
+              <p role="status" className="flex items-center justify-center gap-2 py-2 text-sm text-muted-foreground">
+                <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                Memproses foto…
+              </p>
+            )}
+          </div>
         )}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

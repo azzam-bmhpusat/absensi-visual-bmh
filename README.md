@@ -64,7 +64,7 @@ salinan PNG dari respons URL `og:image` pada server lokal.
 ### 1. Kloning Repositori & Instal Dependensi
 ```bash
 git clone <url-repo-anda>
-cd absensi-visual-bmh
+cd rakernas-bmh
 npm install
 ```
 
@@ -92,7 +92,7 @@ NEXT_PUBLIC_EVENT_NAME=Silaturahim & Rapat Kerja Nasional BMH
 
 ### 3. Migrasi Skema Database & Verifikasi RLS
 Jalankan file migrasi SQL di Supabase SQL Editor:
-- Lokasi skema awal: [`supabase/migrations/0001_init.sql`](file:///c:/Users/muhaz/Downloads/absensi-visual-bmh/supabase/migrations/0001_init.sql)
+- Lokasi skema awal: [`supabase/migrations/0001_init.sql`](supabase/migrations/0001_init.sql)
 - Tabel `profiles` (role `admin`/`user`, terisi otomatis dari Supabase Auth; akun yang sudah ada menjadi admin): [`supabase/migrations/0008_profiles.sql`](supabase/migrations/0008_profiles.sql)
 - Role admin pada akses (RLS `public.is_admin()`): [`supabase/migrations/0009_admin_role_policies.sql`](supabase/migrations/0009_admin_role_policies.sql)
   **Urutan wajib: `0008` → `0009` → baru deploy aplikasi.** Bila ada admin yang terkunci:
@@ -155,6 +155,14 @@ Akses aplikasi di browser:
 
 ## 🚢 Panduan Deployment ke Vercel
 
+`vercel.json` menjalankan `npm ci` dan `npm run build` dengan menghapus variabel
+legacy `NPM_CONFIG_CACHE_DIR`/`npm_config_cache_dir` dari environment perintah.
+Konfigurasi cache npm yang didukung adalah `NPM_CONFIG_CACHE`. Jika variabel
+legacy dipasang di Vercel Project Settings, hapus atau ganti namanya di sana.
+Izin postinstall esbuild dicatat per versi pada `allowScripts` di `package.json`;
+saat memperbarui esbuild, tinjau kembali izinnya. Entrypoint autentikasi Next.js
+memakai `proxy.ts`; logika sesi dan pembatasan akses ada di `lib/supabase/middleware.ts`.
+
 ### Metode 1: Menggunakan Vercel Dashboard (Rekomendasi)
 1. Push kode ke repositori GitHub / GitLab Anda.
 2. Buka [Vercel Dashboard](https://vercel.com/new) dan pilih **Import Project**.
@@ -208,8 +216,8 @@ npx vercel --prod
 
 ## 📚 Dokumen Pendukung & Panduan Hari-H
 
-- 📘 [Panduan Teknis & Operasional Hari-H (docs/panduan-hari-h.md)](file:///c:/Users/muhaz/Downloads/absensi-visual-bmh/docs/panduan-hari-h.md): Panduan lengkap panitia registrasi, operator videotron, SOP ekspor rekap, cetak QR cadangan, dan mitigasi jaringan.
-- 📋 [Laporan Hasil UAT Resmi (docs/uat-report.md)](file:///c:/Users/muhaz/Downloads/absensi-visual-bmh/docs/uat-report.md): Berita acara pengujian penerimaan pengguna dengan 20/20 skenario uji lulus 100%.
-- 🎨 [Design System Token (design-system.md)](file:///c:/Users/muhaz/Downloads/absensi-visual-bmh/design-system.md): Spesifikasi warna, tipografi, dan komponen visual BMH.
-- 🗺️ [Roadmap Eksekusi Proyek (roadmap.md)](file:///c:/Users/muhaz/Downloads/absensi-visual-bmh/roadmap.md): Status pengerjaan Fase 0 hingga Fase 6 (selesai).
+- 📘 [Panduan Teknis & Operasional Hari-H (docs/panduan-hari-h.md)](docs/panduan-hari-h.md): Panduan lengkap panitia registrasi, operator videotron, SOP ekspor rekap, cetak QR cadangan, dan mitigasi jaringan.
+- 📋 [Laporan Hasil UAT Resmi (docs/uat-report.md)](docs/uat-report.md): Berita acara pengujian penerimaan pengguna dengan 20/20 skenario uji lulus 100%.
+- 🎨 [Design System Token (design-system.md)](design-system.md): Spesifikasi warna, tipografi, dan komponen visual BMH.
+- 🗺️ [Roadmap Eksekusi Proyek (roadmap.md)](roadmap.md): Status pengerjaan Fase 0 hingga Fase 6 (selesai).
 

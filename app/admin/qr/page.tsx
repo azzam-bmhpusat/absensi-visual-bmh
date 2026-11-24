@@ -7,7 +7,7 @@ export default function AdminQrPage() {
   const envUrl = process.env.NEXT_PUBLIC_SITE_URL;
   const siteUrl =
     !envUrl || envUrl.includes("localhost") || envUrl.includes("127.0.0.1")
-      ? "https://absensi-visual-bmh.vercel.app"
+      ? "https://rakernas-bmh.vercel.app"
       : envUrl;
   const eventName =
     process.env.NEXT_PUBLIC_EVENT_NAME ||

@@ -153,7 +153,7 @@ export function SiteHeader({
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b border-line bg-background/90 backdrop-blur">
-        <div className="mx-auto flex h-14 w-full max-w-screen-xl items-center justify-between gap-3 px-4 sm:px-5 md:px-8 lg:h-16">
+        <div className="mx-auto flex h-14 w-full max-w-[1280px] items-center justify-between gap-3 px-4 sm:px-5 md:px-8 lg:h-16">
           {/* Logo Kiri (Tautan ke /); logo sudah memuat nama acara */}
           <Link
             href="/"

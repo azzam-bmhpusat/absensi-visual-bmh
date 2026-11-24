@@ -54,7 +54,7 @@ export function RundownSection({ startsAt = DEFAULT_EVENT_SETTINGS.startsAt }: {
   };
 
   return (
-    <div className="mx-auto w-full max-w-screen-xl px-5 md:px-8">
+    <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-5 md:px-8">
       <div className="mx-auto max-w-3xl text-center">
         <h2 className="text-2xl md:text-4xl font-heading font-semibold text-primary">
           Rundown Acara
@@ -64,7 +64,7 @@ export function RundownSection({ startsAt = DEFAULT_EVENT_SETTINGS.startsAt }: {
         </p>
       </div>
 
-      <div className="mx-auto mt-8 md:mt-12 max-w-3xl">
+      <div className="mx-auto mt-6 md:mt-8 max-w-3xl">
         <Tabs
           value={selectedDay}
           onValueChange={handleTabChange}

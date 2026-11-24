@@ -89,30 +89,23 @@ describe("Fase 6 — QA & Penyelesaian: Landing Page Rakernas BMH", () => {
       });
     });
 
-    it("Info transportasi memuat 8 titik asal dan 24 tarif cocok 100% dengan data resmi", () => {
-      expect(TRANSPORT_DATA.items).toHaveLength(8);
-      const fares = (a: string, b: string, c: string, modeA = "Taksi Konvensional") => [
-        { mode: modeA, price: a },
-        { mode: "Taksi Online", price: b },
-        { mode: "Ojek Online", price: c },
-      ];
+    it("Info transportasi memprioritaskan tiga pemberhentian lokal lalu dua bandara", () => {
+      expect(TRANSPORT_DATA.items).toHaveLength(5);
       const expectedData = [
-        { origin: "Stasiun Pasar Senen", distance: "± 3-4 km", fares: fares("Rp 30.000 - 50.000", "Rp 25.000 - 40.000", "Rp 12.000 - 20.000") },
-        { origin: "Stasiun Gambir", distance: "± 5-6 km", fares: fares("Rp 40.000 - 60.000", "Rp 30.000 - 50.000", "Rp 15.000 - 25.000") },
-        { origin: "Terminal Tanjung Priok", distance: "± 9-10 km", fares: fares("Rp 60.000 - 90.000", "Rp 45.000 - 70.000", "Rp 25.000 - 40.000") },
-        { origin: "Terminal Pulogadung", distance: "± 10-11 km", fares: fares("Rp 60.000 - 90.000", "Rp 45.000 - 70.000", "Rp 25.000 - 40.000") },
-        { origin: "Bandara Halim Perdanakusuma", distance: "± 14-16 km", fares: fares("Rp 90.000 - 140.000", "Rp 65.000 - 100.000", "Rp 40.000 - 60.000", "Taksi Bandara") },
-        { origin: "Terminal Kalideres", distance: "± 17-19 km", fares: fares("Rp 110.000 - 160.000", "Rp 80.000 - 120.000", "Rp 50.000 - 75.000") },
-        { origin: "Terminal Kampung Rambutan", distance: "± 22-25 km", fares: fares("Rp 120.000 - 180.000", "Rp 90.000 - 140.000", "Rp 60.000 - 90.000") },
-        { origin: "Bandara Soekarno-Hatta", distance: "± 30 km", fares: fares("Rp 200.000 - 300.000", "Rp 150.000 - 230.000", "Rp 100.000 - 150.000", "Taksi Bandara") },
+        { name: "Halte Hotel Ambhara Blok M", accessInfo: "Di dekat hotel", icon: "bus", travelMode: "walking" },
+        { name: "Terminal Blok M / Halte Transjakarta Blok M", accessInfo: "Jalan kaki ±7 menit", icon: "bus", travelMode: "walking" },
+        { name: "Stasiun MRT Blok M BCA", accessInfo: "Sekitar 660 m dari hotel", icon: "train", travelMode: "walking" },
+        { name: "Bandara Halim Perdanakusuma (HLP)", accessInfo: "Bandara terdekat · Taksi/mobil ke hotel", icon: "plane", travelMode: "driving" },
+        { name: "Bandara Soekarno–Hatta (CGK)", accessInfo: "Alternatif bandara · Taksi/mobil ke hotel", icon: "plane", travelMode: "driving" },
       ];
 
       TRANSPORT_DATA.items.forEach((item, idx) => {
-        expect(item.origin).toBe(expectedData[idx].origin);
-        expect(item.distance).toBe(expectedData[idx].distance);
-        expect(item.fares).toEqual(expectedData[idx].fares);
+        expect(item).toMatchObject(expectedData[idx]);
+        expect(item.mapsQuery).toBeTruthy();
       });
-      expect(JSON.stringify(TRANSPORT_DATA)).not.toMatch(/Ahmad Yani|Tawang|Poncol|Mangkang|Terboyo|Banyumanik/);
+      expect(TRANSPORT_DATA.destination.name).toBe("Ambhara Hotel Jakarta");
+      expect(TRANSPORT_DATA.destination.address).toContain("Jl. Iskandarsyah I No.1");
+      expect(JSON.stringify(TRANSPORT_DATA.items)).not.toMatch(/fares|Pasar Senen|Gambir|Tanjung Priok|Pulogadung|Kalideres|Kampung Rambutan/);
     });
 
     it("Tamu Undangan menjelaskan empat kolom pencarian dan detail tamu", () => {
@@ -122,7 +115,7 @@ describe("Fase 6 — QA & Penyelesaian: Landing Page Rakernas BMH", () => {
     });
 
     it("Footer memuat logo, info acara, dan tautan resmi panitia tanpa counter pengunjung", () => {
-      expect(FOOTER_DATA.logoSrc).toBe("/logo-rakernas-nav.png");
+      expect(FOOTER_DATA.logoSrc).toBe("/light-logo-dark-bg.png");
       expect(FOOTER_DATA.logoAlt).toBe("Logo Rakernas BMH 2027");
       expect(FOOTER_DATA.text).toBe("08-10 Desember 2026 | Hotel Luminor Kota Jakarta Barat @2026");
       expect(FOOTER_DATA.committee.label).toBe("Panitia Rakernas");

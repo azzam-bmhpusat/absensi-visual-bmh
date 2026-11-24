@@ -255,7 +255,7 @@ export function InvitedGuestsSection() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-screen-xl px-5 md:px-8">
+    <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-5 md:px-8">
       <div className="mx-auto max-w-2xl space-y-3 text-center">
         <Badge variant="outline" className="gap-2 border-brand-green/30 bg-brand-green/15 px-3 py-1 text-brand-green-text">
           <UsersRound className="size-3.5" aria-hidden="true" />
@@ -267,7 +267,7 @@ export function InvitedGuestsSection() {
         <p className="text-sm leading-relaxed text-foreground/80 md:text-base">{copy.description}</p>
       </div>
 
-      <Card className="relative mx-auto mt-8 max-w-3xl overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-xl shadow-black/20 backdrop-blur-sm md:mt-10">
+      <Card className="relative mx-auto mt-6 max-w-3xl overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-xl shadow-black/20 backdrop-blur-sm md:mt-8">
         <span
           aria-hidden="true"
           className="absolute inset-x-6 top-0 h-px bg-linear-to-r from-transparent via-brand-gold/70 to-transparent"
@@ -313,7 +313,7 @@ export function InvitedGuestsSection() {
       </Card>
 
       <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>
-      <div id="invited-guest-results" className="mx-auto mt-10 max-w-6xl" aria-busy={loading}>
+      <div id="invited-guest-results" className="mx-auto mt-8 max-w-6xl md:mt-12" aria-busy={loading}>
         {canSearch && (
           <div className="mb-5 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
             <div className="min-w-0">

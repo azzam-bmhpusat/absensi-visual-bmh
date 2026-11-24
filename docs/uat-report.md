@@ -35,7 +35,7 @@ Simulasi beban 30 submit berurutan cepat diselesaikan dalam waktu total **1.270 
 
 - [x] **Cetak QR Cadangan**: Modul cetak di `/admin/qr` siap digunakan dengan styling `@media print`. Disiapkan instruksi minimal 3 lembar A4 dan 2 akrilik A5.
 - [x] **Tautan Pendek (/absen)**: Panduan penyiapan shortlink (misal `s.id/absen-bmh`) untuk peserta dengan kendala kamera fisik.
-- [x] **SOP Pengunduhan CSV Tiap Sesi**: Panduan lengkap ekspor rekapitulasi kehadiran di akhir Sesi 1 dan Sesi 2 terdokumentasi di [`docs/panduan-hari-h.md`](file:///c:/Users/muhaz/Downloads/absensi-visual-bmh/docs/panduan-hari-h.md).
+- [x] **SOP Pengunduhan CSV Tiap Sesi**: Panduan lengkap ekspor rekapitulasi kehadiran di akhir Sesi 1 dan Sesi 2 terdokumentasi di [`docs/panduan-hari-h.md`](panduan-hari-h.md).
 - [x] **Pengetahuan Panitia**: Panduan membuka `/display?sesi=1` (Hari 1) dan `/display?sesi=2` (Hari 2) telah dituliskan secara lugas dan terperinci.
 
 ---

@@ -47,19 +47,30 @@ describe("Fase 1 — Konten Bertipe (PRD Rakernas BMH)", () => {
       });
     });
 
-    it("memiliki 8 titik asal transportasi dengan masing-masing jarak dan 3 moda/tarif (total 24 tarif)", () => {
-      expect(TRANSPORT_DATA.items).toHaveLength(8);
-      let totalFares = 0;
+    it("memiliki tiga pemberhentian lokal dan dua bandara dengan moda yang sesuai", () => {
+      expect(TRANSPORT_DATA.items).toHaveLength(5);
+      expect(TRANSPORT_DATA.destination.name).toBe("Ambhara Hotel Jakarta");
       TRANSPORT_DATA.items.forEach((item) => {
-        expect(item.distance).toMatch(/^± \d+(-\d+)? km$/);
-        expect(item.fares).toHaveLength(3);
-        totalFares += item.fares.length;
-        item.fares.forEach((fare) => {
-          expect(fare.mode).toBeTruthy();
-          expect(fare.price).toMatch(/^Rp \d{1,3}(\.\d{3})* - \d{1,3}(\.\d{3})*$/);
-        });
+        expect(item.name).toBeTruthy();
+        expect(["bus", "train", "plane"]).toContain(item.icon);
+        expect(item.accessInfo).toBeTruthy();
+        expect(item.distanceInfo).toBeTruthy();
+        expect(item.transportMode).toBeTruthy();
+        expect(item.estimatedFare).toMatch(/^Rp [\d.]+ – [\d.]+$/);
+        expect(item.travelMode).toBe(item.icon === "plane" ? "driving" : "walking");
+        expect(item.description).toBeTruthy();
+        expect(item.mapsQuery).toBeTruthy();
       });
-      expect(totalFares).toBe(24);
+      expect(TRANSPORT_DATA.items.filter((item) => item.travelMode === "walking")).toHaveLength(3);
+      expect(TRANSPORT_DATA.items.filter((item) => item.icon === "plane")).toHaveLength(2);
+      expect(new Set(TRANSPORT_DATA.items.map((item) => item.mapsQuery)).size).toBe(5);
+      expect(TRANSPORT_DATA.items.map((item) => item.estimatedFare)).toEqual([
+        "Rp 40.000 – 60.000",
+        "Rp 40.000 – 60.000",
+        "Rp 40.000 – 60.000",
+        "Rp 65.000 – 100.000",
+        "Rp 90.000 – 140.000",
+      ]);
     });
 
     it("memiliki pengumuman tempat transit H-1 dengan tautan Google Maps Guest House YPPH Depok", () => {

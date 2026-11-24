@@ -39,9 +39,9 @@ export function DresscodeSection() {
   }, [api]);
 
   return (
-    <div className="mx-auto w-full max-w-screen-xl px-5 md:px-8">
+    <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-5 md:px-8">
       {/* Judul & Deskripsi Bagian */}
-      <Reveal className="text-center mb-8 md:mb-12">
+      <Reveal className="text-center mb-6 md:mb-8">
         <h2 className="text-2xl md:text-4xl font-heading font-semibold text-primary">
           Dress Code
         </h2>

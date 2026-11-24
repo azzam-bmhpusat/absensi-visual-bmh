@@ -39,7 +39,7 @@ export default async function HomePage() {
         {/* S2 — Hitung Mundur dengan tema gelap */}
         <section
           id="countdown"
-          className="display-theme display-bg text-foreground scroll-mt-20 border-t border-line/10 py-10 md:py-16"
+          className="display-theme display-bg text-foreground scroll-mt-20 border-t border-line/10 py-12 md:py-16"
           aria-label="Hitung Mundur Acara"
         >
           <Reveal><CountdownSection target={settings.startsAt} endsAt={settings.endsAt} /></Reveal>
@@ -48,7 +48,7 @@ export default async function HomePage() {
         {/* S3 — Rundown Acara */}
         <section
           id="rundown"
-          className="page-bg scroll-mt-20 py-12 md:py-20"
+          className="page-bg scroll-mt-20 py-12 md:py-16"
           aria-label="Rundown Acara"
         >
           <Reveal><RundownSection startsAt={settings.startsAt} /></Reveal>
@@ -57,7 +57,7 @@ export default async function HomePage() {
         {/* S4 — Dress Code */}
         <section
           id="dresscode"
-          className="bg-secondary scroll-mt-20 py-12 md:py-20"
+          className="bg-secondary scroll-mt-20 py-12 md:py-16"
           aria-label="Dress Code"
         >
           <Reveal><DresscodeSection /></Reveal>
@@ -66,7 +66,7 @@ export default async function HomePage() {
         {/* S5 — Lokasi Rakernas */}
         <section
           id="lokasi"
-          className="bg-background scroll-mt-20 py-12 md:py-20"
+          className="bg-background scroll-mt-20 py-12 md:py-16"
           aria-label="Lokasi Rakernas"
         >
           <Reveal><LocationSection settings={settings} /></Reveal>
@@ -75,7 +75,7 @@ export default async function HomePage() {
         {/* S6 — Info Transportasi */}
         <section
           id="transportasi"
-          className="bg-surface scroll-mt-20 py-12 md:py-20"
+          className="bg-surface scroll-mt-20 py-12 md:py-16"
           aria-label="Info Transportasi"
         >
           <Reveal><TransportSection venueName={settings.venueName} footerUrl={settings.footerUrl} /></Reveal>
@@ -84,7 +84,7 @@ export default async function HomePage() {
         {/* S7 — Pencarian Tamu Undangan */}
         <section
           id="tamu-undangan"
-          className="display-theme display-bg scroll-mt-20 py-12 md:py-20 text-foreground"
+          className="display-theme display-bg scroll-mt-20 py-12 md:py-16 text-foreground"
           aria-label={INVITED_GUESTS_CONTENT.title}
         >
           <Reveal><InvitedGuestsSection /></Reveal>
@@ -92,7 +92,11 @@ export default async function HomePage() {
       </main>
 
       {/* S8 — Footer */}
-      <SiteFooter className="bg-brand-green-night" settings={settings} />
+      <SiteFooter
+        className="bg-brand-green-night"
+        contentClassName="max-w-[1280px] px-4 pt-12 sm:px-5 md:px-8 md:pt-16"
+        settings={settings}
+      />
     </>
   );
 }
