@@ -10,8 +10,8 @@ export const OG_SIZE = { width: 1200, height: 630 } as const;
 const logoBase64 = await readFile(join(process.cwd(), "public", "logo-rakernas-nav.png"), "base64");
 const logoSrc = `data:image/png;base64,${logoBase64}`;
 const fontDir = join(process.cwd(), "assets", "fonts");
-const [poppinsRegular, poppinsMedium, poppinsSemiBold] = await Promise.all(
-  ["Poppins-Regular.ttf", "Poppins-Medium.ttf", "Poppins-SemiBold.ttf"].map((file) => readFile(join(fontDir, file)))
+const [poppinsRegular, poppinsSemiBold] = await Promise.all(
+  ["Poppins-Regular.ttf", "Poppins-SemiBold.ttf"].map((file) => readFile(join(fontDir, file)))
 );
 
 // Warna token beranda (app/globals.css) dalam bentuk hex — satori tidak mengenal var()/color-mix().
@@ -19,7 +19,6 @@ const COLOR = {
   primary: "#095046", // --primary / --brand-green-deep
   secondary: "#EBF8F3", // --secondary
   inkMuted: "#4E7A72", // --ink-muted
-  line: "#DBE5E3", // --line
   green100: "#D3F0E4", // --green-100
   gold100: "#FFEDCD", // --gold-100
   goldSoft: "#FED38A", // --brand-gold-soft
@@ -27,7 +26,7 @@ const COLOR = {
 };
 
 /**
- * Kartu gambar Open Graph bergaya hero beranda: eyebrow, judul dua baris dengan stabilo emas
+ * Kartu gambar Open Graph bergaya hero beranda: logo, judul dua baris dengan stabilo emas
  * pada tahun, dan tema acara. Tidak memuat tanggal maupun teks lokasi/tempat.
  */
 export function renderOgCard(options: { badge?: string } = {}) {
@@ -44,7 +43,7 @@ export function renderOgCard(options: { badge?: string } = {}) {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          padding: "56px 96px",
+          padding: "60px 96px",
           background: `linear-gradient(180deg, #FFFFFF 0%, ${COLOR.secondary} 100%)`,
           color: COLOR.primary,
           fontFamily: "Poppins",
@@ -79,7 +78,7 @@ export function renderOgCard(options: { badge?: string } = {}) {
         <div style={{ display: "flex", alignItems: "center" }}>
           {/* Logo Rakernas (lambang + nama acara); rasio 600:223 */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={logoSrc} width={258} height={96} alt="" />
+          <img src={logoSrc} width={300} height={111.5} alt="" />
           {options.badge ? (
             <div
               style={{
@@ -103,11 +102,11 @@ export function renderOgCard(options: { badge?: string } = {}) {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            marginTop: 40,
-            fontSize: 86,
+            marginTop: 32,
+            fontSize: 76,
             fontWeight: 600,
             lineHeight: 1.14,
-            letterSpacing: "-0.045em",
+            letterSpacing: "-0.035em",
           }}
         >
           {titleParts ? (
@@ -122,8 +121,9 @@ export function renderOgCard(options: { badge?: string } = {}) {
                       position: "absolute",
                       left: 0,
                       right: 0,
-                      bottom: 16,
+                      bottom: 12,
                       height: 18,
+                      borderRadius: 4,
                       background: COLOR.goldSoft,
                     }}
                   />
@@ -139,11 +139,11 @@ export function renderOgCard(options: { badge?: string } = {}) {
         <div
           style={{
             display: "flex",
-            maxWidth: 880,
-            marginTop: 32,
-            fontSize: 28,
+            maxWidth: 760,
+            marginTop: 28,
+            fontSize: 30,
             fontWeight: 400,
-            lineHeight: 1.6,
+            lineHeight: 1.5,
             color: COLOR.inkMuted,
           }}
         >
@@ -155,7 +155,6 @@ export function renderOgCard(options: { badge?: string } = {}) {
       ...OG_SIZE,
       fonts: [
         { name: "Poppins", data: poppinsRegular, weight: 400, style: "normal" },
-        { name: "Poppins", data: poppinsMedium, weight: 500, style: "normal" },
         { name: "Poppins", data: poppinsSemiBold, weight: 600, style: "normal" },
       ],
     }

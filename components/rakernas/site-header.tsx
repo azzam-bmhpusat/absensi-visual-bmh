@@ -537,7 +537,7 @@ function DesktopGroup({
             type="button"
             className={cn(
               linkBase,
-              "group/publikasi cursor-pointer gap-1 data-popup-open:bg-secondary data-popup-open:text-primary",
+              "group/publikasi cursor-pointer gap-1 rounded-xl data-popup-open:bg-secondary data-popup-open:text-primary",
               active && linkActive,
             )}
           />
@@ -552,7 +552,7 @@ function DesktopGroup({
       <DropdownMenuContent
         align="start"
         sideOffset={8}
-        className="w-72 rounded-xl border border-line bg-popover p-1.5 shadow-lg"
+        className="hidden w-80 rounded-[20px] border border-line bg-popover p-2 shadow-xl shadow-brand-green-deep/10 ring-0 lg:block"
       >
         {group.children.map((child) => (
           <DropdownMenuItem
@@ -564,11 +564,19 @@ function DesktopGroup({
               />
             }
             className={cn(
-              "flex min-h-11 cursor-pointer items-center rounded-lg px-3 py-2 text-sm font-medium text-ink transition-colors focus:bg-secondary focus:text-primary",
+              "flex min-h-14 cursor-pointer items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-ink transition-colors hover:bg-secondary hover:text-primary focus:bg-secondary focus:text-primary not-data-[variant=destructive]:focus:**:text-primary data-highlighted:bg-secondary data-highlighted:text-primary",
               isActive(child.href) && "bg-secondary font-semibold text-primary",
             )}
           >
-            {child.label}
+            <span
+              aria-hidden="true"
+              className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary"
+            >
+              {createElement(iconFor(child.href), { className: "size-[18px]" })}
+            </span>
+            <span className="min-w-0 flex-1 whitespace-nowrap leading-snug">
+              {child.label}
+            </span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

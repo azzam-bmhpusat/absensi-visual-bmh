@@ -39,6 +39,18 @@ Peserta memindai satu QR statis, memilih sesi kehadiran, mencari atau mengetik n
 
 ---
 
+## Gambar pratinjau media sosial
+
+Kartu Open Graph dan Twitter/X memakai renderer yang sama di `lib/og-card.tsx`,
+dengan logo, judul, dan tema acara tanpa tanggal maupun lokasi. PNG siap unduh
+tersedia di `/og/rakernas-bmh.png` (1200 × 630 piksel).
+
+Atur `NEXT_PUBLIC_SITE_URL` ke URL HTTPS situs produksi agar URL gambar pada
+metadata mengarah ke domain publik. Rute gambar dibuat otomatis oleh Next.js dan
+dapat diakses tanpa login. URL lengkapnya ada di tag `og:image` dan `twitter:image`
+karena Next.js dapat menambahkan hash pada nama rute. Saat desain diubah, perbarui
+salinan PNG dari respons URL `og:image` pada server lokal.
+
 ## 📦 Prasyarat Sistem
 
 - **Node.js**: versi 18.18.0 atau lebih baru (disarankan Node.js 20 LTS)

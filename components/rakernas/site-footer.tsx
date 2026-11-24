@@ -49,15 +49,15 @@ export function SiteFooter({
             <Link
               href="/"
               aria-label={`${EVENT_INFO.name} — kembali ke beranda`}
-              className={cn("inline-flex rounded-2xl bg-white px-3 py-2.5 shadow-sm transition-opacity hover:opacity-90", focusRing)}
+              className={cn("relative inline-flex h-12 w-30 rounded-md transition-opacity hover:opacity-90", focusRing)}
             >
-              {/* Teks logo berwarna hijau tua: perlu latar putih di atas footer gelap */}
+              {/* Pangkas ruang transparan vertikal agar logo putih-emas tetap terbaca. */}
               <Image
                 src={FOOTER_DATA.logoSrc}
                 alt={FOOTER_DATA.logoAlt}
-                width={600}
-                height={223}
-                className="h-10 w-auto object-contain"
+                fill
+                sizes="120px"
+                className="object-cover object-[50%_51%]"
               />
             </Link>
             <p className="mt-5 font-heading text-xl font-semibold tracking-tight text-balance md:text-2xl">

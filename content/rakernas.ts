@@ -389,7 +389,7 @@ export const INVITED_GUESTS_CONTENT = {
 };
 
 export const FOOTER_DATA: FooterInfo = {
-  logoSrc: "/logo-rakernas-nav.png",
+  logoSrc: "/light-logo-dark-bg.png",
   logoAlt: "Logo Rakernas BMH 2027",
   text: "08-10 Desember 2026 | Hotel Luminor Kota Jakarta Barat @2026",
   committee: {
