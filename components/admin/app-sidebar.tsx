@@ -58,14 +58,6 @@ export function AppSidebar({
       icon: LayoutDashboard,
       items: [
         { label: "Dashboard Analitik", href: "/dashboard", icon: LayoutDashboard },
-        {
-          label: "Rekap Kehadiran", href: "/rekap-kehadiran", icon: ClipboardList,
-          badge: attendancesCount !== undefined ? `${attendancesCount}` : undefined,
-        },
-        {
-          label: "Kelola Sesi Acara", href: "/kelola-sesi-acara", icon: CalendarClock,
-          badge: activeSessionsCount !== undefined ? `${activeSessionsCount} Aktif` : undefined,
-        },
         { label: "Manajemen User", href: "/manajemen-user", icon: UserCog },
         { label: "Pengaturan", href: "/pengaturan", icon: Settings },
       ],
@@ -74,6 +66,14 @@ export function AppSidebar({
       label: "Absensi",
       icon: ScanLine,
       items: [
+        {
+          label: "Rekap Kehadiran", href: "/rekap-kehadiran", icon: ClipboardList,
+          badge: attendancesCount !== undefined ? `${attendancesCount}` : undefined,
+        },
+        {
+          label: "Kelola Sesi Acara", href: "/kelola-sesi-acara", icon: CalendarClock,
+          badge: activeSessionsCount !== undefined ? `${activeSessionsCount} Aktif` : undefined,
+        },
         { label: "Cetak QR Absen", href: "/admin/qr", icon: QrCode },
         { label: "QR Live Absen", href: "/admin/qr/live", icon: ScanLine },
       ],

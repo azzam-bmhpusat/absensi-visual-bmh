@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useTransition } from "react";
-import { LayoutDashboard, LogOut, UserRound } from "lucide-react";
+import { Download, LayoutDashboard, LogOut, UserRound } from "lucide-react";
+import { useInstallPrompt } from "@/components/pwa/use-install-prompt";
 import { UserAvatar } from "./user-avatar";
 import { logoutUser } from "@/app/(site)/login/actions";
 import {
@@ -28,6 +29,7 @@ export function AccountDropdown({
   isAdmin?: boolean;
 }) {
   const [isPending, startTransition] = useTransition();
+  const { canInstall, install } = useInstallPrompt();
 
   return (
     <DropdownMenu>
@@ -66,6 +68,15 @@ export function AccountDropdown({
           <UserRound className="size-4" />
           Profil
         </DropdownMenuItem>
+        {canInstall && (
+          <DropdownMenuItem
+            onClick={install}
+            className="flex min-h-11 cursor-pointer items-center gap-2 rounded-lg px-3 text-sm font-medium text-ink focus:bg-secondary focus:text-primary"
+          >
+            <Download className="size-4" />
+            Download Apps
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem
           disabled={isPending}
           onClick={() => startTransition(() => logoutUser())}

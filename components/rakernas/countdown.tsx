@@ -7,6 +7,7 @@ import { getTimeLeft, type TimeLeft } from "@/lib/rakernas-helpers";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RevealItem, RevealStagger } from "@/components/motion/reveal";
+import Counter from "@/components/reactbits/counter";
 
 interface CountdownUnit {
   key: keyof TimeLeft["formatted"];
@@ -44,6 +45,20 @@ export function CountdownSection({
   endsAt = null,
 }: CountdownSectionProps = {}) {
   const [now, setNow] = useState<number | null>(null);
+  const [fontSize, setFontSize] = useState(36);
+
+  useEffect(() => {
+    const md = window.matchMedia("(min-width: 768px)");
+    const sm = window.matchMedia("(min-width: 640px)");
+    const update = () => setFontSize(md.matches ? 60 : sm.matches ? 42 : 30);
+    update();
+    md.addEventListener("change", update);
+    sm.addEventListener("change", update);
+    return () => {
+      md.removeEventListener("change", update);
+      sm.removeEventListener("change", update);
+    };
+  }, []);
 
   useEffect(() => {
     const initialTick = setTimeout(() => setNow(Date.now()), 0);
@@ -78,18 +93,24 @@ export function CountdownSection({
           {COUNTDOWN_UNITS.map(({ key, label }) => (
             <RevealItem key={key} y={16}>
             <Card
-              className="rounded-2xl border-line/20 bg-card/30 backdrop-blur-xs p-3 sm:p-4 md:p-6 text-center shadow-lg transition-transform hover:scale-[1.02]"
+              className="rounded-2xl border-brand-green/40 bg-brand-green/10 ring-1 ring-brand-green/20 backdrop-blur-xs px-2 pt-2 pb-2.5 sm:p-4 md:p-6 text-center shadow-lg transition-transform hover:scale-[1.02]"
             >
-              <div className="flex h-10 sm:h-12 md:h-16 items-center justify-center">
+              <div className="flex h-8 sm:h-12 md:h-16 items-end sm:items-center justify-center">
                 {!isMounted ? (
-                  <Skeleton className="h-8 sm:h-10 md:h-14 w-12 sm:w-16 md:w-20 rounded-md bg-white/10" />
+                  <Skeleton className="h-7 sm:h-10 md:h-14 w-12 sm:w-16 md:w-20 rounded-md bg-white/10" />
                 ) : (
-                  <span className="text-3xl sm:text-4xl md:text-6xl font-heading font-bold text-brand-gold-soft tabular-nums">
-                    {timeLeft.formatted[key]}
+                  <span className="font-heading font-bold text-brand-gold-soft tabular-nums">
+                    <span className="sr-only">{timeLeft.formatted[key]}</span>
+                    <Counter
+                      value={timeLeft[key]}
+                      places={key === "days" && timeLeft.days > 99 ? [100, 10, 1] : [10, 1]}
+                      fontSize={fontSize}
+                      fontWeight={700}
+                    />
                   </span>
                 )}
               </div>
-              <span className="mt-1 md:mt-2 block text-xs md:text-sm font-medium uppercase tracking-wider text-muted-foreground">
+              <span className="mt-0 block leading-none text-xs md:text-sm font-medium uppercase tracking-wider text-white/90">
                 {label}
               </span>
             </Card>

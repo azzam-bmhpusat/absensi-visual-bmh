@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { NotebookPen } from "lucide-react";
-import { ComingSoon } from "@/components/rakernas/coming-soon";
+import { NotulaRapat } from "@/components/rakernas/notula-rapat";
+import { PageHero } from "@/components/rakernas/page-hero";
 import { ProfileGate } from "@/components/rakernas/profile-gate";
 import { PublicPage } from "@/components/rakernas/public-page";
 import { buildSocialMetadata } from "@/lib/og-metadata";
@@ -17,14 +18,20 @@ export const metadata: Metadata = {
 
 export default function NotulaRapatPage() {
   return (
-    <PublicPage title={TITLE}>
+    <PublicPage
+      title={TITLE}
+      hero={
+        <PageHero
+          title={TITLE}
+          badge={{ icon: NotebookPen, label: "Hasil Rapat" }}
+          description="Notula dan ringkasan keputusan rapat Rakernas BMH sebagai acuan tindak lanjut."
+          image="/galeri-fasilitas-hotel/belakang-gedung.jpg"
+        />
+      }
+    >
       <Suspense fallback={null}>
         <ProfileGate path="/publikasi/notula-rapat">
-          <ComingSoon
-            icon={NotebookPen}
-            title="Notula rapat sedang disiapkan"
-            description="Notula dan ringkasan hasil rapat akan dipublikasikan di sini setelah sesi selesai."
-          />
+          <NotulaRapat />
         </ProfileGate>
       </Suspense>
     </PublicPage>

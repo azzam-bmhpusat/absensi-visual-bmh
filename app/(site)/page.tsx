@@ -48,7 +48,7 @@ export default async function HomePage() {
         {/* S3 — Rundown Acara */}
         <section
           id="rundown"
-          className="page-bg scroll-mt-20 py-12 md:py-16"
+          className="bg-background scroll-mt-20 py-12 md:py-16"
           aria-label="Rundown Acara"
         >
           <Reveal><RundownSection startsAt={settings.startsAt} /></Reveal>

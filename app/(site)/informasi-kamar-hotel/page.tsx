@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { BedDouble } from "lucide-react";
-import { ComingSoon } from "@/components/rakernas/coming-soon";
+import { HotelHero, HotelInfo } from "@/components/rakernas/hotel-info";
 import { ProfileGate } from "@/components/rakernas/profile-gate";
 import { PublicPage } from "@/components/rakernas/public-page";
 import { buildSocialMetadata } from "@/lib/og-metadata";
@@ -17,14 +16,10 @@ export const metadata: Metadata = {
 
 export default function InformasiKamarHotelPage() {
   return (
-    <PublicPage title={TITLE}>
+    <PublicPage title={TITLE} hero={<HotelHero title={TITLE} />}>
       <Suspense fallback={null}>
         <ProfileGate path="/informasi-kamar-hotel">
-          <ComingSoon
-            icon={BedDouble}
-            title="Informasi kamar hotel sedang disiapkan"
-            description="Daftar hotel, pembagian kamar, dan detail check-in peserta akan ditampilkan di sini menjelang acara."
-          />
+          <HotelInfo />
         </ProfileGate>
       </Suspense>
     </PublicPage>

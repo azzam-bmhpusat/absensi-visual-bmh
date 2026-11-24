@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { createElement, useEffect, useState } from "react";
+import { createElement, useEffect, useRef, useState } from "react";
 import { cn } from "cn";
 import {
   BedDouble,
@@ -23,6 +23,7 @@ import {
 import { motion, useReducedMotion, type Variants } from "motion/react";
 import { useLenis } from "lenis/react";
 import { Button } from "@/components/ui/button";
+import { FloatingCapsuleNav } from "@/components/floating-capsule-nav";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -50,9 +51,22 @@ const SHEET_CLOSE_MS = 250;
 const HASH_PATTERN = /^#[\w-]+$/;
 
 const linkBase =
-  "relative inline-flex h-11 items-center rounded-lg px-3 text-sm font-medium text-ink transition-colors hover:bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "relative z-[1] inline-flex h-10 items-center whitespace-nowrap isolate rounded-full px-3.5 text-sm font-medium text-ink transition-colors duration-200 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 const linkActive =
-  "text-primary after:absolute after:inset-x-3 after:bottom-1 after:h-0.5 after:rounded-full after:bg-brand-gold";
+  "font-semibold text-primary-foreground hover:text-primary-foreground";
+
+/** Pil hijau item aktif navbar desktop; layoutId membuatnya meluncur antar item saat aktif berpindah. */
+function ActiveNavPill() {
+  const reduce = useReducedMotion();
+  return (
+    <motion.span
+      layoutId="desktop-nav-active"
+      aria-hidden="true"
+      className="absolute inset-0 -z-10 rounded-full bg-primary"
+      transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 420, damping: 36 }}
+    />
+  );
+}
 
 /** Halaman yang tidak menampilkan navbar: /form dibuka peserta lewat link broadcast. */
 const HIDDEN_ON = new Set(["/form"]);
@@ -73,6 +87,7 @@ export function SiteHeader({
   sheetFooter?: React.ReactNode;
 }) {
   const [moreOpen, setMoreOpen] = useState(false);
+  const hoverPill = useRef<HTMLSpanElement>(null);
   const lenis = useLenis();
   const pathname = usePathname();
   // Anchor section (#rundown, dst.) hanya ada di beranda. Di halaman lain menu menuju
@@ -150,11 +165,29 @@ export function SiteHeader({
     else run();
   };
 
+  /** Pil hover geser: ikuti item di bawah kursor/fokus, kecuali item aktif (sudah berpil solid). */
+  const moveHoverPill = (target: EventTarget | null) => {
+    const pill = hoverPill.current;
+    if (!pill) return;
+    const item =
+      target instanceof Element
+        ? target.closest<HTMLElement>("[data-nav-item]")
+        : null;
+    if (!item || item.dataset.active !== undefined) {
+      pill.style.opacity = "0";
+      return;
+    }
+    pill.style.opacity = "1";
+    pill.style.width = `${item.offsetWidth}px`;
+    pill.style.transform = `translateX(${item.offsetLeft}px)`;
+  };
+
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-line bg-background/90 backdrop-blur">
-        <div className="mx-auto flex h-14 w-full max-w-[1280px] items-center justify-between gap-3 px-4 sm:px-5 md:px-8 lg:h-16">
-          {/* Logo Kiri (Tautan ke /); logo sudah memuat nama acara */}
+      <FloatingCapsuleNav
+        actions={account}
+        brand={
+          /* Logo kiri (tautan ke /); logo sudah memuat nama acara */
           <Link
             href="/"
             className="flex min-h-11 min-w-11 shrink-0 items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -170,38 +203,48 @@ export function SiteHeader({
               className="h-9 w-auto object-contain lg:h-10"
             />
           </Link>
-
-          {/* Navigasi langsung pada laptop dan desktop */}
-          <nav
-            aria-label="Navigasi utama"
-            className="hidden min-w-0 flex-1 items-center justify-center gap-0.5 lg:flex xl:gap-1"
-          >
-            {NAV_MENU.map((entry) =>
-              entry.children ? (
-                <DesktopGroup
-                  key={entry.label}
-                  group={entry}
-                  active={isGroupActive(entry)}
-                  isActive={isActive}
-                />
-              ) : (
-                <Link
-                  key={entry.href}
-                  href={resolveHref(entry.href)}
-                  aria-current={isActive(entry.href) ? "page" : undefined}
-                  className={cn(linkBase, isActive(entry.href) && linkActive)}
-                  onClick={(event) => handleLinkClick(event, entry.href)}
-                >
-                  {entry.label}
-                </Link>
-              ),
-            )}
-          </nav>
-
-          {/* Slot akun (server): tombol akun atau menu profil */}
-          <div className="flex shrink-0 items-center">{account}</div>
-        </div>
-      </header>
+        }
+      >
+        {/* Navigasi langsung pada laptop dan desktop */}
+        <motion.nav
+          layoutRoot
+          aria-label="Navigasi utama"
+          className="relative flex items-center gap-0.5 xl:gap-1"
+          onPointerOver={(event) => moveHoverPill(event.target)}
+          onPointerLeave={() => moveHoverPill(null)}
+          onFocus={(event) => moveHoverPill(event.target)}
+          onBlur={() => moveHoverPill(null)}
+        >
+          <span
+            ref={hoverPill}
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1/2 left-0 h-10 -translate-y-1/2 rounded-full bg-secondary opacity-0 transition-[transform,width,opacity] duration-[240ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+          />
+          {NAV_MENU.map((entry) =>
+            entry.children ? (
+              <DesktopGroup
+                key={entry.label}
+                group={entry}
+                active={isGroupActive(entry)}
+                isActive={isActive}
+              />
+            ) : (
+              <Link
+                key={entry.href}
+                href={resolveHref(entry.href)}
+                aria-current={isActive(entry.href) ? "page" : undefined}
+                data-nav-item=""
+                data-active={isActive(entry.href) ? "" : undefined}
+                className={cn(linkBase, isActive(entry.href) && linkActive)}
+                onClick={(event) => handleLinkClick(event, entry.href)}
+              >
+                {isActive(entry.href) && <ActiveNavPill />}
+                {entry.label}
+              </Link>
+            ),
+          )}
+        </motion.nav>
+      </FloatingCapsuleNav>
 
       {/* Di luar <header>: backdrop-blur pada header menjadi containing block bagi elemen fixed. */}
       <MobileTabBar
@@ -535,14 +578,17 @@ function DesktopGroup({
         render={
           <button
             type="button"
+            data-nav-item=""
+            data-active={active ? "" : undefined}
             className={cn(
               linkBase,
-              "group/publikasi cursor-pointer gap-1 rounded-xl data-popup-open:bg-secondary data-popup-open:text-primary",
-              active && linkActive,
+              "group/publikasi cursor-pointer gap-1",
+              active ? linkActive : "data-popup-open:text-primary",
             )}
           />
         }
       >
+        {active && <ActiveNavPill />}
         {group.label}
         <ChevronDown
           aria-hidden="true"

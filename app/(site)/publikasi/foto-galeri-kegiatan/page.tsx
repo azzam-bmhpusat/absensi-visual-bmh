@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Images } from "lucide-react";
-import { ComingSoon } from "@/components/rakernas/coming-soon";
+import { GaleriKegiatan } from "@/components/rakernas/galeri-kegiatan";
+import { PageHero } from "@/components/rakernas/page-hero";
 import { ProfileGate } from "@/components/rakernas/profile-gate";
 import { PublicPage } from "@/components/rakernas/public-page";
 import { buildSocialMetadata } from "@/lib/og-metadata";
@@ -17,14 +18,20 @@ export const metadata: Metadata = {
 
 export default function FotoGaleriKegiatanPage() {
   return (
-    <PublicPage title={TITLE}>
+    <PublicPage
+      title={TITLE}
+      hero={
+        <PageHero
+          title={TITLE}
+          badge={{ icon: Images, label: "Dokumentasi" }}
+          description="Kumpulan foto dokumentasi kegiatan Rakernas BMH dari setiap sesi dan agenda."
+          image="/galeri-fasilitas-hotel/ruang-acara.jpg"
+        />
+      }
+    >
       <Suspense fallback={null}>
         <ProfileGate path="/publikasi/foto-galeri-kegiatan">
-          <ComingSoon
-            icon={Images}
-            title="Galeri foto sedang disiapkan"
-            description="Dokumentasi foto kegiatan Rakernas akan diunggah di sini setelah acara berlangsung."
-          />
+          <GaleriKegiatan />
         </ProfileGate>
       </Suspense>
     </PublicPage>
