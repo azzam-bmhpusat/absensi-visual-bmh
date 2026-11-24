@@ -2,7 +2,7 @@
 
 import { useActionState, useState, useTransition } from "react";
 import Link from "next/link";
-import { Check, CheckCircle2, ChevronsUpDown, KeyRound, Loader2, LogIn, Mail, Send, UserSearch } from "lucide-react";
+import { Check, CheckCircle2, CircleAlert, KeyRound, Loader2, LogIn, Mail, MapPinned, Search, Send, X } from "lucide-react";
 import { cn } from "cn";
 import {
   loadParticipant,
@@ -10,8 +10,8 @@ import {
   type SubmitParticipantResult,
 } from "@/app/(site)/form/actions";
 import { ProfileFields, SubmitBar, type ProfileInitial } from "@/components/profile/profile-form";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -28,6 +28,11 @@ export interface ParticipantOption {
   perwakilan_daerah: string | null;
 }
 
+/**
+ * Kolom "Cari daerah perwakilan BMH" langsung di formulir (bukan dropdown).
+ * Pencarian hanya mencocokkan profiles.perwakilan_daerah; hasilnya tampil di bawah kolom
+ * dan peserta memilih namanya dari daftar itu.
+ */
 function ParticipantPicker({
   participants,
   selected,
@@ -39,60 +44,96 @@ function ParticipantPicker({
   onSelect: (p: ParticipantOption) => void;
   disabled?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const q = search.trim().toLowerCase();
-  const filtered = q
-    ? participants.filter(
-        (p) => p.nama.toLowerCase().includes(q) || (p.perwakilan_daerah ?? "").toLowerCase().includes(q)
-      )
-    : participants;
+  const results = q ? participants.filter((p) => (p.perwakilan_daerah ?? "").toLowerCase().includes(q)) : [];
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger
-        id="participant-picker"
-        disabled={disabled}
-        className={cn(
-          "flex h-12 w-full cursor-pointer items-center justify-between gap-2 rounded-xl border border-line bg-white px-3.5 text-left text-[15px] transition-colors focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-primary/15 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
-          !selected && "text-ink-muted"
+    <div className="space-y-3">
+      <div className="space-y-1.5">
+        <Label htmlFor="region-search" className="text-[13px] font-semibold text-ink">
+          Cari daerah perwakilan BMH
+        </Label>
+        <InputGroup className="h-12 rounded-xl border-line bg-white has-[input:focus-visible]:border-primary has-[input:focus-visible]:ring-3 has-[input:focus-visible]:ring-primary/15">
+          <InputGroupAddon className="pl-3.5 text-ink-muted">
+            <Search className="size-[18px]" aria-hidden="true" />
+          </InputGroupAddon>
+          <InputGroupInput
+            id="region-search"
+            type="text"
+            inputMode="search"
+            autoComplete="off"
+            enterKeyHint="search"
+            placeholder="Contoh: Jawa Timur"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            aria-controls="region-results"
+            aria-describedby="region-search-hint"
+            disabled={disabled}
+            className="h-12 text-[15px] text-ink"
+          />
+          {search && (
+            <InputGroupAddon align="inline-end" className="pr-2">
+              <button
+                type="button"
+                onClick={() => setSearch("")}
+                aria-label="Hapus pencarian"
+                className="flex size-9 cursor-pointer items-center justify-center rounded-lg text-ink-muted hover:bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <X className="size-4" aria-hidden="true" />
+              </button>
+            </InputGroupAddon>
+          )}
+        </InputGroup>
+        <p id="region-search-hint" className="text-xs text-ink-muted">
+          Ketik nama daerah perwakilan, lalu pilih nama Anda dari hasil di bawah.
+        </p>
+      </div>
+
+      <div id="region-results" aria-live="polite">
+        {q && results.length === 0 && (
+          <p className="flex items-start gap-2 rounded-xl border border-dashed border-line bg-surface p-3.5 text-sm text-ink-muted">
+            <CircleAlert className="mt-0.5 size-4 shrink-0 text-brand-gold-text" aria-hidden="true" />
+            Daerah perwakilan tidak ditemukan. Tulis nama daerah perwakilan BMH, contoh: Jawa Timur.
+          </p>
         )}
-      >
-        <span className="flex min-w-0 items-center gap-2.5">
-          <UserSearch className="size-[18px] shrink-0 text-ink-muted" aria-hidden="true" />
-          <span className="truncate">{selected ? selected.nama : "Pilih nama peserta..."}</span>
-        </span>
-        <ChevronsUpDown className="size-4 shrink-0 opacity-50" aria-hidden="true" />
-      </PopoverTrigger>
-      <PopoverContent className="w-(--anchor-width) min-w-72 rounded-xl border-line p-0 shadow-lg" align="start">
-        <Command shouldFilter={false}>
-          <CommandInput placeholder="Cari nama peserta..." value={search} onValueChange={setSearch} />
-          <CommandList data-lenis-prevent className="max-h-72 overflow-y-auto">
-            <CommandEmpty className="py-4 text-center text-sm text-ink-muted">Nama tidak ditemukan.</CommandEmpty>
-            <CommandGroup>
-              {filtered.map((p) => (
-                <CommandItem
-                  key={p.id}
-                  value={p.id}
-                  onSelect={() => {
-                    onSelect(p);
-                    setSearch("");
-                    setOpen(false);
-                  }}
-                  className="flex cursor-pointer items-center justify-between rounded-lg px-3 py-2.5"
-                >
-                  <span className="flex min-w-0 flex-col text-left">
-                    <span className="truncate text-sm font-medium text-ink">{p.nama}</span>
-                    {p.perwakilan_daerah && <span className="truncate text-xs text-ink-muted">{p.perwakilan_daerah}</span>}
-                  </span>
-                  {selected?.id === p.id && <Check className="size-4 shrink-0 text-primary" aria-hidden="true" />}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+        {results.length > 0 && (
+          <>
+            <p className="mb-2 text-xs font-medium text-ink-muted">
+              {results.length} peserta ditemukan, pilih nama Anda:
+            </p>
+            <ul data-lenis-prevent className="max-h-80 space-y-1.5 overflow-y-auto">
+              {results.map((p) => {
+                const active = selected?.id === p.id;
+                return (
+                  <li key={p.id}>
+                    <button
+                      type="button"
+                      onClick={() => onSelect(p)}
+                      aria-pressed={active}
+                      disabled={disabled}
+                      className={cn(
+                        "flex min-h-14 w-full cursor-pointer items-center gap-3 rounded-xl border border-line bg-white px-3.5 py-2.5 text-left transition-colors hover:border-primary/40 hover:bg-secondary/50 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50",
+                        active && "border-primary bg-secondary"
+                      )}
+                    >
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-semibold text-ink">{p.nama}</span>
+                        <span className="flex items-center gap-1 truncate text-xs text-ink-muted">
+                          <MapPinned className="size-3.5 shrink-0" aria-hidden="true" />
+                          {p.perwakilan_daerah}
+                        </span>
+                      </span>
+                      {active && <Check className="size-5 shrink-0 text-primary" aria-hidden="true" />}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -173,12 +214,20 @@ export function ParticipantForm({
             <h2 id="form-step-1" className="font-heading text-base font-semibold text-primary">
               Nama Peserta
             </h2>
-            <p className="text-sm text-ink-muted">Cari dan pilih nama Anda dari daftar peserta.</p>
+            <p className="text-sm text-ink-muted">Cari daerah perwakilan Anda, lalu pilih nama Anda.</p>
           </div>
         </div>
-        <label htmlFor="participant-picker" className="sr-only">
-          Nama peserta
-        </label>
+        <div
+          role="note"
+          className="mb-3 flex gap-3 rounded-2xl border border-brand-gold/50 bg-gold-50 p-3.5 text-sm text-ink"
+        >
+          <CircleAlert className="mt-0.5 size-5 shrink-0 text-brand-gold-text" aria-hidden="true" />
+          <p>
+            <span className="font-semibold">Pencarian memakai daerah perwakilan BMH, bukan nama.</span> Tulis nama
+            daerah perwakilan Anda, contoh: <span className="font-semibold">Jawa Timur</span> atau{" "}
+            <span className="font-semibold">Papua Barat</span>.
+          </p>
+        </div>
         <ParticipantPicker
           participants={participants}
           selected={selected}
