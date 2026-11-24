@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   description: "Sistem kehadiran visual cepat dan realtime untuk acara Baitul Maal Hidayatullah (BMH)",
   applicationName: "Rakernas BMH",
   icons: {
-    icon: "/icon.svg",
+    icon: "/icons/favicon.png",
     apple: "/icons/apple-touch-icon.png",
   },
   // Saat dipasang ke layar utama iPhone (PWA)

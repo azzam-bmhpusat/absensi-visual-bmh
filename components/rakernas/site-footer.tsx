@@ -49,13 +49,14 @@ export function SiteFooter({
             <Link
               href="/"
               aria-label={`${EVENT_INFO.name} — kembali ke beranda`}
-              className={cn("inline-flex rounded-2xl border border-white/10 bg-white/10 p-2.5 backdrop-blur-sm transition-colors hover:bg-white/15", focusRing)}
+              className={cn("inline-flex rounded-2xl bg-white px-3 py-2.5 shadow-sm transition-opacity hover:opacity-90", focusRing)}
             >
+              {/* Teks logo berwarna hijau tua: perlu latar putih di atas footer gelap */}
               <Image
                 src={FOOTER_DATA.logoSrc}
                 alt={FOOTER_DATA.logoAlt}
-                width={160}
-                height={40}
+                width={600}
+                height={223}
                 className="h-10 w-auto object-contain"
               />
             </Link>

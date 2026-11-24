@@ -131,7 +131,7 @@ describe("Fase 6 — QA & Penyelesaian: Landing Page Rakernas BMH", () => {
     });
 
     it("Footer memuat logo, info acara, dan tautan resmi panitia tanpa counter pengunjung", () => {
-      expect(FOOTER_DATA.logoSrc).toBe("/logo.png");
+      expect(FOOTER_DATA.logoSrc).toBe("/logo-rakernas-nav.png");
       expect(FOOTER_DATA.logoAlt).toBe("Logo Rakernas BMH 2027");
       expect(FOOTER_DATA.text).toBe("08-10 Desember 2026 | Hotel Luminor Kota Jakarta Barat @2026");
       expect(FOOTER_DATA.committee.label).toBe("Panitia Rakernas");

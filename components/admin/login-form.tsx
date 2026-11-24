@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { loginAdmin, type ActionResult } from "@/app/admin/actions";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Loader2, ShieldCheck, AlertCircle } from "lucide-react";
@@ -56,10 +57,9 @@ export function AdminLoginForm() {
             Kata Sandi
           </Label>
         </div>
-        <Input
+        <PasswordInput
           id="password"
           name="password"
-          type="password"
           autoComplete="current-password"
           required
           placeholder="••••••••"

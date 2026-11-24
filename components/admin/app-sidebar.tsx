@@ -168,24 +168,31 @@ export function AppSidebar({
     <Sidebar collapsible="icon" variant="sidebar">
       <SidebarHeader className="h-16 justify-center border-b border-sidebar-border p-2">
         <div className="flex items-center gap-2.5 px-1 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 transition-all duration-200 ease-linear">
-          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white p-1 shadow-2xs ring-1 ring-white/20 transition-all duration-200 ease-linear group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:rounded-lg">
+          {/* Logo lengkap saat sidebar terbuka; mode ikon hanya memuat lambangnya */}
+          <div className="flex h-11 shrink-0 items-center rounded-xl bg-white px-2 py-1.5 shadow-2xs ring-1 ring-white/20 group-data-[collapsible=icon]:hidden">
             <Image
-              src="/logo.png"
-              alt="Logo BMH"
-              width={36}
-              height={36}
-              className="h-full w-full object-contain"
+              src="/logo-rakernas-nav.png"
+              alt="Logo Rakernas BMH 2027"
+              width={600}
+              height={223}
+              className="h-full w-auto object-contain"
               priority
             />
           </div>
-          <div className="flex flex-col leading-tight overflow-hidden transition-[opacity,max-width] duration-200 ease-linear max-w-48 opacity-100 group-data-[collapsible=icon]:max-w-0 group-data-[collapsible=icon]:opacity-0">
-            <span className="font-heading text-sm font-bold text-sidebar-foreground whitespace-nowrap">
-              Rakernas BMH 2027
-            </span>
-            <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-brand-gold-soft whitespace-nowrap">
-              Panel Administrasi
-            </span>
+          <div className="hidden size-8 shrink-0 items-center justify-center rounded-lg bg-white p-1 shadow-2xs ring-1 ring-white/20 group-data-[collapsible=icon]:flex">
+            <Image
+              src="/logo-rakernas-mark.png"
+              alt="Logo Rakernas BMH 2027"
+              width={240}
+              height={256}
+              className="h-full w-auto object-contain"
+            />
           </div>
+          <span className="text-[9px] font-semibold uppercase leading-tight tracking-[0.12em] text-brand-gold-soft whitespace-nowrap overflow-hidden transition-[opacity,max-width] duration-200 ease-linear max-w-48 opacity-100 group-data-[collapsible=icon]:max-w-0 group-data-[collapsible=icon]:opacity-0">
+            Panel
+            <br />
+            Administrasi
+          </span>
         </div>
       </SidebarHeader>
 

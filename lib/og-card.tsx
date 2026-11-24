@@ -7,7 +7,7 @@ import { splitEventTitle } from "@/lib/event-title";
 export const OG_SIZE = { width: 1200, height: 630 } as const;
 
 // Aset lokal tidak bergantung pada request: dibaca sekali di module scope.
-const logoBase64 = await readFile(join(process.cwd(), "public", "logo.png"), "base64");
+const logoBase64 = await readFile(join(process.cwd(), "public", "logo-rakernas-nav.png"), "base64");
 const logoSrc = `data:image/png;base64,${logoBase64}`;
 const fontDir = join(process.cwd(), "assets", "fonts");
 const [poppinsRegular, poppinsMedium, poppinsSemiBold] = await Promise.all(
@@ -77,44 +77,14 @@ export function renderOgCard(options: { badge?: string } = {}) {
         />
 
         <div style={{ display: "flex", alignItems: "center" }}>
-          <div
-            style={{
-              width: 64,
-              height: 64,
-              borderRadius: 18,
-              background: "#FFFFFF",
-              border: `1px solid ${COLOR.line}`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={logoSrc} width={48} height={45} alt="" />
-          </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginLeft: 16,
-              padding: "12px 26px",
-              borderRadius: 999,
-              border: `1px solid ${COLOR.line}`,
-              background: "#FFFFFF",
-              fontSize: 20,
-              fontWeight: 500,
-              letterSpacing: "0.16em",
-              textTransform: "uppercase",
-            }}
-          >
-            <div style={{ width: 9, height: 9, borderRadius: 999, background: COLOR.primary, marginRight: 14 }} />
-            {EVENT_INFO.name}
-          </div>
+          {/* Logo Rakernas (lambang + nama acara); rasio 600:223 */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={logoSrc} width={258} height={96} alt="" />
           {options.badge ? (
             <div
               style={{
                 display: "flex",
-                marginLeft: 16,
+                marginLeft: 28,
                 padding: "12px 26px",
                 borderRadius: 999,
                 background: COLOR.gold,

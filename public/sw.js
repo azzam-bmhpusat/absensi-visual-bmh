@@ -1,7 +1,7 @@
 // Service worker minimal: membuat aplikasi bisa di-install dan menampilkan halaman offline.
 // Sengaja TIDAK meng-cache halaman maupun respons Supabase/API: hanya navigasi yang gagal
 // karena jaringan yang dijawab dengan /offline.html dari cache.
-const CACHE = "bmh-offline-v1";
+const CACHE = "bmh-offline-v2";
 const OFFLINE_URL = "/offline.html";
 const PRECACHE = [OFFLINE_URL, "/icons/icon-192.png"];
 

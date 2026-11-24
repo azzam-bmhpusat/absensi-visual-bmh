@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { AlertCircle, Loader2, LogIn } from "lucide-react";
 import { loginUser, type LoginResult } from "@/app/(site)/login/actions";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
@@ -55,10 +56,9 @@ export function LoginForm({ next, defaultEmail }: { next?: string; defaultEmail?
         <Label htmlFor="password" className="text-xs font-semibold text-primary">
           Kata Sandi
         </Label>
-        <Input
+        <PasswordInput
           id="password"
           name="password"
-          type="password"
           autoComplete="current-password"
           required
           autoFocus={!!defaultEmail}

@@ -145,9 +145,9 @@ describe("Fase 5 — Transportasi, Tamu Undangan, Footer", () => {
   });
 
   describe("S8 — Footer (B.5 & B.6)", () => {
-    it("menampilkan satu logo dari public/logo.png dengan tinggi maksimal 40 px", () => {
+    it("menampilkan satu logo Rakernas dengan tinggi maksimal 40 px", () => {
       expect(footerContent).toContain("FOOTER_DATA.logoSrc");
-      expect(FOOTER_DATA.logoSrc).toBe("/logo.png");
+      expect(FOOTER_DATA.logoSrc).toBe("/logo-rakernas-nav.png");
       expect(FOOTER_DATA.logoAlt).toBe("Logo Rakernas BMH 2027");
       expect(footerContent).toContain("h-10");
     });

@@ -5,7 +5,7 @@ import { AlertCircle, KeyRound, Loader2 } from "lucide-react";
 import { unlockForm, type UnlockResult } from "@/app/(site)/form/actions";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 
 /**
@@ -33,10 +33,11 @@ export function FormAccessDialog() {
             <Label htmlFor="form-access-password" className="text-xs font-semibold text-primary">
               Kata Sandi Akses
             </Label>
-            <Input
+            {/* Tampil sejak awal: kolom password mengabaikan autoCapitalize sehingga keyboard HP tidak huruf besar */}
+            <PasswordInput
               id="form-access-password"
               name="password"
-              type="text"
+              defaultVisible
               required
               autoFocus
               autoComplete="off"
@@ -47,7 +48,7 @@ export function FormAccessDialog() {
               onChange={(e) => setValue(e.target.value.toUpperCase())}
               aria-invalid={state?.error ? true : undefined}
               aria-describedby={state?.error ? "form-access-error" : undefined}
-              className="h-12 rounded-xl border-line text-center font-semibold tracking-[0.2em] uppercase"
+              className="h-12 rounded-xl border-line pl-11 text-center font-semibold tracking-[0.2em] uppercase"
               disabled={isPending}
             />
           </div>
