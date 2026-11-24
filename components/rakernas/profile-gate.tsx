@@ -4,6 +4,7 @@ import { checkAdmin } from "@/lib/auth/admin";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isProfileComplete } from "@/lib/profile-contact";
+import { toUserRole } from "@/lib/user-schema";
 import { CompleteProfileDialog } from "@/components/rakernas/complete-profile-dialog";
 
 /**
@@ -21,10 +22,12 @@ export async function ProfileGate({ path, children }: { path: string; children?:
   // Kolom no_whatsapp / rencana_kedatangan privat: dibaca server-side untuk akun sendiri saja.
   const { data: profile } = await createAdminClient()
     .from("profiles")
-    .select("nama, perwakilan_daerah, jabatan, ukuran_baju, no_whatsapp, rencana_kedatangan, keterangan_kehadiran")
+    .select("role, nama, perwakilan_daerah, jabatan, ukuran_baju, no_whatsapp, rencana_kedatangan, keterangan_kehadiran")
     .eq("id", user.id)
     .maybeSingle();
 
+  // Role `user` (akun Google baru) belum peserta: arahkan untuk mengajukan diri di /profile.
+  if (toUserRole(profile?.role) === "user") return <CompleteProfileDialog variant="apply" />;
   if (!isProfileComplete(profile)) return <CompleteProfileDialog />;
   return <>{children}</>;
 }

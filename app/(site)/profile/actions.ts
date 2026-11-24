@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { selfProfileSchema } from "@/lib/profile-contact";
 import { AVATAR_BUCKET, avatarFileError, avatarObjectPath } from "@/lib/avatar";
+import { toUserRole } from "@/lib/user-schema";
 
 export interface ProfileActionResult {
   success: boolean;
@@ -32,6 +33,20 @@ export async function updateProfile(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { success: false, error: "Sesi berakhir. Silakan masuk kembali." };
+
+  // Role `user` (belum peserta) tidak boleh mengisi data peserta: `nama` membuat profil tampil publik.
+  const { data: account, error: roleError } = await createAdminClient()
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (roleError) return { success: false, error: "Terjadi kesalahan saat menyimpan profil." };
+  if (toUserRole(account?.role) === "user") {
+    return {
+      success: false,
+      error: "Akun Anda belum terdaftar sebagai peserta. Hubungi panitia untuk menjadi peserta Rakernas 2027.",
+    };
+  }
 
   const raw = Object.fromEntries(FIELDS.map((f) => [f, formData.get(f)?.toString() ?? ""]));
   const parsed = selfProfileSchema.safeParse(raw);

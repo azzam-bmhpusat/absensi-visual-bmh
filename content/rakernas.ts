@@ -62,6 +62,8 @@ export interface FooterInfo {
   committee: {
     label: string;
     url: string;
+    /** Nomor WhatsApp panitia dalam format lokal (sama dengan `url`). */
+    phone: string;
   };
 }
 
@@ -419,5 +421,6 @@ export const FOOTER_DATA: FooterInfo = {
   committee: {
     label: "Panitia Rakernas",
     url: "https://wa.me/6289517795206",
+    phone: "089517795206",
   },
 };
