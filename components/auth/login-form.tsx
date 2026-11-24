@@ -11,7 +11,12 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { GoogleLoginButton } from "@/components/auth/google-login-button";
 
-const GOOGLE_ERROR = "Login dengan Google gagal atau dibatalkan. Silakan coba lagi.";
+const GOOGLE_ERRORS = {
+  failed: "Login dengan Google gagal atau dibatalkan. Silakan coba lagi.",
+  disabled: "Login dengan Google belum diaktifkan. Silakan masuk dengan email dan kata sandi.",
+} as const;
+
+export type GoogleLoginError = keyof typeof GOOGLE_ERRORS;
 
 export function LoginForm({
   next,
@@ -20,13 +25,13 @@ export function LoginForm({
 }: {
   next?: string;
   defaultEmail?: string;
-  /** true saat kembali dari /auth/callback dengan ?error=google. */
-  googleError?: boolean;
+  /** Dari ?error=google (gagal/dibatalkan) atau ?error=google_disabled (provider belum aktif). */
+  googleError?: GoogleLoginError;
 }) {
   const router = useRouter();
   const [state, formAction, isPending] = useActionState<LoginResult | null, FormData>(loginUser, null);
   // Error login email/kata sandi menggantikan pesan error Google.
-  const error = state?.error ?? (googleError ? GOOGLE_ERROR : undefined);
+  const error = state?.error ?? (googleError ? GOOGLE_ERRORS[googleError] : undefined);
 
   useEffect(() => {
     if (state?.success) {

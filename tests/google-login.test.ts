@@ -88,6 +88,25 @@ describe("loginWithGoogle", () => {
     vi.stubEnv("NEXT_PUBLIC_SITE_URL", "");
     mocks.origin = "http://localhost:3000";
     mocks.signInWithOAuth.mockResolvedValue({ data: { url: "https://accounts.google.com/o/oauth2/auth?x=1" }, error: null });
+    providerSettings({ external: { google: true } });
+  });
+
+  /** Respons palsu /auth/v1/settings Supabase. */
+  function providerSettings(body: unknown, ok = true) {
+    vi.stubGlobal("fetch", vi.fn(async () => ({ ok, json: async () => body })));
+  }
+
+  it("provider Google belum aktif -> /login?error=google_disabled tanpa ke Supabase OAuth", async () => {
+    providerSettings({ external: { google: false, email: true } });
+    expect(await redirectOf(loginWithGoogle(form()))).toBe("/login?error=google_disabled");
+    expect(mocks.signInWithOAuth).not.toHaveBeenCalled();
+  });
+
+  it("status provider tidak bisa dibaca -> alur OAuth tetap jalan", async () => {
+    providerSettings({}, false);
+    expect(await redirectOf(loginWithGoogle(form()))).toBe("https://accounts.google.com/o/oauth2/auth?x=1");
+    vi.stubGlobal("fetch", vi.fn(async () => Promise.reject(new Error("offline"))));
+    expect(await redirectOf(loginWithGoogle(form()))).toBe("https://accounts.google.com/o/oauth2/auth?x=1");
   });
 
   it("meminta provider google dengan redirectTo ke callback + next aman, lalu ke URL Google", async () => {
