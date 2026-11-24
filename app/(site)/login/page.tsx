@@ -4,19 +4,27 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { LoginForm } from "@/components/auth/login-form";
 import { PublicFooter } from "@/components/rakernas/public-page";
 import { safeNextPath } from "@/lib/profile-contact";
+import { emailSchema } from "@/lib/user-schema";
 
 export const metadata: Metadata = {
   title: "Masuk",
   robots: { index: false, follow: false },
 };
 
-type SearchParams = Promise<{ next?: string | string[] }>;
+type SearchParams = Promise<{ next?: string | string[]; email?: string | string[] }>;
 
 /** searchParams dibaca di dalam Suspense agar halaman tetap bisa diprerender. */
 async function Form({ searchParams }: { searchParams: SearchParams }) {
-  const { next } = await searchParams;
+  const { next, email } = await searchParams;
   const value = Array.isArray(next) ? next[0] : next;
-  return <LoginForm next={value ? safeNextPath(value) : undefined} />;
+  // ?email= dari /form: diisi otomatis bila formatnya valid.
+  const parsedEmail = emailSchema.safeParse(Array.isArray(email) ? email[0] : email);
+  return (
+    <LoginForm
+      next={value ? safeNextPath(value) : undefined}
+      defaultEmail={parsedEmail.success ? parsedEmail.data : undefined}
+    />
+  );
 }
 
 /** Judul khusus saat diarahkan dari halaman publikasi (next selain /profile). */

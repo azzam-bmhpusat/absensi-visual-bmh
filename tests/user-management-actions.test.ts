@@ -206,8 +206,6 @@ describe("updateUserAction", () => {
       email: "baru@bmh.or.id",
       email_confirm: true,
       password: "sandi-baru-1",
-      // Reset oleh admin: peserta wajib mengganti kata sandi lagi.
-      app_metadata: { password_changed_at: null },
     });
     expect(mocks.profileUpdates).toHaveLength(0);
   });

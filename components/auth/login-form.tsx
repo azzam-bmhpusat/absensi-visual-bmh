@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
-export function LoginForm({ next }: { next?: string }) {
+export function LoginForm({ next, defaultEmail }: { next?: string; defaultEmail?: string }) {
   const router = useRouter();
   const [state, formAction, isPending] = useActionState<LoginResult | null, FormData>(loginUser, null);
 
@@ -44,6 +44,7 @@ export function LoginForm({ next }: { next?: string }) {
           type="email"
           autoComplete="email"
           required
+          defaultValue={defaultEmail}
           placeholder="nama@bmh.or.id"
           className="h-11 rounded-xl border-line"
           disabled={isPending}
@@ -60,6 +61,7 @@ export function LoginForm({ next }: { next?: string }) {
           type="password"
           autoComplete="current-password"
           required
+          autoFocus={!!defaultEmail}
           placeholder="••••••••"
           className="h-11 rounded-xl border-line"
           disabled={isPending}

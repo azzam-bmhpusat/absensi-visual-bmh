@@ -122,6 +122,9 @@ export const profileSchema = profileContactSchema.extend({
  */
 export const selfProfileSchema = profileSchema.omit({ email: true, jabatan: true });
 
+/** Data yang diisi lewat halaman publik /form: semua field wajib, termasuk jabatan (email tetap dikunci). */
+export const participantFormSchema = profileSchema.omit({ email: true });
+
 /** Teks opsional: kosong -> null; selain itu dinormalkan dan dibatasi panjangnya. */
 function optionalText(label: string, min: number, max: number) {
   return z

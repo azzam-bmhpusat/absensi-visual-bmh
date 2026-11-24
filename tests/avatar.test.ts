@@ -1,12 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AVATAR_MAX_BYTES, avatarFileError, avatarObjectPath, avatarPublicUrl } from "@/lib/avatar";
-import { PASSWORD_CHANGED_AT } from "@/lib/password-policy";
 
 const USER_ID = "55555555-5555-4555-8555-555555555555";
 
 const mocks = vi.hoisted(() => ({
   getUser: vi.fn(),
-  role: { value: "peserta" as string },
   upload: vi.fn(),
   remove: vi.fn(),
   from: vi.fn(),
@@ -18,9 +16,6 @@ vi.mock("@/lib/supabase/server", () => ({
 }));
 vi.mock("@/lib/supabase/admin", () => ({
   createAdminClient: () => ({
-    from: () => ({
-      select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: mocks.role.value } }) }) }),
-    }),
     storage: {
       from: (bucket: string) => {
         mocks.from(bucket);
@@ -33,7 +28,7 @@ vi.mock("next/cache", () => ({ revalidatePath: mocks.revalidatePath }));
 
 import { removeAvatar, uploadAvatar } from "@/app/(site)/profile/actions";
 
-const changedUser = { id: USER_ID, app_metadata: { [PASSWORD_CHANGED_AT]: "2026-11-23T00:00:00Z" } };
+const user = { id: USER_ID, app_metadata: {} };
 
 function avatarForm(file: File) {
   const fd = new FormData();
@@ -72,8 +67,7 @@ describe("avatarFileError", () => {
 describe("uploadAvatar / removeAvatar", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.role.value = "peserta";
-    mocks.getUser.mockResolvedValue({ data: { user: changedUser } });
+    mocks.getUser.mockResolvedValue({ data: { user } });
     mocks.upload.mockResolvedValue({ error: null });
     mocks.remove.mockResolvedValue({ error: null });
   });
@@ -91,13 +85,6 @@ describe("uploadAvatar / removeAvatar", () => {
     mocks.getUser.mockResolvedValue({ data: { user: null } });
     expect((await uploadAvatar(avatarForm(new File(["x"], "a.png", { type: "image/png" })))).success).toBe(false);
     expect((await uploadAvatar(avatarForm(new File(["x"], "a.gif", { type: "image/gif" })))).error).toMatch(/Format/);
-    expect(mocks.upload).not.toHaveBeenCalled();
-  });
-
-  it("peserta yang belum ganti kata sandi awal ditolak", async () => {
-    mocks.getUser.mockResolvedValue({ data: { user: { id: USER_ID, app_metadata: {} } } });
-    const res = await uploadAvatar(avatarForm(new File(["x"], "a.png", { type: "image/png" })));
-    expect(res.error).toMatch(/kata sandi/);
     expect(mocks.upload).not.toHaveBeenCalled();
   });
 

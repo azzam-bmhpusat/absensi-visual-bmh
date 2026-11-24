@@ -14,7 +14,8 @@
     "verify:rls": "tsx scripts/verify-rls.ts",
     "create:admin": "tsx scripts/create-admin.ts",
     "test:uat": "tsx scripts/run-uat-simulation.ts",
-    "cleanup:test-data": "tsx scripts/cleanup-test-data.ts"
+    "cleanup:test-data": "tsx scripts/cleanup-test-data.ts",
+    "reset:peserta-passwords": "tsx scripts/reset-peserta-passwords.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

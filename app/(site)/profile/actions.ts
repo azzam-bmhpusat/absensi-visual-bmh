@@ -4,7 +4,6 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { selfProfileSchema } from "@/lib/profile-contact";
-import { mustChangePassword } from "@/lib/password-policy";
 import { AVATAR_BUCKET, avatarFileError, avatarObjectPath } from "@/lib/avatar";
 
 export interface ProfileActionResult {
@@ -42,15 +41,7 @@ export async function updateProfile(
   const fields = parsed.data;
 
   try {
-    const admin = createAdminClient();
-
-    // Dialog di UI bisa dilewati lewat request langsung; tolak juga di server.
-    const { data: current } = await admin.from("profiles").select("role").eq("id", user.id).maybeSingle();
-    if (mustChangePassword(user, current?.role)) {
-      return { success: false, error: "Ganti kata sandi awal Anda terlebih dahulu." };
-    }
-
-    const { error } = await admin.from("profiles").update(fields).eq("id", user.id);
+    const { error } = await createAdminClient().from("profiles").update(fields).eq("id", user.id);
     if (error) {
       if (error.code === "23505") {
         return { success: false, error: "Peserta dengan nama dan perwakilan daerah ini sudah terdaftar." };
@@ -66,15 +57,13 @@ export async function updateProfile(
   return { success: true, message: "Profil berhasil disimpan." };
 }
 
-/** Sesi + aturan ganti kata sandi awal, sama seperti updateProfile. */
+/** Pemilik foto = akun yang sedang login. */
 async function avatarOwner(): Promise<{ userId: string } | { error: string }> {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: "Sesi berakhir. Silakan masuk kembali." };
-  const { data: current } = await createAdminClient().from("profiles").select("role").eq("id", user.id).maybeSingle();
-  if (mustChangePassword(user, current?.role)) return { error: "Ganti kata sandi awal Anda terlebih dahulu." };
   return { userId: user.id };
 }
 

@@ -21,7 +21,7 @@ export type CreateParticipantResult =
 const MAX_EMAIL_ATTEMPTS = 50;
 
 /** Password awal akun peserta bila PARTICIPANT_DEFAULT_PASSWORD tidak diatur. */
-export const DEFAULT_PARTICIPANT_PASSWORD = "www.bmh.or.id";
+export const DEFAULT_PARTICIPANT_PASSWORD = "rakernas2027";
 
 export function getParticipantPassword(): string {
   return process.env.PARTICIPANT_DEFAULT_PASSWORD || DEFAULT_PARTICIPANT_PASSWORD;

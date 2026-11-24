@@ -151,7 +151,7 @@ describe("migrasi 0010 & 0011 dan pemasangan di aplikasi", () => {
   });
 
   it("password default sesuai permintaan dan dapat diganti lewat env", () => {
-    expect(DEFAULT_PARTICIPANT_PASSWORD).toBe("www.bmh.or.id");
+    expect(DEFAULT_PARTICIPANT_PASSWORD).toBe("rakernas2027");
     expect(read(".env.local.example")).toContain("PARTICIPANT_DEFAULT_PASSWORD");
   });
 });

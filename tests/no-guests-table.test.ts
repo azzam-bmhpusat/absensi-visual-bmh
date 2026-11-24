@@ -45,6 +45,9 @@ describe("tabel guests sudah dihapus: semua kode memakai profiles", () => {
       "scripts/create-admin.ts",
       "scripts/run-uat-simulation.ts",
       "scripts/cleanup-test-data.ts",
+      // /form: baca/ubah satu peserta (difilter id + role peserta); reset kata sandi semua akun peserta.
+      "app/(site)/form/actions.ts",
+      "scripts/reset-peserta-passwords.ts",
     ]);
     const bad: string[] = [];
     for (const f of sources) {

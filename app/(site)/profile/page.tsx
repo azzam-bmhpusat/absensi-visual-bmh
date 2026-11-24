@@ -10,8 +10,6 @@ import { PublicFooter } from "@/components/rakernas/public-page";
 import { ProfileForm } from "@/components/profile/profile-form";
 import { formatArrival, isoToWibLocal, isProfileComplete } from "@/lib/profile-contact";
 import { MODE_KEHADIRAN_LABEL } from "@/lib/participant-options";
-import { mustChangePassword } from "@/lib/password-policy";
-import { ChangePasswordDialog } from "@/components/auth/change-password-dialog";
 import { AvatarUpload } from "@/components/profile/avatar-upload";
 import { avatarPublicUrl } from "@/lib/avatar";
 
@@ -59,12 +57,9 @@ async function ProfileContent() {
   const admin = createAdminClient();
   const { data: profile } = await admin
     .from("profiles")
-    .select("role, nama, perwakilan_daerah, jabatan, ukuran_baju, no_whatsapp, rencana_kedatangan, keterangan_kehadiran, avatar_url")
+    .select("nama, perwakilan_daerah, jabatan, ukuran_baju, no_whatsapp, rencana_kedatangan, keterangan_kehadiran, avatar_url")
     .eq("id", user.id)
     .maybeSingle();
-
-  // Peserta dengan kata sandi awal: data profil tidak dirender sampai kata sandi diganti.
-  if (mustChangePassword(user, profile?.role)) return <ChangePasswordDialog />;
 
   const complete = isProfileComplete(profile);
   const filled = PROGRESS_FIELDS.filter((key) => {

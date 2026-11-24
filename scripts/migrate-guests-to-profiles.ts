@@ -9,7 +9,7 @@
  *   npx tsx scripts/migrate-guests-to-profiles.ts                 # DRY-RUN (tidak mengubah apa pun)
  *   npx tsx scripts/migrate-guests-to-profiles.ts --apply         # membuat akun + mengisi profil
  *   npx tsx scripts/migrate-guests-to-profiles.ts --csv path.csv  # CSV lain
- *   npx tsx scripts/migrate-guests-to-profiles.ts --password "..."  # default: env PARTICIPANT_DEFAULT_PASSWORD atau www.bmh.or.id
+ *   npx tsx scripts/migrate-guests-to-profiles.ts --password "..."  # default: env PARTICIPANT_DEFAULT_PASSWORD atau rakernas2027
  *
  * Prasyarat: migrasi 0008, 0009, dan 0010 sudah dijalankan. Aman dijalankan ulang (peserta yang sudah ada dilewati).
  */

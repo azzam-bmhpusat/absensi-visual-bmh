@@ -142,27 +142,24 @@ function LockedField({ id, label, icon: Icon, value }: { id: string; label: stri
 
 const inputClass = "h-12 text-[15px] text-ink";
 
-export function ProfileForm({ initial }: { initial: ProfileInitial }) {
-  const router = useRouter();
-  const [state, formAction, isPending] = useActionState<ProfileActionResult | null, FormData>(updateProfile, null);
+/** Field data peserta & kontak (dipakai /profile dan /form). Nomor langkah dimulai dari `firstStep`. */
+export function ProfileFields({
+  initial,
+  isPending,
+  firstStep,
+  jabatanEditable = false,
+}: {
+  initial: Omit<ProfileInitial, "email">;
+  isPending: boolean;
+  firstStep: number;
+  jabatanEditable?: boolean;
+}) {
   const [arrival, setArrival] = useState(initial.rencanaKedatangan);
-
-  useEffect(() => {
-    if (state?.success) {
-      toast.success(state.message ?? "Profil berhasil disimpan.");
-      router.refresh();
-    }
-  }, [state, router]);
-
   const preview = formatArrival(wibLocalToIso(arrival));
 
   return (
-    <form action={formAction}>
-      <Section step={1} title="Akun" description="Email yang dipakai untuk masuk.">
-        <LockedField id="email" label="Email" icon={Mail} value={initial.email} />
-      </Section>
-
-      <Section step={2} title="Data Peserta" description="Ditampilkan pada daftar peserta Rakernas.">
+    <>
+      <Section step={firstStep} title="Data Peserta" description="Ditampilkan pada daftar peserta Rakernas.">
         <div className="grid gap-4 md:grid-cols-2">
           <div className="md:col-span-2">
             <IconField id="nama" label="Nama lengkap (beserta gelar akademik)" icon={User}>
@@ -189,7 +186,21 @@ export function ProfileForm({ initial }: { initial: ProfileInitial }) {
               disabled={isPending}
             />
           </IconField>
-          <LockedField id="jabatan" label="Jabatan" icon={Briefcase} value={initial.jabatan || "Belum diatur panitia"} />
+          {jabatanEditable ? (
+            <IconField id="jabatan" label="Jabatan" icon={Briefcase}>
+              <InputGroupInput
+                id="jabatan"
+                name="jabatan"
+                required
+                maxLength={100}
+                defaultValue={initial.jabatan}
+                className={inputClass}
+                disabled={isPending}
+              />
+            </IconField>
+          ) : (
+            <LockedField id="jabatan" label="Jabatan" icon={Briefcase} value={initial.jabatan || "Belum diatur panitia"} />
+          )}
         </div>
 
         <fieldset className="mt-5 space-y-2" disabled={isPending}>
@@ -212,7 +223,7 @@ export function ProfileForm({ initial }: { initial: ProfileInitial }) {
         </fieldset>
       </Section>
 
-      <Section step={3} title="Kontak & Kedatangan" description="Dipakai panitia untuk koordinasi selama acara.">
+      <Section step={firstStep + 1} title="Kontak & Kedatangan" description="Dipakai panitia untuk koordinasi selama acara.">
         <div className="grid gap-4 md:grid-cols-2">
           <IconField id="no_whatsapp" label="No WhatsApp" icon={Phone}>
             <InputGroupInput
@@ -282,40 +293,89 @@ export function ProfileForm({ initial }: { initial: ProfileInitial }) {
           </div>
         </fieldset>
       </Section>
+    </>
+  );
+}
 
-      {/* Bar simpan: menempel di bawah layar pada HP, biasa di akhir form pada layar lebar */}
-      <div className="sticky bottom-0 z-10 rounded-b-3xl border-t border-line bg-white/90 px-5 py-4 backdrop-blur-md sm:px-7 md:static md:bg-surface md:backdrop-blur-none">
-        {state?.error && (
-          <div
-            role="alert"
-            className="mb-3 flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 p-3.5 text-sm leading-relaxed text-danger"
-          >
-            <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-            <span>{state.error}</span>
-          </div>
-        )}
-        {/* pr-16 di HP: sisakan ruang untuk tombol WhatsApp melayang di kanan bawah */}
-        <div className="flex flex-col gap-2 pr-16 md:flex-row md:items-center md:justify-between md:pr-0">
-          <p className="hidden text-sm text-ink-muted md:block">Perubahan langsung disimpan ke profil Anda.</p>
-          <Button
-            type="submit"
-            disabled={isPending}
-            className="h-12 w-full rounded-xl bg-primary px-6 text-[15px] font-semibold text-white hover:bg-brand-green-deep md:w-auto"
-          >
-            {isPending ? (
-              <>
-                <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-                Menyimpan...
-              </>
-            ) : (
-              <>
-                <Save className="size-4" aria-hidden="true" />
-                Simpan Perubahan
-              </>
-            )}
-          </Button>
+/** Bar kirim: menempel di bawah layar pada HP, biasa di akhir form pada layar lebar. */
+export function SubmitBar({
+  error,
+  isPending,
+  hint,
+  label,
+  pendingLabel,
+  icon: Icon,
+}: {
+  error?: string;
+  isPending: boolean;
+  hint: string;
+  label: string;
+  pendingLabel: string;
+  icon: LucideIcon;
+}) {
+  return (
+    <div className="sticky bottom-0 z-10 rounded-b-3xl border-t border-line bg-white/90 px-5 py-4 backdrop-blur-md sm:px-7 md:static md:bg-surface md:backdrop-blur-none">
+      {error && (
+        <div
+          role="alert"
+          className="mb-3 flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 p-3.5 text-sm leading-relaxed text-danger"
+        >
+          <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+          <span>{error}</span>
         </div>
+      )}
+      {/* pr-16 di HP: sisakan ruang untuk tombol WhatsApp melayang di kanan bawah */}
+      <div className="flex flex-col gap-2 pr-16 md:flex-row md:items-center md:justify-between md:pr-0">
+        <p className="hidden text-sm text-ink-muted md:block">{hint}</p>
+        <Button
+          type="submit"
+          disabled={isPending}
+          className="h-12 w-full rounded-xl bg-primary px-6 text-[15px] font-semibold text-white hover:bg-brand-green-deep md:w-auto"
+        >
+          {isPending ? (
+            <>
+              <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+              {pendingLabel}
+            </>
+          ) : (
+            <>
+              <Icon className="size-4" aria-hidden="true" />
+              {label}
+            </>
+          )}
+        </Button>
       </div>
+    </div>
+  );
+}
+
+export function ProfileForm({ initial }: { initial: ProfileInitial }) {
+  const router = useRouter();
+  const [state, formAction, isPending] = useActionState<ProfileActionResult | null, FormData>(updateProfile, null);
+
+  useEffect(() => {
+    if (state?.success) {
+      toast.success(state.message ?? "Profil berhasil disimpan.");
+      router.refresh();
+    }
+  }, [state, router]);
+
+  return (
+    <form action={formAction}>
+      <Section step={1} title="Akun" description="Email yang dipakai untuk masuk.">
+        <LockedField id="email" label="Email" icon={Mail} value={initial.email} />
+      </Section>
+
+      <ProfileFields initial={initial} isPending={isPending} firstStep={2} />
+
+      <SubmitBar
+        error={state?.error}
+        isPending={isPending}
+        hint="Perubahan langsung disimpan ke profil Anda."
+        label="Simpan Perubahan"
+        pendingLabel="Menyimpan..."
+        icon={Save}
+      />
     </form>
   );
 }
