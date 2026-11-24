@@ -146,7 +146,13 @@ export function SiteFooter({
         {/* Bar bawah */}
         <div className="mt-12 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-white/60 md:flex-row md:items-center md:justify-between md:pr-20">
           <p>
-            © {yearOf(settings.startsAt)} {EVENT_INFO.name}. Seluruh hak cipta dilindungi.
+            © {yearOf(settings.startsAt)} {EVENT_INFO.name}. Seluruh hak cipta dilindungi. ·{" "}
+            <Link
+              href="/kebijakan-privasi"
+              className={cn("rounded font-medium text-white/80 underline-offset-4 hover:text-white hover:underline", focusRing)}
+            >
+              Kebijakan Privasi
+            </Link>
           </p>
           <p>
             Diselenggarakan oleh{" "}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { AlertCircle, Loader2, LogIn } from "lucide-react";
@@ -115,6 +116,14 @@ export function LoginForm({
           )}
         </Button>
       </form>
+
+      <p className="text-center text-xs leading-relaxed text-ink-muted">
+        Dengan masuk, Anda menyetujui{" "}
+        <Link href="/kebijakan-privasi" className="font-medium text-primary underline underline-offset-4">
+          Kebijakan Privasi
+        </Link>
+        .
+      </p>
     </div>
   );
 }
