@@ -1,6 +1,6 @@
 import { CalendarDays, FileText, MapPin, NotebookPen, User, Users } from "lucide-react";
 import { cn } from "cn";
-import { buttonVariants } from "@/components/ui/button";
+import { CardLinkButton } from "@/components/rakernas/card-link-button";
 import { getNotulaRapat } from "@/lib/content/server";
 
 /** Grid card notula rapat Rakernas (dikelola di dashboard: Kelola Konten). */
@@ -56,14 +56,10 @@ export async function NotulaRapat() {
               ))}
             </ul>
           </div>
-          <button
-            type="button"
-            disabled
-            className={cn(buttonVariants(), "!mt-auto w-full")}
-          >
+          <CardLinkButton href={notula.driveUrl} label={`Lihat notula ${notula.judul}`}>
             <FileText className="size-4" aria-hidden />
             Lihat Notula
-          </button>
+          </CardLinkButton>
         </article>
       ))}
     </section>

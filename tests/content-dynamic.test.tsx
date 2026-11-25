@@ -1,6 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { renderToStaticMarkup } from "react-dom/server";
+import { CardLinkButton } from "@/components/rakernas/card-link-button";
 import {
   albumSchema, albumToView, contactSchema, contentImageUrl, formatTanggal, notulaSchema,
   roomSchema, roomToKamar, type AlbumRow, type RoomRow,
@@ -52,6 +54,22 @@ describe("konten dinamis: validasi input admin", () => {
     expect(albumSchema.safeParse(base).success).toBe(true);
     expect(albumSchema.safeParse({ ...base, driveUrl: "http://drive.google.com" }).success).toBe(false);
     expect(albumSchema.safeParse({ ...base, tanggal: "15-02-2027" }).success).toBe(false);
+  });
+
+  it("link card boleh kosong (jadi null), bila diisi wajib HTTPS", () => {
+    const base = { judul: "A", tanggal: "2027-02-15", lokasi: "L", jumlahFoto: "1", deskripsi: "" };
+    expect(albumSchema.parse({ ...base, driveUrl: "  " }).driveUrl).toBeNull();
+    expect(albumSchema.parse({ ...base, driveUrl: "https://example.com/x" }).driveUrl).toBe("https://example.com/x");
+    expect(albumSchema.safeParse({ ...base, driveUrl: "http://example.com" }).success).toBe(false);
+  });
+
+  it("tombol card: aktif (link tab baru) bila ada URL, nonaktif bila kosong", () => {
+    const on = renderToStaticMarkup(<CardLinkButton href="https://drive.google.com/abc" label="Unduh materi A">Unduh</CardLinkButton>);
+    expect(on).toContain('<a href="https://drive.google.com/abc" target="_blank" rel="noopener noreferrer"');
+    expect(on).not.toContain('disabled=""');
+    const off = renderToStaticMarkup(<CardLinkButton href={null} label="Unduh materi A">Unduh</CardLinkButton>);
+    expect(off).toContain("<button");
+    expect(off).toContain('disabled=""');
   });
 
   it("notula: keputusan satu baris satu poin", () => {

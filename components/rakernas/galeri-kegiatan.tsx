@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { CalendarDays, ExternalLink, Images, MapPin } from "lucide-react";
-import { cn } from "cn";
-import { buttonVariants } from "@/components/ui/button";
+import { CardLinkButton } from "@/components/rakernas/card-link-button";
 import { getAlbumKegiatan } from "@/lib/content/server";
 
 /** Grid card album foto kegiatan Rakernas (dikelola di dashboard: Kelola Konten). */
@@ -41,14 +40,10 @@ export async function GaleriKegiatan() {
               </p>
             </div>
             <p className="pb-2 text-sm">{album.deskripsi}</p>
-            <button
-              type="button"
-              disabled
-              className={cn(buttonVariants(), "!mt-auto w-full")}
-            >
+            <CardLinkButton href={album.driveUrl} label={`Lihat foto ${album.judul}`}>
               Lihat Foto di Google Drive
               <ExternalLink className="size-4" aria-hidden />
-            </button>
+            </CardLinkButton>
           </div>
         </article>
       ))}

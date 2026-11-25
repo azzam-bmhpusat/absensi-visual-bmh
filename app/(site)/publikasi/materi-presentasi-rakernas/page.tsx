@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function MateriPresentasiRakernasPage() {
   return (
-    <PublicPage notice
+    <PublicPage
       title={TITLE}
       hero={
         <PageHero

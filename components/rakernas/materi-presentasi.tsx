@@ -1,6 +1,5 @@
 import { CalendarDays, Download, Presentation, User } from "lucide-react";
-import { cn } from "cn";
-import { buttonVariants } from "@/components/ui/button";
+import { CardLinkButton } from "@/components/rakernas/card-link-button";
 import { getMateriPresentasi } from "@/lib/content/server";
 
 /** Grid card materi presentasi Rakernas (dikelola di dashboard: Kelola Konten). */
@@ -34,14 +33,10 @@ export async function MateriPresentasi() {
             </p>
           </div>
           <p className="pb-2 text-sm">{materi.deskripsi}</p>
-          <button
-            type="button"
-            disabled
-            className={cn(buttonVariants(), "!mt-auto w-full")}
-          >
+          <CardLinkButton href={materi.driveUrl} label={`Unduh materi ${materi.judul}`}>
             <Download className="size-4" aria-hidden />
             Unduh Materi
-          </button>
+          </CardLinkButton>
         </article>
       ))}
     </section>

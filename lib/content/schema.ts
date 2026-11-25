@@ -20,15 +20,15 @@ export type InfoPenting = { judul: string; isi: string };
 export type KontakPanitia = { nama: string; whatsapp: string };
 export type AlbumKegiatan = {
   judul: string; tanggal: string; lokasi: string; jumlahFoto: number;
-  cover: string; deskripsi: string; driveUrl: string;
+  cover: string; deskripsi: string; driveUrl: string | null;
 };
 export type MateriPresentasi = {
   judul: string; pemateri: string; jabatan: string; sesi: string; tanggal: string;
-  format: "PDF" | "PPTX"; ukuran: string; deskripsi: string; driveUrl: string;
+  format: "PDF" | "PPTX"; ukuran: string; deskripsi: string; driveUrl: string | null;
 };
 export type NotulaRapat = {
   judul: string; tanggal: string; waktu: string; tempat: string; pimpinan: string; notulis: string;
-  jumlahPeserta: number; keputusan: string[]; status: "Final" | "Draf"; driveUrl: string;
+  jumlahPeserta: number; keputusan: string[]; status: "Final" | "Draf"; driveUrl: string | null;
 };
 
 // ---- Baris DB ----
@@ -39,15 +39,15 @@ export type RoomRow = {
 export type InfoRow = { id: number; judul: string; isi: string; urutan: number };
 export type AlbumRow = {
   id: number; judul: string; tanggal: string; lokasi: string; jumlah_foto: number; cover_path: string;
-  deskripsi: string; drive_url: string; urutan: number;
+  deskripsi: string; drive_url: string | null; urutan: number;
 };
 export type MateriRow = {
   id: number; judul: string; pemateri: string; jabatan: string; sesi: string; tanggal: string;
-  format: "PDF" | "PPTX"; ukuran: string; deskripsi: string; drive_url: string; urutan: number;
+  format: "PDF" | "PPTX"; ukuran: string; deskripsi: string; drive_url: string | null; urutan: number;
 };
 export type NotulaRow = {
   id: number; judul: string; tanggal: string; waktu: string; tempat: string; pimpinan: string; notulis: string;
-  jumlah_peserta: number; keputusan: string[]; status: "Final" | "Draf"; drive_url: string; urutan: number;
+  jumlah_peserta: number; keputusan: string[]; status: "Final" | "Draf"; drive_url: string | null; urutan: number;
 };
 
 /** '2027-02-15' -> 'Senin, 15 Februari 2027' (sama dengan teks dummy sebelumnya). */
@@ -103,6 +103,8 @@ const int = (label: string, min: number, max: number) => z.coerce.number({ error
 const httpsUrl = z.string().trim().max(2048).refine((v) => {
   try { const u = new URL(v); return u.protocol === "https:" && Boolean(u.hostname); } catch { return false; }
 }, "Gunakan URL HTTPS yang valid.");
+/** Link tombol card: kosong -> null (tombol nonaktif), selain itu wajib HTTPS. */
+const optionalLink = z.string().trim().transform((v) => v || null).pipe(httpsUrl.nullable());
 const urutan = int("Urutan", 0, 100000).default(0);
 
 export const idSchema = z.coerce.number().int().positive();
@@ -125,19 +127,19 @@ export const contactSchema = z.object({
 });
 export const albumSchema = z.object({
   judul: text("Judul"), tanggal: isoDate, lokasi: text("Lokasi"), jumlahFoto: int("Jumlah foto", 0, 100000),
-  deskripsi: optText(2000), driveUrl: httpsUrl, urutan,
+  deskripsi: optText(2000), driveUrl: optionalLink, urutan,
 });
 export const materiSchema = z.object({
   judul: text("Judul"), pemateri: text("Pemateri"), jabatan: optText(200), sesi: text("Sesi", 100), tanggal: isoDate,
   format: z.enum(["PDF", "PPTX"], { error: "Pilih format." }), ukuran: optText(20), deskripsi: optText(2000),
-  driveUrl: httpsUrl, urutan,
+  driveUrl: optionalLink, urutan,
 });
 export const notulaSchema = z.object({
   judul: text("Judul"), tanggal: isoDate, waktu: text("Waktu", 50), tempat: text("Tempat"), pimpinan: text("Pimpinan"),
   notulis: text("Notulis"), jumlahPeserta: int("Jumlah peserta", 0, 100000),
   keputusan: z.string().transform((v) => v.split("\n").map((s) => s.trim()).filter(Boolean))
     .pipe(z.array(z.string().max(500, "Satu poin keputusan maksimal 500 karakter.")).max(50)),
-  status: z.enum(["Final", "Draf"], { error: "Pilih status." }), driveUrl: httpsUrl, urutan,
+  status: z.enum(["Final", "Draf"], { error: "Pilih status." }), driveUrl: optionalLink, urutan,
 });
 
 export type FieldErrors = Record<string, string>;

@@ -173,6 +173,15 @@ export function SiteFooter({
             >
               {FOOTER_DATA.committee.label}
             </a>
+            {" · "}
+            <a
+              href="https://bmh.or.id/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn("rounded text-white/60 underline-offset-4 hover:text-white hover:underline", focusRing)}
+            >
+              bmh.or.id
+            </a>
           </p>
         </div>
       </div>

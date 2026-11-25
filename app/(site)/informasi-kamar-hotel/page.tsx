@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function InformasiKamarHotelPage() {
   return (
-    <PublicPage notice title={TITLE} hero={<HotelHero title={TITLE} />}>
+    <PublicPage title={TITLE} hero={<HotelHero title={TITLE} />}>
       <Suspense fallback={null}>
         <ProfileGate path="/informasi-kamar-hotel">
           <HotelInfo />
