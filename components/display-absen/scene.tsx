@@ -138,7 +138,7 @@ function Led({ world, eventName, hadir, total, pct, welcome, ticker }: LedProps)
           </text>
           <text className="da-ink-dim" x={0} y={Y(47.6)} fontSize={5.4} textAnchor="middle">
             {fit(
-              formatGuestAffiliation({ perwakilan_daerah: welcome.daerah, jabatan: welcome.jabatan, departemen: welcome.departemen, kategori: welcome.kategori }),
+              formatGuestAffiliation({ perwakilan_daerah: welcome.daerah, jabatan: welcome.jabatan, kategori: welcome.kategori }),
               5.4,
               w - 24
             )}
@@ -246,7 +246,7 @@ function Callout({ world, entry, index }: { world: World; entry: SeatEntry; inde
   const SAFE = 24; // jarak aman dari tepi layar
   const x = Math.min(world.W - width - SAFE, Math.max(SAFE, anchor[0] - width / 2));
   const y = Math.max(SAFE, anchor[1] - height - 34);
-  const aff = formatGuestAffiliation({ perwakilan_daerah: entry.daerah, jabatan: entry.jabatan, departemen: entry.departemen, kategori: entry.kategori });
+  const aff = formatGuestAffiliation({ perwakilan_daerah: entry.daerah, jabatan: entry.jabatan, kategori: entry.kategori });
   // batas karakter dari lebar kartu (font monospace ≈ 0.62em per karakter) agar teks tidak keluar bingkai
   const maxChars = (size: number) => Math.max(6, Math.floor((width - 28) / (size * 0.62)));
   const clipId = `ab-card-clip-${index}`;

@@ -4,7 +4,6 @@ export interface AttendanceExportItem {
   nama: string;
   perwakilan_daerah: string;
   jabatan?: string | null;
-  departemen?: string | null;
   kategori?: string | null;
   is_walk_in: boolean;
   checked_in_at: string;
@@ -71,7 +70,7 @@ export function exportAttendanceToCsv(
     "Sesi",
     "Nama Tamu",
     "Perwakilan Daerah / Asal",
-    "Jabatan / Departemen",
+    "Jabatan",
     "Status Kehadiran",
   ];
 
@@ -80,10 +79,7 @@ export function exportAttendanceToCsv(
       sessionMap.get(item.session_id) || `Sesi ${item.session_id}`;
     const wibTime = formatToWibDateTime(item.checked_in_at);
     const status = item.is_walk_in ? "Tamu Baru (Walk-in)" : "Undangan Terdaftar";
-    const affiliationRole =
-      item.jabatan || item.departemen
-        ? `${item.jabatan ?? ""}${item.departemen ? `: ${item.departemen}` : ""}`.trim()
-        : "-";
+    const affiliationRole = item.jabatan?.trim() || "-";
 
     return [
       escapeCsvCell(index + 1),

@@ -92,13 +92,13 @@ export async function GET(request: NextRequest) {
       fetchAll<ExportAttendance>(
         supabase,
         "attendances",
-        "id, session_id, guest_id, nama, perwakilan_daerah, jabatan, departemen, kategori, is_walk_in, checked_in_at",
+        "id, session_id, guest_id, nama, perwakilan_daerah, jabatan, kategori, is_walk_in, checked_in_at",
         "checked_in_at",
         sessionFilter
       ),
       scope.kind === "filter"
         ? Promise.resolve([] as ExportGuest[])
-        : fetchAll<ExportGuest>(supabase, "profiles", "id, nama, perwakilan_daerah, jabatan, departemen, kategori", "nama"),
+        : fetchAll<ExportGuest>(supabase, "profiles", "id, nama, perwakilan_daerah, jabatan, kategori", "nama"),
     ]);
 
     const buffer = await buildAttendanceWorkbook({ scope, sessions, attendances, guests });

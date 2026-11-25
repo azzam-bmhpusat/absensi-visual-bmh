@@ -74,7 +74,6 @@ function hadirColumns(withSession: boolean): Column[] {
     { header: "Nama", key: "nama", width: 32 },
     { header: "Perwakilan Daerah", key: "perwakilan_daerah", width: 28 },
     { header: "Jabatan", key: "jabatan", width: 24 },
-    { header: "Departemen", key: "departemen", width: 22 },
     { header: "Kategori", key: "kategori", width: 13 },
     { header: "Status", key: "status", width: 12 },
   ];
@@ -91,7 +90,6 @@ function hadirRows(attendances: ExportAttendance[], sessionMap: Map<number, Expo
       nama: a.nama,
       perwakilan_daerah: a.perwakilan_daerah,
       jabatan: a.jabatan || "-",
-      departemen: a.departemen || "-",
       kategori: kategoriLabel(a.kategori),
       status: statusLabel(a.is_walk_in),
     };
@@ -103,7 +101,6 @@ const belumHadirColumns: Column[] = [
   { header: "Nama", key: "nama", width: 32 },
   { header: "Perwakilan Daerah", key: "perwakilan_daerah", width: 28 },
   { header: "Jabatan", key: "jabatan", width: 24 },
-  { header: "Departemen", key: "departemen", width: 22 },
   { header: "Kategori", key: "kategori", width: 13 },
 ];
 
@@ -113,7 +110,6 @@ function guestRows(guests: ExportGuest[]) {
     nama: g.nama,
     perwakilan_daerah: g.perwakilan_daerah,
     jabatan: g.jabatan || "-",
-    departemen: g.departemen || "-",
     kategori: kategoriLabel(g.kategori),
   }));
 }

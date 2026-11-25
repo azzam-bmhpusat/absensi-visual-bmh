@@ -110,7 +110,7 @@ describe("Fase 6 — QA & Penyelesaian: Landing Page Rakernas BMH", () => {
 
     it("Tamu Undangan menjelaskan empat kolom pencarian dan detail tamu", () => {
       expect(INVITED_GUESTS_CONTENT.title).toBe("Peserta Rakernas");
-      expect(INVITED_GUESTS_CONTENT.description).toBe("Temukan detail peserta berdasarkan nama, perwakilan daerah, jabatan, atau departemen.");
+      expect(INVITED_GUESTS_CONTENT.description).toBe("Temukan detail peserta berdasarkan nama, perwakilan daerah, atau jabatan.");
       expect(INVITED_GUESTS_CONTENT.detailsTitle).toBe("Detail Peserta");
     });
 

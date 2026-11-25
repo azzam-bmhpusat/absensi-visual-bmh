@@ -34,7 +34,7 @@ describe("CSV Utilities", () => {
       const csv = exportAttendanceToCsv(attendances, sessions);
 
       expect(csv.startsWith("\uFEFF")).toBe(true);
-      expect(csv).toContain("No,Waktu Presensi (WIB),Sesi,Nama Tamu,Perwakilan Daerah / Asal,Jabatan / Departemen,Status Kehadiran");
+      expect(csv).toContain("No,Waktu Presensi (WIB),Sesi,Nama Tamu,Perwakilan Daerah / Asal,Jabatan,Status Kehadiran");
       // Cek quoting koma pada nama
       expect(csv).toContain('"Budi Santoso, Ir."');
       expect(csv).toContain("Hari Pertama");
@@ -44,7 +44,7 @@ describe("CSV Utilities", () => {
       expect(csv).toContain("14:15:00 WIB");
     });
 
-    it("mengekspor jabatan dan departemen tamu ke dalam CSV dengan benar", () => {
+    it("mengekspor jabatan tamu ke dalam CSV dengan benar", () => {
       const attendances = [
         {
           id: "3",
@@ -52,13 +52,12 @@ describe("CSV Utilities", () => {
           nama: "Fulan",
           perwakilan_daerah: "Pusat",
           jabatan: "Ketua Departemen",
-          departemen: "IT",
           is_walk_in: false,
           checked_in_at: "2026-11-13T03:30:00.000Z",
         },
       ];
       const csv = exportAttendanceToCsv(attendances);
-      expect(csv).toContain("Ketua Departemen: IT");
+      expect(csv).toContain("Ketua Departemen");
       expect(csv).toContain("Fulan");
     });
   });

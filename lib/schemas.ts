@@ -35,11 +35,6 @@ export const attendanceSchema = z.object({
     .optional()
     .transform((val) => (val ? normalizeString(val) : undefined))
     .pipe(z.string().max(100, "Jabatan maksimal 100 karakter").optional()),
-  departemen: z
-    .string()
-    .optional()
-    .transform((val) => (val ? normalizeString(val) : undefined))
-    .pipe(z.string().max(100, "Departemen maksimal 100 karakter").optional()),
   kategori: z.string().optional(),
   website: z.string().optional(),
 });
@@ -70,11 +65,6 @@ export const guestRowSchema = z.object({
     .optional()
     .transform((val) => (val ? normalizeString(val) : undefined))
     .pipe(z.string().max(100, "Jabatan maksimal 100 karakter").optional()),
-  departemen: z
-    .string()
-    .optional()
-    .transform((val) => (val ? normalizeString(val) : undefined))
-    .pipe(z.string().max(100, "Departemen maksimal 100 karakter").optional()),
   kategori: z.string().optional(),
 });
 

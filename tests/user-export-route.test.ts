@@ -46,6 +46,15 @@ describe("filterUsers", () => {
     expect(filterUsers(users, { status: "all", jabatan: NO_JABATAN, q: "" }).map((u) => u.id)).toEqual(["budi"]);
     expect(filterUsers(users, { status: "all", jabatan: "all", q: "AND" }).map((u) => u.id)).toEqual(["andi"]);
   });
+
+  it("pencarian bebas mencakup jabatan, peran, status, dan no. WA", () => {
+    const ids = (q: string) => filterUsers(users, { status: "all", jabatan: "all", q }).map((u) => u.id);
+    expect(ids("ketua")).toEqual(["andi", "cici"]);
+    expect(ids("admin")).toEqual(["budi"]);
+    expect(ids("nonaktif")).toEqual(["cici"]);
+    expect(ids("081 23")).toEqual(["andi", "budi", "cici"]);
+    expect(ids("tidak-ada")).toEqual([]);
+  });
 });
 
 describe("GET /api/admin/manajemen-user/export", () => {

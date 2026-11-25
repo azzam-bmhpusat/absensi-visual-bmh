@@ -19,17 +19,17 @@ describe("GET /api/guests/search", () => {
 
   it("memakai akses publik, pagination stabil, dan hanya mengembalikan detail tamu", async () => {
     mock.query.abortSignal.mockResolvedValue({
-      data: [{ id: "guest-1", nama: "Ali", perwakilan_daerah: "Jawa Barat", jabatan: null, departemen: "Dakwah", kategori: "daerah", created_at: "private" }],
+      data: [{ id: "guest-1", nama: "Ali", perwakilan_daerah: "Jawa Barat", jabatan: null, kategori: "daerah", created_at: "private" }],
       count: 23, error: null,
     });
     const response = await GET(new Request("http://localhost/api/guests/search?q=%20Jawa%20%20Barat%20&page=2"));
     expect(response.status).toBe(200);
     expect(response.headers.get("Cache-Control")).toBe("no-store");
-    expect(await response.json()).toEqual({ guests: [{ id: "guest-1", nama: "Ali", perwakilan_daerah: "Jawa Barat", jabatan: null, departemen: "Dakwah" }], total: 23, page: 2, pageSize: 10 });
+    expect(await response.json()).toEqual({ guests: [{ id: "guest-1", nama: "Ali", perwakilan_daerah: "Jawa Barat", jabatan: null }], total: 23, page: 2, pageSize: 10 });
     expect(mock.query.from).toHaveBeenCalledWith("profiles");
     // hanya profil peserta (punya nama), bukan akun admin
     expect(mock.query.not).toHaveBeenCalledWith("nama", "is", null);
-    expect(mock.query.select).toHaveBeenCalledWith("id, nama, perwakilan_daerah, jabatan, departemen", { count: "exact" });
+    expect(mock.query.select).toHaveBeenCalledWith("id, nama, perwakilan_daerah, jabatan", { count: "exact" });
     expect(mock.query.or).toHaveBeenCalledWith(buildGuestSearchFilter("Jawa Barat"));
     expect(mock.query.order.mock.calls).toEqual([["nama", { ascending: true }], ["id", { ascending: true }]]);
     expect(mock.query.range).toHaveBeenCalledWith(10, 19);

@@ -157,7 +157,6 @@ export const adminProfileSchema = z.object({
   nama: optionalText("Nama", 2, 100),
   perwakilan_daerah: optionalText("Perwakilan daerah", 2, 100),
   jabatan: optionalText("Jabatan", 2, 100),
-  departemen: optionalText("Departemen", 1, 100),
   kategori: optionalText("Kategori", 1, 100),
   ukuran_baju: optionalEnum(UKURAN_BAJU, "Ukuran baju tidak valid"),
   no_whatsapp: profileContactSchema.shape.no_whatsapp,

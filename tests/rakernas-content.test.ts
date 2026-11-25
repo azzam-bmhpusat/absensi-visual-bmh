@@ -83,7 +83,7 @@ describe("Fase 1 — Konten Bertipe (PRD Rakernas BMH)", () => {
     it("menyediakan copywriting pencarian dan empat label detail tamu", () => {
       expect(INVITED_GUESTS_CONTENT.title).toBe("Peserta Rakernas");
       expect(INVITED_GUESTS_CONTENT.detailsTitle).toBe("Detail Peserta");
-      expect(Object.keys(INVITED_GUESTS_CONTENT.fields)).toEqual(["nama", "perwakilan_daerah", "jabatan", "departemen"]);
+      expect(Object.keys(INVITED_GUESTS_CONTENT.fields)).toEqual(["nama", "perwakilan_daerah", "jabatan"]);
     });
 
     it("memiliki 2 anchor section di navbar (Rundown Acara dan Dress Code)", () => {

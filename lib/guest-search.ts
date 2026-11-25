@@ -9,7 +9,6 @@ export interface PublicGuest {
   nama: string;
   perwakilan_daerah: string;
   jabatan: string | null;
-  departemen: string | null;
 }
 
 export interface GuestSearchResponse {
@@ -34,7 +33,7 @@ export function parseGuestSearchParams(params: URLSearchParams) {
   return { query, page };
 }
 
-const GUEST_SEARCH_COLUMNS = ["nama", "perwakilan_daerah", "jabatan", "departemen"] as const;
+const GUEST_SEARCH_COLUMNS = ["nama", "perwakilan_daerah", "jabatan"] as const;
 
 export function buildGuestSearchFilter(
   query: string,

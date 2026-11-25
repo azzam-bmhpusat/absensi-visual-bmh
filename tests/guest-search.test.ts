@@ -20,7 +20,7 @@ describe("Guest search parameters and literal filters", () => {
   });
 
   it("mencari sebagian teks tanpa membedakan kapitalisasi pada empat kolom", () => {
-    expect(buildGuestSearchFilter("Ali")).toBe('nama.ilike."%Ali%",perwakilan_daerah.ilike."%Ali%",jabatan.ilike."%Ali%",departemen.ilike."%Ali%"');
+    expect(buildGuestSearchFilter("Ali")).toBe('nama.ilike."%Ali%",perwakilan_daerah.ilike."%Ali%",jabatan.ilike."%Ali%"');
   });
 
   it("dapat memakai daftar kolom kustom (pendaftar memakai perwakilan_bmh)", () => {
@@ -31,7 +31,7 @@ describe("Guest search parameters and literal filters", () => {
     const query = 'O\'Connor, "Ketua" (IT) \\';
     const filter = buildGuestSearchFilter(query);
     const value = JSON.stringify('%O\'Connor, "Ketua" (IT) \\\\%');
-    expect(filter).toBe(["nama", "perwakilan_daerah", "jabatan", "departemen"].map((field) => `${field}.ilike.${value}`).join(","));
+    expect(filter).toBe(["nama", "perwakilan_daerah", "jabatan"].map((field) => `${field}.ilike.${value}`).join(","));
   });
 
   it("tidak menjadikan persen dan underscore sebagai wildcard", () => {

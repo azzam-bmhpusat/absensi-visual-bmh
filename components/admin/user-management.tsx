@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   AlertTriangle,
-  Briefcase,
   ChevronDown,
   Copy,
+  Download,
   Eye,
   EyeOff,
   FileSpreadsheet,
@@ -21,6 +21,7 @@ import {
   Search,
   Shuffle,
   Trash2,
+  Upload,
   UserRound,
 } from "lucide-react";
 import { cn } from "cn";
@@ -44,15 +45,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectSeparator,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -62,6 +54,8 @@ import {
 import {
   createUserAction,
   deleteUserAction,
+  importUsersAction,
+  type ImportUsersResult,
   setUserActiveAction,
   updateUserAction,
   type UserActionResult,
@@ -70,7 +64,6 @@ import {
   ALL_JABATAN,
   filterUsers,
   formatUserDate,
-  NO_JABATAN,
   type UserFilter,
   type UserProfile,
   type UserRow,
@@ -94,6 +87,7 @@ import { DEFAULT_ROLE, generatePassword, ROLE_LABEL, USER_ROLES, type UserRole }
 type Filter = UserStatusFilter;
 
 const EXPORT_ENDPOINT = "/api/admin/manajemen-user/export";
+const IMPORT_TEMPLATE_ENDPOINT = "/api/admin/manajemen-user/import-template";
 
 function buildUserExportUrl(mode: "all" | "filter", filter: UserFilter): string {
   const params = new URLSearchParams({ mode });
@@ -107,11 +101,10 @@ function buildUserExportUrl(mode: "all" | "filter", filter: UserFilter): string 
 
 const menuItemClassName =
   "flex min-h-11 cursor-pointer items-center gap-2 rounded-lg px-3 text-sm font-medium text-ink focus:bg-secondary focus:text-primary";
-const selectItemClassName =
-  "min-h-10 rounded-lg py-2 pr-9 pl-3 text-sm text-ink focus:bg-secondary focus:text-primary data-highlighted:bg-secondary data-highlighted:text-primary data-[selected]:font-semibold data-[selected]:text-primary [&_svg]:text-brand-green-text *:[span]:first:min-w-0 *:[span]:first:truncate *:[span]:first:block";
 
 const ROLE_STYLE: Record<UserRole, string> = {
   admin: "bg-secondary text-brand-green-deep border-brand-green/30",
+  direktur: "bg-primary/10 text-primary border-primary/30",
   peserta: "bg-gold-100 text-brand-gold-text border-brand-gold/40",
   user: "bg-white text-ink-muted border-line",
 };
@@ -125,8 +118,8 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
-  const [jabatanFilter, setJabatanFilter] = useState<string>(ALL_JABATAN);
   const [creating, setCreating] = useState(false);
+  const [importing, setImporting] = useState(false);
   const [editing, setEditing] = useState<UserRow | null>(null);
   const [toDelete, setToDelete] = useState<UserRow | null>(null);
   const [viewing, setViewing] = useState<UserRow | null>(null);
@@ -137,6 +130,7 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
     () => ({
       all: users.length,
       admin: users.filter((u) => u.role === "admin").length,
+      direktur: users.filter((u) => u.role === "direktur").length,
       peserta: users.filter((u) => u.role === "peserta").length,
       user: users.filter((u) => u.role === "user").length,
       inactive: users.filter((u) => u.banned).length,
@@ -144,23 +138,9 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
     [users]
   );
 
-  const jabatanList = useMemo(
-    () => [...new Set(users.flatMap((u) => (u.profile.jabatan ? [u.profile.jabatan] : [])))].sort((a, b) => a.localeCompare(b, "id")),
-    [users]
-  );
-  const hasNoJabatan = useMemo(() => users.some((u) => !u.profile.jabatan), [users]);
-  const jabatanItems = useMemo(
-    () => [
-      { value: ALL_JABATAN, label: "Semua Jabatan" },
-      ...jabatanList.map((j) => ({ value: j, label: j })),
-      ...(hasNoJabatan ? [{ value: NO_JABATAN, label: "Tanpa jabatan" }] : []),
-    ],
-    [jabatanList, hasNoJabatan]
-  );
-
   const visible = useMemo(
-    () => filterUsers(users, { status: filter, jabatan: jabatanFilter, q: search }),
-    [users, filter, jabatanFilter, search]
+    () => filterUsers(users, { status: filter, jabatan: ALL_JABATAN, q: search }),
+    [users, filter, search]
   );
 
   const [exporting, setExporting] = useState<"all" | "filter" | null>(null);
@@ -169,7 +149,7 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
     setExporting(mode);
     try {
       await downloadFromEndpoint(
-        buildUserExportUrl(mode, { status: filter, jabatan: jabatanFilter, q: search }),
+        buildUserExportUrl(mode, { status: filter, jabatan: ALL_JABATAN, q: search }),
         "manajemen-user-bmh.xlsx"
       );
       toast.success(`Excel ${mode === "all" ? "semua user" : "sesuai filter"} berhasil diunduh.`);
@@ -213,6 +193,7 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
   const filters: { value: Filter; label: string }[] = [
     { value: "all", label: "Semua" },
     { value: "admin", label: "Admin" },
+    { value: "direktur", label: "Direktur" },
     { value: "peserta", label: "Peserta" },
     { value: "user", label: "User" },
     { value: "inactive", label: "Nonaktif" },
@@ -227,44 +208,13 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Cari email..."
-              aria-label="Cari email pengguna"
+              placeholder="Cari nama, email, daerah, jabatan, no. WA..."
+              aria-label="Cari pengguna"
               className="h-10 rounded-xl border-line pl-9 text-xs focus-visible:ring-ring"
             />
           </div>
-          <Select items={jabatanItems} value={jabatanFilter} onValueChange={(v) => setJabatanFilter(v ?? ALL_JABATAN)}>
-            <SelectTrigger
-              aria-label="Filter jabatan"
-              className="w-full min-w-0 gap-2 rounded-xl border-line bg-white text-xs data-[size=default]:h-10 sm:w-56 *:data-[slot=select-value]:block *:data-[slot=select-value]:min-w-0"
-            >
-              <Briefcase className="size-4 text-brand-gold-text" aria-hidden="true" />
-              <SelectValue className="truncate" placeholder="Semua Jabatan" />
-            </SelectTrigger>
-            <SelectContent
-              side="bottom"
-              align="start"
-              alignItemWithTrigger={false}
-              className="max-h-[min(20rem,var(--available-height))] rounded-xl border border-line bg-popover p-1.5 shadow-lg ring-0"
-            >
-              <SelectGroup className="p-0">
-                <SelectItem value={ALL_JABATAN} className={selectItemClassName}>
-                  Semua Jabatan
-                </SelectItem>
-              </SelectGroup>
-              {jabatanItems.length > 1 && (
-                <SelectGroup className="p-0">
-                  <SelectSeparator className="mx-0 my-1.5" />
-                  {jabatanItems.slice(1).map((item) => (
-                    <SelectItem key={item.value} value={item.value} title={item.label} className={selectItemClassName}>
-                      {item.label}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              )}
-            </SelectContent>
-          </Select>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger
               disabled={exporting !== null}
@@ -307,6 +257,15 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
           </DropdownMenu>
           <Button
             type="button"
+            variant="outline"
+            onClick={() => setImporting(true)}
+            className="h-11 gap-2 rounded-xl border-line bg-white px-4 text-sm font-semibold text-primary hover:bg-secondary"
+          >
+            <Upload className="h-4 w-4" aria-hidden="true" />
+            Import Excel
+          </Button>
+          <Button
+            type="button"
             onClick={() => setCreating(true)}
             className="h-11 gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-brand-green-night"
           >
@@ -347,8 +306,8 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
           <TableHeader>
             <TableRow className="bg-surface hover:bg-surface">
               <TableHead className="w-12 text-xs font-semibold text-primary">No.</TableHead>
-              <TableHead className="text-xs font-semibold text-primary">Email</TableHead>
               <TableHead className="text-xs font-semibold text-primary">Nama</TableHead>
+              <TableHead className="text-xs font-semibold text-primary">Email</TableHead>
               <TableHead className="text-xs font-semibold text-primary">Jabatan</TableHead>
               <TableHead className="text-xs font-semibold text-primary">Perwakilan daerah</TableHead>
               <TableHead className="text-xs font-semibold text-primary">Peran</TableHead>
@@ -371,6 +330,12 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
                 return (
                   <TableRow key={u.id}>
                     <TableCell className="text-xs tabular-nums text-ink-muted">{index + 1}</TableCell>
+                    <TableCell className={cn("min-w-48 text-sm", u.profile.nama ? "text-ink" : "text-ink-muted")}>
+                      <span className="flex items-center gap-2.5">
+                        <UserAvatar src={avatarPublicUrl(u.profile.avatar_url)} name={u.profile.nama ?? u.email} />
+                        {u.profile.nama ?? (u.profile.nama_google ? `${u.profile.nama_google} (Google)` : "—")}
+                      </span>
+                    </TableCell>
                     <TableCell className="min-w-56 text-sm font-medium text-ink">
                       <span className="break-all">{u.email}</span>
                       {isSelf && (
@@ -378,12 +343,6 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
                           Anda
                         </span>
                       )}
-                    </TableCell>
-                    <TableCell className={cn("min-w-48 text-sm", u.profile.nama ? "text-ink" : "text-ink-muted")}>
-                      <span className="flex items-center gap-2.5">
-                        <UserAvatar src={avatarPublicUrl(u.profile.avatar_url)} name={u.profile.nama ?? u.email} />
-                        {u.profile.nama ?? (u.profile.nama_google ? `${u.profile.nama_google} (Google)` : "—")}
-                      </span>
                     </TableCell>
                     <TableCell className={cn("min-w-32 text-xs", u.profile.jabatan ? "text-ink" : "text-ink-muted")}>
                       {u.profile.jabatan ?? "—"}
@@ -481,6 +440,11 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
         onClose={() => setEditing(null)}
         finish={finish}
       />
+      <ImportUsersDialog
+        open={importing}
+        onClose={() => setImporting(false)}
+        onImported={() => router.refresh()}
+      />
       <ProfileDetailDialog
         user={viewing}
         onClose={() => setViewing(null)}
@@ -534,7 +498,7 @@ function RoleChoice({
   disabled?: boolean;
 }) {
   return (
-    <div role="radiogroup" aria-label="Peran" className="grid grid-cols-3 gap-2">
+    <div role="radiogroup" aria-label="Peran" className="grid grid-cols-2 gap-2 sm:grid-cols-4">
       {USER_ROLES.map((r) => (
         <button
           key={r}
@@ -670,7 +634,6 @@ function ProfileFields({
         {text("nama", "Nama lengkap (beserta gelar)")}
         {text("perwakilan_daerah", "Perwakilan Daerah")}
         {text("jabatan", "Jabatan")}
-        {text("departemen", "Departemen")}
         {text("kategori", "Kategori", { placeholder: "mis. daerah / pusat" })}
         <div className="space-y-1.5">
           <Label htmlFor={`${idPrefix}-ukuran_baju`} className="text-xs font-semibold text-primary">Ukuran Baju</Label>
@@ -943,7 +906,6 @@ function ProfileDetailDialog({
                 <DetailItem label="Nama lengkap" wide>{show(p.nama)}</DetailItem>
                 <DetailItem label="Perwakilan Daerah">{show(p.perwakilan_daerah)}</DetailItem>
                 <DetailItem label="Jabatan">{show(p.jabatan)}</DetailItem>
-                <DetailItem label="Departemen">{show(p.departemen)}</DetailItem>
                 <DetailItem label="Kategori">{show(p.kategori)}</DetailItem>
                 <DetailItem label="Ukuran Baju">{show(p.ukuran_baju)}</DetailItem>
                 <DetailItem label="No WhatsApp">
@@ -984,6 +946,128 @@ function ProfileDetailDialog({
             </Button>
           )}
         </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ImportUsersDialog({ open, onClose, onImported }: { open: boolean; onClose: () => void; onImported: () => void }) {
+  const [file, setFile] = useState<File | null>(null);
+  const [result, setResult] = useState<ImportUsersResult | null>(null);
+  const [downloading, setDownloading] = useState(false);
+  const [isPending, startTransition] = useTransition();
+
+  const close = () => {
+    if (isPending) return;
+    setFile(null);
+    setResult(null);
+    onClose();
+  };
+
+  const downloadTemplate = async () => {
+    if (downloading) return;
+    setDownloading(true);
+    try {
+      await downloadFromEndpoint(IMPORT_TEMPLATE_ENDPOINT, "template-import-user-bmh.xlsx");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Gagal mengunduh template.");
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!file) return;
+    const data = new FormData();
+    data.set("file", file);
+    startTransition(async () => {
+      const res = await importUsersAction(data);
+      if (!res.success) {
+        toast.error(res.error ?? "Gagal mengimpor.");
+        return;
+      }
+      setResult(res);
+      if (res.created > 0) {
+        toast.success(`${res.created} user berhasil diimpor.`);
+        onImported();
+      }
+      if (res.failed.length > 0) toast.error(`${res.failed.length} baris gagal diimpor.`);
+    });
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={(o) => !o && close()}>
+      <DialogContent className={dialogClassName}>
+        <form onSubmit={submit} className="space-y-4">
+          <DialogHeader>
+            <DialogTitle className="font-heading text-lg font-bold text-primary">Import User dari Excel</DialogTitle>
+            <DialogDescription className="text-xs leading-relaxed text-ink-muted">
+              Unduh template, isi satu user per baris (Email dan Password wajib), lalu unggah file .xlsx. Baris yang gagal
+              tidak membatalkan baris lain.
+            </DialogDescription>
+          </DialogHeader>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={downloadTemplate}
+            disabled={downloading}
+            className="h-11 gap-2 rounded-xl border-line bg-white px-4 text-sm font-semibold text-primary hover:bg-secondary"
+          >
+            {downloading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Download className="h-4 w-4" aria-hidden="true" />}
+            Unduh Template
+          </Button>
+          <div className="space-y-1.5">
+            <Label htmlFor="import-user-file" className="text-xs font-semibold text-primary">File Excel (.xlsx)</Label>
+            <Input
+              id="import-user-file"
+              type="file"
+              accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              onChange={(e) => {
+                setFile(e.target.files?.[0] ?? null);
+                setResult(null);
+              }}
+              disabled={isPending}
+              className={fieldInputClassName}
+            />
+          </div>
+          {result && (
+            <div className="space-y-2 rounded-2xl border border-line p-3 text-xs" aria-live="polite">
+              <p className="font-semibold text-primary">
+                {result.created} berhasil, {result.failed.length} gagal.
+              </p>
+              {result.failed.length > 0 && (
+                <div className="max-h-60 overflow-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-14">Baris</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Alasan</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {result.failed.map((f) => (
+                        <TableRow key={f.row}>
+                          <TableCell className="tabular-nums">{f.row}</TableCell>
+                          <TableCell className="break-all">{f.email || "-"}</TableCell>
+                          <TableCell className="whitespace-normal text-danger">{f.error}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </div>
+          )}
+          <DialogFooter className="flex items-center justify-end gap-2">
+            <Button type="button" variant="outline" className="h-11 rounded-xl" onClick={close} disabled={isPending}>Tutup</Button>
+            <Button type="submit" className="h-11 gap-2 rounded-xl bg-primary text-primary-foreground hover:bg-brand-green-night" disabled={!file || isPending}>
+              {isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
+              Import
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

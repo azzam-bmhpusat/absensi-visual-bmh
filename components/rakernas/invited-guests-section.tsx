@@ -6,7 +6,6 @@ import {
   ArrowRight,
   BadgeCheck,
   BriefcaseBusiness,
-  Building2,
   MapPin,
   Search,
   SearchX,
@@ -45,7 +44,6 @@ type ResultCard = {
   nama: string;
   perwakilan_daerah: string;
   jabatan: string | null;
-  departemen: string | null;
 };
 
 const SEARCH_ANCHOR = "#invited-guest-search";
@@ -77,7 +75,6 @@ function highlight(text: string, query: string) {
 
 const detailRows = [
   { field: "jabatan", icon: BriefcaseBusiness },
-  { field: "departemen", icon: Building2 },
 ] as const;
 
 /**

@@ -1,12 +1,13 @@
 import { z } from "zod";
 
 /** Sama dengan enum public.app_role. Role default akun baru adalah 'peserta'; 'user' dipertahankan (lama). */
-export const USER_ROLES = ["admin", "peserta", "user"] as const;
+export const USER_ROLES = ["admin", "direktur", "peserta", "user"] as const;
 export type UserRole = (typeof USER_ROLES)[number];
 export const DEFAULT_ROLE: UserRole = "peserta";
 
 export const ROLE_LABEL: Record<UserRole, string> = {
   admin: "Admin",
+  direktur: "Direktur",
   peserta: "Peserta",
   user: "User",
 };
@@ -29,7 +30,7 @@ export const passwordSchema = z
   .min(8, "Kata sandi minimal 8 karakter")
   .max(72, "Kata sandi maksimal 72 karakter");
 
-export const roleSchema = z.enum(USER_ROLES, { error: "Peran harus Admin, Peserta, atau User" });
+export const roleSchema = z.enum(USER_ROLES, { error: "Peran harus Admin, Direktur, Peserta, atau User" });
 
 export const userIdSchema = z.string().uuid("ID pengguna tidak valid");
 

@@ -9,7 +9,6 @@ export interface WelcomeItem {
   nama: string;
   daerah: string;
   jabatan?: string | null;
-  departemen?: string | null;
   kategori?: string | null;
 }
 
@@ -35,7 +34,6 @@ export function WelcomeBanner({ queue, onDismiss }: WelcomeBannerProps) {
     ? formatGuestAffiliation({
         perwakilan_daerah: currentItem.daerah,
         jabatan: currentItem.jabatan,
-        departemen: currentItem.departemen,
         kategori: currentItem.kategori,
       })
     : "";

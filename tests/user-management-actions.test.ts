@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import fs from "fs";
 import path from "path";
 
+vi.mock("server-only", () => ({}));
+
 const ME = "11111111-1111-4111-8111-111111111111";
 const OTHER_ADMIN = "22222222-2222-4222-8222-222222222222";
 const TARGET = "33333333-3333-4333-8333-333333333333";
@@ -252,10 +254,10 @@ describe("updateUserAction", () => {
   });
 
   it("hanya data profil yang berubah: tidak menyentuh Auth, kosong -> null", async () => {
-    const res = await updateUserAction(TARGET, {}, { departemen: "  Keuangan  ", jabatan: "" });
+    const res = await updateUserAction(TARGET, {}, { kategori: "  Keuangan  ", jabatan: "" });
     expect(res).toMatchObject({ success: true });
     expect(mocks.updateUserById).not.toHaveBeenCalled();
-    expect(mocks.profileUpdates).toEqual([{ values: { departemen: "Keuangan", jabatan: null }, id: TARGET }]);
+    expect(mocks.profileUpdates).toEqual([{ values: { kategori: "Keuangan", jabatan: null }, id: TARGET }]);
   });
 
   it("peran dan profil disimpan dalam satu update", async () => {

@@ -27,7 +27,7 @@ async function RekapContent() {
     supabase
       .from("attendances")
       .select(
-        "id, session_id, guest_id, nama, perwakilan_daerah, jabatan, departemen, kategori, is_walk_in, checked_in_at"
+        "id, session_id, guest_id, nama, perwakilan_daerah, jabatan, kategori, is_walk_in, checked_in_at"
       )
       .order("checked_in_at", { ascending: false }),
   ]);
@@ -48,7 +48,6 @@ async function RekapContent() {
     nama: a.nama,
     perwakilan_daerah: a.perwakilan_daerah,
     jabatan: a.jabatan,
-    departemen: a.departemen,
     kategori: a.kategori,
     is_walk_in: a.is_walk_in,
     checked_in_at: a.checked_in_at,

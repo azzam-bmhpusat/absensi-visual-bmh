@@ -6,7 +6,6 @@ interface GuestChipProps {
   nama: string;
   perwakilanDaerah: string;
   jabatan?: string | null;
-  departemen?: string | null;
   kategori?: string | null;
   status: "hadir" | "belum" | "walk-in";
   isRecent?: boolean;
@@ -17,7 +16,6 @@ export function GuestChip({
   nama,
   perwakilanDaerah,
   jabatan,
-  departemen,
   kategori,
   status,
   isRecent = false,
@@ -26,7 +24,6 @@ export function GuestChip({
   const affiliationLabel = formatGuestAffiliation({
     perwakilan_daerah: perwakilanDaerah,
     jabatan,
-    departemen,
     kategori,
   });
 

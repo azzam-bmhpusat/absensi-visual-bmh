@@ -19,7 +19,6 @@ export interface GuestItem {
   nama: string;
   perwakilan_daerah: string;
   jabatan?: string | null;
-  departemen?: string | null;
   kategori?: string | null;
 }
 

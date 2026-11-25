@@ -193,34 +193,30 @@ describe("guestRowSchema", () => {
     expect(result.success).toBe(false);
   });
 
-  it("menerima dan menormalisasi jabatan dan departemen pada guestRowSchema", () => {
+  it("menerima dan menormalisasi jabatan pada guestRowSchema", () => {
     const result = guestRowSchema.safeParse({
       nama: "Fulan",
       perwakilan_daerah: "Pusat",
       jabatan: "  Ketua   Departemen  ",
-      departemen: "  IT  ",
       kategori: "departemen",
     });
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.jabatan).toBe("Ketua Departemen");
-      expect(result.data.departemen).toBe("IT");
       expect(result.data.kategori).toBe("departemen");
     }
   });
 
-  it("menerima dan menormalisasi jabatan dan departemen pada attendanceSchema", () => {
+  it("menerima dan menormalisasi jabatan pada attendanceSchema", () => {
     const result = attendanceSchema.safeParse({
       sessionId: 1,
       nama: "Fulan",
       perwakilanDaerah: "Pusat",
       jabatan: "Ketua Departemen",
-      departemen: "IT",
     });
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.jabatan).toBe("Ketua Departemen");
-      expect(result.data.departemen).toBe("IT");
     }
   });
 });

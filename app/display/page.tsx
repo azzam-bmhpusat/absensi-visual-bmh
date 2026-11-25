@@ -45,7 +45,7 @@ async function DisplayLoader({ searchParams }: { searchParams: Promise<{ [key: s
         .order("id", { ascending: true }),
       supabase
         .from("profiles")
-        .select("id, nama, perwakilan_daerah, jabatan, departemen, kategori")
+        .select("id, nama, perwakilan_daerah, jabatan, kategori")
         .not("nama", "is", null)
         .order("perwakilan_daerah", { ascending: true })
         .order("nama", { ascending: true }),
@@ -68,7 +68,7 @@ async function DisplayLoader({ searchParams }: { searchParams: Promise<{ [key: s
     const { data: rawAttendances } = await supabase
       .from("attendances")
       .select(
-        "id, session_id, guest_id, nama, perwakilan_daerah, jabatan, departemen, kategori, is_walk_in, checked_in_at"
+        "id, session_id, guest_id, nama, perwakilan_daerah, jabatan, kategori, is_walk_in, checked_in_at"
       )
       .eq("session_id", activeSession.id)
       .order("checked_in_at", { ascending: false });

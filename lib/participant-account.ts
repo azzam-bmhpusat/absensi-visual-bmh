@@ -6,7 +6,6 @@ export interface ParticipantFields {
   nama: string;
   perwakilan_daerah: string;
   jabatan?: string | null;
-  departemen?: string | null;
   kategori?: string | null;
   ukuran_baju?: string | null;
   mode_kehadiran?: string | null;
@@ -38,7 +37,6 @@ export function participantRow(fields: ParticipantFields) {
     nama: fields.nama.trim(),
     perwakilan_daerah: fields.perwakilan_daerah.trim(),
     jabatan: emptyToNull(fields.jabatan),
-    departemen: emptyToNull(fields.departemen),
     kategori: emptyToNull(fields.kategori) ?? "daerah",
     ukuran_baju: emptyToNull(fields.ukuran_baju),
     mode_kehadiran: emptyToNull(fields.mode_kehadiran),

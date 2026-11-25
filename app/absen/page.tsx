@@ -92,7 +92,7 @@ async function SessionPickerLoader({
     const supabase = createPublicServerClient();
     const [sessRes, guestsRes] = await Promise.all([
       supabase.from("sessions").select("id, slug, nama, tanggal, hari, is_active").order("id"),
-      supabase.from("profiles").select("id, nama, perwakilan_daerah, jabatan, departemen, kategori").not("nama", "is", null).order("nama"),
+      supabase.from("profiles").select("id, nama, perwakilan_daerah, jabatan, kategori").not("nama", "is", null).order("nama"),
     ]);
 
     if (sessRes.data && sessRes.data.length > 0) {

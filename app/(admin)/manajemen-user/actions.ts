@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getAdminUser } from "@/lib/auth/admin";
 import { isBanned } from "@/lib/user-row";
+import { IMPORT_MAX_BYTES, parseUserImportWorkbook } from "@/lib/user-import";
 import { adminProfileSchema, type AdminProfileInput } from "@/lib/profile-contact";
 import {
   createUserSchema,
@@ -93,7 +94,56 @@ export async function createUserAction(
 ): Promise<UserActionResult> {
   const me = await requireAdmin();
   if (!me) return DENIED;
+  const res = await createOne(createAdminClient(), input, profile);
+  return res.success ? done(res.message!) : res;
+}
 
+export interface ImportUsersResult {
+  success: boolean;
+  error?: string;
+  created: number;
+  failed: { row: number; email: string; error: string }[];
+}
+
+export async function importUsersAction(formData: FormData): Promise<ImportUsersResult> {
+  const fail = (error: string): ImportUsersResult => ({ success: false, error, created: 0, failed: [] });
+  const me = await requireAdmin();
+  if (!me) return fail(DENIED.error!);
+
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) return fail("Pilih file Excel terlebih dahulu.");
+  if (!file.name.toLowerCase().endsWith(".xlsx")) return fail("File harus berformat .xlsx.");
+  if (file.size > IMPORT_MAX_BYTES) return fail("Ukuran file maksimal 900 KB.");
+
+  const parsed = await parseUserImportWorkbook(await file.arrayBuffer());
+  if (!parsed.ok) return fail(parsed.error);
+
+  const db = createAdminClient();
+  const seen = new Set<string>();
+  const failed: ImportUsersResult["failed"] = [];
+  let created = 0;
+  for (const row of parsed.rows) {
+    const key = row.input.email.trim().toLowerCase();
+    if (key && seen.has(key)) {
+      failed.push({ row: row.rowNumber, email: row.input.email, error: "Email ganda di dalam file." });
+      continue;
+    }
+    seen.add(key);
+    const res = await createOne(db, row.input, row.profile);
+    if (res.success) created++;
+    else failed.push({ row: row.rowNumber, email: row.input.email, error: res.error ?? "Gagal." });
+  }
+
+  if (created > 0) revalidatePath("/manajemen-user");
+  return { success: true, created, failed };
+}
+
+/** Membuat satu akun + profil. Pemanggil wajib sudah memastikan admin. */
+async function createOne(
+  db: AdminDb,
+  input: CreateUserInput,
+  profile?: Partial<AdminProfileInput>
+): Promise<UserActionResult> {
   const parsed = createUserSchema.safeParse(input);
   if (!parsed.success) return { success: false, error: firstIssue(parsed.error) };
   const { email, password, role } = parsed.data;
@@ -101,7 +151,6 @@ export async function createUserAction(
   const profileParsed = parseProfile(profile);
   if (!profileParsed.ok) return { success: false, error: profileParsed.error };
 
-  const db = createAdminClient();
   const { data, error } = await db.auth.admin.createUser({ email, password, email_confirm: true });
   if (error || !data?.user) {
     console.error("createUserAction gagal:", error?.code, error?.message);
@@ -124,7 +173,7 @@ export async function createUserAction(
     };
   }
 
-  return done(`Akun ${email} berhasil dibuat sebagai ${ROLE_LABEL[role]}.`);
+  return { success: true, message: `Akun ${email} berhasil dibuat sebagai ${ROLE_LABEL[role]}.` };
 }
 
 export async function updateUserAction(

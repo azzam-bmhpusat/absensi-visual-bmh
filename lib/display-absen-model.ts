@@ -33,7 +33,6 @@ export interface SeatEntry {
   nama: string;
   daerah: string;
   jabatan?: string | null;
-  departemen?: string | null;
   kategori?: string | null;
   attendanceId: string | null;
   checkedInAt: string | null;
@@ -56,7 +55,6 @@ export function buildSeats(guests: GuestData[], attendances: AttendanceData[]): 
       nama: g.nama,
       daerah: g.perwakilan_daerah,
       jabatan: g.jabatan,
-      departemen: g.departemen,
       kategori: g.kategori,
       attendanceId: a?.id ?? null,
       checkedInAt: a?.checked_in_at ?? null,
@@ -72,7 +70,6 @@ export function buildSeats(guests: GuestData[], attendances: AttendanceData[]): 
       nama: a.nama,
       daerah: a.perwakilan_daerah,
       jabatan: a.jabatan,
-      departemen: a.departemen,
       kategori: a.kategori,
       attendanceId: a.id,
       checkedInAt: a.checked_in_at,

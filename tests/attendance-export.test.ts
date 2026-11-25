@@ -26,7 +26,7 @@ const sessions: ExportSession[] = [
 const guests: ExportGuest[] = [
   { id: "g1", nama: "Ahmad", perwakilan_daerah: "Jawa Timur", kategori: "daerah" },
   { id: "g2", nama: "Budi", perwakilan_daerah: "DKI Jakarta", jabatan: "Ketua", kategori: "daerah" },
-  { id: "g3", nama: "Citra", perwakilan_daerah: "Pusat", departemen: "IT", kategori: "departemen" },
+  { id: "g3", nama: "Citra", perwakilan_daerah: "Pusat", kategori: "departemen" },
 ];
 
 const attendances: ExportAttendance[] = [
@@ -34,7 +34,7 @@ const attendances: ExportAttendance[] = [
   // Tanpa guest_id tapi nama + daerah cocok (beda spasi/kapital) → dihitung hadir
   { id: "a2", session_id: 1, guest_id: null, nama: "  budi ", perwakilan_daerah: "dki  jakarta", is_walk_in: false, checked_in_at: "2026-11-13T01:00:00Z" },
   { id: "a3", session_id: 1, guest_id: null, nama: "Tamu Baru", perwakilan_daerah: "Bali", is_walk_in: true, checked_in_at: "2026-11-13T02:00:00Z" },
-  { id: "a4", session_id: 4, guest_id: "g3", nama: "Citra", perwakilan_daerah: "Pusat", departemen: "IT", is_walk_in: false, checked_in_at: "2026-11-14T01:00:00Z" },
+  { id: "a4", session_id: 4, guest_id: "g3", nama: "Citra", perwakilan_daerah: "Pusat", is_walk_in: false, checked_in_at: "2026-11-14T01:00:00Z" },
 ];
 
 describe("attendance-export helpers", () => {
@@ -94,13 +94,13 @@ describe("buildAttendanceWorkbook", () => {
 
     const hadir = wb.getWorksheet("Hadir")!;
     expect(hadir.getRow(1).values).toEqual([
-      undefined, "No", "Waktu Presensi (WIB)", "Nama", "Perwakilan Daerah", "Jabatan", "Departemen", "Kategori", "Status",
+      undefined, "No", "Waktu Presensi (WIB)", "Nama", "Perwakilan Daerah", "Jabatan", "Kategori", "Status",
     ]);
     expect(hadir.rowCount).toBe(4);
     // Diurutkan dari presensi paling awal; waktu tersimpan sebagai tanggal WIB
     expect(hadir.getCell("C2").value).toBe("  budi ");
     expect((hadir.getCell("B2").value as Date).toISOString()).toBe("2026-11-13T08:00:00.000Z");
-    expect(hadir.getCell("H4").value).toBe("Walk-in");
+    expect(hadir.getCell("G4").value).toBe("Walk-in");
 
     const belum = wb.getWorksheet("Belum Hadir")!;
     expect(belum.rowCount).toBe(2);
@@ -120,8 +120,8 @@ describe("buildAttendanceWorkbook", () => {
 
     const matrix = wb.getWorksheet("Matriks Undangan")!;
     const citra = matrix.getRows(2, 3)!.find((r) => r.getCell(2).value === "Citra")!;
-    // Kolom sesi: G (sesi 1), H (sesi 2), I (sesi 4), J total
-    expect([citra.getCell(7).value, citra.getCell(8).value, citra.getCell(9).value, citra.getCell(10).value]).toEqual(["-", "-", "Hadir", 1]);
+    // Kolom sesi: F (sesi 1), G (sesi 2), H (sesi 4), I total
+    expect([citra.getCell(6).value, citra.getCell(7).value, citra.getCell(8).value, citra.getCell(9).value]).toEqual(["-", "-", "Hadir", 1]);
   });
 
   it("ekspor sesuai filter: info filter + hadir dengan kolom hari/sesi", async () => {

@@ -4,8 +4,8 @@
  */
 
 export const ATTENDANCE_COLUMNS =
-  "id, session_id, guest_id, nama, perwakilan_daerah, jabatan, departemen, kategori, is_walk_in, checked_in_at";
-export const GUEST_COLUMNS = "id, nama, perwakilan_daerah, jabatan, departemen, kategori";
+  "id, session_id, guest_id, nama, perwakilan_daerah, jabatan, kategori, is_walk_in, checked_in_at";
+export const GUEST_COLUMNS = "id, nama, perwakilan_daerah, jabatan, kategori";
 
 export interface SeatGuest {
   id: string;

@@ -22,7 +22,6 @@ export function makeDemoGuests(count = 120): GuestData[] {
     nama: `${NAMES[i % NAMES.length]}${i >= NAMES.length ? ` ${Math.floor(i / NAMES.length) + 1}` : ""}`,
     perwakilan_daerah: REGIONS[(i * 7) % REGIONS.length],
     jabatan: i % 5 === 0 ? "Ketua Daerah" : null,
-    departemen: null,
     kategori: null,
   }));
 }
@@ -34,7 +33,6 @@ const demoAttendance = (guest: GuestData | null, n: number, session: number): At
   nama: guest?.nama ?? `Tamu Walk-in ${n}`,
   perwakilan_daerah: guest?.perwakilan_daerah ?? "Pusat",
   jabatan: guest?.jabatan ?? null,
-  departemen: null,
   kategori: null,
   is_walk_in: !guest,
   checked_in_at: new Date().toISOString(),

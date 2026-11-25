@@ -20,7 +20,7 @@ export async function GET(request: Request) {
     const start = (params.page - 1) * GUEST_SEARCH_PAGE_SIZE;
     const { data, count, error } = await supabase
       .from("profiles")
-      .select("id, nama, perwakilan_daerah, jabatan, departemen", { count: "exact" })
+      .select("id, nama, perwakilan_daerah, jabatan", { count: "exact" })
       .not("nama", "is", null)
       .or(buildGuestSearchFilter(params.query))
       .order("nama", { ascending: true })
@@ -36,7 +36,6 @@ export async function GET(request: Request) {
         nama: guest.nama,
         perwakilan_daerah: guest.perwakilan_daerah,
         jabatan: guest.jabatan ?? null,
-        departemen: guest.departemen ?? null,
       })),
       total: count ?? 0,
       page: params.page,

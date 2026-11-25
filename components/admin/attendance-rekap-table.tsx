@@ -58,7 +58,6 @@ export interface AttendanceItem {
   nama: string;
   perwakilan_daerah: string;
   jabatan?: string | null;
-  departemen?: string | null;
   kategori?: string | null;
   is_walk_in: boolean;
   checked_in_at: string;
@@ -398,7 +397,7 @@ export function AttendanceRekapTable({
                 id="rekap-filter-search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Cari nama, daerah, jabatan, atau departemen..."
+                placeholder="Cari nama, daerah, atau jabatan..."
                 className="h-11 pl-10 rounded-xl border-line text-base lg:text-sm focus-visible:ring-ring"
               />
             </div>
@@ -430,7 +429,7 @@ export function AttendanceRekapTable({
                 Perwakilan / Asal
               </TableHead>
               <TableHead className="text-xs font-bold text-primary">
-                Jabatan / Departemen
+                Jabatan
               </TableHead>
               <TableHead className="w-28 text-center text-xs font-bold text-primary">
                 Status
@@ -493,10 +492,9 @@ export function AttendanceRekapTable({
                       {item.perwakilan_daerah}
                     </TableCell>
                     <TableCell className="text-xs text-ink-muted">
-                      {item.jabatan || item.departemen ? (
+                      {item.jabatan ? (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-secondary text-brand-green-text border border-brand-green/30">
                           {item.jabatan}
-                          {item.departemen ? `: ${item.departemen}` : ""}
                         </span>
                       ) : (
                         <span className="text-[10px] text-ink-muted/60">-</span>

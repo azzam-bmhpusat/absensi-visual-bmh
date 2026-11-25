@@ -105,12 +105,10 @@ export function AttendanceDialog({
         shouldValidate: true,
       });
       form.setValue("jabatan", guest.jabatan ?? undefined);
-      form.setValue("departemen", guest.departemen ?? undefined);
       form.setValue("kategori", guest.kategori ?? "daerah");
     } else {
       form.setValue("guestId", "");
       form.setValue("jabatan", undefined);
-      form.setValue("departemen", undefined);
       form.setValue("kategori", "daerah");
     }
   }
@@ -124,7 +122,6 @@ export function AttendanceDialog({
       nama: "",
       perwakilanDaerah: "",
       jabatan: undefined,
-      departemen: undefined,
       kategori: "daerah",
       website: "",
     });
@@ -135,7 +132,6 @@ export function AttendanceDialog({
   const watchedNama = useWatch({ control: form.control, name: "nama" });
   const watchedPerwakilanDaerah = useWatch({ control: form.control, name: "perwakilanDaerah" });
   const watchedJabatan = useWatch({ control: form.control, name: "jabatan" });
-  const watchedDepartemen = useWatch({ control: form.control, name: "departemen" });
 
   return (
     <Dialog open={open} onOpenChange={(o) => (!o ? handleClose() : null)}>
@@ -194,10 +190,9 @@ export function AttendanceDialog({
                   >
                     Perwakilan Daerah / Asal <span className="text-danger">*</span>
                   </Label>
-                  {(watchedJabatan || watchedDepartemen) && (
+                  {watchedJabatan && (
                     <span className="text-xs font-semibold text-brand-gold-text bg-gold-50 px-2 py-0.5 rounded-full border border-brand-gold-soft">
                       {watchedJabatan}
-                      {watchedDepartemen ? `: ${watchedDepartemen}` : ""}
                     </span>
                   )}
                 </div>
@@ -212,7 +207,7 @@ export function AttendanceDialog({
                 {selectedGuestId && (
                   <p className="text-xs text-ink-muted">
                     {watchedJabatan
-                      ? `Terverifikasi sebagai ${watchedJabatan}${watchedDepartemen ? `: ${watchedDepartemen}` : ""}`
+                      ? `Terverifikasi sebagai ${watchedJabatan}`
                       : "Terisi otomatis dari database tamu terdaftar."}
                   </p>
                 )}

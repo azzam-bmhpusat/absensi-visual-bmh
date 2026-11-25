@@ -25,7 +25,6 @@ const columns: Column[] = [
   { header: "Nama", key: "nama", width: 30 },
   { header: "Perwakilan Daerah", key: "perwakilan_daerah", width: 26 },
   { header: "Jabatan", key: "jabatan", width: 24 },
-  { header: "Departemen", key: "departemen", width: 22 },
   { header: "Kategori", key: "kategori", width: 12 },
   { header: "Ukuran Baju", key: "ukuran_baju", width: 12 },
   { header: "No. WhatsApp", key: "no_whatsapp", width: 18 },
@@ -51,7 +50,6 @@ function userRows(users: UserRow[]) {
       nama: dash(p.nama),
       perwakilan_daerah: dash(p.perwakilan_daerah),
       jabatan: dash(p.jabatan),
-      departemen: dash(p.departemen),
       kategori: kategoriLabel(p.kategori),
       ukuran_baju: dash(p.ukuran_baju),
       // Disimpan sebagai teks agar angka 0 di depan tidak hilang di Excel.
@@ -102,7 +100,7 @@ export async function buildUserWorkbook(
         ? [
             { k: "Status", v: STATUS_FILTER_LABEL[scope.filter.status] },
             { k: "Jabatan", v: jabatanLabel(scope.filter.jabatan) },
-            { k: "Pencarian Email", v: scope.filter.q.trim() || "-" },
+            { k: "Pencarian", v: scope.filter.q.trim() || "-" },
           ]
         : []),
       { k: "Jumlah User", v: users.length },

@@ -21,7 +21,7 @@ function fakeDb() {
   } as never;
 }
 
-const fields = { nama: "Abdul Wali", perwakilan_daerah: "BMH Kalimantan Selatan", jabatan: "Kepala Perwakilan", departemen: "" };
+const fields = { nama: "Abdul Wali", perwakilan_daerah: "BMH Kalimantan Selatan", jabatan: "Kepala Perwakilan" };
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -36,7 +36,6 @@ describe("participantRow", () => {
       nama: "Abdul Wali",
       perwakilan_daerah: "BMH Kalimantan Selatan",
       jabatan: "Kepala Perwakilan",
-      departemen: null,
       kategori: "daerah",
       ukuran_baju: null,
       mode_kehadiran: null,

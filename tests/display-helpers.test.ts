@@ -153,13 +153,12 @@ describe("display-helpers", () => {
   });
 
   describe("formatGuestAffiliation", () => {
-    it("memformat Ketua Departemen dengan Departemen IT", () => {
+    it("memformat jabatan saja untuk perwakilan Pusat", () => {
       const label = formatGuestAffiliation({
         jabatan: "Ketua Departemen",
-        departemen: "IT",
         perwakilan_daerah: "Pusat",
       });
-      expect(label).toBe("Ketua Departemen: IT");
+      expect(label).toBe("Ketua Departemen");
     });
 
     it("memformat Ketua Daerah dengan BMH Jawa Timur", () => {

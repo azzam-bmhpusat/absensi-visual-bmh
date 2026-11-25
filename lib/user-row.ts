@@ -1,4 +1,4 @@
-import type { UserRole } from "@/lib/user-schema";
+import { ROLE_LABEL, type UserRole } from "@/lib/user-schema";
 
 /** Kolom profiles yang dimuat untuk Manajemen User (email & role ada di UserRow). */
 export const USER_PROFILE_COLUMNS = [
@@ -7,7 +7,6 @@ export const USER_PROFILE_COLUMNS = [
   "nama_google",
   "perwakilan_daerah",
   "jabatan",
-  "departemen",
   "kategori",
   "ukuran_baju",
   "no_whatsapp",
@@ -70,8 +69,39 @@ export interface UserFilter {
   q: string;
 }
 
+/** Field profil yang ikut dicari oleh kotak pencarian. */
+const SEARCH_FIELDS = [
+  "nama",
+  "nama_google",
+  "perwakilan_daerah",
+  "jabatan",
+  "kategori",
+  "ukuran_baju",
+  "no_whatsapp",
+  "keterangan_kehadiran",
+  "mode_kehadiran",
+] as const satisfies readonly (keyof UserProfile)[];
+
+type SearchableUser = Pick<UserRow, "email" | "role" | "banned" | "profile">;
+
+/** Cocokkan teks bebas ke email, peran, status, dan data profil (tidak peka huruf besar/kecil). */
+function matchesSearch(u: SearchableUser, needle: string): boolean {
+  const haystack = [
+    u.email,
+    ROLE_LABEL[u.role],
+    u.banned ? "nonaktif" : "aktif",
+    ...SEARCH_FIELDS.map((f) => u.profile[f] ?? ""),
+  ]
+    .join("\n")
+    .toLowerCase();
+  if (haystack.includes(needle)) return true;
+  // No. WA: "0812 345" atau "0812-345" tetap cocok dengan "0812345...".
+  const digits = needle.replace(/\D/g, "");
+  return digits.length >= 3 && /^[\d\s+().-]+$/.test(needle) && (u.profile.no_whatsapp ?? "").replace(/\D/g, "").includes(digits);
+}
+
 /** Filter yang sama dipakai tabel (client) dan ekspor Excel (server). */
-export function filterUsers<T extends Pick<UserRow, "email" | "role" | "banned" | "profile">>(
+export function filterUsers<T extends SearchableUser>(
   users: T[],
   { status, jabatan, q }: UserFilter
 ): T[] {
@@ -79,6 +109,6 @@ export function filterUsers<T extends Pick<UserRow, "email" | "role" | "banned" 
   return users.filter((u) => {
     if (status === "inactive" ? !u.banned : status !== "all" && u.role !== status) return false;
     if (jabatan === NO_JABATAN ? u.profile.jabatan : jabatan !== ALL_JABATAN && u.profile.jabatan !== jabatan) return false;
-    return !needle || u.email.toLowerCase().includes(needle);
+    return !needle || matchesSearch(u, needle);
   });
 }

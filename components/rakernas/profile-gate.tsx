@@ -8,7 +8,7 @@ import { toUserRole } from "@/lib/user-schema";
 import { CompleteProfileDialog } from "@/components/rakernas/complete-profile-dialog";
 
 /**
- * Batasi konten untuk admin dan peserta yang profilnya sudah lengkap.
+ * Batasi konten untuk admin, direktur, dan peserta yang profilnya sudah lengkap.
  * Belum login -> /login;
  * profil belum lengkap -> dialog lengkapi profil (children tidak dirender).
  */
@@ -27,6 +27,8 @@ export async function ProfileGate({ path, children }: { path: string; children?:
     .maybeSingle();
 
   // Role `user` (akun Google baru) belum peserta: arahkan untuk mengajukan diri di /profile.
+  // Direktur boleh melihat semua halaman situs tanpa syarat profil (dashboard admin tetap ditolak).
+  if (toUserRole(profile?.role) === "direktur") return <>{children}</>;
   if (toUserRole(profile?.role) === "user") return <CompleteProfileDialog variant="apply" />;
   if (!isProfileComplete(profile)) return <CompleteProfileDialog />;
   return <>{children}</>;

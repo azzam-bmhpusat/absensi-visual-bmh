@@ -126,7 +126,6 @@ export function AttendanceBoard({
         nama: newRow.nama,
         daerah: newRow.perwakilan_daerah,
         jabatan: newRow.jabatan,
-        departemen: newRow.departemen,
         kategori: newRow.kategori,
       },
     ]);
@@ -185,13 +184,13 @@ export function AttendanceBoard({
           supabase
             .from("attendances")
             .select(
-              "id, session_id, guest_id, nama, perwakilan_daerah, jabatan, departemen, kategori, is_walk_in, checked_in_at"
+              "id, session_id, guest_id, nama, perwakilan_daerah, jabatan, kategori, is_walk_in, checked_in_at"
             )
             .eq("session_id", currentSession.id)
             .order("checked_in_at", { ascending: false }),
           supabase
             .from("profiles")
-            .select("id, nama, perwakilan_daerah, jabatan, departemen, kategori")
+            .select("id, nama, perwakilan_daerah, jabatan, kategori")
             .not("nama", "is", null)
             .order("perwakilan_daerah", { ascending: true })
             .order("nama", { ascending: true }),
@@ -239,7 +238,7 @@ export function AttendanceBoard({
       const { data, error } = await supabase
         .from("attendances")
         .select(
-          "id, session_id, guest_id, nama, perwakilan_daerah, jabatan, departemen, kategori, is_walk_in, checked_in_at"
+          "id, session_id, guest_id, nama, perwakilan_daerah, jabatan, kategori, is_walk_in, checked_in_at"
         )
         .eq("session_id", session.id)
         .order("checked_in_at", { ascending: false });
@@ -320,7 +319,6 @@ export function AttendanceBoard({
                 nama={item.nama}
                 perwakilanDaerah={item.perwakilan_daerah}
                 jabatan={item.jabatan}
-                departemen={item.departemen}
                 kategori={item.kategori}
                 status={item.is_walk_in ? "walk-in" : "hadir"}
                 isRecent={recentAttendanceIds.includes(item.id)}
@@ -360,7 +358,6 @@ export function AttendanceBoard({
                 nama={guest.nama}
                 perwakilanDaerah={guest.perwakilan_daerah}
                 jabatan={guest.jabatan}
-                departemen={guest.departemen}
                 kategori={guest.kategori}
                 status="belum"
               />

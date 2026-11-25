@@ -83,7 +83,6 @@ export async function submitAttendance(
   let finalNama = nama;
   let finalDaerah = perwakilanDaerah;
   let finalJabatan: string | null = parsed.data.jabatan ?? null;
-  let finalDepartemen: string | null = parsed.data.departemen ?? null;
   let finalKategori: string = parsed.data.kategori ?? "daerah";
   let isWalkIn = false;
 
@@ -93,7 +92,7 @@ export async function submitAttendance(
   if (guestId) {
     const { data: guest } = await supabase
       .from("profiles")
-      .select("id, nama, perwakilan_daerah, jabatan, departemen, kategori")
+      .select("id, nama, perwakilan_daerah, jabatan, kategori")
       .eq("id", guestId)
       .not("nama", "is", null)
       .maybeSingle();
@@ -102,7 +101,6 @@ export async function submitAttendance(
       finalNama = guest.nama;
       finalDaerah = guest.perwakilan_daerah;
       finalJabatan = guest.jabatan ?? finalJabatan;
-      finalDepartemen = guest.departemen ?? finalDepartemen;
       finalKategori = guest.kategori ?? finalKategori;
     } else {
       guestId = null;
@@ -116,7 +114,7 @@ export async function submitAttendance(
 
     const { data: matchedGuests } = await supabase
       .from("profiles")
-      .select("id, nama, perwakilan_daerah, jabatan, departemen, kategori")
+      .select("id, nama, perwakilan_daerah, jabatan, kategori")
       .not("nama", "is", null);
 
     const matched = (matchedGuests || []).find(
@@ -130,7 +128,6 @@ export async function submitAttendance(
       finalNama = matched.nama;
       finalDaerah = matched.perwakilan_daerah;
       finalJabatan = matched.jabatan ?? finalJabatan;
-      finalDepartemen = matched.departemen ?? finalDepartemen;
       finalKategori = matched.kategori ?? finalKategori;
       isWalkIn = false;
     } else {
@@ -163,7 +160,6 @@ export async function submitAttendance(
       nama: finalNama,
       perwakilan_daerah: finalDaerah,
       jabatan: finalJabatan,
-      departemen: finalDepartemen,
       kategori: finalKategori,
       is_walk_in: isWalkIn,
       ticket_nonce: ticket.nonce,

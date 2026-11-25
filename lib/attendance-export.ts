@@ -18,7 +18,6 @@ export interface ExportAttendance {
   nama: string;
   perwakilan_daerah: string;
   jabatan?: string | null;
-  departemen?: string | null;
   kategori?: string | null;
   is_walk_in: boolean;
   checked_in_at: string;
@@ -29,7 +28,6 @@ export interface ExportGuest {
   nama: string;
   perwakilan_daerah: string;
   jabatan?: string | null;
-  departemen?: string | null;
   kategori?: string | null;
 }
 
@@ -92,8 +90,7 @@ export function filterAttendances<T extends ExportAttendance>(
       const match =
         item.nama.toLowerCase().includes(q) ||
         item.perwakilan_daerah.toLowerCase().includes(q) ||
-        Boolean(item.jabatan?.toLowerCase().includes(q)) ||
-        Boolean(item.departemen?.toLowerCase().includes(q));
+        Boolean(item.jabatan?.toLowerCase().includes(q));
       if (!match) return false;
     }
     return true;
