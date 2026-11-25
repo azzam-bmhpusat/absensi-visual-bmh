@@ -194,13 +194,22 @@ export function SiteHeader({
             aria-label={EVENT_INFO.name}
             onClick={(event) => handleLinkClick(event, "/")}
           >
+            {/* HP: logo ikon saja; ≥640px: logo lengkap */}
+            <Image
+              src="/logo-rakernas-mark.png"
+              alt={EVENT_INFO.logoAlt}
+              width={240}
+              height={256}
+              priority
+              className="h-10 w-auto object-contain sm:hidden"
+            />
             <Image
               src={EVENT_INFO.logoSrc}
               alt={EVENT_INFO.logoAlt}
               width={600}
               height={223}
               priority
-              className="h-9 w-auto object-contain lg:h-10"
+              className="hidden h-9 w-auto object-contain sm:block lg:h-10"
             />
           </Link>
         }
@@ -330,7 +339,7 @@ const MORE_GROUPS = NAV_MENU.filter(
 type Navigate = (event: React.MouseEvent, href: string, delay?: number) => void;
 
 const tabBase =
-  "group/tab relative flex min-h-14 min-w-0 flex-1 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl px-0.5 text-[11px] leading-none font-medium max-[359px]:text-[10px] max-[359px]:tracking-tight text-ink-muted transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "group/tab relative flex min-h-16 min-w-0 flex-1 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl px-0.5 text-[11px] leading-none font-medium max-[359px]:text-[10px] max-[359px]:tracking-tight text-ink-muted transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 /** Ikon tab dengan pil penanda yang bergeser ke tab aktif. */
 function TabIcon({
@@ -415,7 +424,7 @@ function MobileTabBar({
       className="pointer-events-none fixed inset-x-0 bottom-0 z-40 sm:bottom-4 sm:px-4 lg:hidden"
     >
       <Sheet open={moreOpen} onOpenChange={onMoreOpenChange}>
-        <ul className="pointer-events-auto mx-auto flex items-stretch gap-0.5 rounded-t-2xl border-t border-line bg-background/95 px-1.5 pt-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] shadow-[0_-10px_30px_-18px_rgb(9_80_70/0.45)] backdrop-blur-md sm:max-w-md sm:rounded-full sm:border sm:px-2 sm:pb-1 sm:shadow-xl sm:shadow-brand-green-deep/15">
+        <ul className="pointer-events-auto mx-auto flex items-stretch gap-0.5 rounded-t-2xl border-t border-line bg-background/95 px-1.5 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-10px_30px_-18px_rgb(9_80_70/0.45)] backdrop-blur-md sm:max-w-md sm:rounded-full sm:border sm:px-2 sm:pb-1 sm:shadow-xl sm:shadow-brand-green-deep/15">
           {TAB_ITEMS.map((item) => {
             const active = isActive(item.href);
             return (

@@ -17,7 +17,18 @@ const focusRing =
 const yearOf = (instant: string) =>
   new Intl.DateTimeFormat("id-ID", { year: "numeric", timeZone: "Asia/Jakarta" }).format(new Date(instant));
 
-/** @param showNav false untuk halaman tanpa navigasi situs (mis. /form). */
+/* Pangkas ruang transparan vertikal agar logo putih-emas tetap terbaca. */
+const footerLogo = (
+  <Image
+    src={FOOTER_DATA.logoSrc}
+    alt={FOOTER_DATA.logoAlt}
+    fill
+    sizes="120px"
+    className="object-cover object-[50%_51%]"
+  />
+);
+
+/** @param showNav false untuk halaman tanpa navigasi situs (mis. /form); logo juga tidak bisa diklik. */
 export function SiteFooter({
   className,
   contentClassName,
@@ -47,20 +58,17 @@ export function SiteFooter({
         <div className="grid gap-10 md:grid-cols-2 md:gap-x-10 md:gap-y-12 lg:grid-cols-12 lg:gap-8">
           {/* Brand */}
           <div className="md:col-span-2 lg:col-span-5">
-            <Link
-              href="/"
-              aria-label={`${EVENT_INFO.name} — kembali ke beranda`}
-              className={cn("relative inline-flex h-12 w-30 rounded-md transition-opacity hover:opacity-90", focusRing)}
-            >
-              {/* Pangkas ruang transparan vertikal agar logo putih-emas tetap terbaca. */}
-              <Image
-                src={FOOTER_DATA.logoSrc}
-                alt={FOOTER_DATA.logoAlt}
-                fill
-                sizes="120px"
-                className="object-cover object-[50%_51%]"
-              />
-            </Link>
+            {showNav ? (
+              <Link
+                href="/"
+                aria-label={`${EVENT_INFO.name} — kembali ke beranda`}
+                className={cn("relative inline-flex h-12 w-30 rounded-md transition-opacity hover:opacity-90", focusRing)}
+              >
+                {footerLogo}
+              </Link>
+            ) : (
+              <span className="relative inline-flex h-12 w-30">{footerLogo}</span>
+            )}
             <p className="mt-5 font-heading text-xl font-semibold tracking-tight text-balance md:text-2xl">
               {EVENT_INFO.title}
             </p>

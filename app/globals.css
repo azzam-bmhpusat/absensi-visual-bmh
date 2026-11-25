@@ -234,7 +234,7 @@
   }
   @media (max-width: 639.98px) {
     body:has([data-bottom-nav]) {
-      --bottom-nav-offset: calc(4.125rem + env(safe-area-inset-bottom));
+      --bottom-nav-offset: calc(5.25rem + env(safe-area-inset-bottom));
     }
   }
   @media (min-width: 640px) and (max-width: 1023.98px) {

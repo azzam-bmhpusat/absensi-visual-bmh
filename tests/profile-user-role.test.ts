@@ -6,6 +6,8 @@ import { FOOTER_DATA } from "@/content/rakernas";
 const mocks = vi.hoisted(() => ({
   getUser: vi.fn(),
   role: "user" as string | null,
+  /** Kolom profil tambahan (mis. profil lengkap). */
+  row: {} as Record<string, string>,
   update: vi.fn(),
 }));
 
@@ -16,7 +18,7 @@ vi.mock("@/lib/supabase/admin", () => ({
   createAdminClient: () => ({
     from: () => ({
       select: () => ({
-        eq: () => ({ maybeSingle: async () => ({ data: mocks.role ? { role: mocks.role } : null, error: null }) }),
+        eq: () => ({ maybeSingle: async () => ({ data: mocks.role ? { role: mocks.role, ...mocks.row } : null, error: null }) }),
       }),
       update: (fields: unknown) => {
         mocks.update(fields);
@@ -46,6 +48,7 @@ const read = (file: string) => fs.readFileSync(path.join(__dirname, "..", file),
 describe("role user tidak bisa mengisi profil peserta", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.row = {};
     mocks.getUser.mockResolvedValue({ data: { user: { id: "u1" } } });
   });
 
@@ -62,6 +65,29 @@ describe("role user tidak bisa mengisi profil peserta", () => {
     const res = await updateProfile(null, validForm());
     expect(res).toMatchObject({ success: true });
     expect(mocks.update).toHaveBeenCalledOnce();
+  });
+});
+
+describe("profil peserta yang sudah lengkap dikunci", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.getUser.mockResolvedValue({ data: { user: { id: "u1" } } });
+  });
+
+  it("updateProfile menolak peserta dengan profil lengkap", async () => {
+    mocks.role = "peserta";
+    mocks.row = {
+      nama: "Budi",
+      perwakilan_daerah: "Jawa Timur",
+      jabatan: "Kepala",
+      ukuran_baju: "L",
+      no_whatsapp: "081234567890",
+      rencana_kedatangan: "2026-12-07T03:00:00.000Z",
+      keterangan_kehadiran: "offline",
+    };
+    const res = await updateProfile(null, validForm());
+    expect(res.error).toMatch(/sudah lengkap dan dikunci/);
+    expect(mocks.update).not.toHaveBeenCalled();
   });
 });
 

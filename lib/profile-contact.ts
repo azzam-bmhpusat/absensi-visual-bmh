@@ -122,6 +122,9 @@ export const profileSchema = profileContactSchema.extend({
  */
 export const selfProfileSchema = profileSchema.omit({ email: true, jabatan: true });
 
+/** Profil peserta yang sudah lengkap dikunci di /profile (tampilan dan server). */
+export const PROFILE_LOCKED_MESSAGE = "Profil Anda sudah lengkap dan dikunci. Hubungi panitia bila ada data yang perlu diubah.";
+
 /** Data yang diisi lewat halaman publik /form: semua field wajib, termasuk jabatan (email dan perwakilan daerah dikunci). */
 export const participantFormSchema = profileSchema.omit({ email: true, perwakilan_daerah: true });
 

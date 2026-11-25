@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { cn } from "cn";
 import { updateProfile, type ProfileActionResult } from "@/app/(site)/profile/actions";
-import { formatArrival, wibLocalToIso } from "@/lib/profile-contact";
+import { PROFILE_LOCKED_MESSAGE, formatArrival, wibLocalToIso } from "@/lib/profile-contact";
 import { MODE_KEHADIRAN, MODE_KEHADIRAN_LABEL, UKURAN_BAJU } from "@/lib/participant-options";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { Button } from "@/components/ui/button";
@@ -84,26 +84,87 @@ function IconField({
   id,
   label,
   icon: Icon,
+  missing = false,
   children,
 }: {
   id: string;
   label: string;
   icon: LucideIcon;
+  missing?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <div className="space-y-1.5">
       <Label htmlFor={id} className={labelClass}>
         {label}
+        {missing && <RequiredMark />}
       </Label>
-      <InputGroup className={groupClass}>
+      <InputGroup className={cn(groupClass, missing && "border-danger")}>
         <InputGroupAddon className="pl-3.5 text-ink-muted">
           <Icon className="size-[18px]" aria-hidden="true" />
         </InputGroupAddon>
         {children}
       </InputGroup>
+      {missing && <RequiredHint id={id} />}
     </div>
   );
+}
+
+function RequiredMark() {
+  return (
+    <span className="ml-0.5 text-danger" aria-hidden="true">
+      *
+    </span>
+  );
+}
+
+function RequiredHint({ id }: { id: string }) {
+  return (
+    <p id={`${id}-required`} className="text-xs font-medium text-danger">
+      Wajib diisi
+    </p>
+  );
+}
+
+/**
+ * Tanda "Wajib diisi" untuk field kosong saat form dikirim. Memakai validasi bawaan browser
+ * (atribut `required`): balon bawaan diganti tanda merah, pengiriman tetap terblokir.
+ */
+export function useMissingFields() {
+  const [missing, setMissing] = useState<ReadonlySet<string>>(() => new Set());
+  const lastInvalidAt = useRef(0);
+
+  const formProps = {
+    onInvalidCapture: (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const el = e.target as HTMLInputElement;
+      if (!el.name) return;
+      const now = Date.now();
+      const newRound = now - lastInvalidAt.current > 200;
+      lastInvalidAt.current = now;
+      if (newRound) {
+        (el.closest("fieldset") ?? el).scrollIntoView({ behavior: "smooth", block: "center" });
+        if (el.type !== "radio") el.focus({ preventScroll: true });
+      }
+      setMissing((prev) => {
+        const next = new Set(newRound ? [] : prev);
+        next.add(el.name);
+        return next;
+      });
+    },
+    onChangeCapture: (e: FormEvent<HTMLFormElement>) => {
+      const el = e.target as HTMLInputElement;
+      if (el.name && el.checkValidity()) {
+        setMissing((prev) => {
+          if (!prev.has(el.name)) return prev;
+          const next = new Set(prev);
+          next.delete(el.name);
+          return next;
+        });
+      }
+    },
+  };
+  return { missing, formProps };
 }
 
 const LOCKED_HINT = "Dikunci. Hubungi panitia untuk mengubahnya.";
@@ -149,6 +210,7 @@ export function ProfileFields({
   firstStep,
   jabatanEditable = false,
   lockedEmail,
+  missing = new Set<string>(),
 }: {
   initial: Omit<ProfileInitial, "email">;
   isPending: boolean;
@@ -156,6 +218,8 @@ export function ProfileFields({
   jabatanEditable?: boolean;
   /** Dipakai /form: email dan perwakilan daerah ditampilkan terkunci (tidak terkirim). */
   lockedEmail?: string;
+  /** Nama field kosong saat dikirim (dari useMissingFields). */
+  missing?: ReadonlySet<string>;
 }) {
   const [arrival, setArrival] = useState(initial.rencanaKedatangan);
   const preview = formatArrival(wibLocalToIso(arrival));
@@ -170,7 +234,7 @@ export function ProfileFields({
             </div>
           )}
           <div className="md:col-span-2">
-            <IconField id="nama" label="Nama lengkap (beserta gelar akademik)" icon={User}>
+            <IconField id="nama" missing={missing.has("nama")} label="Nama lengkap (beserta gelar akademik)" icon={User}>
                 <InputGroupInput
                   id="nama"
                   name="nama"
@@ -186,7 +250,7 @@ export function ProfileFields({
           {lockedEmail !== undefined ? (
             <LockedField id="perwakilan_daerah" label="Perwakilan Daerah" icon={MapPinned} value={initial.perwakilanDaerah} />
           ) : (
-            <IconField id="perwakilan_daerah" label="Perwakilan Daerah" icon={MapPinned}>
+            <IconField id="perwakilan_daerah" missing={missing.has("perwakilan_daerah")} label="Perwakilan Daerah" icon={MapPinned}>
               <InputGroupInput
                 id="perwakilan_daerah"
                 name="perwakilan_daerah"
@@ -199,7 +263,7 @@ export function ProfileFields({
             </IconField>
           )}
           {jabatanEditable ? (
-            <IconField id="jabatan" label="Jabatan" icon={Briefcase}>
+            <IconField id="jabatan" missing={missing.has("jabatan")} label="Jabatan" icon={Briefcase}>
               <InputGroupInput
                 id="jabatan"
                 name="jabatan"
@@ -216,7 +280,11 @@ export function ProfileFields({
         </div>
 
         <fieldset className="mt-5 space-y-2" disabled={isPending}>
-          <legend className={cn(labelClass, "mb-2")}>Ukuran Baju</legend>
+          <legend className={cn(labelClass, "mb-2")}>
+            Ukuran Baju
+            {missing.has("ukuran_baju") && <RequiredMark />}
+          </legend>
+          {missing.has("ukuran_baju") && <RequiredHint id="ukuran_baju" />}
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
             {UKURAN_BAJU.map((size) => (
               <label key={size} className={cn(optionCard, "h-12 justify-center text-sm font-semibold text-ink has-[:checked]:text-primary")}>
@@ -237,7 +305,7 @@ export function ProfileFields({
 
       <Section step={firstStep + 1} title="Kontak & Kedatangan" description="Dipakai panitia untuk koordinasi selama acara.">
         <div className="grid gap-4 md:grid-cols-2">
-          <IconField id="no_whatsapp" label="No WhatsApp" icon={Phone}>
+          <IconField id="no_whatsapp" missing={missing.has("no_whatsapp")} label="No WhatsApp" icon={Phone}>
             <InputGroupInput
               id="no_whatsapp"
               name="no_whatsapp"
@@ -252,7 +320,7 @@ export function ProfileFields({
             />
           </IconField>
           <div className="space-y-1.5">
-            <IconField id="rencana_kedatangan" label="Rencana Kedatangan (WIB)" icon={CalendarClock}>
+            <IconField id="rencana_kedatangan" missing={missing.has("rencana_kedatangan")} label="Rencana Kedatangan (WIB)" icon={CalendarClock}>
               <InputGroupInput
                 id="rencana_kedatangan"
                 name="rencana_kedatangan"
@@ -274,7 +342,11 @@ export function ProfileFields({
         </div>
 
         <fieldset className="mt-5" disabled={isPending}>
-          <legend className={cn(labelClass, "mb-2")}>Keterangan Kehadiran</legend>
+          <legend className={cn(labelClass, "mb-2")}>
+            Keterangan Kehadiran
+            {missing.has("keterangan_kehadiran") && <RequiredMark />}
+          </legend>
+          {missing.has("keterangan_kehadiran") && <RequiredHint id="keterangan_kehadiran" />}
           <div className="grid gap-3 sm:grid-cols-2">
             {MODE_KEHADIRAN.map((mode) => {
               const Icon = MODE_ICON[mode];
@@ -361,9 +433,10 @@ export function SubmitBar({
   );
 }
 
-export function ProfileForm({ initial }: { initial: ProfileInitial }) {
+export function ProfileForm({ initial, readOnly = false }: { initial: ProfileInitial; readOnly?: boolean }) {
   const router = useRouter();
   const [state, formAction, isPending] = useActionState<ProfileActionResult | null, FormData>(updateProfile, null);
+  const { missing, formProps } = useMissingFields();
 
   useEffect(() => {
     if (state?.success) {
@@ -373,21 +446,31 @@ export function ProfileForm({ initial }: { initial: ProfileInitial }) {
   }, [state, router]);
 
   return (
-    <form action={formAction}>
+    <form action={formAction} {...formProps}>
       <Section step={1} title="Akun" description="Email yang dipakai untuk masuk.">
         <LockedField id="email" label="Email" icon={Mail} value={initial.email} />
       </Section>
 
-      <ProfileFields initial={initial} isPending={isPending} firstStep={2} />
+      {/* Peserta dengan profil lengkap: semua field dikunci, tanpa tombol simpan. */}
+      <fieldset disabled={readOnly} className="min-w-0">
+        <ProfileFields initial={initial} isPending={isPending} firstStep={2} missing={missing} />
+      </fieldset>
 
-      <SubmitBar
-        error={state?.error}
-        isPending={isPending}
-        hint="Perubahan langsung disimpan ke profil Anda."
-        label="Simpan Perubahan"
-        pendingLabel="Menyimpan..."
-        icon={Save}
-      />
+      {readOnly ? (
+        <div className="flex items-start gap-2.5 rounded-b-3xl border-t border-line bg-surface px-5 py-4 text-sm text-ink-muted sm:px-7">
+          <LockKeyhole className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
+          <p>{PROFILE_LOCKED_MESSAGE}</p>
+        </div>
+      ) : (
+        <SubmitBar
+          error={state?.error}
+          isPending={isPending}
+          hint="Perubahan langsung disimpan ke profil Anda."
+          label="Simpan Perubahan"
+          pendingLabel="Menyimpan..."
+          icon={Save}
+        />
+      )}
     </form>
   );
 }

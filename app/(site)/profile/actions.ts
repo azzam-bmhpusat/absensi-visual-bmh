@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { selfProfileSchema } from "@/lib/profile-contact";
+import { PROFILE_COMPLETE_COLUMNS, PROFILE_LOCKED_MESSAGE, isProfileComplete, selfProfileSchema } from "@/lib/profile-contact";
 import { AVATAR_BUCKET, avatarFileError, avatarObjectPath } from "@/lib/avatar";
 import { toUserRole } from "@/lib/user-schema";
 
@@ -37,7 +37,7 @@ export async function updateProfile(
   // Role `user` (belum peserta) tidak boleh mengisi data peserta: `nama` membuat profil tampil publik.
   const { data: account, error: roleError } = await createAdminClient()
     .from("profiles")
-    .select("role")
+    .select(`role, ${PROFILE_COMPLETE_COLUMNS}`)
     .eq("id", user.id)
     .maybeSingle();
   if (roleError) return { success: false, error: "Terjadi kesalahan saat menyimpan profil." };
@@ -46,6 +46,11 @@ export async function updateProfile(
       success: false,
       error: "Akun Anda belum terdaftar sebagai peserta. Hubungi panitia untuk menjadi peserta Rakernas 2027.",
     };
+  }
+
+  // Peserta dengan profil lengkap tidak bisa mengubah data lagi (hanya lewat panitia).
+  if (toUserRole(account?.role) === "peserta" && isProfileComplete(account)) {
+    return { success: false, error: PROFILE_LOCKED_MESSAGE };
   }
 
   const raw = Object.fromEntries(FIELDS.map((f) => [f, formData.get(f)?.toString() ?? ""]));

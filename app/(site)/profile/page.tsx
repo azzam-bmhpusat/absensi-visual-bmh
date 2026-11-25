@@ -68,6 +68,8 @@ async function ProfileContent() {
   // Role `user` (akun Google baru) belum peserta: tanpa form, hanya ajakan menghubungi panitia.
   const isApplicant = toUserRole(profile?.role) === "user";
   const complete = isProfileComplete(profile);
+  // Peserta dengan profil lengkap: form hanya dibaca (updateProfile juga menolak).
+  const locked = toUserRole(profile?.role) === "peserta" && complete;
   const filled = PROGRESS_FIELDS.filter((key) => {
     const value = profile?.[key];
     return typeof value === "string" && value.trim().length > 0;
@@ -167,6 +169,7 @@ async function ProfileContent() {
           {/* Form */}
           <div className="rounded-3xl border border-line bg-white shadow-sm lg:col-span-8">
             <ProfileForm
+              readOnly={locked}
               key={`${user.email}-${profile?.nama}-${profile?.rencana_kedatangan}`}
               initial={{
                 email: user.email ?? "",

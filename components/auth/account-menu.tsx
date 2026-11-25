@@ -15,7 +15,7 @@ export function LoginLink() {
       href="/login"
       className={cn(
         buttonVariants(),
-        "h-11 rounded-lg bg-brand-green-deep px-4 text-sm font-semibold text-white hover:bg-brand-green-deep/90"
+        "h-11 rounded-full bg-brand-green-deep px-4 text-sm font-semibold text-white hover:bg-brand-green-deep/90"
       )}
     >
       Masuk

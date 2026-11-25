@@ -9,7 +9,7 @@ import {
   submitParticipantForm,
   type SubmitParticipantResult,
 } from "@/app/(site)/form/actions";
-import { ProfileFields, SubmitBar, type ProfileInitial } from "@/components/profile/profile-form";
+import { ProfileFields, SubmitBar, useMissingFields, type ProfileInitial } from "@/components/profile/profile-form";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label";
 import {
@@ -21,6 +21,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { buttonVariants } from "@/components/ui/button";
+import { savePrefillPassword } from "@/components/auth/login-form";
 
 export interface ParticipantOption {
   id: string;
@@ -205,6 +206,7 @@ function SuccessDialog({ email, password }: { email: string; password: string })
         <DialogFooter className="-mx-6 -mb-6 px-6">
           <Link
             href={`/login?email=${encodeURIComponent(email)}`}
+            onClick={() => savePrefillPassword(password)}
             className={cn(buttonVariants(), "h-11 w-full rounded-xl bg-primary font-semibold text-white hover:bg-brand-green-deep")}
           >
             <LogIn className="size-4" aria-hidden="true" />
@@ -231,6 +233,7 @@ export function ParticipantForm({
     submitParticipantForm,
     null
   );
+  const { missing, formProps } = useMissingFields();
 
   function handleSelect(p: ParticipantOption) {
     setSelected(p);
@@ -295,7 +298,7 @@ export function ParticipantForm({
       </section>
 
       {selected && initial && !isLoading && (
-        <form action={formAction} key={selected.id}>
+        <form action={formAction} key={selected.id} {...formProps}>
           <input type="hidden" name="id" value={selected.id} />
           <ProfileFields
             initial={initial}
@@ -303,6 +306,7 @@ export function ParticipantForm({
             firstStep={2}
             jabatanEditable
             lockedEmail={initial.email}
+            missing={missing}
           />
           <SubmitBar
             error={state?.success ? undefined : state?.error}

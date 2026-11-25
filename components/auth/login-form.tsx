@@ -17,6 +17,15 @@ const GOOGLE_ERRORS = {
   disabled: "Login dengan Google belum diaktifkan. Silakan masuk dengan email dan kata sandi.",
 } as const;
 
+const PREFILL_KEY = "login-prefill-password";
+
+/** Dipanggil setelah kirim /form: kata sandi awal diisikan otomatis di halaman login (sekali pakai, tidak lewat URL). */
+export function savePrefillPassword(password: string) {
+  try {
+    sessionStorage.setItem(PREFILL_KEY, password);
+  } catch {}
+}
+
 export type GoogleLoginError = keyof typeof GOOGLE_ERRORS;
 
 export function LoginForm({
@@ -32,6 +41,16 @@ export function LoginForm({
   const router = useRouter();
   const [state, formAction, isPending] = useActionState<LoginResult | null, FormData>(loginUser, null);
   // Error login email/kata sandi menggantikan pesan error Google.
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem(PREFILL_KEY);
+      const input = document.getElementById("password");
+      if (saved && input instanceof HTMLInputElement) {
+        sessionStorage.removeItem(PREFILL_KEY);
+        input.value = saved;
+      }
+    } catch {}
+  }, []);
   const error = state?.error ?? (googleError ? GOOGLE_ERRORS[googleError] : undefined);
 
   useEffect(() => {
