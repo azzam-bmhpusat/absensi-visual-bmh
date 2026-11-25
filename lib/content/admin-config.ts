@@ -54,7 +54,7 @@ export const CONTENT_KINDS: Record<ContentKind, KindConfig> = {
       { name: "tanggal", label: "Tanggal", type: "date", required: true },
       { name: "lokasi", label: "Lokasi", type: "text", required: true },
       { name: "jumlahFoto", label: "Jumlah foto", type: "number", required: true },
-      { name: "cover", label: "Foto sampul", type: "image", hint: "JPG/PNG/WebP, maksimal 2 MB. Kosongkan saat edit untuk memakai sampul lama." },
+      { name: "cover", label: "Foto sampul", type: "image", hint: "JPG/PNG/WebP. Foto besar otomatis diperkecil. Kosongkan saat edit untuk memakai sampul lama." },
       { name: "deskripsi", label: "Deskripsi", type: "textarea" },
       { name: "driveUrl", label: "Link (Google Drive atau lainnya)", type: "url", placeholder: "https://drive.google.com/…", hint: "Kosongkan bila belum ada; tombol di halaman publik nonaktif." },
       urutan,

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CONTENT_KINDS, rowToFormValues, type ContentKind, type FieldConfig } from "@/lib/content/admin-config";
-import type { ContentResult, FieldErrors } from "@/lib/content/schema";
+import { CONTENT_IMAGE_MAX_BYTES, type ContentResult, type FieldErrors } from "@/lib/content/schema";
 import { deleteContent, saveContent } from "@/app/(admin)/kelola-konten/actions";
 
 export type ContentRowData = Record<string, unknown> & { id: number };
@@ -151,6 +151,22 @@ function ContentFormDialog({
     const fd = new FormData(e.currentTarget);
     if (row) fd.set("id", String(row.id));
     startTransition(async () => {
+      // Foto dari HP sering 3–8 MB, di atas batas body Server Action: perkecil dulu di browser.
+      for (const f of cfg.fields) {
+        if (f.type !== "image") continue;
+        const file = fd.get(f.name);
+        if (!(file instanceof File) || file.size === 0) continue;
+        try {
+          fd.set(f.name, await shrinkImage(file));
+        } catch {
+          if (file.size > CONTENT_IMAGE_MAX_BYTES) {
+            const msg = "Gambar terlalu besar (maksimal 2 MB) dan tidak dapat diperkecil otomatis.";
+            setErrors({ [f.name]: msg });
+            toast.error(msg);
+            return;
+          }
+        }
+      }
       const res: ContentResult = await saveContent(kind, fd);
       if (!res.success) {
         setErrors(res.fieldErrors ?? {});
@@ -186,6 +202,26 @@ function ContentFormDialog({
       </DialogContent>
     </Dialog>
   );
+}
+
+const MAX_IMAGE_SIDE = 1600;
+
+/** Perkecil ke sisi terpanjang 1600px WebP (sampul card cukup); hasil jauh di bawah 2 MB. */
+async function shrinkImage(file: File): Promise<File> {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, MAX_IMAGE_SIDE / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Canvas tidak tersedia");
+  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/webp", 0.82));
+  if (!blob || blob.type !== "image/webp") throw new Error("WebP tidak didukung");
+  // File kecil yang sudah pas tidak perlu diganti hasil yang lebih besar.
+  if (blob.size >= file.size && file.size <= CONTENT_IMAGE_MAX_BYTES) return file;
+  return new File([blob], "sampul.webp", { type: "image/webp" });
 }
 
 const selectClass =
