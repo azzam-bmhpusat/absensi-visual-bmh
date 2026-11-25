@@ -32,15 +32,14 @@ export function MateriPresentasi() {
             </p>
           </div>
           <p className="pb-2 text-sm">{materi.deskripsi}</p>
-          <a
-            href={materi.driveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            disabled
             className={cn(buttonVariants(), "!mt-auto w-full")}
           >
             <Download className="size-4" aria-hidden />
             Unduh Materi
-          </a>
+          </button>
         </article>
       ))}
     </section>

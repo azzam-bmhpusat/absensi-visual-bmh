@@ -2,7 +2,7 @@
 
 import { useActionState, useState, useTransition } from "react";
 import Link from "next/link";
-import { Check, CheckCircle2, CircleAlert, KeyRound, Loader2, LogIn, Mail, MapPinned, RefreshCw, Search, Send, X } from "lucide-react";
+import { Check, CheckCircle2, CircleAlert, KeyRound, Loader2, LogIn, Mail, MapPinned, RefreshCw, Search, Send, TriangleAlert, X } from "lucide-react";
 import { cn } from "cn";
 import {
   loadParticipant,
@@ -207,6 +207,13 @@ function SuccessDialog({ email, password }: { email: string; password: string })
             <dd className="font-mono font-semibold text-ink">{password}</dd>
           </div>
         </dl>
+        <div role="alert" className="flex gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+          <TriangleAlert className="mt-0.5 size-4 shrink-0 text-amber-600" aria-hidden="true" />
+          <p>
+            <span className="font-semibold">Penting: simpan kata sandi ini.</span> Catat atau screenshot email dan kata sandi di
+            atas. Kata sandi ini diperlukan untuk masuk kembali dan tidak akan ditampilkan lagi setelah dialog ditutup.
+          </p>
+        </div>
         <DialogFooter className="-mx-6 -mb-6 px-6">
           <Link
             href={`/login?email=${encodeURIComponent(email)}`}

@@ -54,15 +54,14 @@ export function NotulaRapat() {
               ))}
             </ul>
           </div>
-          <a
-            href={notula.driveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            disabled
             className={cn(buttonVariants(), "!mt-auto w-full")}
           >
             <FileText className="size-4" aria-hidden />
             Lihat Notula
-          </a>
+          </button>
         </article>
       ))}
     </section>

@@ -39,15 +39,14 @@ export function GaleriKegiatan() {
               </p>
             </div>
             <p className="pb-2 text-sm">{album.deskripsi}</p>
-            <a
-              href={album.driveUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
+              disabled
               className={cn(buttonVariants(), "!mt-auto w-full")}
             >
               Lihat Foto di Google Drive
               <ExternalLink className="size-4" aria-hidden />
-            </a>
+            </button>
           </div>
         </article>
       ))}
