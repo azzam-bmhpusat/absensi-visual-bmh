@@ -89,10 +89,10 @@ describe("submitParticipantForm", () => {
     );
   });
 
-  it("nama ikut disimpan, email dan perwakilan daerah dikunci (nilai dari browser diabaikan)", async () => {
+  it("nama, email, dan perwakilan daerah dikunci (nilai dari browser diabaikan)", async () => {
     await submitParticipantForm(null, form({ ...VALID, nama: "Nama Baru", email: "lain@bmh.or.id" }));
     const row = mocks.update.mock.calls[0][0] as Record<string, unknown>;
-    expect(row).toHaveProperty("nama", "Nama Baru");
+    expect(row).not.toHaveProperty("nama");
     expect(row).not.toHaveProperty("email");
     expect(row).not.toHaveProperty("perwakilan_daerah");
   });

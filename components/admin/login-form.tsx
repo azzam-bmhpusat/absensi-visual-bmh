@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { BmhAccountNote } from "@/components/auth/login-form";
 import { loginAdmin, type ActionResult } from "@/app/admin/actions";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -28,6 +29,7 @@ export function AdminLoginForm() {
 
   return (
     <form action={formAction} className="space-y-4">
+      <BmhAccountNote />
       {state?.error && (
         <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-red-50 border border-red-200 text-danger text-xs leading-relaxed animate-in fade-in duration-200">
           <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />

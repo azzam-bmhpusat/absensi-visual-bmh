@@ -123,10 +123,10 @@ export const profileSchema = profileContactSchema.extend({
 export const selfProfileSchema = profileSchema.omit({ email: true, jabatan: true });
 
 /** Profil peserta yang sudah lengkap dikunci di /profile (tampilan dan server). */
-export const PROFILE_LOCKED_MESSAGE = "Profil Anda sudah lengkap dan dikunci. Hubungi panitia bila ada data yang perlu diubah.";
+export const PROFILE_LOCKED_MESSAGE = "Profil Anda sudah lengkap dan dikunci.";
 
-/** Data yang diisi lewat halaman publik /form: semua field wajib, termasuk jabatan (email dan perwakilan daerah dikunci). */
-export const participantFormSchema = profileSchema.omit({ email: true, perwakilan_daerah: true });
+/** Data yang diisi lewat halaman publik /form: semua field wajib, termasuk jabatan (email, nama, dan perwakilan daerah dikunci; hanya admin yang mengubah). */
+export const participantFormSchema = profileSchema.omit({ email: true, nama: true, perwakilan_daerah: true });
 
 /** Teks opsional: kosong -> null; selain itu dinormalkan dan dibatasi panjangnya. */
 function optionalText(label: string, min: number, max: number) {
@@ -186,14 +186,14 @@ export const PROFILE_COMPLETE_COLUMNS =
 export function isProfileComplete(
   p:
     | {
-        nama?: string | null;
-        perwakilan_daerah?: string | null;
-        jabatan?: string | null;
-        ukuran_baju?: string | null;
-        no_whatsapp?: string | null;
-        rencana_kedatangan?: string | null;
-        keterangan_kehadiran?: string | null;
-      }
+      nama?: string | null;
+      perwakilan_daerah?: string | null;
+      jabatan?: string | null;
+      ukuran_baju?: string | null;
+      no_whatsapp?: string | null;
+      rencana_kedatangan?: string | null;
+      keterangan_kehadiran?: string | null;
+    }
     | null
     | undefined
 ): boolean {

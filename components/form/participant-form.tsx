@@ -32,8 +32,8 @@ export interface ParticipantOption {
 }
 
 /**
- * Kolom "Cari daerah perwakilan BMH" langsung di formulir (bukan dropdown).
- * Pencarian hanya mencocokkan profiles.perwakilan_daerah; hasilnya tampil di bawah kolom
+ * Kolom "Cari nama atau daerah perwakilan BMH" langsung di formulir (bukan dropdown).
+ * Pencarian mencocokkan nama peserta atau perwakilan daerah; hasilnya tampil di bawah kolom
  * dan peserta memilih namanya dari daftar itu.
  */
 function ParticipantPicker({
@@ -51,7 +51,11 @@ function ParticipantPicker({
 }) {
   const [search, setSearch] = useState("");
   const q = search.trim().toLowerCase();
-  const results = q ? participants.filter((p) => (p.perwakilan_daerah ?? "").toLowerCase().includes(q)) : [];
+  const results = q
+    ? participants.filter(
+        (p) => p.nama.toLowerCase().includes(q) || (p.perwakilan_daerah ?? "").toLowerCase().includes(q)
+      )
+    : [];
 
   if (selected) {
     return (
@@ -84,7 +88,7 @@ function ParticipantPicker({
     <div className="space-y-3">
       <div className="space-y-1.5">
         <Label htmlFor="region-search" className="text-[13px] font-semibold text-ink">
-          Cari daerah perwakilan BMH
+          Cari nama atau daerah perwakilan BMH
         </Label>
         <InputGroup className="h-12 rounded-xl border-line bg-white has-[input:focus-visible]:border-primary has-[input:focus-visible]:ring-3 has-[input:focus-visible]:ring-primary/15">
           <InputGroupAddon className="pl-3.5 text-ink-muted">
@@ -96,7 +100,7 @@ function ParticipantPicker({
             inputMode="search"
             autoComplete="off"
             enterKeyHint="search"
-            placeholder="Contoh: Jawa Timur"
+            placeholder="Contoh: Ahmad atau Jawa Timur"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             aria-controls="region-results"
@@ -118,7 +122,7 @@ function ParticipantPicker({
           )}
         </InputGroup>
         <p id="region-search-hint" className="text-xs text-ink-muted">
-          Ketik nama daerah perwakilan, lalu pilih nama Anda dari hasil di bawah.
+          Ketik nama Anda atau daerah perwakilan, lalu pilih nama Anda dari hasil di bawah.
         </p>
       </div>
 
@@ -126,7 +130,7 @@ function ParticipantPicker({
         {q && results.length === 0 && (
           <p className="flex items-start gap-2 rounded-xl border border-dashed border-line bg-surface p-3.5 text-sm text-ink-muted">
             <CircleAlert className="mt-0.5 size-4 shrink-0 text-brand-gold-text" aria-hidden="true" />
-            Daerah perwakilan tidak ditemukan. Tulis nama daerah perwakilan BMH, contoh: Jawa Timur.
+            Nama atau daerah perwakilan tidak ditemukan. Coba ketik nama Anda atau daerah perwakilan BMH, contoh: Jawa Timur.
           </p>
         )}
         {results.length > 0 && (
@@ -263,7 +267,7 @@ export function ParticipantForm({
             <h2 id="form-step-1" className="font-heading text-base font-semibold text-primary">
               Nama Peserta
             </h2>
-            <p className="text-sm text-ink-muted">Cari daerah perwakilan Anda, lalu pilih nama Anda.</p>
+            <p className="text-sm text-ink-muted">Cari nama atau daerah perwakilan Anda, lalu pilih nama Anda.</p>
           </div>
         </div>
         <div
@@ -272,9 +276,8 @@ export function ParticipantForm({
         >
           <CircleAlert className="mt-0.5 size-5 shrink-0 text-brand-gold-text" aria-hidden="true" />
           <p>
-            <span className="font-semibold">Pencarian memakai daerah perwakilan BMH, bukan nama.</span> Tulis nama
-            daerah perwakilan Anda, contoh: <span className="font-semibold">Jawa Timur</span> atau{" "}
-            <span className="font-semibold">Papua Barat</span>.
+            <span className="font-semibold">Cari dengan nama Anda atau daerah perwakilan BMH.</span> Contoh:{" "}
+            <span className="font-semibold">Ahmad</span> atau <span className="font-semibold">Jawa Timur</span>.
           </p>
         </div>
         <ParticipantPicker

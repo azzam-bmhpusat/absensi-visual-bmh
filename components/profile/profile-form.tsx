@@ -170,7 +170,7 @@ export function useMissingFields() {
 const LOCKED_HINT = "Dikunci. Hubungi panitia untuk mengubahnya.";
 
 /**
- * Field terkunci (email, jabatan, perwakilan daerah di /form): read-only dan tanpa `name`, jadi tidak ikut terkirim.
+ * Field terkunci (email, jabatan, nama & perwakilan daerah di /form): read-only dan tanpa `name`, jadi tidak ikut terkirim.
  * Server (updateProfile, submitParticipantForm) juga tidak membaca field ini.
  */
 function LockedField({ id, label, icon: Icon, value }: { id: string; label: string; icon: LucideIcon; value: string }) {
@@ -216,7 +216,7 @@ export function ProfileFields({
   isPending: boolean;
   firstStep: number;
   jabatanEditable?: boolean;
-  /** Dipakai /form: email dan perwakilan daerah ditampilkan terkunci (tidak terkirim). */
+  /** Dipakai /form: email, nama, dan perwakilan daerah ditampilkan terkunci (tidak terkirim). */
   lockedEmail?: string;
   /** Nama field kosong saat dikirim (dari useMissingFields). */
   missing?: ReadonlySet<string>;
@@ -234,6 +234,9 @@ export function ProfileFields({
             </div>
           )}
           <div className="md:col-span-2">
+            {lockedEmail !== undefined ? (
+              <LockedField id="nama" label="Nama lengkap (beserta gelar akademik)" icon={User} value={initial.nama} />
+            ) : (
             <IconField id="nama" missing={missing.has("nama")} label="Nama lengkap (beserta gelar akademik)" icon={User}>
                 <InputGroupInput
                   id="nama"
@@ -246,6 +249,7 @@ export function ProfileFields({
                   disabled={isPending}
                 />
               </IconField>
+            )}
           </div>
           {lockedEmail !== undefined ? (
             <LockedField id="perwakilan_daerah" label="Perwakilan Daerah" icon={MapPinned} value={initial.perwakilanDaerah} />

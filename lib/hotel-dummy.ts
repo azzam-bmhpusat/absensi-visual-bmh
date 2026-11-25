@@ -14,69 +14,69 @@ export const DAFTAR_KAMAR: Kamar[] = [
     nomor: "301",
     lantai: 3,
     penghuni: [
-      { nama: "Ahmad Hidayat", wilayah: "Jawa Barat" },
-      { nama: "Budi Santoso", wilayah: "DKI Jakarta" },
+      { nama: "Peserta 1", wilayah: "Jawa Barat" },
+      { nama: "Peserta 2", wilayah: "DKI Jakarta" },
     ],
   },
   {
     nomor: "302",
     lantai: 3,
     penghuni: [
-      { nama: "Choirul Anam", wilayah: "Jawa Timur" },
-      { nama: "Dedi Kurniawan", wilayah: "Banten" },
+      { nama: "Peserta 3", wilayah: "Jawa Timur" },
+      { nama: "Peserta 4", wilayah: "Banten" },
     ],
   },
   {
     nomor: "303",
     lantai: 3,
     penghuni: [
-      { nama: "Eko Prasetyo", wilayah: "Jawa Tengah" },
-      { nama: "Fajar Ramadhan", wilayah: "DI Yogyakarta" },
+      { nama: "Peserta 5", wilayah: "Jawa Tengah" },
+      { nama: "Peserta 6", wilayah: "DI Yogyakarta" },
     ],
   },
   {
     nomor: "401",
     lantai: 4,
     penghuni: [
-      { nama: "Gilang Saputra", wilayah: "Sumatera Utara" },
-      { nama: "Hasan Basri", wilayah: "Sumatera Barat" },
+      { nama: "Peserta 7", wilayah: "Sumatera Utara" },
+      { nama: "Peserta 8", wilayah: "Sumatera Barat" },
     ],
   },
   {
     nomor: "402",
     lantai: 4,
     penghuni: [
-      { nama: "Irfan Maulana", wilayah: "Riau" },
-      { nama: "Joko Widodo", wilayah: "Lampung" },
+      { nama: "Peserta 9", wilayah: "Riau" },
+      { nama: "Peserta 10", wilayah: "Lampung" },
     ],
   },
   {
     nomor: "403",
     lantai: 4,
-    penghuni: [{ nama: "Khairul Umam", wilayah: "Aceh" }],
+    penghuni: [{ nama: "Peserta 11", wilayah: "Aceh" }],
   },
   {
     nomor: "501",
     lantai: 5,
     penghuni: [
-      { nama: "Lukman Hakim", wilayah: "Kalimantan Timur" },
-      { nama: "Muhammad Rizki", wilayah: "Kalimantan Selatan" },
+      { nama: "Peserta 12", wilayah: "Kalimantan Timur" },
+      { nama: "Peserta 13", wilayah: "Kalimantan Selatan" },
     ],
   },
   {
     nomor: "502",
     lantai: 5,
     penghuni: [
-      { nama: "Nur Hidayat", wilayah: "Sulawesi Selatan" },
-      { nama: "Oki Setiawan", wilayah: "Bali" },
+      { nama: "Peserta 14", wilayah: "Sulawesi Selatan" },
+      { nama: "Peserta 15", wilayah: "Bali" },
     ],
   },
   {
     nomor: "503",
     lantai: 5,
     penghuni: [
-      { nama: "Putra Pratama", wilayah: "Nusa Tenggara Barat" },
-      { nama: "Rahmat Hidayat", wilayah: "Papua" },
+      { nama: "Peserta 16", wilayah: "Nusa Tenggara Barat" },
+      { nama: "Peserta 17", wilayah: "Papua" },
     ],
   },
 ];

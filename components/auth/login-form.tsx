@@ -4,7 +4,7 @@ import { useActionState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { AlertCircle, Loader2, LogIn } from "lucide-react";
+import { AlertCircle, Info, Loader2, LogIn } from "lucide-react";
 import { loginUser, type LoginResult } from "@/app/(site)/login/actions";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -24,6 +24,19 @@ export function savePrefillPassword(password: string) {
   try {
     sessionStorage.setItem(PREFILL_KEY, password);
   } catch {}
+}
+
+/** Keterangan akun BMH, dipakai semua form login (peserta dan admin). */
+export function BmhAccountNote() {
+  return (
+    <p className="flex items-start gap-2.5 rounded-xl border border-line bg-secondary p-3.5 text-xs leading-relaxed text-ink">
+      <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
+      <span>
+        Login dengan akun <span className="font-semibold text-primary">@bmh.or.id</span> untuk mendapatkan semua akses
+        Informasi penting
+      </span>
+    </p>
+  );
 }
 
 export type GoogleLoginError = keyof typeof GOOGLE_ERRORS;
@@ -63,6 +76,7 @@ export function LoginForm({
 
   return (
     <div className="space-y-4">
+      <BmhAccountNote />
       {error && (
         <div
           role="alert"

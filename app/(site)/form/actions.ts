@@ -16,9 +16,8 @@ const LOAD_LIMIT = 60;
 const SUBMIT_LIMIT = 30;
 const WINDOW_MS = 15 * 60_000;
 
-/** Field yang boleh diisi lewat /form (email dan perwakilan daerah dikunci, tidak dibaca dari form). */
+/** Field yang boleh diisi lewat /form (email, nama, dan perwakilan daerah dikunci, tidak dibaca dari form). */
 const FIELDS = [
-  "nama",
   "jabatan",
   "ukuran_baju",
   "no_whatsapp",
