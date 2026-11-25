@@ -101,12 +101,16 @@ describe("tampilan untuk role user", () => {
     expect(FOOTER_DATA.committee.url).toBe("https://wa.me/6289517795206");
   });
 
-  it("ProfileGate memakai dialog 'ajukan peserta' untuk role user", () => {
+  it("ProfileGate mengarahkan role user ke halaman /khusus-peserta", () => {
     const gate = read("components/rakernas/profile-gate.tsx");
-    expect(gate).toContain('=== "user") return <CompleteProfileDialog variant="apply" />');
+    expect(gate).toContain('=== "user") redirect("/khusus-peserta");');
+    const page = read("app/(site)/khusus-peserta/page.tsx");
+    expect(page).toContain("Khusus Peserta Rakernas 2027");
+    expect(page).toContain("Silakan ajukan diri Anda sebagai peserta di halaman profil.");
+    expect(page).toContain('href="/profile"');
     const dialog = read("components/rakernas/complete-profile-dialog.tsx");
-    expect(dialog).toContain("Silakan ajukan diri Anda sebagai peserta di halaman profil.");
-    // Teks lama tetap untuk peserta yang profilnya belum lengkap.
+    expect(dialog).not.toContain("Khusus Peserta");
+    // Dialog tetap untuk peserta yang profilnya belum lengkap.
     expect(dialog).toContain("Lengkapi Profil Anda");
   });
 });

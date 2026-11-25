@@ -14,7 +14,7 @@ export interface RoundedQrProps {
 }
 
 export const OFFICIAL_ABSEN_URL =
-  "https://rakernas-bmh.vercel.app/absen";
+  "https://rakernas.bmh.or.id/absen";
 
 export function resolveQrTargetUrl(siteUrl?: string): string {
   if (!siteUrl) return OFFICIAL_ABSEN_URL;

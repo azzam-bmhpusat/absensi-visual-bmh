@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function FotoGaleriKegiatanPage() {
   return (
-    <PublicPage
+    <PublicPage notice
       title={TITLE}
       hero={
         <PageHero

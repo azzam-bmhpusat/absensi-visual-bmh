@@ -54,8 +54,8 @@ describe("RoundedQr Module & Finder Pattern Logic", () => {
     ]);
   });
 
-  it("creates valid QR code matrix for target URL https://rakernas-bmh.vercel.app/absen", () => {
-    const targetUrl = "https://rakernas-bmh.vercel.app/absen";
+  it("creates valid QR code matrix for target URL https://rakernas.bmh.or.id/absen", () => {
+    const targetUrl = "https://rakernas.bmh.or.id/absen";
     const qr = QRCode.create(targetUrl, { errorCorrectionLevel: "M" });
 
     expect(qr.modules.size).toBeGreaterThan(0);
@@ -69,9 +69,9 @@ describe("RoundedQr Module & Finder Pattern Logic", () => {
   });
 
   it("ensures target URL is cleanly formatted without trailing slash", () => {
-    const siteUrl = "https://rakernas-bmh.vercel.app/";
+    const siteUrl = "https://rakernas.bmh.or.id/";
     const targetUrl = resolveQrTargetUrl(siteUrl);
-    expect(targetUrl).toBe("https://rakernas-bmh.vercel.app/absen");
+    expect(targetUrl).toBe("https://rakernas.bmh.or.id/absen");
   });
 
   it("selalu mengarahkan localhost atau 127.0.0.1 ke URL resmi BMH Vercel", () => {

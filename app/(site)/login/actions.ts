@@ -3,7 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { safeNextPath } from "@/lib/profile-contact";
+import { BMH_EMAIL_DOMAIN, safeNextPath } from "@/lib/profile-contact";
 
 export interface LoginResult {
   success: boolean;
@@ -45,7 +45,11 @@ export async function loginWithGoogle(formData: FormData): Promise<void> {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
-    options: { redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}` },
+    options: {
+      redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
+      // Petunjuk ke Google agar hanya menampilkan akun domain BMH; penegakan ada di /auth/callback.
+      queryParams: { hd: BMH_EMAIL_DOMAIN },
+    },
   });
   if (error || !data.url) {
     console.error("Gagal memulai login Google:", error?.message);

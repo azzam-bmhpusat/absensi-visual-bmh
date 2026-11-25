@@ -181,37 +181,54 @@ export type ProfileInput = z.input<typeof profileSchema>;
 export const PROFILE_COMPLETE_COLUMNS =
   "nama, perwakilan_daerah, jabatan, ukuran_baju, no_whatsapp, rencana_kedatangan, keterangan_kehadiran";
 
+/** Field peserta yang harus terisi agar profil dianggap lengkap. */
+export const PROFILE_COMPLETE_FIELDS = [
+  "nama",
+  "perwakilan_daerah",
+  "jabatan",
+  "ukuran_baju",
+  "no_whatsapp",
+  "rencana_kedatangan",
+  "keterangan_kehadiran",
+] as const;
+
+type CompletenessInput = Partial<Record<(typeof PROFILE_COMPLETE_FIELDS)[number], string | null>> | null | undefined;
+
+export type ProfileStatus = "complete" | "progress" | "empty";
+
+export const PROFILE_STATUS_LABEL: Record<ProfileStatus, string> = {
+  complete: "Complete",
+  progress: "Progress",
+  empty: "Kosong",
+};
+
+/** Kelengkapan profil: jumlah field terisi dan statusnya (kosong / sebagian / lengkap). */
+export function profileStatus(p: CompletenessInput): { status: ProfileStatus; filled: number; total: number } {
+  const total = PROFILE_COMPLETE_FIELDS.length;
+  const filled = p
+    ? PROFILE_COMPLETE_FIELDS.filter((k) => {
+        const v = p[k];
+        return typeof v === "string" && v.trim().length > 0;
+      }).length
+    : 0;
+  return { status: filled === total ? "complete" : filled === 0 ? "empty" : "progress", filled, total };
+}
+
 /** Profil dianggap lengkap bila seluruh field peserta terisi. */
-export function isProfileComplete(
-  p:
-    | {
-      nama?: string | null;
-      perwakilan_daerah?: string | null;
-      jabatan?: string | null;
-      ukuran_baju?: string | null;
-      no_whatsapp?: string | null;
-      rencana_kedatangan?: string | null;
-      keterangan_kehadiran?: string | null;
-    }
-    | null
-    | undefined
-): boolean {
-  if (!p) return false;
-  return [
-    p.nama,
-    p.perwakilan_daerah,
-    p.jabatan,
-    p.ukuran_baju,
-    p.no_whatsapp,
-    p.rencana_kedatangan,
-    p.keterangan_kehadiran,
-  ].every(
-    (v) => typeof v === "string" && v.trim().length > 0
-  );
+export function isProfileComplete(p: CompletenessInput): boolean {
+  return profileStatus(p).status === "complete";
 }
 
 /** Hanya path internal yang boleh dipakai untuk ?next= (cegah open redirect). */
 export function safeNextPath(next: string | null | undefined, fallback = "/profile"): string {
   if (!next || !next.startsWith("/") || next.startsWith("//") || next.includes("\\")) return fallback;
   return next;
+}
+
+/** Domain email organisasi; satu-satunya domain yang boleh login lewat Google. */
+export const BMH_EMAIL_DOMAIN = "bmh.or.id";
+
+/** `true` hanya untuk alamat `...@bmh.or.id` (tanpa membedakan huruf besar/kecil). */
+export function isBmhEmail(email: string | null | undefined): boolean {
+  return !!email && email.trim().toLowerCase().endsWith(`@${BMH_EMAIL_DOMAIN}`);
 }

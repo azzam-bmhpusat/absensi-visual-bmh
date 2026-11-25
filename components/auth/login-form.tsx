@@ -15,6 +15,7 @@ import { GoogleLoginButton } from "@/components/auth/google-login-button";
 const GOOGLE_ERRORS = {
   failed: "Login dengan Google gagal atau dibatalkan. Silakan coba lagi.",
   disabled: "Login dengan Google belum diaktifkan. Silakan masuk dengan email dan kata sandi.",
+  domain: "Login dengan Google hanya untuk akun @bmh.or.id. Silakan gunakan akun BMH Anda.",
 } as const;
 
 const PREFILL_KEY = "login-prefill-password";

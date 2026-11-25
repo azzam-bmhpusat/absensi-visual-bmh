@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { PublicFooter } from "@/components/rakernas/public-page";
 import { ProfileForm } from "@/components/profile/profile-form";
-import { formatArrival, isoToWibLocal, isProfileComplete } from "@/lib/profile-contact";
+import { formatArrival, isoToWibLocal, isProfileComplete, profileStatus } from "@/lib/profile-contact";
 import { MODE_KEHADIRAN_LABEL } from "@/lib/participant-options";
 import { AvatarUpload } from "@/components/profile/avatar-upload";
 import { avatarPublicUrl } from "@/lib/avatar";
@@ -21,17 +21,6 @@ export const metadata: Metadata = {
   title: "Profil Saya",
   robots: { index: false, follow: false },
 };
-
-/** Field yang sama dengan isProfileComplete (lib/profile-contact.ts), untuk bar progres. */
-const PROGRESS_FIELDS = [
-  "nama",
-  "perwakilan_daerah",
-  "jabatan",
-  "ukuran_baju",
-  "no_whatsapp",
-  "rencana_kedatangan",
-  "keterangan_kehadiran",
-] as const;
 
 function SummaryRow({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: string | null }) {
   return (
@@ -70,11 +59,8 @@ async function ProfileContent() {
   const complete = isProfileComplete(profile);
   // Peserta dengan profil lengkap: form hanya dibaca (updateProfile juga menolak).
   const locked = toUserRole(profile?.role) === "peserta" && complete;
-  const filled = PROGRESS_FIELDS.filter((key) => {
-    const value = profile?.[key];
-    return typeof value === "string" && value.trim().length > 0;
-  }).length;
-  const percent = Math.round((filled / PROGRESS_FIELDS.length) * 100);
+  const { filled, total } = profileStatus(profile);
+  const percent = Math.round((filled / total) * 100);
   // Akun dari Google: nama Google (privat) hanya sebagai sapaan; tidak pernah menjadi `nama` publik.
   const googleName = profile?.nama_google?.trim() || "";
   const displayName = profile?.nama?.trim() || googleName || "Peserta Rakernas";
@@ -120,7 +106,7 @@ async function ProfileContent() {
                 role="progressbar"
                 aria-label="Kelengkapan profil"
                 aria-valuemin={0}
-                aria-valuemax={PROGRESS_FIELDS.length}
+                aria-valuemax={total}
                 aria-valuenow={filled}
               >
                 <div
@@ -129,7 +115,7 @@ async function ProfileContent() {
                 />
               </div>
               <p className="mt-2 text-xs text-white/75">
-                {filled} dari {PROGRESS_FIELDS.length} data terisi
+                {filled} dari {total} data terisi
               </p>
             </div>
           )}

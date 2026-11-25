@@ -1,4 +1,5 @@
 import { ROLE_LABEL, type UserRole } from "@/lib/user-schema";
+import { PROFILE_STATUS_LABEL, profileStatus } from "@/lib/profile-contact";
 
 /** Kolom profiles yang dimuat untuk Manajemen User (email & role ada di UserRow). */
 export const USER_PROFILE_COLUMNS = [
@@ -88,6 +89,7 @@ function matchesSearch(u: SearchableUser, needle: string): boolean {
     u.email,
     ROLE_LABEL[u.role],
     u.banned ? "nonaktif" : "aktif",
+    PROFILE_STATUS_LABEL[profileStatus(u.profile).status],
     ...SEARCH_FIELDS.map((f) => u.profile[f] ?? ""),
   ]
     .join("\n")

@@ -27,6 +27,7 @@ const PAGE_LABELS = new Map(
 const GOOGLE_ERROR_PARAMS: Record<string, GoogleLoginError | undefined> = {
   google: "failed",
   google_disabled: "disabled",
+  google_domain: "domain",
 };
 
 function first(value: string | string[] | undefined) {

@@ -5,13 +5,18 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   exchangeCodeForSession: vi.fn(),
+  signOut: vi.fn(),
   signInWithOAuth: vi.fn(),
   origin: "http://localhost:3000" as string | null,
 }));
 
 vi.mock("@/lib/supabase/server", () => ({
   createClient: async () => ({
-    auth: { exchangeCodeForSession: mocks.exchangeCodeForSession, signInWithOAuth: mocks.signInWithOAuth },
+    auth: {
+      exchangeCodeForSession: mocks.exchangeCodeForSession,
+      signInWithOAuth: mocks.signInWithOAuth,
+      signOut: mocks.signOut,
+    },
   }),
 }));
 vi.mock("next/headers", () => ({
@@ -54,7 +59,16 @@ async function redirectOf(promise: Promise<unknown>) {
 describe("/auth/callback (login Google)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.exchangeCodeForSession.mockResolvedValue({ error: null });
+    mocks.exchangeCodeForSession.mockResolvedValue({ data: { user: { email: "Staf@BMH.or.id" } }, error: null });
+  });
+
+  it("akun di luar @bmh.or.id ditolak: sesi dibuang -> /login?error=google_domain", async () => {
+    for (const email of ["orang@gmail.com", "x@bmh.or.id.evil.com", "x@notbmh.or.id"]) {
+      mocks.exchangeCodeForSession.mockResolvedValue({ data: { user: { email } }, error: null });
+      const res = await callback("?code=abc&next=%2Fprofile");
+      expect(res.headers.get("location")).toBe("http://localhost:3000/login?error=google_domain");
+    }
+    expect(mocks.signOut).toHaveBeenCalledTimes(3);
   });
 
   it("menukar code lalu ke next yang aman", async () => {
@@ -134,7 +148,10 @@ describe("loginWithGoogle", () => {
     expect(to).toBe("https://accounts.google.com/o/oauth2/auth?x=1");
     expect(mocks.signInWithOAuth).toHaveBeenCalledWith({
       provider: "google",
-      options: { redirectTo: "http://localhost:3000/auth/callback?next=%2Finformasi-kamar-hotel" },
+      options: {
+        redirectTo: "http://localhost:3000/auth/callback?next=%2Finformasi-kamar-hotel",
+        queryParams: { hd: "bmh.or.id" },
+      },
     });
   });
 

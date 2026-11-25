@@ -77,6 +77,9 @@ import {
   formatArrival,
   isoToWibLocal,
   isProfileComplete,
+  PROFILE_STATUS_LABEL,
+  profileStatus,
+  type ProfileStatus,
   whatsappLink,
   wibLocalToIso,
   type AdminProfileInput,
@@ -108,6 +111,25 @@ const ROLE_STYLE: Record<UserRole, string> = {
   peserta: "bg-gold-100 text-brand-gold-text border-brand-gold/40",
   user: "bg-white text-ink-muted border-line",
 };
+
+const PROFILE_STATUS_STYLE: Record<ProfileStatus, string> = {
+  complete: "border-brand-green/30 bg-secondary text-brand-green-deep",
+  progress: "border-brand-gold/40 bg-gold-100 text-brand-gold-text",
+  empty: "border-line bg-white text-ink-muted",
+};
+
+function ProfileStatusBadge({ profile }: { profile: UserProfile }) {
+  const { status, filled, total } = profileStatus(profile);
+  return (
+    <span
+      className={cn("inline-flex whitespace-nowrap rounded-full border px-2.5 py-0.5 text-[11px] font-semibold", PROFILE_STATUS_STYLE[status])}
+      title={`${filled} dari ${total} data profil terisi`}
+    >
+      {PROFILE_STATUS_LABEL[status]}
+      {status === "progress" && <span className="ml-1 tabular-nums">{filled}/{total}</span>}
+    </span>
+  );
+}
 
 interface UserManagementProps {
   users: UserRow[];
@@ -310,6 +332,7 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
               <TableHead className="text-xs font-semibold text-primary">Email</TableHead>
               <TableHead className="text-xs font-semibold text-primary">Jabatan</TableHead>
               <TableHead className="text-xs font-semibold text-primary">Perwakilan daerah</TableHead>
+              <TableHead className="text-xs font-semibold text-primary">Status profil</TableHead>
               <TableHead className="text-xs font-semibold text-primary">Peran</TableHead>
               <TableHead className="text-xs font-semibold text-primary">Status</TableHead>
               <TableHead className="text-xs font-semibold text-primary">Terakhir masuk</TableHead>
@@ -319,7 +342,7 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
           <TableBody>
             {visible.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="py-10 text-center text-sm text-ink-muted">
+                <TableCell colSpan={10} className="py-10 text-center text-sm text-ink-muted">
                   Tidak ada pengguna yang cocok.
                 </TableCell>
               </TableRow>
@@ -349,6 +372,9 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
                     </TableCell>
                     <TableCell className={cn("min-w-32 text-xs", u.profile.perwakilan_daerah ? "text-ink" : "text-ink-muted")}>
                       {u.profile.perwakilan_daerah ?? "—"}
+                    </TableCell>
+                    <TableCell>
+                      <ProfileStatusBadge profile={u.profile} />
                     </TableCell>
                     <TableCell>
                       <span className={cn("inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-semibold", ROLE_STYLE[u.role])}>

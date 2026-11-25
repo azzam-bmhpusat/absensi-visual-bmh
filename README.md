@@ -170,7 +170,7 @@ memakai `proxy.ts`; logika sesi dan pembatasan akses ada di `lib/supabase/middle
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY`
-   - `NEXT_PUBLIC_SITE_URL` (Set ke domain Vercel Anda, misal: `https://absensi-bmh.vercel.app`)
+   - `NEXT_PUBLIC_SITE_URL` (Set ke domain Vercel Anda, misal: `https://rakernas.bmh.or.id`)
    - `NEXT_PUBLIC_EVENT_NAME` (Misal: `Silaturahim & Rapat Kerja Nasional BMH`)
 4. Klik **Deploy**.
 

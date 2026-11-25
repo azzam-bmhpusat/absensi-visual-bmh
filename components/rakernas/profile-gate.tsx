@@ -29,7 +29,7 @@ export async function ProfileGate({ path, children }: { path: string; children?:
   // Role `user` (akun Google baru) belum peserta: arahkan untuk mengajukan diri di /profile.
   // Direktur boleh melihat semua halaman situs tanpa syarat profil (dashboard admin tetap ditolak).
   if (toUserRole(profile?.role) === "direktur") return <>{children}</>;
-  if (toUserRole(profile?.role) === "user") return <CompleteProfileDialog variant="apply" />;
+  if (toUserRole(profile?.role) === "user") redirect("/khusus-peserta");
   if (!isProfileComplete(profile)) return <CompleteProfileDialog />;
   return <>{children}</>;
 }
