@@ -57,37 +57,38 @@ export function DresscodeSection() {
             align: "start",
           }}
           setApi={setApi}
-          className="w-full"
+          className="w-full [&_[data-slot=carousel-content]]:-mx-3 [&_[data-slot=carousel-content]]:px-3"
         >
-          <CarouselContent className="-ml-4">
+          <CarouselContent className="-ml-4 py-4">
             {DRESSCODE_DATA.map((item) => (
               <CarouselItem
                 key={item.src}
-                className="basis-4/5 sm:basis-1/2 lg:basis-1/3 pl-4"
+                className="flex basis-4/5 pl-4 sm:basis-1/2 lg:basis-1/3"
               >
-                <div className="group rounded-2xl border border-line bg-card overflow-hidden shadow-[0_8px_24px_-8px_rgba(19,75,64,0.18)] transition-all duration-300 hover:shadow-lg flex flex-col">
+                <article className="group flex h-full w-full flex-col rounded-[24px] border border-line bg-card p-3 shadow-[0_4px_12px_-4px_rgba(9,80,70,0.12)] transition-[border-color,box-shadow] duration-300 hover:border-brand-gold/60 hover:shadow-[0_8px_16px_-6px_rgba(9,80,70,0.2)] motion-reduce:transition-none">
                   {/* Kontainer Gambar */}
-                  <div className="relative aspect-[3/4] w-full bg-muted/30 overflow-hidden">
+                  <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[16px] bg-muted/30">
                     <Image
                       src={item.src}
                       alt={item.alt}
                       fill
-                      sizes="(max-width: 640px) 80vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      sizes="(min-width: 1280px) 365px, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 80vw"
+                      className="object-cover transition-transform duration-500 motion-safe:group-hover:scale-[1.02] motion-reduce:transition-none"
                       loading="lazy"
                     />
                   </div>
 
                   {/* Keterangan */}
-                  <div className="p-4 border-t border-line text-center bg-card">
-                    <span className="block font-heading font-semibold text-sm md:text-base text-primary">
+                  <div className="flex flex-1 flex-col items-start px-2 pt-5 pb-2 text-left">
+                    <h3 className="inline-flex rounded-full bg-primary px-3.5 py-1.5 font-heading text-sm font-semibold text-primary-foreground">
                       {item.day}
-                    </span>
-                    <p className="mt-1 text-xs md:text-sm text-ink-muted">
+                    </h3>
+                    <span className="my-3 h-0.5 w-10 rounded-full bg-brand-gold" aria-hidden="true" />
+                    <p className="text-sm leading-relaxed text-ink-muted">
                       {item.desc}
                     </p>
                   </div>
-                </div>
+                </article>
               </CarouselItem>
             ))}
           </CarouselContent>
@@ -115,7 +116,7 @@ export function DresscodeSection() {
             >
               <span
                 className={cn(
-                  "block h-2.5 rounded-full transition-all duration-300",
+                  "block h-2.5 rounded-full transition-all duration-300 motion-reduce:transition-none",
                   current === index
                     ? "w-8 bg-primary"
                     : "w-2.5 bg-primary/25 hover:bg-primary/50"
