@@ -9,7 +9,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import type { Kamar } from "@/lib/hotel-dummy";
+import type { Kamar } from "@/lib/content/schema";
 
 const inisial = (nama: string) =>
   nama

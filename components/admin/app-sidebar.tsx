@@ -6,7 +6,8 @@ import { usePathname } from "next/navigation";
 import { useState, useTransition } from "react";
 import { logoutAdmin } from "@/app/admin/actions";
 import {
-  ArrowUpRight, Boxes, CalendarClock, ChevronDown, ClipboardList,
+  ArrowUpRight, BedDouble, Boxes, CalendarClock, ChevronDown, ClipboardList, FilePen, Images,
+  NotebookPen, Presentation,
   LayoutDashboard, LogOut, Monitor, QrCode, ScanLine, Settings,
   Theater, UserCog, X, type LucideIcon,
 } from "lucide-react";
@@ -76,6 +77,16 @@ export function AppSidebar({
         },
         { label: "Cetak QR Absen", href: "/admin/qr", icon: QrCode },
         { label: "QR Live Absen", href: "/admin/qr/live", icon: ScanLine },
+      ],
+    },
+    {
+      label: "Kelola Konten",
+      icon: FilePen,
+      items: [
+        { label: "Informasi Kamar Hotel", href: "/kelola-konten/kamar-hotel", icon: BedDouble },
+        { label: "Foto Galeri Kegiatan", href: "/kelola-konten/foto-galeri", icon: Images },
+        { label: "Materi Presentasi", href: "/kelola-konten/materi-presentasi", icon: Presentation },
+        { label: "Notula Rapat", href: "/kelola-konten/notula-rapat", icon: NotebookPen },
       ],
     },
     {

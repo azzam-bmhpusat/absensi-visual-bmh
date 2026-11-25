@@ -1,10 +1,12 @@
 import { CalendarDays, Download, Presentation, User } from "lucide-react";
 import { cn } from "cn";
 import { buttonVariants } from "@/components/ui/button";
-import { MATERI_PRESENTASI } from "@/lib/materi-dummy";
+import { getMateriPresentasi } from "@/lib/content/server";
 
-/** Grid card materi presentasi Rakernas (masih data dummy). */
-export function MateriPresentasi() {
+/** Grid card materi presentasi Rakernas (dikelola di dashboard: Kelola Konten). */
+export async function MateriPresentasi() {
+  const MATERI_PRESENTASI = await getMateriPresentasi();
+  if (MATERI_PRESENTASI.length === 0) return <p className="text-sm text-muted-foreground">Belum ada materi presentasi.</p>;
   return (
     <section aria-label="Materi presentasi" className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {MATERI_PRESENTASI.map((materi) => (

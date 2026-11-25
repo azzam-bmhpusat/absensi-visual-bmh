@@ -2,10 +2,12 @@ import Image from "next/image";
 import { CalendarDays, ExternalLink, Images, MapPin } from "lucide-react";
 import { cn } from "cn";
 import { buttonVariants } from "@/components/ui/button";
-import { ALBUM_KEGIATAN } from "@/lib/galeri-dummy";
+import { getAlbumKegiatan } from "@/lib/content/server";
 
-/** Grid card album foto kegiatan Rakernas (masih data dummy). */
-export function GaleriKegiatan() {
+/** Grid card album foto kegiatan Rakernas (dikelola di dashboard: Kelola Konten). */
+export async function GaleriKegiatan() {
+  const ALBUM_KEGIATAN = await getAlbumKegiatan();
+  if (ALBUM_KEGIATAN.length === 0) return <p className="text-sm text-muted-foreground">Belum ada album foto.</p>;
   return (
     <section aria-label="Album foto kegiatan" className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {ALBUM_KEGIATAN.map((album) => (

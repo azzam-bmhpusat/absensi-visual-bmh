@@ -8,10 +8,11 @@ import {
 } from "@/components/ui/accordion";
 import { PageHero } from "@/components/rakernas/page-hero";
 import { DaftarKamar } from "@/components/rakernas/daftar-kamar";
-import { DAFTAR_KAMAR, INFO_PENTING, KONTAK_PANITIA } from "@/lib/hotel-dummy";
+import { getHotelContent } from "@/lib/content/server";
 
 /** Header halaman: foto kamar hotel dengan judul dan ringkasan jumlah kamar/peserta. */
-export function HotelHero({ title }: { title: string }) {
+export async function HotelHero({ title }: { title: string }) {
+  const { kamar: DAFTAR_KAMAR } = await getHotelContent();
   const totalPeserta = DAFTAR_KAMAR.reduce((n, k) => n + k.penghuni.length, 0);
   const totalLantai = new Set(DAFTAR_KAMAR.map((k) => k.lantai)).size;
   const stats = [
@@ -31,8 +32,9 @@ export function HotelHero({ title }: { title: string }) {
   );
 }
 
-/** Pembagian kamar peserta dan ketentuan hotel (masih data dummy). */
-export function HotelInfo() {
+/** Pembagian kamar peserta dan ketentuan hotel (dikelola di dashboard: Kelola Konten). */
+export async function HotelInfo() {
+  const { kamar: DAFTAR_KAMAR, info: INFO_PENTING, kontak: KONTAK_PANITIA } = await getHotelContent();
   return (
     <div className="space-y-10">
       <section aria-label="Pembagian kamar">
@@ -57,6 +59,7 @@ export function HotelInfo() {
             ))}
           </Accordion>
         </div>
+        {KONTAK_PANITIA && (
         <p className="text-sm text-muted-foreground">
           Ada kendala kamar?{" "}
           <a
@@ -68,6 +71,7 @@ export function HotelInfo() {
             Hubungi {KONTAK_PANITIA.nama}
           </a>
         </p>
+        )}
       </section>
     </div>
   );

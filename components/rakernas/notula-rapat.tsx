@@ -1,10 +1,12 @@
 import { CalendarDays, FileText, MapPin, NotebookPen, User, Users } from "lucide-react";
 import { cn } from "cn";
 import { buttonVariants } from "@/components/ui/button";
-import { NOTULA_RAPAT } from "@/lib/notula-dummy";
+import { getNotulaRapat } from "@/lib/content/server";
 
-/** Grid card notula rapat Rakernas (masih data dummy). */
-export function NotulaRapat() {
+/** Grid card notula rapat Rakernas (dikelola di dashboard: Kelola Konten). */
+export async function NotulaRapat() {
+  const NOTULA_RAPAT = await getNotulaRapat();
+  if (NOTULA_RAPAT.length === 0) return <p className="text-sm text-muted-foreground">Belum ada notula rapat.</p>;
   return (
     <section aria-label="Notula rapat" className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {NOTULA_RAPAT.map((notula) => (

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
-import { BadgeCheck, CalendarClock, CircleAlert, MapPin, Phone, Shirt, UserPlus, Video, type LucideIcon } from "lucide-react";
+import { BadgeCheck, CalendarClock, CircleAlert, MapPin, Phone, Lock, Shirt, Video, type LucideIcon } from "lucide-react";
 import { cn } from "cn";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -14,6 +14,7 @@ import { AvatarUpload } from "@/components/profile/avatar-upload";
 import { avatarPublicUrl } from "@/lib/avatar";
 import { toUserRole } from "@/lib/user-schema";
 import { FOOTER_DATA } from "@/content/rakernas";
+import { logoutUser } from "@/app/(site)/login/actions";
 import { buttonVariants } from "@/components/ui/button";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 
@@ -175,7 +176,7 @@ async function ProfileContent() {
   );
 }
 
-/** Pengganti form profil untuk role `user`: cara menjadi peserta lewat panitia. */
+/** Pengganti form profil untuk role `user`: keluar dari akun Google lalu masuk dengan akun email BMH. */
 function ApplyParticipantCard() {
   const { phone, url } = FOOTER_DATA.committee;
   return (
@@ -183,28 +184,29 @@ function ApplyParticipantCard() {
       aria-labelledby="apply-participant-title"
       className="mx-auto flex max-w-2xl flex-col items-center gap-4 rounded-3xl border border-line bg-white p-6 text-center shadow-sm sm:p-8"
     >
-      <span className="flex size-14 items-center justify-center rounded-full bg-secondary text-primary">
-        <UserPlus className="size-7" aria-hidden="true" />
+      <span className="flex size-14 items-center justify-center rounded-full bg-gold-100 ring-4 ring-gold-50">
+        <Lock className="size-7 text-brand-gold-text" aria-hidden="true" />
       </span>
-      <div className="space-y-2">
-        <h2 id="apply-participant-title" className="font-heading text-xl font-bold text-primary">
-          Ajukan Menjadi Peserta
-        </h2>
-        <p className="text-pretty text-ink-muted">
-          Hubungi <span className="font-semibold whitespace-nowrap text-ink">{phone}</span> untuk menjadi peserta
-          Rakernas 2027.
-        </p>
+      <h2 id="apply-participant-title" className="font-heading text-xl font-bold text-pretty text-primary">
+        Masuk dengan akun email BMH untuk akses halaman.
+      </h2>
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <form action={logoutUser}>
+          <button type="submit" className={cn(buttonVariants(), "h-11 w-full rounded-xl px-5")}>
+            Masuk dengan Akun BMH
+          </button>
+        </form>
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Hubungi panitia via WhatsApp di ${phone} (tab baru)`}
+          className={cn(buttonVariants({ variant: "outline" }), "h-11 gap-2 rounded-xl px-5")}
+        >
+          <WhatsAppIcon className="size-[18px]" />
+          Hubungi via WhatsApp
+        </a>
       </div>
-      <a
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label={`Hubungi panitia via WhatsApp di ${phone} (tab baru)`}
-        className={cn(buttonVariants(), "h-11 gap-2 rounded-xl px-5")}
-      >
-        <WhatsAppIcon className="size-[18px]" />
-        Hubungi via WhatsApp
-      </a>
     </section>
   );
 }

@@ -96,7 +96,9 @@ describe("tampilan untuk role user", () => {
     const page = read("app/(site)/profile/page.tsx");
     expect(page).toMatch(/isApplicant \? \(\s*<ApplyParticipantCard \/>/);
     expect(page).toContain("FOOTER_DATA.committee");
-    expect(page).toContain("untuk menjadi peserta");
+    expect(page).toContain("Masuk dengan akun email BMH untuk akses halaman.");
+    expect(page).not.toContain("Ajukan Menjadi Peserta");
+    expect(page).toContain("action={logoutUser}");
     expect(FOOTER_DATA.committee.phone).toBe("089517795206");
     expect(FOOTER_DATA.committee.url).toBe("https://wa.me/6289517795206");
   });
@@ -106,8 +108,10 @@ describe("tampilan untuk role user", () => {
     expect(gate).toContain('=== "user") redirect("/khusus-peserta");');
     const page = read("app/(site)/khusus-peserta/page.tsx");
     expect(page).toContain("Khusus Peserta Rakernas 2027");
-    expect(page).toContain("Silakan ajukan diri Anda sebagai peserta di halaman profil.");
-    expect(page).toContain('href="/profile"');
+    expect(page).toContain("Masuk dengan akun BMH untuk akses halaman.");
+    expect(page).not.toContain("Silakan ajukan diri Anda");
+    expect(page).toContain("action={logoutUser}");
+    expect(page).toContain("flex min-h-svh items-center justify-center");
     const dialog = read("components/rakernas/complete-profile-dialog.tsx");
     expect(dialog).not.toContain("Khusus Peserta");
     // Dialog tetap untuk peserta yang profilnya belum lengkap.

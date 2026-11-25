@@ -5,6 +5,10 @@ const nextConfig: NextConfig = {
   // Izinkan akses dev server dari HP di jaringan Wi-Fi yang sama
   allowedDevOrigins: ["192.168.*.*", "10.*.*.*", "172.16.*.*"],
   cacheComponents: true,
+  // Cover album galeri dari bucket Storage publik 'konten' (lib/content/schema.ts).
+  images: {
+    remotePatterns: [{ protocol: "https", hostname: "*.supabase.co", pathname: "/storage/v1/object/public/konten/**" }],
+  },
   // Service worker PWA: jangan di-cache agar versi baru langsung terpakai.
   async headers() {
     return [
@@ -19,6 +23,8 @@ const nextConfig: NextConfig = {
     ];
   },
   partialPrefetching: true,
+  // Upload sampul album (maks 2 MB) lewat Server Action + overhead multipart.
+  experimental: { serverActions: { bodySizeLimit: "2200kb" } },
   turbopack: {
     rules: {
       "*.css": {
