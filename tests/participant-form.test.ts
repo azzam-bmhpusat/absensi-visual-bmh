@@ -38,14 +38,7 @@ vi.mock("@/lib/supabase/admin", () => ({
   }),
 }));
 
-import {
-  FORM_ACCESS_COOKIE,
-  FORM_ACCESS_TTL_MS,
-  createFormAccessToken,
-  isFormAccessPassword,
-  verifyFormAccessToken,
-} from "@/lib/form-access";
-import { loadParticipant, submitParticipantForm, unlockForm } from "@/app/(site)/form/actions";
+import { loadParticipant, submitParticipantForm } from "@/app/(site)/form/actions";
 
 const ID = "3f2b8c1e-4a5d-4e6f-8a9b-0c1d2e3f4a5b";
 const VALID = {
@@ -80,55 +73,9 @@ beforeEach(() => {
   mocks.ip = `10.0.1.${ipSeq}`;
 });
 
-describe("kata sandi & token akses /form", () => {
-  it("menerima RAKERNAS2027 tanpa peduli huruf besar/kecil", () => {
-    expect(isFormAccessPassword("RAKERNAS2027")).toBe(true);
-    expect(isFormAccessPassword(" rakernas2027 ")).toBe(true);
-    expect(isFormAccessPassword("RAKERNAS2026")).toBe(false);
-    expect(isFormAccessPassword("")).toBe(false);
-  });
-
-  it("token berlaku sampai kedaluwarsa dan tidak bisa dipalsukan", () => {
-    const now = 1_000_000;
-    const token = createFormAccessToken(now);
-    expect(verifyFormAccessToken(token, now + 1000)).toBe(true);
-    expect(verifyFormAccessToken(token, now + FORM_ACCESS_TTL_MS + 1)).toBe(false);
-    const [exp] = token.split(".");
-    expect(verifyFormAccessToken(`${Number(exp) + 999999}.${token.split(".")[1]}`, now)).toBe(false);
-    expect(verifyFormAccessToken("abc", now)).toBe(false);
-    expect(verifyFormAccessToken(undefined, now)).toBe(false);
-  });
-});
-
-describe("unlockForm", () => {
-  it("kata sandi salah: tidak memberi cookie", async () => {
-    expect(await unlockForm(null, form({ password: "SALAH" }))).toMatchObject({ success: false });
-    expect(mocks.setCookie).not.toHaveBeenCalled();
-  });
-
-  it("kata sandi benar: memberi cookie akses httpOnly", async () => {
-    expect(await unlockForm(null, form({ password: "rakernas2027" }))).toEqual({ success: true });
-    const [name, value, options] = mocks.setCookie.mock.calls[0];
-    expect(name).toBe(FORM_ACCESS_COOKIE);
-    expect(verifyFormAccessToken(value)).toBe(true);
-    expect(options).toMatchObject({ httpOnly: true });
-  });
-
-  it("membatasi percobaan per IP (10 per 15 menit)", async () => {
-    for (let i = 0; i < 10; i += 1) await unlockForm(null, form({ password: "SALAH" }));
-    expect((await unlockForm(null, form({ password: "RAKERNAS2027" }))).error).toMatch(/Terlalu banyak/);
-  });
-});
-
 describe("submitParticipantForm", () => {
-  it("ditolak tanpa cookie akses", async () => {
-    expect((await submitParticipantForm(null, form(VALID))).success).toBe(false);
-    expect(mocks.update).not.toHaveBeenCalled();
-  });
-
   it("ditolak bila ada field wajib kosong (termasuk jabatan)", async () => {
-    mocks.cookieValues.set(FORM_ACCESS_COOKIE, createFormAccessToken());
-    for (const field of ["jabatan", "no_whatsapp", "rencana_kedatangan", "ukuran_baju", "keterangan_kehadiran"]) {
+      for (const field of ["jabatan", "no_whatsapp", "rencana_kedatangan", "ukuran_baju", "keterangan_kehadiran"]) {
       const res = await submitParticipantForm(null, form({ ...VALID, [field]: "" }));
       expect(res.success, field).toBe(false);
     }
@@ -136,24 +83,22 @@ describe("submitParticipantForm", () => {
   });
 
   it("menyimpan data lalu mengembalikan email akun peserta", async () => {
-    mocks.cookieValues.set(FORM_ACCESS_COOKIE, createFormAccessToken());
-    expect(await submitParticipantForm(null, form(VALID))).toEqual({ success: true, email: "budi@bmh.or.id" });
+      expect(await submitParticipantForm(null, form(VALID))).toEqual({ success: true, email: "budi@bmh.or.id" });
     expect(mocks.update).toHaveBeenCalledWith(
       expect.objectContaining({ jabatan: "Kepala Cabang", no_whatsapp: "081234567890" })
     );
   });
 
-  it("nama dan email dikunci: nilai dari browser diabaikan", async () => {
-    mocks.cookieValues.set(FORM_ACCESS_COOKIE, createFormAccessToken());
-    await submitParticipantForm(null, form({ ...VALID, nama: "Nama Palsu", email: "lain@bmh.or.id" }));
+  it("nama ikut disimpan, email dan perwakilan daerah dikunci (nilai dari browser diabaikan)", async () => {
+    await submitParticipantForm(null, form({ ...VALID, nama: "Nama Baru", email: "lain@bmh.or.id" }));
     const row = mocks.update.mock.calls[0][0] as Record<string, unknown>;
-    expect(row).not.toHaveProperty("nama");
+    expect(row).toHaveProperty("nama", "Nama Baru");
     expect(row).not.toHaveProperty("email");
+    expect(row).not.toHaveProperty("perwakilan_daerah");
   });
 
   it("profil yang sudah lengkap tidak bisa diisi ulang lewat /form", async () => {
-    mocks.cookieValues.set(FORM_ACCESS_COOKIE, createFormAccessToken());
-    mocks.currentRow = {
+      mocks.currentRow = {
       nama: "Budi",
       perwakilan_daerah: "BMH Jawa Timur",
       jabatan: "Kepala",
@@ -168,8 +113,7 @@ describe("submitParticipantForm", () => {
   });
 
   it("peserta tidak ditemukan (id bukan peserta) ditolak", async () => {
-    mocks.cookieValues.set(FORM_ACCESS_COOKIE, createFormAccessToken());
-    mocks.updateResult = { data: null, error: null };
+      mocks.updateResult = { data: null, error: null };
     expect((await submitParticipantForm(null, form(VALID))).error).toMatch(/tidak ditemukan/);
   });
 });

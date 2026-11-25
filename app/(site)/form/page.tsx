@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { cookies } from "next/headers";
 import { connection } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { FORM_ACCESS_COOKIE, verifyFormAccessToken } from "@/lib/form-access";
 import { getParticipantPassword } from "@/lib/participant-account";
 import { PROFILE_COMPLETE_COLUMNS, isProfileComplete } from "@/lib/profile-contact";
 import { PublicFooter } from "@/components/rakernas/public-page";
-import { FormAccessDialog } from "@/components/form/access-dialog";
 import { ParticipantForm, type ParticipantOption } from "@/components/form/participant-form";
 
 export const metadata: Metadata = {
@@ -17,11 +14,7 @@ export const metadata: Metadata = {
 
 async function FormContent() {
   await connection();
-  const access = verifyFormAccessToken((await cookies()).get(FORM_ACCESS_COOKIE)?.value);
-  if (!access) return <FormAccessDialog />;
-
-  // Daftar peserta hanya dimuat setelah kata sandi akses benar. Kolom privat hanya dipakai
-  // di server untuk menandai profil lengkap; ke browser hanya dikirim id, nama, daerah, dan status.
+  // Kolom privat hanya dipakai di server untuk menandai profil lengkap; ke browser hanya dikirim id, nama, daerah, dan status.
   const { data } = await createAdminClient()
     .from("profiles")
     .select(`id, ${PROFILE_COMPLETE_COLUMNS}`)

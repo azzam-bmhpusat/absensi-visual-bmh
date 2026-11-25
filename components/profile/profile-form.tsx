@@ -109,7 +109,7 @@ function IconField({
 const LOCKED_HINT = "Dikunci. Hubungi panitia untuk mengubahnya.";
 
 /**
- * Field terkunci (email, jabatan, nama di /form): read-only dan tanpa `name`, jadi tidak ikut terkirim.
+ * Field terkunci (email, jabatan, perwakilan daerah di /form): read-only dan tanpa `name`, jadi tidak ikut terkirim.
  * Server (updateProfile, submitParticipantForm) juga tidak membaca field ini.
  */
 function LockedField({ id, label, icon: Icon, value }: { id: string; label: string; icon: LucideIcon; value: string }) {
@@ -154,7 +154,7 @@ export function ProfileFields({
   isPending: boolean;
   firstStep: number;
   jabatanEditable?: boolean;
-  /** Dipakai /form: email ditampilkan terkunci dan nama ikut dikunci (tidak terkirim). */
+  /** Dipakai /form: email dan perwakilan daerah ditampilkan terkunci (tidak terkirim). */
   lockedEmail?: string;
 }) {
   const [arrival, setArrival] = useState(initial.rencanaKedatangan);
@@ -170,10 +170,7 @@ export function ProfileFields({
             </div>
           )}
           <div className="md:col-span-2">
-            {lockedEmail !== undefined ? (
-              <LockedField id="nama" label="Nama lengkap (beserta gelar akademik)" icon={User} value={initial.nama} />
-            ) : (
-              <IconField id="nama" label="Nama lengkap (beserta gelar akademik)" icon={User}>
+            <IconField id="nama" label="Nama lengkap (beserta gelar akademik)" icon={User}>
                 <InputGroupInput
                   id="nama"
                   name="nama"
@@ -185,19 +182,22 @@ export function ProfileFields({
                   disabled={isPending}
                 />
               </IconField>
-            )}
           </div>
-          <IconField id="perwakilan_daerah" label="Perwakilan Daerah" icon={MapPinned}>
-            <InputGroupInput
-              id="perwakilan_daerah"
-              name="perwakilan_daerah"
-              required
-              maxLength={100}
-              defaultValue={initial.perwakilanDaerah}
-              className={inputClass}
-              disabled={isPending}
-            />
-          </IconField>
+          {lockedEmail !== undefined ? (
+            <LockedField id="perwakilan_daerah" label="Perwakilan Daerah" icon={MapPinned} value={initial.perwakilanDaerah} />
+          ) : (
+            <IconField id="perwakilan_daerah" label="Perwakilan Daerah" icon={MapPinned}>
+              <InputGroupInput
+                id="perwakilan_daerah"
+                name="perwakilan_daerah"
+                required
+                maxLength={100}
+                defaultValue={initial.perwakilanDaerah}
+                className={inputClass}
+                disabled={isPending}
+              />
+            </IconField>
+          )}
           {jabatanEditable ? (
             <IconField id="jabatan" label="Jabatan" icon={Briefcase}>
               <InputGroupInput

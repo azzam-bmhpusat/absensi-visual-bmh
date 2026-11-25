@@ -1,7 +1,6 @@
 "use server";
 
-import { cookies, headers } from "next/headers";
-import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit } from "@/lib/rate-limit";
@@ -11,23 +10,15 @@ import {
   isoToWibLocal,
   participantFormSchema,
 } from "@/lib/profile-contact";
-import {
-  FORM_ACCESS_COOKIE,
-  createFormAccessToken,
-  formAccessCookieOptions,
-  isFormAccessPassword,
-  verifyFormAccessToken,
-} from "@/lib/form-access";
 import type { ProfileInitial } from "@/components/profile/profile-form";
 
-const NO_ACCESS = "Akses formulir berakhir. Muat ulang halaman lalu masukkan kata sandi akses.";
-const UNLOCK_LIMIT = 10;
+const LOAD_LIMIT = 60;
 const SUBMIT_LIMIT = 30;
 const WINDOW_MS = 15 * 60_000;
 
-/** Field yang boleh diisi lewat /form (email dan nama dikunci, tidak dibaca dari form). */
+/** Field yang boleh diisi lewat /form (email dan perwakilan daerah dikunci, tidak dibaca dari form). */
 const FIELDS = [
-  "perwakilan_daerah",
+  "nama",
   "jabatan",
   "ukuran_baju",
   "no_whatsapp",
@@ -55,35 +46,15 @@ async function clientIp(): Promise<string> {
   return forwardedFor ? forwardedFor.split(",")[0].trim() : "127.0.0.1";
 }
 
-async function hasAccess(): Promise<boolean> {
-  return verifyFormAccessToken((await cookies()).get(FORM_ACCESS_COOKIE)?.value);
-}
-
-export interface UnlockResult {
-  success: boolean;
-  error?: string;
-}
-
-/** Memeriksa kata sandi akses bersama lalu memberi cookie akses /form. */
-export async function unlockForm(_prev: UnlockResult | null, formData: FormData): Promise<UnlockResult> {
-  if (!checkRateLimit(`form-unlock:${await clientIp()}`, UNLOCK_LIMIT, WINDOW_MS)) {
-    return { success: false, error: "Terlalu banyak percobaan. Tunggu 15 menit lalu coba lagi." };
-  }
-  if (!isFormAccessPassword(formData.get("password")?.toString() ?? "")) {
-    return { success: false, error: "Kata sandi akses salah." };
-  }
-  (await cookies()).set(FORM_ACCESS_COOKIE, createFormAccessToken(), formAccessCookieOptions());
-  revalidatePath("/form");
-  return { success: true };
-}
-
 export type LoadParticipantResult =
   | { success: true; initial: ProfileInitial }
   | { success: false; error: string };
 
 /** Data profil satu peserta untuk mengisi formulir. */
 export async function loadParticipant(id: string): Promise<LoadParticipantResult> {
-  if (!(await hasAccess())) return { success: false, error: NO_ACCESS };
+  if (!checkRateLimit(`form-load:${await clientIp()}`, LOAD_LIMIT, WINDOW_MS)) {
+    return { success: false, error: "Terlalu banyak permintaan. Tunggu sebentar lalu coba lagi." };
+  }
   if (!idSchema.safeParse(id).success) return { success: false, error: "Peserta tidak ditemukan." };
 
   const { data, error } = await readParticipant(id);
@@ -117,7 +88,6 @@ export async function submitParticipantForm(
   _prev: SubmitParticipantResult | null,
   formData: FormData
 ): Promise<SubmitParticipantResult> {
-  if (!(await hasAccess())) return { success: false, error: NO_ACCESS };
   if (!checkRateLimit(`form-submit:${await clientIp()}`, SUBMIT_LIMIT, WINDOW_MS)) {
     return { success: false, error: "Terlalu banyak pengiriman. Tunggu sebentar lalu coba lagi." };
   }
