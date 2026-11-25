@@ -2,7 +2,6 @@ import "server-only";
 import ExcelJS from "exceljs";
 import { addTableSheet, type Column } from "./attendance-xlsx";
 import { kategoriLabel, safeSheetName, toWibExcelDate, wibDateStamp } from "./attendance-export";
-import { MODE_KEHADIRAN_LABEL, type MODE_KEHADIRAN } from "./participant-options";
 import { formatArrival, isProfileComplete } from "./profile-contact";
 import { ROLE_LABEL } from "./user-schema";
 import { ALL_JABATAN, NO_JABATAN, type UserFilter, type UserRow } from "./user-row";
@@ -29,7 +28,6 @@ const columns: Column[] = [
   { header: "Ukuran Baju", key: "ukuran_baju", width: 12 },
   { header: "No. WhatsApp", key: "no_whatsapp", width: 18 },
   { header: "Rencana Kedatangan", key: "rencana_kedatangan", width: 36 },
-  { header: "Mode Kehadiran", key: "mode_kehadiran", width: 24 },
   { header: "Keterangan Kehadiran", key: "keterangan_kehadiran", width: 30 },
   { header: "Profil Lengkap", key: "lengkap", width: 14 },
   { header: "Login Terakhir (WIB)", key: "last_sign_in", width: 20, numFmt: DATE_FORMAT },
@@ -41,7 +39,6 @@ const dash = (v: string | null) => v || "-";
 function userRows(users: UserRow[]) {
   return users.map((u, i) => {
     const p = u.profile;
-    const mode = p.mode_kehadiran as (typeof MODE_KEHADIRAN)[number] | null;
     return {
       no: i + 1,
       email: u.email,
@@ -55,7 +52,6 @@ function userRows(users: UserRow[]) {
       // Disimpan sebagai teks agar angka 0 di depan tidak hilang di Excel.
       no_whatsapp: dash(p.no_whatsapp),
       rencana_kedatangan: formatArrival(p.rencana_kedatangan) ?? "-",
-      mode_kehadiran: mode ? (MODE_KEHADIRAN_LABEL[mode] ?? mode) : "-",
       keterangan_kehadiran: dash(p.keterangan_kehadiran),
       lengkap: isProfileComplete(p) ? "Ya" : "Belum",
       last_sign_in: u.lastSignInAt ? (toWibExcelDate(u.lastSignInAt) ?? "-") : "Belum pernah",

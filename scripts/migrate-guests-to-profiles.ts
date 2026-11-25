@@ -66,10 +66,8 @@ async function loadSource(): Promise<SourceRow[]> {
     nama: r.nama,
     perwakilan_daerah: r.perwakilan_daerah,
     jabatan: r.jabatan,
-    departemen: r.departemen,
     kategori: r.kategori,
     ukuran_baju: r.ukuran_baju,
-    mode_kehadiran: r.mode_kehadiran,
     created_at: r.created_at,
   }));
 }

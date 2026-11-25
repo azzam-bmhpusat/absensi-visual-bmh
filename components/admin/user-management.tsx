@@ -919,7 +919,6 @@ function ProfileDetailDialog({
                 </DetailItem>
                 <DetailItem label="Rencana Kedatangan">{formatArrival(p.rencana_kedatangan) ?? EMPTY_VALUE}</DetailItem>
                 <DetailItem label="Keterangan Kehadiran">{modeLabel(p.keterangan_kehadiran)}</DetailItem>
-                <DetailItem label="Mode Kehadiran (data lama)">{modeLabel(p.mode_kehadiran)}</DetailItem>
               </dl>
             </section>
             <section className="space-y-3">

@@ -12,7 +12,6 @@ export const USER_PROFILE_COLUMNS = [
   "no_whatsapp",
   "rencana_kedatangan",
   "keterangan_kehadiran",
-  "mode_kehadiran",
   "legacy_guest_id",
   "avatar_url",
   "updated_at",
@@ -79,7 +78,6 @@ const SEARCH_FIELDS = [
   "ukuran_baju",
   "no_whatsapp",
   "keterangan_kehadiran",
-  "mode_kehadiran",
 ] as const satisfies readonly (keyof UserProfile)[];
 
 type SearchableUser = Pick<UserRow, "email" | "role" | "banned" | "profile">;

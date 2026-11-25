@@ -8,7 +8,6 @@ export interface ParticipantFields {
   jabatan?: string | null;
   kategori?: string | null;
   ukuran_baju?: string | null;
-  mode_kehadiran?: string | null;
   legacy_guest_id?: string | null;
   created_at?: string | null;
 }
@@ -39,7 +38,6 @@ export function participantRow(fields: ParticipantFields) {
     jabatan: emptyToNull(fields.jabatan),
     kategori: emptyToNull(fields.kategori) ?? "daerah",
     ukuran_baju: emptyToNull(fields.ukuran_baju),
-    mode_kehadiran: emptyToNull(fields.mode_kehadiran),
     legacy_guest_id: emptyToNull(fields.legacy_guest_id),
   };
   const createdAt = emptyToNull(fields.created_at);

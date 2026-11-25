@@ -38,7 +38,6 @@ describe("participantRow", () => {
       jabatan: "Kepala Perwakilan",
       kategori: "daerah",
       ukuran_baju: null,
-      mode_kehadiran: null,
       legacy_guest_id: null,
     });
     expect(participantRow({ ...fields, created_at: "2026-11-13 09:34:33+00", legacy_guest_id: "g1" })).toMatchObject({
