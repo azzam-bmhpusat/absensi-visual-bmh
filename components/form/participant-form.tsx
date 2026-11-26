@@ -30,6 +30,8 @@ export interface ParticipantOption {
   perwakilan_daerah: string | null;
   /** Profil sudah lengkap: dikunci dari /form (tidak bisa dipilih lagi). */
   complete: boolean;
+  /** Email login; hanya dikirim untuk /form-data-direksi agar dialog Berhasil bisa mengarah ke halaman login. */
+  email?: string | null;
 }
 
 /**
@@ -43,8 +45,11 @@ function ParticipantPicker({
   onSelect,
   onClear,
   disabled,
+  browse = false,
 }: {
   participants: ParticipantOption[];
+  /** Tampilkan semua nama sebagai kartu tanpa kolom pencarian (dipakai /form-data-direksi). */
+  browse?: boolean;
   selected: ParticipantOption | null;
   onSelect: (p: ParticipantOption) => void;
   onClear: () => void;
@@ -52,7 +57,9 @@ function ParticipantPicker({
 }) {
   const [search, setSearch] = useState("");
   const q = search.trim().toLowerCase();
-  const results = q
+  const results = browse
+    ? participants
+    : q
     ? participants.filter(
         (p) => p.nama.toLowerCase().includes(q) || (p.perwakilan_daerah ?? "").toLowerCase().includes(q)
       )
@@ -61,7 +68,7 @@ function ParticipantPicker({
   if (selected) {
     return (
       <div className="space-y-2">
-        <p className="text-[13px] font-semibold text-ink">Peserta dipilih</p>
+        <p className="text-[13px] font-semibold text-ink">{browse ? "Direksi dipilih" : "Peserta dipilih"}</p>
         <div className="flex min-h-14 w-full items-center gap-3 rounded-xl border border-primary bg-secondary px-3.5 py-2.5">
           <Check className="size-5 shrink-0 text-primary" aria-hidden="true" />
           <span className="min-w-0 flex-1">
@@ -87,6 +94,7 @@ function ParticipantPicker({
 
   return (
     <div className="space-y-3">
+      {!browse && (
       <div className="space-y-1.5">
         <Label htmlFor="region-search" className="text-[13px] font-semibold text-ink">
           Cari nama atau daerah perwakilan BMH
@@ -126,9 +134,15 @@ function ParticipantPicker({
           Ketik nama Anda atau daerah perwakilan, lalu pilih nama Anda dari hasil di bawah.
         </p>
       </div>
+      )}
 
       <div id="region-results" aria-live="polite">
-        {q && results.length === 0 && (
+        {browse && results.length === 0 && (
+          <p className="rounded-xl border border-dashed border-line bg-surface p-3.5 text-sm text-ink-muted">
+            Belum ada data direksi.
+          </p>
+        )}
+        {!browse && q && results.length === 0 && (
           <p className="flex items-start gap-2 rounded-xl border border-dashed border-line bg-surface p-3.5 text-sm text-ink-muted">
             <CircleAlert className="mt-0.5 size-4 shrink-0 text-brand-gold-text" aria-hidden="true" />
             Nama atau daerah perwakilan tidak ditemukan. Coba ketik nama Anda atau daerah perwakilan BMH, contoh: Jawa Timur.
@@ -137,22 +151,22 @@ function ParticipantPicker({
         {results.length > 0 && (
           <>
             <p className="mb-2 text-xs font-medium text-ink-muted">
-              {results.length} peserta ditemukan, pilih nama Anda:
+              {browse ? "Pilih nama Anda:" : `${results.length} peserta ditemukan, pilih nama Anda:`}
             </p>
-            {results.some((p) => p.complete) && (
+            {!browse && results.some((p) => p.complete) && (
               <p className="mb-2 text-xs text-ink-muted">
                 Nama bertanda <span className="font-semibold text-primary">Sudah diisi</span> tidak bisa diisi ulang di
                 sini. Untuk mengubah data, masuk lalu buka halaman Profil.
               </p>
             )}
-            <ul data-lenis-prevent className="max-h-80 space-y-1.5 overflow-y-auto">
+            <ul data-lenis-prevent className={cn("space-y-1.5", !browse && "max-h-80 overflow-y-auto")}>
               {results.map((p) => {
                 return (
                   <li key={p.id}>
                     <button
                       type="button"
                       onClick={() => onSelect(p)}
-                      disabled={disabled || p.complete}
+                      disabled={disabled || (p.complete && !browse)}
                       className={cn(
                         "flex min-h-14 w-full cursor-pointer items-center gap-3 rounded-xl border border-line bg-white px-3.5 py-2.5 text-left transition-colors hover:border-primary/40 hover:bg-secondary/50 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-60",
                         p.complete && "border-dashed bg-surface hover:border-line hover:bg-surface"
@@ -231,7 +245,7 @@ function SuccessDialog({ email, password }: { email: string; password: string })
 }
 
 /** Dialog sukses /form-data-direksi: tanpa info akun, cukup konfirmasi kesiapan. */
-function ReadyDialog() {
+function ReadyDialog({ email, password }: { email: string; password: string }) {
   return (
     <Dialog open onOpenChange={() => {}} disablePointerDismissal>
       <DialogContent showCloseButton={false} className="gap-5 p-6 sm:max-w-md">
@@ -242,10 +256,18 @@ function ReadyDialog() {
           <DialogTitle className="font-heading text-lg font-bold text-primary">Berhasil</DialogTitle>
           <DialogDescription>Anda sudah siap mengikuti Rakernas BMH 2027.</DialogDescription>
         </DialogHeader>
-        <DialogFooter className="-mx-6 -mb-6 px-6">
+        <DialogFooter className="-mx-6 -mb-6 flex-col gap-2 px-6 sm:flex-col">
+          <Link
+            href={email ? `/login?email=${encodeURIComponent(email)}` : "/login"}
+            onClick={() => savePrefillPassword(password)}
+            className={cn(buttonVariants(), "h-11 w-full rounded-xl bg-primary font-semibold text-white hover:bg-brand-green-deep")}
+          >
+            <LogIn className="size-4" aria-hidden="true" />
+            Masuk
+          </Link>
           <Link
             href="/"
-            className={cn(buttonVariants(), "h-11 w-full rounded-xl bg-primary font-semibold text-white hover:bg-brand-green-deep")}
+            className={cn(buttonVariants({ variant: "outline" }), "h-11 w-full rounded-xl font-semibold text-primary")}
           >
             Kembali ke Beranda
           </Link>
@@ -264,6 +286,8 @@ export function ParticipantForm({
   loginPassword: string;
   role: FormRole;
 }) {
+  const browse = role === "direktur";
+  const [readyEmail, setReadyEmail] = useState<string | null>(null);
   const [selected, setSelected] = useState<ParticipantOption | null>(null);
   const [initial, setInitial] = useState<ProfileInitial | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -275,6 +299,11 @@ export function ParticipantForm({
   const { missing, formProps } = useMissingFields();
 
   function handleSelect(p: ParticipantOption) {
+    // Direksi yang datanya sudah lengkap cukup diberi konfirmasi kesiapan, tanpa membuka formulir.
+    if (browse && p.complete) {
+      setReadyEmail(p.email ?? "");
+      return;
+    }
     setSelected(p);
     setInitial(null);
     setLoadError(null);
@@ -300,11 +329,14 @@ export function ParticipantForm({
           </span>
           <div>
             <h2 id="form-step-1" className="font-heading text-base font-semibold text-primary">
-              Nama Peserta
+              {browse ? "Nama Direksi" : "Nama Peserta"}
             </h2>
-            <p className="text-sm text-ink-muted">Cari nama atau daerah perwakilan Anda, lalu pilih nama Anda.</p>
+            <p className="text-sm text-ink-muted">
+              {browse ? "Pilih nama Anda dari daftar di bawah." : "Cari nama atau daerah perwakilan Anda, lalu pilih nama Anda."}
+            </p>
           </div>
         </div>
+        {!browse && (
         <div
           role="note"
           className="mb-3 flex gap-3 rounded-2xl border border-brand-gold/50 bg-gold-50 p-3.5 text-sm text-ink"
@@ -315,12 +347,14 @@ export function ParticipantForm({
             <span className="font-semibold">Ahmad</span> atau <span className="font-semibold">Jawa Timur</span>.
           </p>
         </div>
+        )}
         <ParticipantPicker
           participants={participants}
           selected={selected}
           onSelect={handleSelect}
           onClear={handleClear}
           disabled={isPending}
+          browse={browse}
         />
         {isLoading && (
           <p className="mt-3 flex items-center gap-2 text-sm text-ink-muted">
@@ -358,9 +392,10 @@ export function ParticipantForm({
         </form>
       )}
 
+      {readyEmail !== null && <ReadyDialog email={readyEmail} password={loginPassword} />}
       {state?.success &&
         (role === "direktur" ? (
-          <ReadyDialog />
+          <ReadyDialog email={state.email ?? ""} password={loginPassword} />
         ) : (
           state.email && <SuccessDialog email={state.email} password={loginPassword} />
         ))}

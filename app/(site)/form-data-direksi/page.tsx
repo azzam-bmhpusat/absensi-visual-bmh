@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getParticipantPassword } from "@/lib/participant-account";
 import { PROFILE_COMPLETE_COLUMNS, isProfileComplete } from "@/lib/profile-contact";
 import { PublicFooter } from "@/components/rakernas/public-page";
 import { ParticipantForm, type ParticipantOption } from "@/components/form/participant-form";
+
+/** Kata sandi akun direksi, diisikan otomatis ke halaman login. */
+const DIREKSI_PASSWORD = "www.bmh.or.id";
 
 export const metadata: Metadata = {
   title: "Formulir Data Direksi",
@@ -14,10 +16,10 @@ export const metadata: Metadata = {
 
 async function FormContent() {
   await connection();
-  // Kolom privat hanya dipakai di server untuk menandai profil lengkap; ke browser hanya dikirim id, nama, daerah, dan status.
+  // Kolom privat hanya dipakai di server untuk menandai profil lengkap; ke browser dikirim id, nama, daerah, status, dan email login.
   const { data } = await createAdminClient()
     .from("profiles")
-    .select(`id, ${PROFILE_COMPLETE_COLUMNS}`)
+    .select(`id, email, ${PROFILE_COMPLETE_COLUMNS}`)
     .eq("role", "direktur")
     .not("nama", "is", null)
     .order("nama", { ascending: true });
@@ -26,9 +28,10 @@ async function FormContent() {
     nama: p.nama,
     perwakilan_daerah: p.perwakilan_daerah,
     complete: isProfileComplete(p),
+    email: p.email,
   }));
 
-  return <ParticipantForm participants={participants} loginPassword={getParticipantPassword()} role="direktur" />;
+  return <ParticipantForm participants={participants} loginPassword={DIREKSI_PASSWORD} role="direktur" />;
 }
 
 export default function FormDataDireksiPage() {
