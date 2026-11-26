@@ -92,21 +92,17 @@ function requiredText(label: string, min: number, max: number) {
     );
 }
 
-/** Seluruh data profil yang bisa diedit user (email, data peserta, kontak, rencana kedatangan). */
-export const profileSchema = profileContactSchema.extend({
+/** Field profil yang bisa diedit user (tanpa aturan ukuran baju; lihat withShirtRule). */
+const profileFields = profileContactSchema.extend({
   email: emailSchema,
   nama: requiredText("Nama", 2, 100),
   perwakilan_daerah: requiredText("Perwakilan daerah", 2, 100),
   jabatan: requiredText("Jabatan", 2, 100),
   ukuran_baju: z
     .string()
-    .transform((v) => v.trim())
-    .pipe(
-      z
-        .string()
-        .min(1, "Ukuran baju wajib dipilih")
-        .pipe(z.enum(UKURAN_BAJU, { error: "Ukuran baju tidak valid" }))
-    ),
+    .optional()
+    .transform((v) => v?.trim() || null)
+    .pipe(z.enum(UKURAN_BAJU, { error: "Ukuran baju tidak valid" }).nullable()),
   no_whatsapp: profileContactSchema.shape.no_whatsapp.pipe(
     z.string({ error: "No WhatsApp wajib diisi" })
   ),
@@ -116,17 +112,32 @@ export const profileSchema = profileContactSchema.extend({
   keterangan_kehadiran: z.enum(MODE_KEHADIRAN, { error: "Keterangan kehadiran wajib dipilih" }),
 });
 
+/** Ukuran baju hanya untuk peserta offline (wajib); peserta online disimpan null. */
+function withShirtRule<T extends z.ZodType<{ ukuran_baju: string | null; keterangan_kehadiran: string }>>(schema: T) {
+  return schema
+    .refine((d) => d.keterangan_kehadiran !== "offline" || d.ukuran_baju !== null, {
+      message: "Ukuran baju wajib dipilih",
+      path: ["ukuran_baju"],
+    })
+    .transform((d) => (d.keterangan_kehadiran === "offline" ? d : { ...d, ukuran_baju: null }));
+}
+
+/** Seluruh data profil yang bisa diedit user (email, data peserta, kontak, rencana kedatangan). */
+export const profileSchema = withShirtRule(profileFields);
+
 /**
  * Data yang boleh diubah peserta sendiri di /profile. Email (akun login) dan jabatan
  * dikunci: hanya admin yang mengubahnya lewat Manajemen User.
  */
-export const selfProfileSchema = profileSchema.omit({ email: true, jabatan: true });
+export const selfProfileSchema = withShirtRule(profileFields.omit({ email: true, jabatan: true }));
 
 /** Profil peserta yang sudah lengkap dikunci di /profile (tampilan dan server). */
 export const PROFILE_LOCKED_MESSAGE = "Profil Anda sudah lengkap dan dikunci.";
 
-/** Data yang diisi lewat halaman publik /form: semua field wajib, termasuk jabatan (email, nama, dan perwakilan daerah dikunci; hanya admin yang mengubah). */
-export const participantFormSchema = profileSchema.omit({ email: true, nama: true, perwakilan_daerah: true });
+/** Data yang diisi lewat halaman publik /form: semua field wajib, termasuk jabatan (email, nama, dan perwakilan daerah dikunci; hanya admin yang mengubah). Ukuran baju hanya untuk peserta offline. */
+export const participantFormSchema = withShirtRule(
+  profileFields.omit({ email: true, nama: true, perwakilan_daerah: true })
+);
 
 /** Teks opsional: kosong -> null; selain itu dinormalkan dan dibatasi panjangnya. */
 function optionalText(label: string, min: number, max: number) {
@@ -175,13 +186,13 @@ export function whatsappLink(no: string | null | undefined): string | null {
   return `https://wa.me/${digits.startsWith("0") ? `62${digits.slice(1)}` : digits}`;
 }
 
-export type ProfileInput = z.input<typeof profileSchema>;
+export type ProfileInput = z.input<typeof profileFields>;
 
 /** Kolom profiles yang diperiksa isProfileComplete (untuk .select). */
 export const PROFILE_COMPLETE_COLUMNS =
   "nama, perwakilan_daerah, jabatan, ukuran_baju, no_whatsapp, rencana_kedatangan, keterangan_kehadiran";
 
-/** Field peserta yang harus terisi agar profil dianggap lengkap. */
+/** Field peserta yang harus terisi agar profil dianggap lengkap (ukuran baju hanya untuk peserta offline). */
 export const PROFILE_COMPLETE_FIELDS = [
   "nama",
   "perwakilan_daerah",
@@ -204,9 +215,10 @@ export const PROFILE_STATUS_LABEL: Record<ProfileStatus, string> = {
 
 /** Kelengkapan profil: jumlah field terisi dan statusnya (kosong / sebagian / lengkap). */
 export function profileStatus(p: CompletenessInput): { status: ProfileStatus; filled: number; total: number } {
-  const total = PROFILE_COMPLETE_FIELDS.length;
+  const fields = PROFILE_COMPLETE_FIELDS.filter((k) => k !== "ukuran_baju" || p?.keterangan_kehadiran !== "online");
+  const total = fields.length;
   const filled = p
-    ? PROFILE_COMPLETE_FIELDS.filter((k) => {
+    ? fields.filter((k) => {
         const v = p[k];
         return typeof v === "string" && v.trim().length > 0;
       }).length

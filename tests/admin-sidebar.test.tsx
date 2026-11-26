@@ -19,11 +19,12 @@ describe("Sidebar administrasi", () => {
       expect(html).toContain(`href="${href}"`);
     }
     const links = [...html.matchAll(/<a\b[^>]*>/g)].map(([tag]) => tag);
-    for (const href of ["/display", "/display-anatomy", "/display-absen", "/absen"]) {
+    for (const href of ["/display", "/display-absen", "/absen"]) {
       const link = links.find((tag) => tag.includes(`href="${href}"`));
       expect(link).toContain('target="_blank"');
       expect(link).toContain('rel="noopener noreferrer"');
     }
+    expect(html).not.toContain('href="/display-anatomy"');
     expect(html).toContain("Navigasi administrasi");
   });
 

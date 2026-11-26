@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState, useTransition } from "react";
 import { logoutAdmin } from "@/app/admin/actions";
 import {
-  ArrowUpRight, BedDouble, Boxes, CalendarClock, ChevronDown, ClipboardList, FilePen, Images,
+  ArrowUpRight, BedDouble, CalendarClock, ChevronDown, ClipboardList, FilePen, Images,
   NotebookPen, Presentation,
   LayoutDashboard, LogOut, Monitor, QrCode, ScanLine, Settings,
   Theater, UserCog, X, type LucideIcon,
@@ -94,7 +94,6 @@ export function AppSidebar({
       icon: Monitor,
       items: [
         { label: "Buka Videotron", href: "/display", icon: Monitor, external: true },
-        { label: "Videotron Anatomy", href: "/display-anatomy", icon: Boxes, external: true },
         { label: "Videotron Aula", href: "/display-absen", icon: Theater, external: true },
       ],
     },

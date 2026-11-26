@@ -41,6 +41,17 @@ describe("profile-contact", () => {
     expect(profileContactSchema.safeParse({ no_whatsapp: "", rencana_kedatangan: "xx" }).success).toBe(false);
   });
 
+  const base = () => ({
+    email: "user@bmh.or.id",
+    nama: "Budi Santoso",
+    perwakilan_daerah: "BMH Pusat",
+    jabatan: "Ketua",
+    ukuran_baju: "XL",
+    no_whatsapp: "081234567890",
+    rencana_kedatangan: "2026-11-20T14:00",
+    keterangan_kehadiran: "offline",
+  });
+
   it("memvalidasi seluruh profil (semua field wajib)", () => {
     const base = {
       email: " User@BMH.or.id ",
@@ -66,6 +77,16 @@ describe("profile-contact", () => {
     expect(profileSchema.safeParse({ ...base, nama: " " }).success).toBe(false);
     expect(profileSchema.safeParse({ ...base, ukuran_baju: "XXXL" }).success).toBe(false);
     expect(profileSchema.safeParse({ ...base, email: "bukan-email" }).success).toBe(false);
+    expect(profileSchema.safeParse({ ...base, keterangan_kehadiran: "hybrid" }).success).toBe(false);
+  });
+
+  it("ukuran baju hanya untuk peserta offline", () => {
+    const online = profileSchema.safeParse({ ...base(), keterangan_kehadiran: "online", ukuran_baju: "" });
+    expect(online.success && online.data.ukuran_baju).toBeNull();
+    const dropped = profileSchema.safeParse({ ...base(), keterangan_kehadiran: "online" });
+    expect(dropped.success && dropped.data.ukuran_baju).toBeNull();
+    expect(isProfileComplete({ ...base(), keterangan_kehadiran: "online", ukuran_baju: null })).toBe(true);
+    expect(isProfileComplete({ ...base(), ukuran_baju: null })).toBe(false);
   });
 
   it("selfProfileSchema: email & jabatan dikunci (dibuang walau dikirim)", () => {
@@ -103,7 +124,7 @@ describe("profile-contact", () => {
       ukuran_baju: "XL",
       no_whatsapp: "0812",
       rencana_kedatangan: "2026-11-20T07:00:00.000Z",
-      keterangan_kehadiran: "online",
+      keterangan_kehadiran: "offline",
     };
     expect(isProfileComplete(full)).toBe(true);
     expect(isProfileComplete(null)).toBe(false);
@@ -129,7 +150,6 @@ describe("profile-contact", () => {
     expect(whatsappLink("081234567890")).toBe("https://wa.me/6281234567890");
     expect(whatsappLink("+6281234567890")).toBe("https://wa.me/6281234567890");
     expect(whatsappLink("")).toBeNull();
-    expect(profileSchema.shape.keterangan_kehadiran.safeParse("hybrid").success).toBe(false);
   });
 
   it("hanya menerima ?next= internal", () => {

@@ -223,6 +223,8 @@ export function ProfileFields({
 }) {
   const [arrival, setArrival] = useState(initial.rencanaKedatangan);
   const preview = formatArrival(wibLocalToIso(arrival));
+  // Ukuran baju hanya untuk peserta yang hadir offline (baju dibagikan di lokasi acara).
+  const [mode, setMode] = useState(initial.keteranganKehadiran);
 
   return (
     <>
@@ -283,28 +285,6 @@ export function ProfileFields({
           )}
         </div>
 
-        <fieldset className="mt-5 space-y-2" disabled={isPending}>
-          <legend className={cn(labelClass, "mb-2")}>
-            Ukuran Baju
-            {missing.has("ukuran_baju") && <RequiredMark />}
-          </legend>
-          {missing.has("ukuran_baju") && <RequiredHint id="ukuran_baju" />}
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
-            {UKURAN_BAJU.map((size) => (
-              <label key={size} className={cn(optionCard, "h-12 justify-center text-sm font-semibold text-ink has-[:checked]:text-primary")}>
-                <input
-                  type="radio"
-                  name="ukuran_baju"
-                  value={size}
-                  required
-                  defaultChecked={initial.ukuranBaju === size}
-                  className="sr-only"
-                />
-                {size}
-              </label>
-            ))}
-          </div>
-        </fieldset>
       </Section>
 
       <Section step={firstStep + 1} title="Kontak & Kedatangan" description="Dipakai panitia untuk koordinasi selama acara.">
@@ -362,6 +342,7 @@ export function ProfileFields({
                     value={mode}
                     required
                     defaultChecked={initial.keteranganKehadiran === mode}
+                    onChange={(e) => setMode(e.target.value)}
                     className="sr-only"
                   />
                   <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary transition-colors group-has-[:checked]/mode:bg-primary group-has-[:checked]/mode:text-primary-foreground">
@@ -380,6 +361,31 @@ export function ProfileFields({
             })}
           </div>
         </fieldset>
+
+        {mode === "offline" && (
+        <fieldset className="mt-5 space-y-2" disabled={isPending}>
+          <legend className={cn(labelClass, "mb-2")}>
+            Ukuran Baju
+            {missing.has("ukuran_baju") && <RequiredMark />}
+          </legend>
+          {missing.has("ukuran_baju") && <RequiredHint id="ukuran_baju" />}
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+            {UKURAN_BAJU.map((size) => (
+              <label key={size} className={cn(optionCard, "h-12 justify-center text-sm font-semibold text-ink has-[:checked]:text-primary")}>
+                <input
+                  type="radio"
+                  name="ukuran_baju"
+                  value={size}
+                  required
+                  defaultChecked={initial.ukuranBaju === size}
+                  className="sr-only"
+                />
+                {size}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+        )}
       </Section>
     </>
   );
