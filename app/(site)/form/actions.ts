@@ -27,16 +27,20 @@ const FIELDS = [
 
 const idSchema = z.uuid();
 
+/** Role yang boleh mengisi data lewat formulir publik (/form: peserta, /form-data-direksi: direktur). */
+export type FormRole = "peserta" | "direktur";
+const roleSchema = z.enum(["peserta", "direktur"]);
+
 /** Profil yang sudah lengkap dikunci dari /form; perubahan lewat halaman Profil setelah login. */
 const ALREADY_FILLED = "Data peserta ini sudah diisi lengkap. Untuk mengubahnya, masuk lalu buka halaman Profil.";
 
 /** Satu profil peserta (role peserta) beserta kolom kelengkapannya. */
-async function readParticipant(id: string) {
+async function readParticipant(id: string, role: FormRole) {
   return createAdminClient()
     .from("profiles")
     .select(`email, ${PROFILE_COMPLETE_COLUMNS}`)
     .eq("id", id)
-    .eq("role", "peserta")
+    .eq("role", role)
     .maybeSingle();
 }
 
@@ -50,13 +54,15 @@ export type LoadParticipantResult =
   | { success: false; error: string };
 
 /** Data profil satu peserta untuk mengisi formulir. */
-export async function loadParticipant(id: string): Promise<LoadParticipantResult> {
+export async function loadParticipant(id: string, role: FormRole): Promise<LoadParticipantResult> {
   if (!checkRateLimit(`form-load:${await clientIp()}`, LOAD_LIMIT, WINDOW_MS)) {
     return { success: false, error: "Terlalu banyak permintaan. Tunggu sebentar lalu coba lagi." };
   }
-  if (!idSchema.safeParse(id).success) return { success: false, error: "Peserta tidak ditemukan." };
+  if (!idSchema.safeParse(id).success || !roleSchema.safeParse(role).success) {
+    return { success: false, error: "Peserta tidak ditemukan." };
+  }
 
-  const { data, error } = await readParticipant(id);
+  const { data, error } = await readParticipant(id, role);
   if (error) return { success: false, error: "Gagal memuat data peserta. Coba lagi." };
   if (!data) return { success: false, error: "Peserta tidak ditemukan." };
   if (isProfileComplete(data)) return { success: false, error: ALREADY_FILLED };
@@ -93,6 +99,9 @@ export async function submitParticipantForm(
 
   const id = formData.get("id")?.toString() ?? "";
   if (!idSchema.safeParse(id).success) return { success: false, error: "Pilih nama peserta terlebih dahulu." };
+  const roleParsed = roleSchema.safeParse(formData.get("role")?.toString());
+  if (!roleParsed.success) return { success: false, error: "Formulir tidak valid." };
+  const role = roleParsed.data;
 
   const raw = Object.fromEntries(FIELDS.map((f) => [f, formData.get(f)?.toString() ?? ""]));
   const parsed = participantFormSchema.safeParse(raw);
@@ -102,7 +111,7 @@ export async function submitParticipantForm(
 
   try {
     // Tolak juga di server: daftar di browser bisa saja sudah usang atau dilewati.
-    const current = await readParticipant(id);
+    const current = await readParticipant(id, role);
     if (current.error) return { success: false, error: "Gagal memeriksa data peserta. Coba lagi." };
     if (!current.data) return { success: false, error: "Peserta tidak ditemukan." };
     if (isProfileComplete(current.data)) return { success: false, error: ALREADY_FILLED };
@@ -111,7 +120,7 @@ export async function submitParticipantForm(
       .from("profiles")
       .update(parsed.data)
       .eq("id", id)
-      .eq("role", "peserta")
+      .eq("role", role)
       .select("email")
       .maybeSingle();
     if (error) {

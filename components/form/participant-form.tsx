@@ -7,6 +7,7 @@ import { cn } from "cn";
 import {
   loadParticipant,
   submitParticipantForm,
+  type FormRole,
   type SubmitParticipantResult,
 } from "@/app/(site)/form/actions";
 import { ProfileFields, SubmitBar, useMissingFields, type ProfileInitial } from "@/components/profile/profile-form";
@@ -229,12 +230,39 @@ function SuccessDialog({ email, password }: { email: string; password: string })
   );
 }
 
+/** Dialog sukses /form-data-direksi: tanpa info akun, cukup konfirmasi kesiapan. */
+function ReadyDialog() {
+  return (
+    <Dialog open onOpenChange={() => {}} disablePointerDismissal>
+      <DialogContent showCloseButton={false} className="gap-5 p-6 sm:max-w-md">
+        <DialogHeader className="items-center text-center">
+          <span className="flex size-14 items-center justify-center rounded-full bg-secondary text-primary">
+            <CheckCircle2 className="size-8" aria-hidden="true" />
+          </span>
+          <DialogTitle className="font-heading text-lg font-bold text-primary">Berhasil</DialogTitle>
+          <DialogDescription>Anda sudah siap mengikuti Rakernas BMH 2027.</DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="-mx-6 -mb-6 px-6">
+          <Link
+            href="/"
+            className={cn(buttonVariants(), "h-11 w-full rounded-xl bg-primary font-semibold text-white hover:bg-brand-green-deep")}
+          >
+            Kembali ke Beranda
+          </Link>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export function ParticipantForm({
   participants,
   loginPassword,
+  role,
 }: {
   participants: ParticipantOption[];
   loginPassword: string;
+  role: FormRole;
 }) {
   const [selected, setSelected] = useState<ParticipantOption | null>(null);
   const [initial, setInitial] = useState<ProfileInitial | null>(null);
@@ -251,7 +279,7 @@ export function ParticipantForm({
     setInitial(null);
     setLoadError(null);
     startLoading(async () => {
-      const res = await loadParticipant(p.id);
+      const res = await loadParticipant(p.id, role);
       if (res.success) setInitial(res.initial);
       else setLoadError(res.error);
     });
@@ -310,6 +338,7 @@ export function ParticipantForm({
       {selected && initial && !isLoading && (
         <form action={formAction} key={selected.id} {...formProps}>
           <input type="hidden" name="id" value={selected.id} />
+          <input type="hidden" name="role" value={role} />
           <ProfileFields
             initial={initial}
             isPending={isPending}
@@ -329,7 +358,12 @@ export function ParticipantForm({
         </form>
       )}
 
-      {state?.success && state.email && <SuccessDialog email={state.email} password={loginPassword} />}
+      {state?.success &&
+        (role === "direktur" ? (
+          <ReadyDialog />
+        ) : (
+          state.email && <SuccessDialog email={state.email} password={loginPassword} />
+        ))}
     </div>
   );
 }

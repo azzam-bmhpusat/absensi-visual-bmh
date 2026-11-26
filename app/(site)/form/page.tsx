@@ -28,7 +28,7 @@ async function FormContent() {
     complete: isProfileComplete(p),
   }));
 
-  return <ParticipantForm participants={participants} loginPassword={getParticipantPassword()} />;
+  return <ParticipantForm participants={participants} loginPassword={getParticipantPassword()} role="peserta" />;
 }
 
 export default function FormPage() {

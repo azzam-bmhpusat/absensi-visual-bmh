@@ -54,6 +54,7 @@ const VALID = {
 
 function form(values: Record<string, string>) {
   const fd = new FormData();
+  fd.set("role", "peserta");
   for (const [k, v] of Object.entries(values)) fd.set(k, v);
   return fd;
 }
@@ -108,7 +109,7 @@ describe("submitParticipantForm", () => {
       keterangan_kehadiran: "offline",
     };
     expect((await submitParticipantForm(null, form(VALID))).error).toMatch(/sudah diisi lengkap/);
-    expect((await loadParticipant(ID)).success).toBe(false);
+    expect((await loadParticipant(ID, "peserta")).success).toBe(false);
     expect(mocks.update).not.toHaveBeenCalled();
   });
 

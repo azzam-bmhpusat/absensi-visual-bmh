@@ -69,7 +69,7 @@ function ActiveNavPill() {
 }
 
 /** Halaman yang tidak menampilkan navbar: /form dibuka peserta lewat link broadcast. */
-const HIDDEN_ON = new Set(["/form"]);
+const HIDDEN_ON = new Set(["/form", "/form-data-direksi"]);
 
 /**
  * Navbar situs publik.
