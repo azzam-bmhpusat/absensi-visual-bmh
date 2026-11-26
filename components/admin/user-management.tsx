@@ -105,13 +105,6 @@ function buildUserExportUrl(mode: "all" | "filter", filter: UserFilter): string 
 const menuItemClassName =
   "flex min-h-11 cursor-pointer items-center gap-2 rounded-lg px-3 text-sm font-medium text-ink focus:bg-secondary focus:text-primary";
 
-const ROLE_STYLE: Record<UserRole, string> = {
-  admin: "bg-secondary text-brand-green-deep border-brand-green/30",
-  direktur: "bg-primary/10 text-primary border-primary/30",
-  peserta: "bg-gold-100 text-brand-gold-text border-brand-gold/40",
-  user: "bg-white text-ink-muted border-line",
-};
-
 const PROFILE_STATUS_STYLE: Record<ProfileStatus, string> = {
   complete: "border-brand-green/30 bg-secondary text-brand-green-deep",
   progress: "border-brand-gold/40 bg-gold-100 text-brand-gold-text",
@@ -329,20 +322,15 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
             <TableRow className="bg-surface hover:bg-surface">
               <TableHead className="w-12 text-xs font-semibold text-primary">No.</TableHead>
               <TableHead className="text-xs font-semibold text-primary">Nama</TableHead>
-              <TableHead className="text-xs font-semibold text-primary">Email</TableHead>
-              <TableHead className="text-xs font-semibold text-primary">Jabatan</TableHead>
               <TableHead className="text-xs font-semibold text-primary">Perwakilan daerah</TableHead>
               <TableHead className="text-xs font-semibold text-primary">Status profil</TableHead>
-              <TableHead className="text-xs font-semibold text-primary">Peran</TableHead>
-              <TableHead className="text-xs font-semibold text-primary">Status</TableHead>
-              <TableHead className="text-xs font-semibold text-primary">Terakhir masuk</TableHead>
               <TableHead className="text-right text-xs font-semibold text-primary">Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {visible.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={10} className="py-10 text-center text-sm text-ink-muted">
+                <TableCell colSpan={5} className="py-10 text-center text-sm text-ink-muted">
                   Tidak ada pengguna yang cocok.
                 </TableCell>
               </TableRow>
@@ -357,18 +345,12 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
                       <span className="flex items-center gap-2.5">
                         <UserAvatar src={avatarPublicUrl(u.profile.avatar_url)} name={u.profile.nama ?? u.email} />
                         {u.profile.nama ?? (u.profile.nama_google ? `${u.profile.nama_google} (Google)` : "—")}
+                        {isSelf && (
+                          <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold text-primary">
+                            Anda
+                          </span>
+                        )}
                       </span>
-                    </TableCell>
-                    <TableCell className="min-w-56 text-sm font-medium text-ink">
-                      <span className="break-all">{u.email}</span>
-                      {isSelf && (
-                        <span className="ml-2 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold text-primary">
-                          Anda
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell className={cn("min-w-32 text-xs", u.profile.jabatan ? "text-ink" : "text-ink-muted")}>
-                      {u.profile.jabatan ?? "—"}
                     </TableCell>
                     <TableCell className={cn("min-w-32 text-xs", u.profile.perwakilan_daerah ? "text-ink" : "text-ink-muted")}>
                       {u.profile.perwakilan_daerah ?? "—"}
@@ -376,22 +358,6 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
                     <TableCell>
                       <ProfileStatusBadge profile={u.profile} />
                     </TableCell>
-                    <TableCell>
-                      <span className={cn("inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-semibold", ROLE_STYLE[u.role])}>
-                        {ROLE_LABEL[u.role]}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <span
-                        className={cn(
-                          "inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-semibold",
-                          u.banned ? "border-red-200 bg-red-50 text-danger" : "border-brand-green/30 bg-secondary text-brand-green-deep"
-                        )}
-                      >
-                        {u.banned ? "Nonaktif" : "Aktif"}
-                      </span>
-                    </TableCell>
-                    <TableCell className="whitespace-nowrap text-xs text-ink-muted">{formatUserDate(u.lastSignInAt)}</TableCell>
                     <TableCell>
                       <div className="flex items-center justify-end">
                         <DropdownMenu>
