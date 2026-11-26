@@ -384,3 +384,9 @@ export const FOOTER_DATA: FooterInfo = {
     phone: "089517795206",
   },
 };
+
+export const HADROH_TEAM = {
+  title: "Tim Hadroh",
+  name: "Shoutul Hidayah",
+  description: "TIM Hadroh santri SMP-MA Hidayatullah Depok",
+};

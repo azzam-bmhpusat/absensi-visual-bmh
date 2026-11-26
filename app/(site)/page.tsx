@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { EVENT_INFO, SITE_METADATA, INVITED_GUESTS_CONTENT } from "@/content/rakernas";
+import { EVENT_INFO, SITE_METADATA, INVITED_GUESTS_CONTENT, HADROH_TEAM } from "@/content/rakernas";
 import { HeroSection } from "@/components/rakernas/hero";
 import { CountdownSection } from "@/components/rakernas/countdown";
 import { RundownSection } from "@/components/rakernas/rundown-tabs";
@@ -52,6 +52,25 @@ export default async function HomePage() {
           aria-label="Rundown Acara"
         >
           <Reveal><RundownSection startsAt={settings.startsAt} /></Reveal>
+        </section>
+
+        {/* S3b — Tim Hadroh */}
+        <section
+          id="hadroh"
+          className="bg-surface scroll-mt-20 py-12 md:py-16"
+          aria-label={HADROH_TEAM.title}
+        >
+          <Reveal>
+            <div className="mx-auto max-w-xl px-4 text-center">
+              <h2 className="text-2xl md:text-4xl font-heading font-semibold text-primary">
+                {HADROH_TEAM.title}
+              </h2>
+              <div className="mt-6 rounded-2xl border border-line bg-white p-6 shadow-sm">
+                <p className="font-heading text-xl md:text-2xl font-bold text-primary">{HADROH_TEAM.name}</p>
+                <p className="mt-2 text-sm md:text-base text-ink-muted">{HADROH_TEAM.description}</p>
+              </div>
+            </div>
+          </Reveal>
         </section>
 
         {/* S4 — Dress Code */}
