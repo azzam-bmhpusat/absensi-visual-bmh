@@ -63,10 +63,16 @@ export type UserStatusFilter = "all" | UserRole | "inactive";
 export const ALL_JABATAN = "all";
 export const NO_JABATAN = "__none__";
 
+/** Filter keterangan kehadiran: semua, offline, online, atau belum diisi. */
+export const KEHADIRAN_FILTERS = ["all", "offline", "online", "none"] as const;
+export type KehadiranFilter = (typeof KEHADIRAN_FILTERS)[number];
+
 export interface UserFilter {
   status: UserStatusFilter;
   jabatan: string;
   q: string;
+  /** Default "all". */
+  kehadiran?: KehadiranFilter;
 }
 
 /** Field profil yang ikut dicari oleh kotak pencarian. */
@@ -103,12 +109,13 @@ function matchesSearch(u: SearchableUser, needle: string): boolean {
 /** Filter yang sama dipakai tabel (client) dan ekspor Excel (server). */
 export function filterUsers<T extends SearchableUser>(
   users: T[],
-  { status, jabatan, q }: UserFilter
+  { status, jabatan, q, kehadiran = "all" }: UserFilter
 ): T[] {
   const needle = q.trim().toLowerCase();
   return users.filter((u) => {
     if (status === "inactive" ? !u.banned : status !== "all" && u.role !== status) return false;
     if (jabatan === NO_JABATAN ? u.profile.jabatan : jabatan !== ALL_JABATAN && u.profile.jabatan !== jabatan) return false;
+    if (kehadiran !== "all" && (u.profile.keterangan_kehadiran ?? "none") !== kehadiran) return false;
     return !needle || matchesSearch(u, needle);
   });
 }

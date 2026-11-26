@@ -64,6 +64,7 @@ import {
   ALL_JABATAN,
   filterUsers,
   formatUserDate,
+  type KehadiranFilter,
   type UserFilter,
   type UserProfile,
   type UserRow,
@@ -97,6 +98,7 @@ function buildUserExportUrl(mode: "all" | "filter", filter: UserFilter): string 
   if (mode === "filter") {
     params.set("status", filter.status);
     params.set("jabatan", filter.jabatan);
+    params.set("kehadiran", filter.kehadiran ?? "all");
     if (filter.q.trim()) params.set("q", filter.q.trim());
   }
   return `${EXPORT_ENDPOINT}?${params.toString()}`;
@@ -139,6 +141,7 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
+  const [kehadiran, setKehadiran] = useState<KehadiranFilter>("all");
   const [creating, setCreating] = useState(false);
   const [importing, setImporting] = useState(false);
   const [editing, setEditing] = useState<UserRow | null>(null);
@@ -160,9 +163,18 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
   );
 
   const visible = useMemo(
-    () => filterUsers(users, { status: filter, jabatan: ALL_JABATAN, q: search }),
-    [users, filter, search]
+    () => filterUsers(users, { status: filter, jabatan: ALL_JABATAN, q: search, kehadiran }),
+    [users, filter, search, kehadiran]
   );
+
+  const kehadiranCounts = useMemo(() => {
+    const c: Record<KehadiranFilter, number> = { all: users.length, offline: 0, online: 0, none: 0 };
+    for (const u of users) {
+      const m = u.profile.keterangan_kehadiran;
+      c[m === "offline" || m === "online" ? m : "none"]++;
+    }
+    return c;
+  }, [users]);
 
   const [exporting, setExporting] = useState<"all" | "filter" | null>(null);
   const runExport = async (mode: "all" | "filter") => {
@@ -170,7 +182,7 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
     setExporting(mode);
     try {
       await downloadFromEndpoint(
-        buildUserExportUrl(mode, { status: filter, jabatan: ALL_JABATAN, q: search }),
+        buildUserExportUrl(mode, { status: filter, jabatan: ALL_JABATAN, q: search, kehadiran }),
         "manajemen-user-bmh.xlsx"
       );
       toast.success(`Excel ${mode === "all" ? "semua user" : "sesuai filter"} berhasil diunduh.`);
@@ -218,6 +230,13 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
     { value: "peserta", label: "Peserta" },
     { value: "user", label: "User" },
     { value: "inactive", label: "Nonaktif" },
+  ];
+
+  const kehadiranFilters: { value: KehadiranFilter; label: string }[] = [
+    { value: "all", label: "Semua kehadiran" },
+    { value: "offline", label: "Offline" },
+    { value: "online", label: "Online" },
+    { value: "none", label: "Belum diisi" },
   ];
 
   return (
@@ -316,6 +335,32 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
               {f.label}
               <span className={cn("tabular-nums", active ? "text-primary-foreground/80" : "text-ink-muted")}>
                 {counts[f.value]}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="flex flex-wrap gap-2" role="tablist" aria-label="Filter keterangan kehadiran">
+        {kehadiranFilters.map((f) => {
+          const active = kehadiran === f.value;
+          return (
+            <button
+              key={f.value}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => setKehadiran(f.value)}
+              className={cn(
+                "inline-flex min-h-9 items-center gap-1.5 rounded-full border px-3.5 text-xs font-semibold transition-colors",
+                active
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-line bg-white text-ink-muted hover:border-ring"
+              )}
+            >
+              {f.label}
+              <span className={cn("tabular-nums", active ? "text-primary-foreground/80" : "text-ink-muted")}>
+                {kehadiranCounts[f.value]}
               </span>
             </button>
           );

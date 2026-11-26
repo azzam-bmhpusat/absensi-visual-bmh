@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { checkAdmin } from "@/lib/auth/admin";
 import { loadUsers } from "@/lib/user-list";
-import { ALL_JABATAN, filterUsers } from "@/lib/user-row";
+import { ALL_JABATAN, KEHADIRAN_FILTERS, filterUsers } from "@/lib/user-row";
 import { USER_ROLES } from "@/lib/user-schema";
 import { buildUserExportFilename, buildUserWorkbook, type UserExportScope } from "@/lib/user-xlsx";
 
@@ -15,6 +15,7 @@ const querySchema = z.discriminatedUnion("mode", [
     mode: z.literal("filter"),
     status: z.enum(["all", "inactive", ...USER_ROLES]).default("all"),
     jabatan: z.string().trim().max(200).default(ALL_JABATAN),
+    kehadiran: z.enum(KEHADIRAN_FILTERS).default("all"),
     q: z.string().trim().max(200).default(""),
   }),
 ]);
@@ -40,7 +41,7 @@ export async function GET(request: NextRequest) {
     const scope: UserExportScope =
       query.mode === "all"
         ? { kind: "all" }
-        : { kind: "filter", filter: { status: query.status, jabatan: query.jabatan || ALL_JABATAN, q: query.q } };
+        : { kind: "filter", filter: { status: query.status, jabatan: query.jabatan || ALL_JABATAN, q: query.q, kehadiran: query.kehadiran } };
     const rows = scope.kind === "all" ? users : filterUsers(users, scope.filter);
     const buffer = await buildUserWorkbook(scope, rows);
 

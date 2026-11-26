@@ -86,14 +86,38 @@ describe("GET /api/admin/manajemen-user/export", () => {
     const res = await GET(req("mode=all"));
     expect(res.status).toBe(200);
     expect(res.headers.get("Content-Disposition")).toMatch(/manajemen-user-bmh-semua-\d{4}-\d{2}-\d{2}\.xlsx/);
-    expect(await readSheet(res)).toEqual(["andi@bmh.or.id", "budi@bmh.or.id", "cici@bmh.or.id"]);
+    expect(await readSheet(res)).toEqual(["ANDI", "BUDI", "CICI"]);
   });
 
   it("mode=filter hanya mengekspor user yang lolos filter", async () => {
     const res = await GET(req("mode=filter&status=peserta&jabatan=Ketua&q=cici"));
     expect(res.status).toBe(200);
     expect(res.headers.get("Content-Disposition")).toContain("sesuai-filter");
-    expect(await readSheet(res)).toEqual(["cici@bmh.or.id"]);
+    expect(await readSheet(res)).toEqual(["CICI"]);
+  });
+
+  it("sheet User hanya berisi No., Nama, Perwakilan daerah, Keterangan kehadiran, Ukuran baju", async () => {
+    mocks.loadUsers.mockResolvedValue([
+      user("andi", { profile: { ...EMPTY_PROFILE, nama: "Andi", perwakilan_daerah: "Jabar", keterangan_kehadiran: "offline", ukuran_baju: "XL" } }),
+      user("budi", { profile: { ...EMPTY_PROFILE, nama: "Budi", keterangan_kehadiran: "online" } }),
+    ]);
+    const wb = new ExcelJS.Workbook();
+    await wb.xlsx.load(await (await GET(req("mode=all"))).arrayBuffer());
+    const ws = wb.getWorksheet("User")!;
+    expect(ws.getRow(1).values).toEqual([undefined, "No.", "Nama", "Perwakilan daerah", "Keterangan kehadiran", "Ukuran baju"]);
+    expect(ws.getRow(2).values).toEqual([undefined, 1, "Andi", "Jabar", "Offline", "XL"]);
+    expect(ws.getRow(3).values).toEqual([undefined, 2, "Budi", "-", "Online", "-"]);
+  });
+
+  it("mode=filter menerapkan filter keterangan kehadiran", async () => {
+    mocks.loadUsers.mockResolvedValue([
+      user("andi", { profile: { ...EMPTY_PROFILE, nama: "ANDI", keterangan_kehadiran: "offline" } }),
+      user("budi", { profile: { ...EMPTY_PROFILE, nama: "BUDI", keterangan_kehadiran: "online" } }),
+      user("cici"),
+    ]);
+    expect(await readSheet(await GET(req("mode=filter&kehadiran=online")))).toEqual(["BUDI"]);
+    expect(await readSheet(await GET(req("mode=filter&kehadiran=none")))).toEqual(["CICI"]);
+    expect((await GET(req("mode=filter&kehadiran=hybrid"))).status).toBe(400);
   });
 
   it("500 bila daftar user gagal dimuat", async () => {
