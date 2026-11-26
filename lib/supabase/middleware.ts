@@ -75,7 +75,7 @@ function hasSessionCookie(request: NextRequest) {
 }
 
 /** Rute admin yang wajib login sebagai admin. */
-const ADMIN_PATHS = ["/dashboard", "/rekap-kehadiran", "/kelola-sesi-acara", "/pengaturan", "/manajemen-user", "/admin"];
+const ADMIN_PATHS = ["/dashboard", "/rekap-kehadiran", "/scan-absen", "/kelola-sesi-acara", "/pengaturan", "/manajemen-user", "/admin"];
 
 /** Aturan akses per rute. `response` membawa cookie sesi yang baru disegarkan. */
 function guard(

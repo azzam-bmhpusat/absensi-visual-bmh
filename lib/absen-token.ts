@@ -109,3 +109,19 @@ export function cookieBaseOptions() {
     path: "/",
   };
 }
+
+// ---------- QR pribadi per user (di-scan admin) ----------
+
+const USER_QR_PREFIX = "bmh";
+
+/** QR pribadi permanen: diturunkan dari id profil, jadi setiap user langsung punya tanpa disimpan. */
+export function createUserQrToken(profileId: string): string {
+  return `${USER_QR_PREFIX}:${profileId}.${sign("user-qr", profileId)}`;
+}
+
+export function verifyUserQrToken(raw: string | null | undefined): string | null {
+  if (!raw) return null;
+  const match = /^bmh:([0-9a-f-]{36})\.([A-Za-z0-9_-]+)$/i.exec(raw.trim());
+  if (!match || !UUID_RE.test(match[1])) return null;
+  return safeEqual(match[2], sign("user-qr", match[1])) ? match[1] : null;
+}

@@ -11,6 +11,8 @@ import { ProfileForm } from "@/components/profile/profile-form";
 import { formatArrival, isoToWibLocal, isProfileComplete, profileStatus } from "@/lib/profile-contact";
 import { MODE_KEHADIRAN_LABEL } from "@/lib/participant-options";
 import { AvatarUpload } from "@/components/profile/avatar-upload";
+import { MyQrCard } from "@/components/profile/my-qr-card";
+import { createUserQrToken } from "@/lib/absen-token";
 import { avatarPublicUrl } from "@/lib/avatar";
 import { toUserRole } from "@/lib/user-schema";
 import { FOOTER_DATA } from "@/content/rakernas";
@@ -122,6 +124,8 @@ async function ProfileContent() {
           )}
         </div>
       </section>
+
+      <MyQrCard token={createUserQrToken(user.id)} name={displayName} />
 
       {isApplicant ? (
         <ApplyParticipantCard />

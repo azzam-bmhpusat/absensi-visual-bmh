@@ -339,25 +339,27 @@ const MORE_GROUPS = NAV_MENU.filter(
 type Navigate = (event: React.MouseEvent, href: string, delay?: number) => void;
 
 const tabBase =
-  "group/tab relative flex min-h-16 min-w-0 flex-1 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl px-0.5 text-[11px] leading-none font-medium max-[359px]:text-[10px] max-[359px]:tracking-tight text-ink-muted transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "group/tab relative isolate flex min-h-12 min-w-0 flex-1 cursor-pointer flex-col items-center justify-center gap-1 rounded-[14px] px-2 py-1.5 text-[11px] leading-none font-medium max-[359px]:px-1 max-[359px]:text-[10px] max-[359px]:tracking-tight text-[#4F7A72] transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
-/** Ikon tab dengan pil penanda yang bergeser ke tab aktif. */
-function TabIcon({
+/** Isi tab: pil gradien hijau (bergeser antar tab) di belakang ikon + label saat aktif. */
+function TabContent({
   icon,
+  label,
   active,
   reduceMotion,
 }: {
   icon: LucideIcon;
+  label: string;
   active: boolean;
   reduceMotion: boolean;
 }) {
   return (
-    <span className="relative flex h-8 w-12 items-center justify-center sm:w-14">
+    <>
       {active && (
         <motion.span
           layoutId="mobile-tab-pill"
           aria-hidden="true"
-          className="absolute inset-0 rounded-full bg-secondary"
+          className="absolute inset-0 -z-10 rounded-[14px] bg-linear-to-b from-[#0B6355] to-[#04362F] shadow-[0_6px_16px_#09504640,inset_0_1px_0_#FFFFFF33]"
           transition={
             reduceMotion
               ? { duration: 0 }
@@ -368,18 +370,13 @@ function TabIcon({
       {createElement(icon, {
         "aria-hidden": true,
         className: cn(
-          "relative size-[22px] transition-transform group-active/tab:scale-90",
-          active && "text-primary",
+          "size-5 transition-transform group-active/tab:scale-90",
+          active && "text-white",
         ),
         strokeWidth: active ? 2.25 : 1.9,
       })}
-      {active && (
-        <span
-          aria-hidden="true"
-          className="absolute top-0.5 right-1.5 size-1.5 rounded-full bg-brand-gold ring-2 ring-background"
-        />
-      )}
-    </span>
+      <span className={cn("max-w-full truncate", active && "text-white")}>{label}</span>
+    </>
   );
 }
 
@@ -396,7 +393,11 @@ const sheetItemVariants: Variants = {
   },
 };
 
-/** Tab bar bawah untuk HP/tablet: menempel di HP, kapsul melayang mulai sm. */
+/** Garis tepi gradien (putih ke hijau transparan) untuk permukaan kaca. */
+const glassEdge =
+  "pointer-events-none absolute inset-0 border border-transparent [mask:linear-gradient(#000_0_0)_padding-box_exclude,linear-gradient(#000_0_0)_border-box]";
+
+/** Tab bar bawah HP/tablet: kapsul kaca melayang. */
 function MobileTabBar({
   isActive,
   isGroupActive,
@@ -421,51 +422,51 @@ function MobileTabBar({
     <nav
       data-bottom-nav
       aria-label="Navigasi seluler"
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-40 sm:bottom-4 sm:px-4 lg:hidden"
+      className="pointer-events-none fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 px-3 sm:bottom-4 lg:hidden"
     >
       <Sheet open={moreOpen} onOpenChange={onMoreOpenChange}>
-        <ul className="pointer-events-auto mx-auto flex items-stretch gap-0.5 rounded-t-2xl border-t border-line bg-background/95 px-1.5 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-10px_30px_-18px_rgb(9_80_70/0.45)] backdrop-blur-md sm:max-w-md sm:rounded-full sm:border sm:px-2 sm:pb-1 sm:shadow-xl sm:shadow-brand-green-deep/15">
+        <ul className="pointer-events-auto relative mx-auto flex max-w-[340px] items-center justify-around gap-0.5 rounded-[28px] bg-white/80 bg-linear-to-b from-white/50 via-white/0 via-60% to-white/0 p-2 shadow-[0_8px_24px_#04362F14,inset_0_1px_0_#FFFFFFE6] backdrop-blur-[24px] backdrop-saturate-150 sm:max-w-sm">
+          <span
+            aria-hidden="true"
+            className={cn(glassEdge, "rounded-[28px] [background:linear-gradient(to_bottom,#FFFFFF,#09504626)_border-box]")}
+          />
           {TAB_ITEMS.map((item) => {
             const active = isActive(item.href);
             return (
-              <li key={item.href} className="flex min-w-0 flex-1">
+              <li key={item.href} className="flex min-w-0">
                 <Link
                   href={resolveHref(item.href)}
                   aria-label={item.label}
                   aria-current={active ? "page" : undefined}
                   onClick={(event) => onNavigate(event, item.href)}
-                  className={cn(
-                    tabBase,
-                    active && "font-semibold text-primary",
-                  )}
+                  className={cn(tabBase, active && "font-semibold")}
                 >
-                  <TabIcon
+                  <TabContent
                     icon={iconFor(item.href)}
+                    label={TAB_LABELS[item.href] ?? item.label}
                     active={active}
                     reduceMotion={reduceMotion}
                   />
-                  <span className="max-w-full truncate">
-                    {TAB_LABELS[item.href] ?? item.label}
-                  </span>
                 </Link>
               </li>
             );
           })}
           {MORE_GROUPS.length > 0 && (
-            <li className="flex min-w-0 flex-1">
+            <li className="flex min-w-0">
               <SheetTrigger
                 aria-label={`Lainnya: ${MORE_GROUPS.map((g) => g.label).join(", ")}`}
                 className={cn(
                   tabBase,
-                  (moreActive || moreOpen) && "font-semibold text-primary",
+                  (moreActive || moreOpen) && "font-semibold",
+                  moreOpen && !moreActive && "text-primary",
                 )}
               >
-                <TabIcon
+                <TabContent
                   icon={LayoutGrid}
+                  label="Lainnya"
                   active={moreActive}
                   reduceMotion={reduceMotion}
                 />
-                <span className="max-w-full truncate">Lainnya</span>
               </SheetTrigger>
             </li>
           )}
@@ -474,14 +475,17 @@ function MobileTabBar({
         <SheetContent
           side="bottom"
           showCloseButton={false}
-          className="max-h-[85dvh] gap-0 overflow-hidden rounded-t-3xl border-line p-0 sm:mx-auto sm:max-w-md"
+          className="max-h-[85dvh] gap-0 overflow-hidden rounded-t-[28px] border-0 bg-white/72 bg-linear-to-b from-white/60 via-white/0 via-35% to-white/0 p-0 shadow-[0_-8px_40px_#04363029,inset_0_1px_0_#FFFFFFF2] backdrop-blur-[32px] backdrop-saturate-150 sm:mx-auto sm:max-w-md"
         >
           <span
             aria-hidden="true"
-            className="mx-auto mt-2.5 h-1.5 w-10 shrink-0 rounded-full bg-line"
+            className={cn(glassEdge, "rounded-t-[28px] [background:linear-gradient(to_bottom,#FFFFFF,#FFFFFF33)_border-box]")}
           />
-          <SheetHeader className="flex-row items-center justify-between gap-3 px-5 pt-3 pb-2">
-            <SheetTitle className="font-heading text-lg font-bold text-primary">
+          <div className="flex justify-center pt-2.5 pb-1">
+            <span aria-hidden="true" className="h-[5px] w-10 shrink-0 rounded-[3px] bg-[#04362F33]" />
+          </div>
+          <SheetHeader className="flex-row items-center justify-between gap-3 px-6 pt-4 pb-2">
+            <SheetTitle className="font-heading text-[22px] font-bold text-primary">
               Menu Lainnya
             </SheetTitle>
             <SheetClose
@@ -489,19 +493,19 @@ function MobileTabBar({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="-mr-2 size-11 shrink-0 rounded-full text-ink hover:bg-secondary hover:text-primary"
+                  className="size-11 shrink-0 rounded-full border border-white bg-white/60 text-primary hover:bg-white hover:text-primary"
                   aria-label="Tutup menu lainnya"
                 />
               }
             >
-              <X className="size-5" />
+              <X className="size-[22px]" />
             </SheetClose>
           </SheetHeader>
 
-          <div className="flex-1 overflow-y-auto px-3 pb-3" data-lenis-prevent>
+          <div className="flex-1 overflow-y-auto px-4 pt-2 pb-4" data-lenis-prevent>
             {MORE_GROUPS.map((group) => (
               <section key={group.label} aria-label={group.label}>
-                <p className="px-2.5 pt-1 pb-2 text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+                <p className="px-2 pt-1 pb-2 text-xs font-bold tracking-[2px] text-[#4F7A72] uppercase">
                   {group.label}
                 </p>
                 <motion.ul
@@ -525,15 +529,14 @@ function MobileTabBar({
                             onNavigate(event, child.href, SHEET_CLOSE_MS);
                           }}
                           className={cn(
-                            "group/row flex min-h-14 items-center gap-3 rounded-2xl px-2.5 py-2 text-[15px] font-medium text-ink transition-colors hover:bg-secondary/70 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                            active && "bg-secondary font-semibold text-primary",
+                            "group/row flex items-center gap-4 rounded-2xl border border-white/90 bg-white/55 px-2 py-2.5 text-[17px] font-medium text-[#073B33] shadow-[0_2px_8px_#04362F0D] transition-colors hover:bg-white/85 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                            active && "bg-white/90 font-semibold text-primary ring-1 ring-primary/25",
                           )}
                         >
                           <span
                             className={cn(
-                              "flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary transition-colors group-hover/row:bg-background",
-                              active &&
-                                "bg-primary text-primary-foreground group-hover/row:bg-primary",
+                              "flex size-12 shrink-0 items-center justify-center rounded-full bg-[#EEF8F3E6] text-primary",
+                              active && "bg-primary text-primary-foreground",
                             )}
                           >
                             {createElement(iconFor(child.href), {
@@ -546,7 +549,7 @@ function MobileTabBar({
                           </span>
                           <ChevronRight
                             aria-hidden="true"
-                            className="size-4 shrink-0 text-muted-foreground/60 transition-transform group-hover/row:translate-x-0.5"
+                            className="size-[18px] shrink-0 text-[#4F7A72] transition-transform group-hover/row:translate-x-0.5"
                           />
                         </Link>
                       </motion.li>
@@ -558,7 +561,7 @@ function MobileTabBar({
           </div>
 
           {sheetFooter ? (
-            <div className="border-t border-line p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+            <div className="border-t border-[#04362F1A] px-4 pt-4 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
               {sheetFooter}
             </div>
           ) : null}

@@ -71,6 +71,7 @@ export function AppSidebar({
           label: "Rekap Kehadiran", href: "/rekap-kehadiran", icon: ClipboardList,
           badge: attendancesCount !== undefined ? `${attendancesCount}` : undefined,
         },
+        { label: "Scan QR Absensi", href: "/scan-absen", icon: ScanLine },
         {
           label: "Kelola Sesi Acara", href: "/kelola-sesi-acara", icon: CalendarClock,
           badge: activeSessionsCount !== undefined ? `${activeSessionsCount} Aktif` : undefined,
