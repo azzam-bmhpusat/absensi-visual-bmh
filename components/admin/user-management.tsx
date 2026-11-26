@@ -105,6 +105,12 @@ function buildUserExportUrl(mode: "all" | "filter", filter: UserFilter): string 
 const menuItemClassName =
   "flex min-h-11 cursor-pointer items-center gap-2 rounded-lg px-3 text-sm font-medium text-ink focus:bg-secondary focus:text-primary";
 
+/** Badge keterangan kehadiran di tabel: offline biru, online merah terang. */
+const MODE_BADGE: Record<(typeof MODE_KEHADIRAN)[number], { label: string; className: string }> = {
+  offline: { label: "Offline", className: "border-blue-200 bg-blue-50 text-blue-700" },
+  online: { label: "Online", className: "border-red-200 bg-red-50 text-red-500" },
+};
+
 const PROFILE_STATUS_STYLE: Record<ProfileStatus, string> = {
   complete: "border-brand-green/30 bg-secondary text-brand-green-deep",
   progress: "border-brand-gold/40 bg-gold-100 text-brand-gold-text",
@@ -323,6 +329,7 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
               <TableHead className="w-12 text-xs font-semibold text-primary">No.</TableHead>
               <TableHead className="text-xs font-semibold text-primary">Nama</TableHead>
               <TableHead className="text-xs font-semibold text-primary">Perwakilan daerah</TableHead>
+              <TableHead className="text-xs font-semibold text-primary">Keterangan kehadiran</TableHead>
               <TableHead className="text-xs font-semibold text-primary">Status profil</TableHead>
               <TableHead className="text-right text-xs font-semibold text-primary">Aksi</TableHead>
             </TableRow>
@@ -330,7 +337,7 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
           <TableBody>
             {visible.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="py-10 text-center text-sm text-ink-muted">
+                <TableCell colSpan={6} className="py-10 text-center text-sm text-ink-muted">
                   Tidak ada pengguna yang cocok.
                 </TableCell>
               </TableRow>
@@ -354,6 +361,20 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
                     </TableCell>
                     <TableCell className={cn("min-w-32 text-xs", u.profile.perwakilan_daerah ? "text-ink" : "text-ink-muted")}>
                       {u.profile.perwakilan_daerah ?? "—"}
+                    </TableCell>
+                    <TableCell>
+                      {u.profile.keterangan_kehadiran === "offline" || u.profile.keterangan_kehadiran === "online" ? (
+                        <span
+                          className={cn(
+                            "inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-semibold",
+                            MODE_BADGE[u.profile.keterangan_kehadiran].className
+                          )}
+                        >
+                          {MODE_BADGE[u.profile.keterangan_kehadiran].label}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-ink-muted">—</span>
+                      )}
                     </TableCell>
                     <TableCell>
                       <ProfileStatusBadge profile={u.profile} />
