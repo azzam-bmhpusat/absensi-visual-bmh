@@ -42,22 +42,19 @@ export function FloatingCapsuleNav({
     const apply = () => {
       const W = el.clientWidth;
       const mobile = W < 760;
-      const gutter = W >= 768 ? 32 : W >= 640 ? 20 : 16;
-      const cap = Math.min(W, 1280) - gutter * 2;
-      const s = ((W - cap) / 2) * x;
-      const pad = mobile ? 16 : 32;
-      const capPad = mobile ? 10 : 14;
+      const desktop = W >= 1024;
       const p = Math.min(Math.max(x, 0), 1);
+      // Inset kapsul dari tepi layar: state atas (x=0) → state scroll (x=1), sesuai desain .pen.
+      const s0 = mobile ? 12 : desktop ? Math.max(16, (W - 1232) / 2) : 16;
+      const s1 = mobile ? 16 : desktop ? Math.max(24, (W - 1200) / 2) : 24;
+      const s = s0 + (s1 - s0) * x;
+      const pad = mobile ? 16 : 32;
+      const innerL = mobile ? 16 - 2 * p : 20;
+      const innerR = mobile ? 8 : 10 - 2 * p;
       el.style.setProperty("--fcn-s", `${s.toFixed(2)}px`);
-      el.style.setProperty(
-        "--fcn-t",
-        `${(8 * Math.min(Math.max(x, 0), 1.2)).toFixed(2)}px`,
-      );
-      el.style.setProperty("--fcn-r", `${(28 * p).toFixed(2)}px`);
-      el.style.setProperty(
-        "--fcn-dx",
-        `${(s + (capPad - pad) * x).toFixed(2)}px`,
-      );
+      el.style.setProperty("--fcn-t", `${mobile ? 8 : 6}px`);
+      el.style.setProperty("--fcn-dx", `${(s + innerL - pad).toFixed(2)}px`);
+      el.style.setProperty("--fcn-dxr", `${(s + innerR - pad).toFixed(2)}px`);
       el.style.setProperty("--fcn-p", p.toFixed(3));
     };
     const step = (now: number) => {
@@ -130,31 +127,33 @@ export function FloatingCapsuleNav({
 
 const css = `
 .fd-fcn {
-  --fcn-s: 0px; --fcn-t: 0px; --fcn-r: 0px; --fcn-dx: 0px; --fcn-p: 0;
+  --fcn-s: 12px; --fcn-t: 8px; --fcn-dx: 0px; --fcn-dxr: 0px; --fcn-p: 0;
   position: sticky; top: 0; z-index: 50;
   display: block; height: 72px; box-sizing: content-box;
   padding-top: env(safe-area-inset-top);
 }
-@media (min-width: 1024px) { .fd-fcn { height: 72px; } }
 .fd-fcn-shape {
   position: absolute; inset: env(safe-area-inset-top) 0 0 0; z-index: 0; pointer-events: none;
-  filter: drop-shadow(0 calc(var(--fcn-p) * 12px) calc(var(--fcn-p) * 22px) color-mix(in srgb, var(--brand-green-deep) calc(var(--fcn-p) * 22%), transparent));
+  filter: drop-shadow(0 calc(var(--fcn-p) * 4px) calc(32px - var(--fcn-p) * 8px) color-mix(in srgb, #04362F calc(12% - var(--fcn-p) * 4%), transparent));
 }
 .fd-fcn-edge, .fd-fcn-fill { position: absolute; inset: 0; display: block; }
 .fd-fcn-edge {
-  background: var(--line);
-  clip-path: inset(var(--fcn-t) var(--fcn-s) var(--fcn-t) var(--fcn-s) round var(--fcn-r));
+  background: linear-gradient(to bottom, #FFFFFF, color-mix(in srgb, color-mix(in srgb, #095046 15%, transparent) calc(var(--fcn-p) * 100%), color-mix(in srgb, #FFFFFF 25%, transparent)));
+  clip-path: inset(var(--fcn-t) var(--fcn-s) var(--fcn-t) var(--fcn-s) round 999px);
 }
 .fd-fcn-fill {
-  background: color-mix(in srgb, var(--background) 94%, transparent);
-  backdrop-filter: blur(12px);
-  clip-path: inset(calc(var(--fcn-t) + var(--fcn-p) * 1px) calc(var(--fcn-s) + var(--fcn-p) * 1px) calc(var(--fcn-t) + 1px) calc(var(--fcn-s) + var(--fcn-p) * 1px) round max(0px, calc(var(--fcn-r) - 1px)));
+  background:
+    linear-gradient(to bottom, color-mix(in srgb, #FFFFFF calc(40% + var(--fcn-p) * 10%), transparent), transparent 60%),
+    color-mix(in srgb, #FFFFFF 80%, transparent);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  backdrop-filter: blur(24px) saturate(1.5);
+  clip-path: inset(calc(var(--fcn-t) + 1px) calc(var(--fcn-s) + 1px) calc(var(--fcn-t) + 1px) calc(var(--fcn-s) + 1px) round 999px);
 }
 .fd-fcn-row { position: relative; z-index: 1; height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 16px; }
 @media (min-width: 760px) { .fd-fcn-row { padding: 0 32px; } }
 .fd-fcn-l, .fd-fcn-r { position: relative; display: flex; align-items: center; flex-shrink: 0; }
 .fd-fcn-l { transform: translateX(var(--fcn-dx)); }
-.fd-fcn-r { transform: translateX(calc(var(--fcn-dx) * -1 + var(--fcn-p) * 2px)); }
+.fd-fcn-r { transform: translateX(calc(var(--fcn-dxr) * -1)); }
 .fd-fcn-c { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: none; }
 @media (min-width: 1024px) { .fd-fcn-c { display: flex; } }
 `;

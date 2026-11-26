@@ -17,6 +17,7 @@ import {
   Link2,
   Presentation,
   Shirt,
+  UserRound,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -51,7 +52,7 @@ const SHEET_CLOSE_MS = 250;
 const HASH_PATTERN = /^#[\w-]+$/;
 
 const linkBase =
-  "relative z-[1] inline-flex h-10 items-center whitespace-nowrap isolate rounded-full px-3.5 text-sm font-medium text-ink transition-colors duration-200 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "relative z-[1] inline-flex h-10 items-center gap-2 whitespace-nowrap isolate rounded-full px-3.5 text-sm font-medium text-[#073B33] xl:h-11 xl:px-4 xl:text-[15px] transition-colors duration-200 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 const linkActive =
   "font-semibold text-primary-foreground hover:text-primary-foreground";
 
@@ -62,10 +63,15 @@ function ActiveNavPill() {
     <motion.span
       layoutId="desktop-nav-active"
       aria-hidden="true"
-      className="absolute inset-0 -z-10 rounded-full bg-primary"
+      className="absolute inset-0 -z-10 rounded-full bg-linear-to-b from-[#0B6355] to-[#04362F] shadow-[0_4px_14px_#09504633,inset_0_1px_0_#FFFFFF33]"
       transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 420, damping: 36 }}
     />
   );
+}
+
+/** Titik emas penanda item aktif navbar desktop. */
+function ActiveDot() {
+  return <span aria-hidden="true" className="-ml-0.5 size-1.5 shrink-0 rounded-full bg-brand-gold" />;
 }
 
 /** Halaman yang tidak menampilkan navbar: /form dibuka peserta lewat link broadcast. */
@@ -194,22 +200,14 @@ export function SiteHeader({
             aria-label={EVENT_INFO.name}
             onClick={(event) => handleLinkClick(event, "/")}
           >
-            {/* HP: logo ikon saja; ≥640px: logo lengkap */}
-            <Image
-              src="/logo-rakernas-mark.png"
-              alt={EVENT_INFO.logoAlt}
-              width={240}
-              height={256}
-              priority
-              className="h-10 w-auto object-contain sm:hidden"
-            />
+            {/* Logo lengkap; di HP mengecil saat navbar menjadi kapsul (scroll) */}
             <Image
               src={EVENT_INFO.logoSrc}
               alt={EVENT_INFO.logoAlt}
               width={600}
               height={223}
               priority
-              className="hidden h-9 w-auto object-contain sm:block lg:h-10"
+              className="h-[34px] w-auto object-contain transition-[height] duration-200 in-data-compact:h-[30px] sm:h-9 sm:in-data-compact:h-9 lg:h-10 lg:in-data-compact:h-10"
             />
           </Link>
         }
@@ -248,6 +246,7 @@ export function SiteHeader({
                 onClick={(event) => handleLinkClick(event, entry.href)}
               >
                 {isActive(entry.href) && <ActiveNavPill />}
+                {isActive(entry.href) && <ActiveDot />}
                 {entry.label}
               </Link>
             ),
@@ -318,20 +317,21 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "#rundown": CalendarClock,
   "#dresscode": Shirt,
   "/informasi-kamar-hotel": BedDouble,
+  "/profile": UserRound,
   "/publikasi/foto-galeri-kegiatan": Images,
   "/publikasi/materi-presentasi-rakernas": Presentation,
   "/publikasi/notula-rapat": FileText,
 };
 const iconFor = (href: string) => NAV_ICONS[href] ?? Link2;
 
-/** Label pendek untuk tab bar HP (label lengkap tetap dipakai sebagai aria-label). */
-const TAB_LABELS: Record<string, string> = {
-  "/informasi-kamar-hotel": "Hotel",
-  "#rundown": "Rundown",
-};
-
-/** Tab langsung = menu tanpa submenu; grup (Publikasi) dibuka lewat tab "Lainnya". */
-const TAB_ITEMS = NAV_MENU.filter((entry): entry is NavItem => !entry.children);
+/** Tab bar HP (ikon saja): dua tab kiri, tombol "Lainnya" di tengah, dua tab kanan. */
+const NAV_ITEMS = NAV_MENU.filter((entry): entry is NavItem => !entry.children);
+const tabItem = (href: string, label?: string): NavItem => ({
+  href,
+  label: label ?? NAV_ITEMS.find((item) => item.href === href)?.label ?? href,
+});
+const TABS_LEFT = [tabItem("/"), tabItem("#rundown")];
+const TABS_RIGHT = [tabItem("/informasi-kamar-hotel"), tabItem("/profile", "Profil Saya")];
 const MORE_GROUPS = NAV_MENU.filter(
   (entry): entry is NavMenuGroup => !!entry.children,
 );
@@ -339,17 +339,15 @@ const MORE_GROUPS = NAV_MENU.filter(
 type Navigate = (event: React.MouseEvent, href: string, delay?: number) => void;
 
 const tabBase =
-  "group/tab relative isolate flex min-h-12 min-w-0 flex-1 cursor-pointer flex-col items-center justify-center gap-1 rounded-[14px] px-2 py-1.5 text-[11px] leading-none font-medium max-[359px]:px-1 max-[359px]:text-[10px] max-[359px]:tracking-tight text-[#4F7A72] transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "group/tab relative isolate flex size-11 cursor-pointer items-center justify-center rounded-[14px] text-[#4F7A72] transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
-/** Isi tab: pil gradien hijau (bergeser antar tab) di belakang ikon + label saat aktif. */
-function TabContent({
+/** Ikon tab dengan pil gradien hijau (bergeser antar tab) saat aktif. */
+function TabIcon({
   icon,
-  label,
   active,
   reduceMotion,
 }: {
   icon: LucideIcon;
-  label: string;
   active: boolean;
   reduceMotion: boolean;
 }) {
@@ -370,12 +368,11 @@ function TabContent({
       {createElement(icon, {
         "aria-hidden": true,
         className: cn(
-          "size-5 transition-transform group-active/tab:scale-90",
+          "size-[22px] transition-transform group-active/tab:scale-90",
           active && "text-white",
         ),
         strokeWidth: active ? 2.25 : 1.9,
       })}
-      <span className={cn("max-w-full truncate", active && "text-white")}>{label}</span>
     </>
   );
 }
@@ -417,59 +414,47 @@ function MobileTabBar({
 }) {
   const reduceMotion = useReducedMotion() ?? false;
   const moreActive = MORE_GROUPS.some(isGroupActive);
+  const renderTab = (item: NavItem) => {
+    const active = isActive(item.href);
+    return (
+      <li key={item.href} className="flex">
+        <Link
+          href={resolveHref(item.href)}
+          aria-label={item.label}
+          aria-current={active ? "page" : undefined}
+          onClick={(event) => onNavigate(event, item.href)}
+          className={tabBase}
+        >
+          <TabIcon icon={iconFor(item.href)} active={active} reduceMotion={reduceMotion} />
+        </Link>
+      </li>
+    );
+  };
 
   return (
     <nav
       data-bottom-nav
       aria-label="Navigasi seluler"
-      className="pointer-events-none fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 px-3 sm:bottom-4 lg:hidden"
+      className="pointer-events-none fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 px-4 sm:bottom-4 min-[760px]:px-6 lg:hidden"
     >
       <Sheet open={moreOpen} onOpenChange={onMoreOpenChange}>
-        <ul className="pointer-events-auto relative mx-auto flex max-w-[340px] items-center justify-around gap-0.5 rounded-[28px] bg-white/80 bg-linear-to-b from-white/50 via-white/0 via-60% to-white/0 p-2 shadow-[0_8px_24px_#04362F14,inset_0_1px_0_#FFFFFFE6] backdrop-blur-[24px] backdrop-saturate-150 sm:max-w-sm">
+        <ul className="pointer-events-auto relative mx-auto flex h-[60px] items-center justify-between rounded-[28px] bg-white/80 bg-linear-to-b from-white/50 via-white/0 via-60% to-white/0 p-2 shadow-[0_8px_24px_#04362F14,inset_0_1px_0_#FFFFFFE6] backdrop-blur-[24px] backdrop-saturate-150 px-3.5">
           <span
             aria-hidden="true"
             className={cn(glassEdge, "rounded-[28px] [background:linear-gradient(to_bottom,#FFFFFF,#09504626)_border-box]")}
           />
-          {TAB_ITEMS.map((item) => {
-            const active = isActive(item.href);
-            return (
-              <li key={item.href} className="flex min-w-0">
-                <Link
-                  href={resolveHref(item.href)}
-                  aria-label={item.label}
-                  aria-current={active ? "page" : undefined}
-                  onClick={(event) => onNavigate(event, item.href)}
-                  className={cn(tabBase, active && "font-semibold")}
-                >
-                  <TabContent
-                    icon={iconFor(item.href)}
-                    label={TAB_LABELS[item.href] ?? item.label}
-                    active={active}
-                    reduceMotion={reduceMotion}
-                  />
-                </Link>
-              </li>
-            );
-          })}
-          {MORE_GROUPS.length > 0 && (
-            <li className="flex min-w-0">
-              <SheetTrigger
-                aria-label={`Lainnya: ${MORE_GROUPS.map((g) => g.label).join(", ")}`}
-                className={cn(
-                  tabBase,
-                  (moreActive || moreOpen) && "font-semibold",
-                  moreOpen && !moreActive && "text-primary",
-                )}
-              >
-                <TabContent
-                  icon={LayoutGrid}
-                  label="Lainnya"
-                  active={moreActive}
-                  reduceMotion={reduceMotion}
-                />
-              </SheetTrigger>
-            </li>
-          )}
+          {TABS_LEFT.map(renderTab)}
+          <li className="relative flex h-11 w-16 justify-center">
+            <SheetTrigger
+              aria-label={`Lainnya: ${MORE_GROUPS.map((g) => g.label).join(", ")}`}
+              className={cn(
+                "absolute -top-[26px] flex size-16 cursor-pointer items-center justify-center rounded-full border border-white/90 bg-linear-to-b from-[#0B6355] to-[#04362F] bg-clip-padding text-white shadow-[0_0_0_5px_#FFFFFF99,0_0_0_6px_#09504614,0_10px_24px_#09504659,inset_0_1px_0_#FFFFFF40] transition-transform hover:brightness-110 active:scale-95 focus-visible:outline-none focus-visible:ring-ring",
+              )}
+            >
+              <LayoutGrid aria-hidden="true" className="size-[26px]" strokeWidth={2} />
+            </SheetTrigger>
+          </li>
+          {TABS_RIGHT.map(renderTab)}
         </ul>
 
         <SheetContent
@@ -601,6 +586,7 @@ function DesktopGroup({
         }
       >
         {active && <ActiveNavPill />}
+        {active && <ActiveDot />}
         {group.label}
         <ChevronDown
           aria-hidden="true"

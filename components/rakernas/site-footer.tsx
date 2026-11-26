@@ -10,7 +10,7 @@ const FOOTER_LINKS: NavItem[] = NAV_MENU.flatMap((entry) => (entry.children ? en
   (item) => ({ ...item, href: item.href.startsWith("#") ? `/${item.href}` : item.href }),
 );
 
-const headingLabel = "text-[11px] font-semibold tracking-[0.16em] text-brand-gold-soft uppercase";
+const headingLabel = "text-xs font-bold tracking-[2.2px] text-brand-gold uppercase";
 const focusRing =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2 focus-visible:ring-offset-brand-green-night";
 
@@ -38,7 +38,7 @@ export function SiteFooter({
   return (
     <footer
       id="footer"
-      className={cn("relative isolate overflow-hidden bg-brand-green-night text-white", className)}
+      className={cn("relative isolate overflow-hidden bg-[#04362F] bg-[radial-gradient(ellipse_25%_45%_at_0%_100%,#FEB7381F_0%,#FEB73800_100%),radial-gradient(ellipse_35%_60%_at_92%_0%,#39BA8726_0%,#39BA8700_100%)] text-white", className)}
     >
       {/* Dekorasi: garis emas di tepi atas + glow lembut */}
       <span
@@ -62,30 +62,30 @@ export function SiteFooter({
               <Link
                 href="/"
                 aria-label={`${EVENT_INFO.name} — kembali ke beranda`}
-                className={cn("relative inline-flex h-12 w-30 rounded-md transition-opacity hover:opacity-90", focusRing)}
+                className={cn("relative inline-flex h-[54px] w-36 rounded-md transition-opacity hover:opacity-90", focusRing)}
               >
                 {footerLogo}
               </Link>
             ) : (
-              <span className="relative inline-flex h-12 w-30">{footerLogo}</span>
+              <span className="relative inline-flex h-[54px] w-36">{footerLogo}</span>
             )}
-            <p className="mt-5 font-heading text-xl font-semibold tracking-tight text-balance md:text-2xl">
+            <p className="mt-[18px] font-heading text-xl font-bold text-balance md:text-2xl">
               {EVENT_INFO.title}
             </p>
-            <p className="mt-2 max-w-md text-sm leading-relaxed text-pretty text-white/70">{EVENT_THEME}</p>
+            <p className="mt-2 max-w-[400px] text-sm/[22px] text-pretty text-white/70 md:text-[15px]/6">{EVENT_THEME}</p>
           </div>
 
           {/* Navigasi */}
           {showNav && (
             <nav aria-label="Navigasi footer" className="lg:col-span-3">
               <p className={headingLabel}>Navigasi</p>
-              <ul className="mt-3 grid grid-cols-2 gap-x-4 md:grid-cols-1">
+              <ul className="mt-3.5 grid grid-cols-2 gap-x-4 md:grid-cols-1">
                 {FOOTER_LINKS.map((item) => (
                   <li key={item.href}>
                     <Link
                       href={item.href}
                       className={cn(
-                        "group inline-flex min-h-11 items-center rounded-md text-sm text-white/80 transition-colors hover:text-white md:min-h-9",
+                        "group inline-flex min-h-11 items-center rounded-md text-sm text-white/85 transition-colors hover:text-white md:min-h-9 md:text-[15px]",
                         focusRing,
                       )}
                     >
@@ -104,20 +104,20 @@ export function SiteFooter({
           {/* Informasi acara */}
           <div className={showNav ? "lg:col-span-4" : "md:col-span-2 lg:col-span-7"}>
             <p className={headingLabel}>Informasi Acara</p>
-            <ul className="mt-4 flex flex-col gap-4 text-sm">
+            <ul className="mt-4 flex flex-col gap-4 text-[15px] md:text-base">
               <li className="flex gap-3">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-white/10 text-brand-gold-soft">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/8 text-brand-gold">
                   <CalendarDays aria-hidden="true" className="size-[18px]" />
                 </span>
-                <span className="self-center font-medium">{formatEventDateRange(settings.startsAt)}</span>
+                <span className="self-center font-semibold">{formatEventDateRange(settings.startsAt)}</span>
               </li>
               <li className="flex gap-3">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-white/10 text-brand-gold-soft">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/8 text-brand-gold">
                   <MapPin aria-hidden="true" className="size-[18px]" />
                 </span>
                 <span className="min-w-0">
-                  <span className="block font-medium">{settings.venueName}</span>
-                  <span className="mt-0.5 block text-xs leading-relaxed text-white/60">{settings.venueAddress}</span>
+                  <span className="block pt-0.5 font-semibold">{settings.venueName}</span>
+                  <span className="mt-1 block text-[13px]/[21px] text-white/60">{settings.venueAddress}</span>
                 </span>
               </li>
             </ul>
@@ -128,7 +128,7 @@ export function SiteFooter({
                 rel="noopener noreferrer"
                 aria-label={`Lihat lokasi ${settings.venueName} di Google Maps (tab baru)`}
                 className={cn(
-                  "inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-brand-gold px-4 text-sm font-semibold text-brand-green-night transition-colors hover:bg-brand-gold-soft",
+                  "inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full bg-brand-gold px-4 text-[15px] font-semibold text-[#04362F] transition-colors hover:bg-brand-gold-soft",
                   focusRing,
                 )}
               >
@@ -141,7 +141,7 @@ export function SiteFooter({
                 rel="noopener noreferrer"
                 aria-label={`Hubungi ${FOOTER_DATA.committee.label} (tab baru)`}
                 className={cn(
-                  "inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-white/25 px-4 text-sm font-semibold text-white transition-colors hover:border-white/50 hover:bg-white/10",
+                  "inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full border border-white/25 px-4 text-[15px] font-semibold text-white transition-colors hover:border-white/50 hover:bg-white/10",
                   focusRing,
                 )}
               >
@@ -153,12 +153,12 @@ export function SiteFooter({
         </div>
 
         {/* Bar bawah */}
-        <div className="mt-12 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-white/60 md:flex-row md:items-center md:justify-between md:pr-20">
+        <div className="mt-12 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-white/60 md:flex-row md:items-center md:justify-between md:pr-20 md:text-[13px]">
           <p>
             © {yearOf(settings.startsAt)} {EVENT_INFO.name}. Seluruh hak cipta dilindungi. ·{" "}
             <Link
               href="/kebijakan-privasi"
-              className={cn("rounded font-medium text-white/80 underline-offset-4 hover:text-white hover:underline", focusRing)}
+              className={cn("rounded font-semibold text-white/85 underline-offset-4 hover:text-white hover:underline", focusRing)}
             >
               Kebijakan Privasi
             </Link>
@@ -169,7 +169,7 @@ export function SiteFooter({
               href={settings.footerUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className={cn("rounded font-medium text-brand-gold-soft underline-offset-4 hover:text-white hover:underline", focusRing)}
+              className={cn("rounded font-semibold text-brand-gold-soft underline-offset-4 hover:text-white hover:underline", focusRing)}
             >
               {FOOTER_DATA.committee.label}
             </a>

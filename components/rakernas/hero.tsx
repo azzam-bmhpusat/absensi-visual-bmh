@@ -12,7 +12,7 @@ export function HeroSection({ settings = DEFAULT_EVENT_SETTINGS }: { settings?: 
     <section className={styles.hero} aria-labelledby="hero-title">
       <RevealStagger immediate stagger={0.07} className={styles.wrap}>
         <RevealItem>
-          <p className={styles.eyebrow}>{EVENT_INFO.name}</p>
+          <p className={styles.eyebrow}>{EVENT_INFO.name} {titleParts?.year}</p>
         </RevealItem>
 
         <RevealItem>
@@ -70,7 +70,9 @@ export function HeroSection({ settings = DEFAULT_EVENT_SETTINGS }: { settings?: 
             aria-label={`Lihat lokasi ${settings.venueName} di Google Maps (tab baru)`}
           >
             Lihat lokasi acara
-            <ArrowUpRight aria-hidden="true" />
+            <span className={styles.buttonIcon} aria-hidden="true">
+              <ArrowUpRight />
+            </span>
           </a>
           <a
             className={`${styles.button} ${styles.buttonOutline}`}
@@ -78,7 +80,9 @@ export function HeroSection({ settings = DEFAULT_EVENT_SETTINGS }: { settings?: 
             aria-label="Scroll ke informasi acara"
           >
             Informasi Acara
-            <ChevronDown aria-hidden="true" />
+            <span className={styles.buttonIcon} aria-hidden="true">
+              <ChevronDown />
+            </span>
           </a>
         </div>
         </RevealItem>

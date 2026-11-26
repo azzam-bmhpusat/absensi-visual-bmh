@@ -3,10 +3,13 @@
   isolation: isolate;
   display: flex;
   align-items: center;
-  min-height: calc(100svh - 4rem);
+  /* Hero mulai dari tepi atas layar (di belakang navbar sticky 72px); isi tetap di tengah viewport. */
+  --hero-nav: calc(72px + env(safe-area-inset-top));
+  min-height: 100svh;
+  margin-top: calc(var(--hero-nav) * -1);
   overflow: hidden;
-  padding: 64px 0;
-  background: linear-gradient(180deg, var(--background), var(--secondary));
+  padding: var(--hero-nav) 0;
+  background: linear-gradient(180deg, #ffffff 0%, #eef8f3 100%);
   color: var(--primary);
   font-family: var(--font-sans), Arial, sans-serif;
   text-align: center;
@@ -27,52 +30,57 @@
 .hero::before {
   top: -260px;
   left: -240px;
-  border: 70px solid var(--green-100);
+  border: 70px solid #d9f0e4;
 }
 
 .hero::after {
   right: -230px;
   bottom: -340px;
-  border: 60px solid var(--gold-100);
+  border: 60px solid #ffeed4;
 }
 
 .wrap {
   width: 100%;
-  max-width: 1280px;
-  margin: auto;
+  max-width: 945px;
+  margin: 0 auto;
   padding-inline: 16px;
 }
 
 .eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  margin: 0 0 28px;
-  padding: 8px 16px;
-  border: 1px solid var(--border);
+  gap: 8px;
+  margin: 0 0 24px;
+  padding: 7px 14px 7px 10px;
+  border: 1px solid #ffffff;
   border-radius: 999px;
-  background: var(--background);
-  font-size: 11px;
+  background: linear-gradient(180deg, #ffffff80 0%, #ffffff00 60%), #ffffffcc;
+  box-shadow: 0 4px 14px #04362f0f, inset 0 1px 0 #ffffffe6;
+  backdrop-filter: blur(10px);
+  color: #095046;
+  font-size: 12px;
   font-weight: 600;
-  line-height: 1.6;
-  letter-spacing: 0.16em;
+  line-height: 1.4;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .eyebrow::before {
   content: "";
   flex-shrink: 0;
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: var(--brand-green-deep);
+  background: #feb738;
+  box-shadow: 0 0 0 4px #feb73840;
 }
 
 .title {
   max-width: 1100px;
   margin: 0 auto;
   font-family: var(--font-heading), Arial, sans-serif;
-  font-size: clamp(44px, 5.6vw, 78px);
+  color: #095046;
+  font-size: clamp(36px, 4.6vw, 54px);
   font-weight: 600;
   line-height: 1.14;
   letter-spacing: -0.055em;
@@ -89,22 +97,12 @@
   white-space: nowrap;
 }
 
-.year::after {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  right: 0;
-  bottom: 0.08em;
-  left: 0;
-  height: 0.2em;
-  background: var(--brand-gold-soft);
-}
 
 .theme {
   max-width: 700px;
   margin: 28px auto 0;
-  color: var(--muted-foreground);
-  font-size: clamp(16px, 1.55vw, 20px);
+  color: #427167;
+  font-size: 16px;
   line-height: 1.8;
 }
 
@@ -114,8 +112,8 @@
   max-width: 800px;
   margin: 40px auto 0;
   padding: 24px 0;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+  border-top: 1px solid #dce5e3;
+  border-bottom: 1px solid #dce5e3;
   text-align: left;
 }
 
@@ -129,7 +127,7 @@
 }
 
 .detail + .detail {
-  border-left: 1px solid var(--border);
+  border-left: 1px solid #dce5e3;
 }
 
 .icon {
@@ -139,7 +137,8 @@
   width: 44px;
   height: 44px;
   border-radius: 14px;
-  background: var(--green-100);
+  background: #d9f0e4;
+  color: #095046;
 }
 
 .icon svg {
@@ -150,7 +149,7 @@
 
 .label {
   margin: 0 0 3px;
-  color: var(--muted-foreground);
+  color: #427167;
   font-size: 11px;
   font-weight: 500;
   line-height: 1.6;
@@ -160,6 +159,7 @@
 
 .value {
   margin: 0;
+  color: #095046;
   font-size: 16px;
   font-weight: 600;
   line-height: 1.5;
@@ -176,46 +176,67 @@
 .button {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 12px;
+  justify-content: space-between;
+  gap: 14px;
   min-height: 52px;
-  padding: 14px 24px;
-  border: 2px solid transparent;
-  border-radius: 14px;
+  padding: 8px 8px 8px 24px;
+  border: 1px solid transparent;
+  border-radius: 999px;
   font-size: 16px;
   font-weight: 600;
-  line-height: 1.6;
+  line-height: 26px;
   text-decoration: none;
-  transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease;
+  transition: filter 200ms ease, transform 200ms ease;
+}
+
+.button:hover {
+  filter: brightness(1.06);
+}
+
+.button:active {
+  transform: scale(0.98);
+}
+
+.buttonIcon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
 }
 
 .buttonPrimary {
-  background: var(--primary);
-  color: var(--primary-foreground);
+  border-color: #ffffff2e;
+  background: linear-gradient(180deg, #0b6355 0%, #04362f 100%);
+  box-shadow: 0 10px 24px #09504640, inset 0 1px 0 #ffffff33;
+  color: #ffffff;
 }
 
-.buttonPrimary:hover {
-  background: var(--brand-green-night);
+.buttonPrimary .buttonIcon {
+  background: #feb738;
+  color: #04362f;
 }
 
 .buttonOutline {
-  background: transparent;
-  border-color: var(--primary);
-  color: var(--primary);
+  border-color: #ffffff;
+  background: linear-gradient(180deg, #ffffff80 0%, #ffffff00 60%), #ffffffcc;
+  box-shadow: 0 8px 24px #04362f14, inset 0 1px 0 #ffffffe6;
+  backdrop-filter: blur(10px);
+  color: #095046;
 }
 
-.buttonOutline:hover {
-  background: var(--primary);
-  color: var(--primary-foreground);
+.buttonOutline .buttonIcon {
+  background: #eef8f3;
+  color: #095046;
 }
 
 .button:focus-visible {
   outline: 3px solid var(--primary);
-  outline-offset: 5px;
+  outline-offset: 4px;
 }
 
 .button svg {
-  flex-shrink: 0;
   width: 18px;
   height: 18px;
 }
@@ -234,7 +255,7 @@
 
 @media (max-width: 800px) {
   .hero {
-    padding: 56px 0;
+    padding: var(--hero-nav) 0;
   }
 
   .detail {
@@ -245,21 +266,21 @@
 
 @media (max-width: 600px) {
   .hero {
-    padding: 44px 0;
-  }
-
-  .eyebrow {
-    font-size: 10px;
-    letter-spacing: 0.12em;
+    padding: var(--hero-nav) 0;
   }
 
   .title {
-    font-size: clamp(34px, 9vw, 50px);
+    font-size: clamp(30px, 9vw, 36px);
+    letter-spacing: -0.05em;
   }
 
   .theme {
     margin-top: 24px;
     font-size: 16px;
+  }
+
+  .wrap {
+    padding-inline: 16px;
   }
 
   .details {
@@ -275,7 +296,7 @@
   }
 
   .detail + .detail {
-    border-top: 1px solid var(--border);
+    border-top: 1px solid #dce5e3;
     border-left: 0;
   }
 
@@ -292,5 +313,13 @@
 @media (prefers-reduced-motion: reduce) {
   .button {
     transition: none;
+  }
+}
+
+/* Desktop: hero mulai dari tepi atas layar (di belakang navbar kapsul), tanpa celah. */
+@media (min-width: 1024px) {
+  .hero {
+    margin-top: calc(-72px - env(safe-area-inset-top));
+    min-height: 100svh;
   }
 }

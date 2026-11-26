@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { EVENT_INFO, SITE_METADATA, INVITED_GUESTS_CONTENT, HADROH_TEAM } from "@/content/rakernas";
 import { HeroSection } from "@/components/rakernas/hero";
 import { CountdownSection } from "@/components/rakernas/countdown";
@@ -32,14 +33,14 @@ export default async function HomePage() {
   return (
     <>
       {/* S0 — Header (Sticky) ada di app/(site)/layout.tsx */}
-      <main className="flex-1 w-full overflow-x-hidden">
+      <main className="flex-1 w-full overflow-x-clip">
         {/* S1 — Hero minimalis dengan tema terang */}
         <HeroSection settings={settings} />
 
         {/* S2 — Hitung Mundur dengan tema gelap */}
         <section
           id="countdown"
-          className="display-theme display-bg text-foreground scroll-mt-20 border-t border-line/10 py-12 md:py-16"
+          className="bg-[#F4F8F7] scroll-mt-20 py-11 lg:py-[88px]"
           aria-label="Hitung Mundur Acara"
         >
           <Reveal><CountdownSection target={settings.startsAt} endsAt={settings.endsAt} /></Reveal>
@@ -48,7 +49,7 @@ export default async function HomePage() {
         {/* S3 — Rundown Acara */}
         <section
           id="rundown"
-          className="bg-background scroll-mt-20 py-12 md:py-16"
+          className="bg-white scroll-mt-20 py-14 lg:py-[104px]"
           aria-label="Rundown Acara"
         >
           <Reveal><RundownSection startsAt={settings.startsAt} /></Reveal>
@@ -57,17 +58,27 @@ export default async function HomePage() {
         {/* S3b — Tim Hadroh */}
         <section
           id="hadroh"
-          className="bg-surface scroll-mt-20 py-12 md:py-16"
+          className="bg-[#F4F8F7] scroll-mt-20 py-14 lg:py-[88px]"
           aria-label={HADROH_TEAM.title}
         >
           <Reveal>
-            <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-5 md:px-8 text-center">
-              <h2 className="text-2xl md:text-4xl font-heading font-semibold text-primary">
-                {HADROH_TEAM.title}
-              </h2>
-              <div className="mt-6 rounded-2xl border border-line bg-white p-6 shadow-sm">
-                <p className="font-heading text-xl md:text-2xl font-bold text-primary">{HADROH_TEAM.name}</p>
-                <p className="mt-2 text-sm md:text-base text-ink-muted">{HADROH_TEAM.description}</p>
+            <div className="mx-auto flex w-full max-w-[1080px] flex-col gap-5 px-5 md:flex-row md:items-center md:gap-10 md:px-8 lg:gap-14">
+              <div className="relative h-[220px] w-full shrink-0 overflow-hidden rounded-[20px] md:h-[260px] md:w-[46%] lg:h-[300px] lg:w-[440px] lg:rounded-3xl">
+                <Image
+                  src="/galeri-fasilitas-hotel/ruang-acara.jpg"
+                  alt="Ruang acara Rakernas BMH"
+                  fill
+                  sizes="(min-width: 1024px) 440px, (min-width: 768px) 46vw, 100vw"
+                  className="object-cover"
+                />
+              </div>
+              <div className="flex flex-1 flex-col gap-2 lg:gap-3.5">
+                <p className="text-[11px] font-semibold tracking-[2px] text-[#1E7F62] uppercase lg:text-xs lg:tracking-[2.4px]">
+                  Pengisi Acara
+                </p>
+                <h2 className="font-heading text-[28px] font-bold text-primary lg:text-[40px]">{HADROH_TEAM.title}</h2>
+                <p className="font-heading text-lg font-semibold text-[#9A6A12] lg:text-2xl">{HADROH_TEAM.name}</p>
+                <p className="text-[15px]/6 text-[#4F7A72] lg:text-[17px]/[27px]">{HADROH_TEAM.description}</p>
               </div>
             </div>
           </Reveal>
@@ -76,7 +87,7 @@ export default async function HomePage() {
         {/* S4 — Dress Code */}
         <section
           id="dresscode"
-          className="bg-secondary scroll-mt-20 py-12 md:py-16"
+          className="bg-white scroll-mt-20 py-12 lg:py-[120px]"
           aria-label="Dress Code"
         >
           <Reveal><DresscodeSection /></Reveal>
@@ -85,7 +96,7 @@ export default async function HomePage() {
         {/* S5 — Lokasi Rakernas */}
         <section
           id="lokasi"
-          className="bg-background scroll-mt-20 py-12 md:py-16"
+          className="bg-[#F4F8F7] scroll-mt-20 py-14 lg:py-[104px]"
           aria-label="Lokasi Rakernas"
         >
           <Reveal><LocationSection settings={settings} /></Reveal>
@@ -94,16 +105,16 @@ export default async function HomePage() {
         {/* S6 — Info Transportasi */}
         <section
           id="transportasi"
-          className="bg-surface scroll-mt-20 py-12 md:py-16"
+          className="relative overflow-hidden bg-[#F4F8F7] scroll-mt-20 py-14 lg:py-[104px]"
           aria-label="Info Transportasi"
         >
-          <Reveal><TransportSection venueName={settings.venueName} footerUrl={settings.footerUrl} /></Reveal>
+          <Reveal><TransportSection venueName={settings.venueName} venueAddress={settings.venueAddress} mapsUrl={settings.mapsUrl} footerUrl={settings.footerUrl} /></Reveal>
         </section>
 
         {/* S7 — Pencarian Tamu Undangan */}
         <section
           id="tamu-undangan"
-          className="display-theme display-bg scroll-mt-20 py-12 md:py-16 text-foreground"
+          className="bg-[#F4F8F7] scroll-mt-20 py-14 lg:py-[104px]"
           aria-label={INVITED_GUESTS_CONTENT.title}
         >
           <Reveal><InvitedGuestsSection /></Reveal>
@@ -112,8 +123,7 @@ export default async function HomePage() {
 
       {/* S8 — Footer */}
       <SiteFooter
-        className="bg-brand-green-night"
-        contentClassName="max-w-[1280px] px-4 pt-12 sm:px-5 md:px-8 md:pt-16"
+        contentClassName="max-w-[1280px] px-5 pt-14 md:px-8 lg:pt-20 lg:pb-9"
         settings={settings}
       />
     </>

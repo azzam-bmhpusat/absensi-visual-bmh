@@ -252,71 +252,60 @@ export function InvitedGuestsSection() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-5 md:px-8">
-      <div className="mx-auto max-w-2xl space-y-3 text-center">
-        <Badge variant="outline" className="gap-2 border-brand-green/30 bg-brand-green/15 px-3 py-1 text-brand-green-text">
-          <UsersRound className="size-3.5" aria-hidden="true" />
+    <div className="mx-auto w-full max-w-[1280px] px-5 md:px-8">
+      <div className="mx-auto flex max-w-2xl flex-col items-center gap-2 text-center md:gap-3">
+        <p className="text-[11px] font-semibold tracking-[2px] text-[#1E7F62] uppercase md:text-xs md:tracking-[2.4px]">
           {copy.badge}
-        </Badge>
-        <h2 className="font-heading text-3xl font-semibold tracking-tight text-brand-gold-soft md:text-4xl">
-          {copy.title}
-        </h2>
-        <p className="text-sm leading-relaxed text-foreground/80 md:text-base">{copy.description}</p>
+        </p>
+        <h2 className="font-heading text-[28px] font-bold text-primary md:text-[40px]">{copy.title}</h2>
+        <p className="text-sm/[22px] text-[#4F7A72] md:text-base">{copy.description}</p>
       </div>
 
-      <Card className="relative mx-auto mt-6 max-w-3xl overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-xl shadow-black/20 backdrop-blur-sm md:mt-8">
-        <span
-          aria-hidden="true"
-          className="absolute inset-x-6 top-0 h-px bg-linear-to-r from-transparent via-brand-gold/70 to-transparent"
-        />
-        <CardContent>
-          <div role="search" className="space-y-3">
-            <Label htmlFor="invited-guest-search" className="text-sm font-semibold text-foreground">
-              {copy.searchLabel}
-            </Label>
-            <InputGroup className="h-14 rounded-xl border-0 bg-white shadow-sm ring-1 ring-white/20 transition-shadow has-[input:focus-visible]:ring-3 has-[input:focus-visible]:ring-brand-gold/80">
-              <InputGroupAddon className="pl-4 text-brand-green-deep">
-                <Search className="size-5" aria-hidden="true" />
-              </InputGroupAddon>
-              <InputGroupInput
-                ref={inputRef}
-                id="invited-guest-search"
-                type="search"
-                value={query}
-                onChange={(event) => changeQuery(event.target.value)}
-                placeholder={copy.searchPlaceholder}
-                maxLength={GUEST_SEARCH_MAX_LENGTH}
-                autoComplete="off"
-                aria-describedby="invited-guest-hint"
-                aria-controls="invited-guest-results"
-                className="scroll-mt-40 h-14 min-w-0 text-base font-medium text-brand-green-night placeholder:font-normal placeholder:text-brand-green-deep/50 [&::-webkit-search-cancel-button]:hidden"
-              />
-              {query && (
-                <InputGroupAddon align="inline-end" className="pr-1.5">
-                  <InputGroupButton
-                    size="icon-sm"
-                    className="size-11 rounded-lg text-brand-green-deep/70 hover:bg-brand-green/10 hover:text-brand-green-night"
-                    aria-label={copy.clearLabel}
-                    onClick={() => { changeQuery(""); inputRef.current?.focus(); }}
-                  >
-                    <X className="size-4" aria-hidden="true" />
-                  </InputGroupButton>
-                </InputGroupAddon>
-              )}
-            </InputGroup>
-            <p id="invited-guest-hint" className="text-xs leading-relaxed text-foreground/75 sm:text-sm">{copy.searchHint}</p>
-          </div>
-        </CardContent>
-      </Card>
+      <div role="search" className="mx-auto mt-6 max-w-[720px] md:mt-8">
+        <Label htmlFor="invited-guest-search" className="sr-only">
+          {copy.searchLabel}
+        </Label>
+        <InputGroup className="h-12 rounded-2xl border border-[#DCE8E5] bg-white shadow-[0_8px_24px_#04362F0F] transition-shadow has-[input:focus-visible]:border-primary/40 has-[input:focus-visible]:ring-3 has-[input:focus-visible]:ring-brand-gold/40 md:h-[52px]">
+          <InputGroupAddon className="pl-4 text-[#4F7A72]">
+            <Search className="size-5" aria-hidden="true" />
+          </InputGroupAddon>
+          <InputGroupInput
+            ref={inputRef}
+            id="invited-guest-search"
+            type="search"
+            value={query}
+            onChange={(event) => changeQuery(event.target.value)}
+            placeholder={copy.searchPlaceholder}
+            maxLength={GUEST_SEARCH_MAX_LENGTH}
+            autoComplete="off"
+            aria-describedby="invited-guest-hint"
+            aria-controls="invited-guest-results"
+            className="scroll-mt-40 h-full min-w-0 text-base text-[#073B33] placeholder:text-[#4F7A72] [&::-webkit-search-cancel-button]:hidden"
+          />
+          {query && (
+            <InputGroupAddon align="inline-end" className="pr-1.5">
+              <InputGroupButton
+                size="icon-sm"
+                className="size-11 rounded-lg text-[#4F7A72] hover:bg-secondary hover:text-primary"
+                aria-label={copy.clearLabel}
+                onClick={() => { changeQuery(""); inputRef.current?.focus(); }}
+              >
+                <X className="size-4" aria-hidden="true" />
+              </InputGroupButton>
+            </InputGroupAddon>
+          )}
+        </InputGroup>
+        <p id="invited-guest-hint" className="sr-only">{copy.searchHint}</p>
+      </div>
 
       <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>
       <div id="invited-guest-results" className="mx-auto mt-8 max-w-6xl md:mt-12" aria-busy={loading}>
         {canSearch && (
           <div className="mb-5 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
             <div className="min-w-0">
-              <h3 className="font-heading text-xl font-semibold text-foreground sm:text-2xl">{copy.detailsTitle}</h3>
-              <p className="mt-0.5 wrap-anywhere text-sm text-foreground/70">
-                Hasil untuk <span className="font-semibold text-brand-gold-soft">&ldquo;{normalizedQuery}&rdquo;</span>
+              <h3 className="font-heading text-xl font-semibold text-primary sm:text-2xl">{copy.detailsTitle}</h3>
+              <p className="mt-0.5 wrap-anywhere text-sm text-[#4F7A72]">
+                Hasil untuk <span className="font-semibold text-[#9A6A12]">&ldquo;{normalizedQuery}&rdquo;</span>
               </p>
             </div>
             {data && (
@@ -356,13 +345,13 @@ export function InvitedGuestsSection() {
                 className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-between"
                 aria-label={copy.paginationLabel}
               >
-                <p className="rounded-full bg-white/10 px-3 py-1 text-sm font-medium text-foreground/85">
+                <p className="rounded-full bg-white px-3 py-1 text-sm font-medium text-[#073B33] ring-1 ring-[#DCE8E5]">
                   {copy.pageLabel(page, totalPages)}
                 </p>
                 <div className="grid w-full grid-cols-2 gap-3 sm:flex sm:w-auto">
                   <Button
                     variant="outline"
-                    className="h-12 border-white/25 bg-white/5 px-4 text-foreground hover:bg-white/15 hover:text-foreground disabled:opacity-40"
+                    className="h-12 border-[#DCE8E5] bg-white px-4 text-primary hover:bg-secondary hover:text-primary disabled:opacity-40"
                     disabled={page <= 1}
                     onClick={() => setPage(page - 1)}
                   >
@@ -370,7 +359,7 @@ export function InvitedGuestsSection() {
                     {copy.previousLabel}
                   </Button>
                   <Button
-                    className="h-12 bg-brand-gold px-4 font-semibold text-brand-green-night hover:bg-brand-gold-soft disabled:opacity-40"
+                    className="h-12 bg-primary px-4 font-semibold text-white hover:bg-primary/90 disabled:opacity-40"
                     disabled={page >= totalPages}
                     onClick={() => setPage(page + 1)}
                   >
@@ -382,14 +371,14 @@ export function InvitedGuestsSection() {
             )}
           </>
         ) : (
-          <Card className="mx-auto max-w-3xl rounded-2xl border border-dashed border-white/20 bg-white/5 text-center shadow-none">
-            <CardContent className="flex min-h-48 flex-col items-center justify-center gap-3 px-6 py-10">
+          <Card className="mx-auto max-w-[720px] rounded-none border-0 bg-transparent text-center shadow-none ring-0">
+            <CardContent className="flex flex-col items-center justify-center gap-3 px-0 py-2 md:px-6">
               <span
                 className={cn(
                   "flex size-14 items-center justify-center rounded-full ring-1",
                   failed
-                    ? "bg-red-400/15 text-red-200 ring-red-300/30"
-                    : "bg-brand-gold/15 text-brand-gold-soft ring-brand-gold/30",
+                    ? "bg-red-50 text-red-700 ring-red-200"
+                    : "bg-[#DFF3EA] text-primary ring-transparent",
                 )}
               >
                 {failed ? (
@@ -400,15 +389,15 @@ export function InvitedGuestsSection() {
                   <UsersRound className="size-7" aria-hidden="true" />
                 )}
               </span>
-              <h3 className="max-w-md font-heading text-lg font-semibold text-balance text-foreground">
+              <h3 className="hidden max-w-md font-heading text-lg font-semibold text-balance text-primary md:block">
                 {failed ? copy.errorTitle : canSearch ? copy.emptyTitle : copy.initialTitle}
               </h3>
-              <p className="max-w-xl text-sm leading-relaxed text-foreground/75">
+              <p className="max-w-xl text-sm/[22px] text-[#4F7A72] md:text-[15px]">
                 {failed ? copy.errorDescription : canSearch ? copy.emptyDescription : copy.initialDescription}
               </p>
               {failed && (
                 <Button
-                  className="mt-2 h-12 bg-brand-gold px-6 font-semibold text-brand-green-night hover:bg-brand-gold-soft"
+                  className="mt-2 h-12 bg-primary px-6 font-semibold text-white hover:bg-primary/90"
                   onClick={() => setRetry(retry + 1)}
                 >
                   {copy.retryLabel}

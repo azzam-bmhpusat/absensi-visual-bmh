@@ -40,6 +40,8 @@ export interface DresscodeItem {
 export interface GalleryItem {
   src: string;
   caption: string;
+  /** Atribusi foto berlisensi (mis. Wikimedia Commons). */
+  credit?: string;
 }
 
 export interface TransportItem {
@@ -246,6 +248,18 @@ export const LOCATION_DATA = {
     { src: "/galeri-fasilitas-hotel/belakang-gedung.jpg", caption: "Belakang Gedung" },
   ] as GalleryItem[],
 };
+
+/** Ikon sekitar Blok M, urut utara → selatan. Foto: Wikimedia Commons. */
+export const JAKARTA_EXPLORE_GALLERY: GalleryItem[] = [
+  { src: "/galeri-jakarta-explore/stasiun-mrt-senayan.jpg", caption: "Stasiun MRT Senayan", credit: "Foto: Vulphere / CC BY 4.0, Wikimedia Commons" },
+  { src: "/galeri-jakarta-explore/stasiun-mrt-asean.jpg", caption: "MRT Jakarta di Stasiun ASEAN", credit: "Foto: VulcanSphere / CC BY 4.0, Wikimedia Commons" },
+  { src: "/galeri-jakarta-explore/masjid-agung-al-azhar.jpg", caption: "Masjid Agung Al-Azhar", credit: "Foto: Rhmtdns / CC BY-SA 4.0, Wikimedia Commons" },
+  { src: "/galeri-jakarta-explore/taman-literasi.jpg", caption: "Taman Literasi Martha Christina Tiahahu", credit: "Foto: RasyaAbhirama13 / CC BY-SA 4.0, Wikimedia Commons" },
+  { src: "/galeri-jakarta-explore/stasiun-mrt-blok-m.jpg", caption: "Stasiun MRT Blok M", credit: "Foto: VulcanSphere / CC BY 4.0, Wikimedia Commons" },
+  { src: "/galeri-jakarta-explore/blok-m-plaza.jpg", caption: "Blok M Plaza", credit: "Foto: Vulphere / CC BY 4.0, Wikimedia Commons" },
+  { src: "/galeri-jakarta-explore/terminal-blok-m.jpg", caption: "Terminal Blok M", credit: "Foto: Aqilla Rahmi / CC0, Wikimedia Commons" },
+  { src: "/galeri-jakarta-explore/m-bloc-space.jpg", caption: "M Bloc Space", credit: "Foto: VulcanSphere / CC BY 4.0, Wikimedia Commons" },
+];
 
 export const TRANSPORT_DATA = {
   title: "Info Transportasi",

@@ -105,7 +105,7 @@ describe("Fase 4 — Dress Code & Lokasi (PRD Rakernas BMH)", () => {
       expect(LOCATION_DATA.gallery).toHaveLength(5);
       const expectedCaptions = ["Gedung", "Ruang Acara", "Ruang Makan", "Kamar", "Belakang Gedung"];
       expect(LOCATION_DATA.gallery.map((g) => g.caption)).toEqual(expectedCaptions);
-      expect(locationContent).toContain("LOCATION_DATA.gallery.map");
+      expect(locationContent).toContain("items={LOCATION_DATA.gallery}");
     });
 
     it("menerapkan galeri Carousel potret 3:4 dengan basis-[70%] sm:basis-1/3 lg:basis-1/5", () => {

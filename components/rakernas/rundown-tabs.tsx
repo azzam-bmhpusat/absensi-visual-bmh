@@ -3,11 +3,11 @@
 import { useId, useState, useSyncExternalStore } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { cn } from "cn";
-import { RUNDOWN_DATA } from "@/content/rakernas";
+import { ChevronDown } from "lucide-react";
+import { RUNDOWN_DATA, type RundownItem } from "@/content/rakernas";
 import { DEFAULT_EVENT_SETTINGS, formatEventDay, getEventDays } from "@/lib/event-settings";
 import { getDefaultDay, parseRundownTitle } from "@/lib/rakernas-helpers";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 
 type DayKey = "hari1" | "hari2" | "hari3";
 
@@ -26,10 +26,24 @@ const DAY_INDEX: Record<DayKey, number> = {
 
 function timeBadgeColor(title: string) {
   const t = title.toLowerCase();
-  if (t.includes("coffee break")) return "bg-amber-100 text-amber-800 border-amber-200";
-  if (t.includes("ishoma")) return "bg-sky-100 text-sky-800 border-sky-200";
-  if (t.includes("shalat")) return "bg-violet-100 text-violet-800 border-violet-200";
-  return "bg-green-100 text-primary border-line";
+  if (t.includes("coffee break")) return "bg-[#FFF7E8] text-[#9A6A12]";
+  if (t.includes("ishoma")) return "bg-sky-50 text-sky-800";
+  if (t.includes("shalat")) return "bg-[#EDE7FB] text-[#5B3FA8]";
+  return "bg-[#EEF8F3] text-[#1E7F62]";
+}
+
+/** Jumlah agenda yang tampil sebelum tombol "Lihat seluruh agenda". */
+const COLLAPSED_COUNT = 9;
+
+/** Kelompokkan baris berurutan dengan `section` sama. */
+function groupBySection(items: RundownItem[]) {
+  const groups: { section?: string; items: { item: RundownItem; index: number }[] }[] = [];
+  items.forEach((item, index) => {
+    const last = groups.at(-1);
+    if (last && last.section === item.section) last.items.push({ item, index });
+    else groups.push({ section: item.section, items: [{ item, index }] });
+  });
+  return groups;
 }
 
 export function RundownSection({ startsAt = DEFAULT_EVENT_SETTINGS.startsAt }: { startsAt?: string } = {}) {
@@ -49,6 +63,7 @@ export function RundownSection({ startsAt = DEFAULT_EVENT_SETTINGS.startsAt }: {
   const [userSelectedDay, setUserSelectedDay] = useState<DayKey | null>(null);
   const selectedDay = userSelectedDay ?? defaultDay;
   const [direction, setDirection] = useState<number>(0);
+  const [expanded, setExpanded] = useState(false);
   const uniqueId = useId();
   const shouldReduceMotion = useReducedMotion();
 
@@ -59,69 +74,56 @@ export function RundownSection({ startsAt = DEFAULT_EVENT_SETTINGS.startsAt }: {
     const newIdx = DAY_INDEX[nextDay];
     setDirection(newIdx > oldIdx ? 1 : newIdx < oldIdx ? -1 : 0);
     setUserSelectedDay(nextDay);
+    setExpanded(false);
   };
 
   return (
-    <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-5 md:px-8">
-      <div className="mx-auto max-w-3xl text-center">
-        <h2 className="text-2xl md:text-4xl font-heading font-semibold text-primary">
-          Rundown Acara
-        </h2>
-        <p className="mt-2 md:mt-3 text-sm md:text-base text-ink-muted">
+    <div className="mx-auto w-full max-w-[1280px] px-5 md:px-8">
+      <div className="mx-auto flex max-w-3xl flex-col items-center gap-2 text-center md:gap-3">
+        <p className="text-[11px] font-semibold tracking-[2px] text-[#1E7F62] uppercase md:text-xs md:tracking-[2.4px]">
+          Jadwal Kegiatan
+        </p>
+        <h2 className="font-heading text-[28px] font-bold text-primary md:text-[40px]">Rundown Acara</h2>
+        <p className="text-sm/[21px] text-[#4F7A72] md:text-base">
           Jadwal lengkap tiga hari kegiatan Rapat Kerja Nasional BMH 2027
         </p>
       </div>
 
-      <div className="mx-auto mt-6 md:mt-8 max-w-3xl">
-        <Tabs
-          value={selectedDay}
-          onValueChange={handleTabChange}
-          className="w-full"
-        >
-          {/* Tabs List dengan grid-cols-3 penuh lebar & indikator meluncur */}
-          <TabsList className="grid w-full grid-cols-3 group-data-horizontal/tabs:h-auto min-h-13 sm:min-h-15 rounded-2xl border border-line bg-surface p-1 sm:p-1.5 shadow-xs">
-            {daysConfig.map(({ key, label, sublabel, compactLabel }) => {
+      <div className="mx-auto mt-7 max-w-[880px] md:mt-10">
+        <Tabs value={selectedDay} onValueChange={handleTabChange} className="w-full gap-0">
+          <TabsList className="relative grid w-full grid-cols-3 gap-1.5 rounded-[20px] border border-white/80 bg-white/80 bg-linear-to-b from-white/50 via-white/0 via-60% to-white/0 p-1.5 shadow-[0_8px_24px_#04362F14,inset_0_1px_0_#FFFFFFE6] backdrop-blur-md group-data-horizontal/tabs:h-auto md:rounded-full">
+            {daysConfig.map(({ key, label, sublabel, compactLabel }, index) => {
               const isActive = selectedDay === key;
               return (
                 <TabsTrigger
                   key={key}
                   value={key}
                   className={cn(
-                    "relative z-10 flex h-full flex-col items-center justify-center rounded-xl px-2 py-2 sm:py-2.5 text-center transition-colors duration-200",
+                    "relative z-10 flex h-full cursor-pointer items-center justify-center gap-2 rounded-[14px] border-0 p-2 text-left shadow-none transition-colors md:justify-start md:gap-3 md:rounded-full md:py-2.5 md:pr-5 md:pl-2.5",
                     "focus-visible:ring-2 focus-visible:ring-brand-green/30 focus-visible:outline-none",
-                    "data-active:bg-transparent group-data-[variant=default]/tabs-list:data-active:shadow-none shadow-none cursor-pointer"
+                    "data-active:bg-transparent group-data-[variant=default]/tabs-list:data-active:shadow-none",
                   )}
                 >
                   {isActive && (
                     <motion.div
                       layoutId="activeRundownIndicator"
-                      className="absolute inset-0 rounded-xl bg-background shadow-xs border border-line"
-                      transition={
-                        shouldReduceMotion
-                          ? { duration: 0 }
-                          : { type: "spring", stiffness: 400, damping: 32 }
-                      }
+                      className="absolute inset-0 rounded-[14px] bg-linear-to-b from-[#0B6355] to-[#04362F] shadow-[0_6px_16px_#09504640,inset_0_1px_0_#FFFFFF33] md:rounded-full"
+                      transition={shouldReduceMotion ? { duration: 0 } : { type: "spring", stiffness: 400, damping: 32 }}
                     />
                   )}
                   <span
                     className={cn(
-                      "relative z-10 font-heading text-xs sm:text-sm font-semibold transition-colors duration-200",
-                      isActive ? "text-primary font-bold" : "text-ink-muted hover:text-ink"
+                      "relative z-10 size-7 shrink-0 items-center justify-center rounded-full font-heading text-sm font-bold md:flex md:size-9",
+                      isActive ? "flex bg-brand-gold text-[#04362F]" : "hidden bg-[#EEF8F3] text-[#1E7F62]",
                     )}
                   >
-                    {label}
+                    {index + 1}
                   </span>
-                  <span
-                    className={cn(
-                      "relative z-10 mt-0.5 text-xs transition-colors duration-200",
-                      isActive ? "text-ink-muted font-medium" : "text-ink-muted"
-                    )}
-                  >
-                    <span className="inline sm:hidden">
-                      {compactLabel}
-                    </span>
-                    <span className="hidden sm:inline">
-                      {sublabel}
+                  <span className="relative z-10 flex flex-col gap-0.5">
+                    <span className={cn("text-sm font-bold md:text-[15px]", isActive ? "text-white" : "text-[#073B33]")}>{label}</span>
+                    <span className={cn("text-xs md:text-[13px]", isActive ? "text-white/70" : "text-[#4F7A72]")}>
+                      <span className="md:hidden">{compactLabel}</span>
+                      <span className="hidden md:inline">{sublabel}</span>
                     </span>
                   </span>
                 </TabsTrigger>
@@ -129,114 +131,85 @@ export function RundownSection({ startsAt = DEFAULT_EVENT_SETTINGS.startsAt }: {
             })}
           </TabsList>
 
-          {daysConfig.map(({ key, label, sublabel }) => {
+          {daysConfig.map(({ key, label }) => {
             const items = RUNDOWN_DATA[key];
-            const isPending =
-              items.length === 1 && items[0].time === "-";
+            const isPending = items.length === 1 && items[0].time === "-";
+            const canCollapse = items.length > COLLAPSED_COUNT;
+            const visible = expanded || !canCollapse ? items : items.slice(0, COLLAPSED_COUNT);
 
             return (
-              <TabsContent
-                key={key}
-                value={key}
-                className="mt-6 focus-visible:outline-hidden"
-              >
+              <TabsContent key={key} value={key} className="mt-5 focus-visible:outline-hidden md:mt-6">
                 <motion.div
                   key={`content-${key}`}
-                  initial={
-                    shouldReduceMotion
-                      ? { opacity: 0 }
-                      : {
-                          opacity: 0,
-                          x: direction === 0 ? 0 : direction > 0 ? 32 : -32,
-                        }
-                  }
+                  initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: direction === 0 ? 0 : direction > 0 ? 32 : -32 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 340,
-                    damping: 30,
-                    mass: 0.8,
-                  }}
-                  className="rounded-2xl border border-line bg-card p-5 sm:p-6 md:p-8 shadow-[0_8px_24px_-8px_rgba(19,75,64,0.18)]"
+                  transition={{ type: "spring", stiffness: 340, damping: 30, mass: 0.8 }}
+                  className="flex flex-col gap-6 rounded-[20px] bg-white px-5 py-6 outline-1 -outline-offset-[0.5px] outline-[#DCE8E5] md:gap-8 md:rounded-3xl md:px-12 md:py-10"
                 >
-                  {/* Header Hari */}
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-line pb-4 gap-1">
-                    <div>
-                      <h3 className="text-lg md:text-xl font-heading font-bold text-primary">
-                        {label}
-                      </h3>
-                      <p className="text-xs md:text-sm text-ink-muted">
-                        {sublabel}
-                      </p>
-                    </div>
-                    <span className="text-xs font-medium text-ink-muted">
-                      {isPending ? "Belum dirilis" : `${items.length} agenda`}
-                    </span>
-                  </div>
-
-                  {/* Konten Timeline */}
                   {isPending ? (
-                    <div className="my-8 rounded-xl border border-dashed border-line bg-surface/60 p-8 text-center">
-                      <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-brand-gold-soft/30 text-brand-gold-text">
-                        <span className="text-lg font-bold">!</span>
-                      </div>
-                      <h4 className="mt-3 font-heading text-base font-semibold text-primary">
-                        {items[0].title}
-                      </h4>
-                      <p className="mt-1 text-xs md:text-sm text-ink-muted max-w-md mx-auto">
+                    <div className="rounded-xl border border-dashed border-line bg-surface/60 p-8 text-center">
+                      <h3 className="font-heading text-base font-semibold text-primary">{items[0].title}</h3>
+                      <p className="mx-auto mt-1 max-w-md text-xs text-ink-muted md:text-sm">
                         Jadwal resmi untuk {label} akan segera diperbarui oleh panitia Rakernas BMH.
                       </p>
                     </div>
                   ) : (
-                    <div className="relative mt-6 pl-4 sm:pl-6 space-y-6 before:absolute before:left-1 sm:before:left-2 before:top-3 before:bottom-3 before:w-0.5 before:bg-line">
-                      {items.map((item, index) => {
-                        // Pisahkan "(keterangan)" hanya bila ada note eksplisit; judul seperti
-                        // "Tausiyah (1)" harus tampil utuh.
-                        const { mainTitle, subtitle } = item.note
-                          ? parseRundownTitle(item.title, item.note)
-                          : { mainTitle: item.title, subtitle: undefined };
-                        const itemKey = `${uniqueId}-${key}-${index}`;
-
-                        return (
-                          <div key={itemKey} className="space-y-4">
-                            <div className="relative flex flex-col items-start gap-1.5 sm:flex-row sm:gap-4 group">
-                              {/* Titik Penanda Timeline */}
-                              <span
-                                className="absolute -left-4 sm:-left-6 top-1.5 flex size-2.5 sm:size-3 items-center justify-center rounded-full bg-background ring-2 ring-brand-green group-hover:bg-brand-green transition-colors"
-                                aria-hidden="true"
-                              />
-
-                              {/* Badge Waktu (rentang, mis. 10.00 - 12.00) */}
-                              <Badge
-                                variant="secondary"
-                                className={`w-fit shrink-0 justify-center font-mono text-xs sm:w-28 font-semibold tabular-nums border ${timeBadgeColor(item.title)}`}
-                              >
-                                {item.time}
-                              </Badge>
-
-                              {/* Judul & Keterangan Acara */}
-                              <div className="flex-1 pt-0.5 min-w-0">
-                                <p className={`text-sm sm:text-base text-ink leading-snug ${/^[A-Z]\. /.test(mainTitle) ? "font-bold" : "font-medium"}`}>
-                                  {mainTitle}
-                                </p>
-                                {subtitle && (
-                                  <p className="mt-0.5 text-xs sm:text-sm text-ink-muted">
-                                    {subtitle}
-                                  </p>
-                                )}
-                                {item.details && item.details.length > 0 && (
-                                  <ol className="mt-2 list-decimal space-y-1 pl-5 text-xs sm:text-sm text-ink-muted marker:font-medium marker:text-primary">
-                                    {item.details.map((detail) => (
-                                      <li key={detail}>{detail}</li>
-                                    ))}
-                                  </ol>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
+                    <>
+                      {groupBySection(visible).map((group, gi) => (
+                        <section key={`${uniqueId}-${key}-g${gi}`} className="flex flex-col gap-0.5 md:gap-1">
+                          {group.section && (
+                            <h3 className="flex items-center gap-2 pb-1.5 font-heading text-[15px] font-semibold text-primary md:gap-2.5 md:pb-2 md:text-[17px]">
+                              <span aria-hidden="true" className="h-4 w-1 rounded-[2px] bg-brand-gold md:h-[18px]" />
+                              {group.section}
+                            </h3>
+                          )}
+                          <ul>
+                            {group.items.map(({ item, index }) => {
+                              const { mainTitle, subtitle } = item.note
+                                ? parseRundownTitle(item.title, item.note)
+                                : { mainTitle: item.title, subtitle: undefined };
+                              return (
+                                <li
+                                  key={`${uniqueId}-${key}-${index}`}
+                                  className="flex flex-col items-start gap-1.5 border-b border-[#DCE8E5] py-2.5 last:border-b-0 md:flex-row md:items-center md:gap-5 md:py-3"
+                                >
+                                  <span
+                                    className={cn(
+                                      "shrink-0 rounded-full px-2.5 py-1 font-mono text-[11px] font-semibold tabular-nums md:w-[132px] md:px-0 md:py-1.5 md:text-center md:text-xs",
+                                      timeBadgeColor(item.title),
+                                    )}
+                                  >
+                                    {item.time.replace(" - ", " – ")}
+                                  </span>
+                                  <div className="min-w-0 flex-1">
+                                    <p className="text-sm/[21px] text-[#073B33] md:text-[15px]/[23px]">{mainTitle}</p>
+                                    {subtitle && <p className="mt-0.5 text-xs text-ink-muted md:text-sm">{subtitle}</p>}
+                                    {item.details && item.details.length > 0 && (
+                                      <ol className="mt-2 list-decimal space-y-1 pl-5 text-xs text-ink-muted marker:font-medium marker:text-primary md:text-sm">
+                                        {item.details.map((detail) => (
+                                          <li key={detail}>{detail}</li>
+                                        ))}
+                                      </ol>
+                                    )}
+                                  </div>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </section>
+                      ))}
+                      {canCollapse && (
+                        <button
+                          type="button"
+                          onClick={() => setExpanded((v) => !v)}
+                          aria-expanded={expanded}
+                          className="mx-auto flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full px-4 text-[13px] font-semibold text-primary hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:gap-2 md:text-sm"
+                        >
+                          {expanded ? `Ringkas agenda ${label}` : `Lihat seluruh agenda ${label}`}
+                          <ChevronDown aria-hidden="true" className={cn("size-4 transition-transform", expanded && "rotate-180")} />
+                        </button>
+                      )}
+                    </>
                   )}
                 </motion.div>
               </TabsContent>

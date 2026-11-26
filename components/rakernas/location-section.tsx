@@ -3,18 +3,9 @@
 import * as React from "react";
 import Image from "next/image";
 import { cn } from "cn";
-import { LOCATION_DATA, type GalleryItem } from "@/content/rakernas";
+import { LOCATION_DATA, JAKARTA_EXPLORE_GALLERY, type GalleryItem } from "@/content/rakernas";
 import { DEFAULT_EVENT_SETTINGS, type EventSettings } from "@/lib/event-settings";
 import { LocationMap } from "@/components/rakernas/location-map";
-import { Button } from "@/components/ui/button";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselPrevious,
-  CarouselNext,
-  type CarouselApi,
-} from "@/components/ui/carousel";
 import {
   Dialog,
   DialogContent,
@@ -22,183 +13,139 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { MapPin, ExternalLink, ZoomIn } from "lucide-react";
+import { ArrowUpRight, MapPin, ZoomIn } from "lucide-react";
 
 export function LocationSection({ settings = DEFAULT_EVENT_SETTINGS }: { settings?: EventSettings } = {}) {
-  const [api, setApi] = React.useState<CarouselApi>();
-  const [current, setCurrent] = React.useState(0);
-  const [count, setCount] = React.useState(0);
-  const [selectedPhoto, setSelectedPhoto] = React.useState<GalleryItem | null>(null);
-
-  React.useEffect(() => {
-    if (!api) return;
-
-    const syncState = () => {
-      setCount(api.scrollSnapList().length);
-      setCurrent(api.selectedScrollSnap());
-    };
-
-    syncState();
-
-    api.on("select", syncState);
-    api.on("reInit", syncState);
-
-    return () => {
-      api.off("select", syncState);
-      api.off("reInit", syncState);
-    };
-  }, [api]);
+  const mapsButton = (className: string) => (
+    <a
+      href={settings.mapsUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`Buka ${settings.venueName} di Google Maps (tab baru)`}
+      className={cn(
+        "inline-flex min-h-12 items-center justify-center gap-2 rounded-[14px] bg-primary px-[22px] text-[15px] font-semibold text-white transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        className,
+      )}
+    >
+      Buka di Google Maps
+      <ArrowUpRight aria-hidden="true" className="size-[18px]" />
+    </a>
+  );
 
   return (
-    <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-5 md:px-8">
-      {/* Header Bagian */}
-      <div className="text-center mb-6 md:mb-8">
-        <h2 className="text-2xl md:text-4xl font-heading font-semibold text-primary">
-          {LOCATION_DATA.title}
-        </h2>
-        <p className="mt-2 md:mt-3 text-ink-muted text-sm md:text-base max-w-xl mx-auto">
-          Lokasi penyelenggaraan acara di {settings.venueName}
-        </p>
+    <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-5 px-5 md:px-8 lg:gap-12">
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:gap-12">
+        <div className="flex flex-col gap-3 lg:w-[460px] lg:shrink-0 lg:gap-5">
+          <p className="text-[11px] font-semibold tracking-[2px] text-[#1E7F62] uppercase lg:text-xs lg:tracking-[2.4px]">
+            {LOCATION_DATA.title}
+          </p>
+          <h2 className="font-heading text-[28px] font-bold text-primary lg:text-[40px]/[46px]">{settings.venueName}</h2>
+          <p className="flex gap-2.5 text-sm/[22px] text-[#4F7A72] lg:gap-3 lg:text-base/[26px]">
+            <MapPin aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-[#1E7F62]" />
+            {settings.venueAddress}
+          </p>
+          {mapsButton("hidden w-fit lg:inline-flex")}
+        </div>
+        <div className="min-w-0 flex-1 [&>div]:h-[220px] [&>div]:rounded-[20px] [&>div]:border-[#DCE8E5] md:[&>div]:h-[320px] lg:[&>div]:h-[400px] lg:[&>div]:rounded-3xl">
+          <LocationMap location={settings} />
+        </div>
+        {mapsButton("w-full lg:hidden")}
       </div>
 
-      {/* Peta lokasi dimuat ketika mendekati layar */}
-      <div className="mb-6 md:mb-8">
-        <LocationMap location={settings} />
-      </div>
+      <PhotoGallery
+        title="Fasilitas Hotel"
+        items={LOCATION_DATA.gallery}
+        variant="portrait"
+        altSuffix={settings.venueName}
+        dialogDescription={`Foto fasilitas ${settings.venueName}`}
+      />
 
-      {/* Kartu Informasi Alamat & Tombol Google Map */}
-      <div className="mb-8 md:mb-12">
-        <div className="rounded-2xl border border-line bg-card p-6 md:p-8 shadow-[0_8px_24px_-8px_rgba(19,75,64,0.18)] flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="flex items-start gap-4">
-            <div className="size-12 shrink-0 rounded-full bg-green-100 text-primary flex items-center justify-center">
-              <MapPin className="size-6" />
-            </div>
-            <div>
-              <h3 className="text-xl md:text-2xl font-heading font-semibold text-primary">
-                {settings.venueName}
-              </h3>
-              <p className="mt-1 text-sm md:text-base text-ink-muted leading-relaxed max-w-2xl">
-                {settings.venueAddress}
-              </p>
-            </div>
-          </div>
+      <PhotoGallery
+        title="Jelajah Sekitar Blok M"
+        items={JAKARTA_EXPLORE_GALLERY}
+        variant="landscape"
+        altSuffix="Blok M, Jakarta Selatan"
+        dialogDescription="Jelajah sekitar Blok M, Jakarta Selatan"
+      />
+    </div>
+  );
+}
 
-          <div className="w-full md:w-auto shrink-0">
-            <Button
-              nativeButton={false}
-              render={
-                <a
-                  href={settings.mapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+// Kelas Tailwind harus literal agar ikut ter-generate.
+const GALLERY_VARIANTS = {
+  portrait: {
+    list: "lg:grid lg:grid-cols-5 lg:overflow-visible",
+    item: "w-[150px] h-[200px] lg:w-auto lg:h-[300px]",
+    aspect: "aspect-[3/4]",
+    sizes: "(min-width: 1024px) 20vw, 150px",
+    dialog: "max-w-sm",
+    dialogSizes: "(max-width: 640px) 90vw, 384px",
+  },
+  landscape: {
+    list: "",
+    item: "w-[260px] h-[195px] lg:w-[360px] lg:h-[260px]",
+    aspect: "aspect-[4/3]",
+    sizes: "(min-width: 1024px) 360px, 260px",
+    dialog: "max-w-3xl",
+    dialogSizes: "(max-width: 768px) 90vw, 768px",
+  },
+} as const;
+
+function PhotoGallery({
+  title,
+  items,
+  variant,
+  altSuffix,
+  dialogDescription,
+}: {
+  title: string;
+  items: GalleryItem[];
+  variant: keyof typeof GALLERY_VARIANTS;
+  altSuffix: string;
+  dialogDescription: string;
+}) {
+  const v = GALLERY_VARIANTS[variant];
+  const [selectedPhoto, setSelectedPhoto] = React.useState<GalleryItem | null>(null);
+
+  return (
+    <>
+      <div className="flex flex-col gap-3 lg:gap-4">
+        <h3 className="font-heading text-[17px] font-semibold text-primary lg:text-xl">{title}</h3>
+        <ul
+          className={cn(
+            "-mx-5 flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto px-5 pb-1 md:scroll-px-8 lg:scroll-px-0 [scrollbar-width:none] md:-mx-8 md:px-8 lg:mx-0 lg:gap-4 lg:px-0 [&::-webkit-scrollbar]:hidden",
+            v.list,
+          )}
+          data-lenis-prevent-horizontal
+        >
+          {items.map((photo, index) => (
+            <li key={`${photo.src}-${index}`} className={cn("relative shrink-0 snap-start", v.item)}>
+              <button
+                type="button"
+                onClick={() => setSelectedPhoto(photo)}
+                className="group relative block size-full cursor-pointer overflow-hidden rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:rounded-[18px]"
+                aria-label={`Perbesar foto ${photo.caption} — ${altSuffix}`}
+              >
+                <Image
+                  src={photo.src}
+                  alt={`${photo.caption} — ${altSuffix}`}
+                  fill
+                  sizes={v.sizes}
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  loading="lazy"
                 />
-              }
-              aria-label={`Buka ${settings.venueName} di Google Maps (tab baru)`}
-              className="h-auto min-h-12 py-3 px-6 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-heading font-medium shadow-md w-full sm:w-auto text-base whitespace-normal text-center transition-colors inline-flex items-center justify-center gap-2"
-            >
-              <MapPin className="size-5 shrink-0" />
-              <span>Buka di Google Maps</span>
-              <ExternalLink className="size-4 shrink-0 opacity-80" />
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Galeri Foto Lokasi: foto potret kecil (224x298), jadi kartu 3:4 dan sempit agar tidak buram */}
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-xl md:text-2xl font-heading font-semibold text-primary">
-              Galeri Fasilitas Hotel
-            </h3>
-            <p className="text-sm text-ink-muted mt-1">
-              Ketuk foto untuk memperbesar
-            </p>
-          </div>
-        </div>
-
-        <div className="relative">
-          <Carousel
-            opts={{
-              align: "start",
-            }}
-            setApi={setApi}
-            className="w-full"
-          >
-            <CarouselContent className="-ml-4">
-              {LOCATION_DATA.gallery.map((photo, index) => (
-                <CarouselItem
-                  key={`${photo.src}-${index}`}
-                  className="basis-[70%] sm:basis-1/3 lg:basis-1/5 pl-4"
-                >
-                  <button
-                    type="button"
-                    onClick={() => setSelectedPhoto(photo)}
-                    className="group w-full text-left rounded-2xl border border-line bg-card overflow-hidden shadow-[0_8px_24px_-8px_rgba(19,75,64,0.18)] transition-all duration-300 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring flex flex-col cursor-pointer"
-                    aria-label={`Perbesar foto ${photo.caption} — ${settings.venueName}`}
-                  >
-                    <div className="relative aspect-[3/4] w-full bg-muted/40 overflow-hidden">
-                      <Image
-                        src={photo.src}
-                        alt={`${photo.caption} — ${settings.venueName}`}
-                        fill
-                        sizes="(max-width: 640px) 70vw, (max-width: 1024px) 33vw, 20vw"
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                        loading="lazy"
-                      />
-                      {/* Overlay ikon pembesar saat hover */}
-                      <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-                        <span className="p-2.5 rounded-full bg-white/95 text-primary shadow-md backdrop-blur-xs">
-                          <ZoomIn className="size-5" />
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="p-3.5 md:p-4 bg-card border-t border-line">
-                      <p className="font-heading font-medium text-sm md:text-base text-ink line-clamp-1">
-                        {photo.caption}
-                      </p>
-                    </div>
-                  </button>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-
-            {/* Tombol Panah Navigasi Galeri (Mulai md) */}
-            <CarouselPrevious className="hidden md:inline-flex -left-4 lg:-left-6 bg-card hover:bg-muted text-primary border-line shadow-md" />
-            <CarouselNext className="hidden md:inline-flex -right-4 lg:-right-6 bg-card hover:bg-muted text-primary border-line shadow-md" />
-          </Carousel>
-
-          {/* Titik Indikator Pagination Galeri (disembunyikan bila semua foto sudah terlihat) */}
-          <div
-            className={cn("flex items-center justify-center gap-1 mt-6 md:mt-8", count === 1 && "hidden")}
-            role="tablist"
-            aria-label="Navigasi galeri foto lokasi"
-          >
-            {Array.from({ length: count || LOCATION_DATA.gallery.length }).map(
-              (_, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={() => api?.scrollTo(index)}
-                  className="min-h-11 min-w-11 flex items-center justify-center p-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-full"
-                  aria-label={`Pilih slide galeri ${index + 1}`}
-                  aria-selected={current === index}
-                  role="tab"
-                >
-                  <span
-                    className={cn(
-                      "block h-2.5 rounded-full transition-all duration-300",
-                      current === index
-                        ? "w-8 bg-primary"
-                        : "w-2.5 bg-primary/25 hover:bg-primary/50"
-                    )}
-                  />
-                </button>
-              )
-            )}
-          </div>
-        </div>
+                <span className="absolute inset-0 bg-linear-to-b from-[#04362F00] from-50% to-[#04362FCC] lg:from-55%" />
+                <span className="absolute inset-x-3 bottom-3 text-left text-[13px] font-semibold text-white lg:inset-x-4 lg:bottom-4 lg:text-sm">
+                  <span className="line-clamp-1">{photo.caption}</span>
+                  {photo.credit && <span className="mt-0.5 line-clamp-1 text-[10px] font-normal text-white/70">{photo.credit}</span>}
+                </span>
+                <span className="absolute top-3 right-3 rounded-full bg-white/90 p-1.5 text-primary opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                  <ZoomIn aria-hidden="true" className="size-4" />
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
       </div>
 
       {/* Dialog Modal Pembesaran Foto */}
@@ -208,30 +155,33 @@ export function LocationSection({ settings = DEFAULT_EVENT_SETTINGS }: { setting
           if (!open) setSelectedPhoto(null);
         }}
       >
-        <DialogContent className="max-w-sm p-4 sm:p-6 overflow-hidden rounded-2xl border border-line bg-card text-foreground">
+        <DialogContent className={cn("p-4 sm:p-6 overflow-hidden rounded-2xl border border-line bg-card text-foreground", v.dialog)}>
           <DialogHeader className="mb-2">
             <DialogTitle className="text-lg md:text-xl font-heading font-semibold text-primary">
               {selectedPhoto?.caption}
             </DialogTitle>
             <DialogDescription className="text-sm text-ink-muted">
-              Foto fasilitas {settings.venueName}
+              {dialogDescription}
             </DialogDescription>
           </DialogHeader>
 
           {selectedPhoto && (
-            <div className="relative aspect-[3/4] w-full rounded-xl overflow-hidden bg-muted/40 border border-line">
+            <div className={cn("relative w-full rounded-xl overflow-hidden bg-muted/40 border border-line", v.aspect)}>
               <Image
                 src={selectedPhoto.src}
-                alt={`${selectedPhoto.caption} — ${settings.venueName}`}
+                alt={`${selectedPhoto.caption} — ${altSuffix}`}
                 fill
-                sizes="(max-width: 640px) 90vw, 384px"
+                sizes={v.dialogSizes}
                 className="object-contain"
                 priority
               />
             </div>
           )}
+          {selectedPhoto?.credit && (
+            <p className="mt-2 text-xs text-ink-muted">{selectedPhoto.credit}</p>
+          )}
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }
