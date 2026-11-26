@@ -153,10 +153,7 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
   const counts = useMemo(
     () => ({
       all: users.length,
-      admin: users.filter((u) => u.role === "admin").length,
-      direktur: users.filter((u) => u.role === "direktur").length,
-      peserta: users.filter((u) => u.role === "peserta").length,
-      user: users.filter((u) => u.role === "user").length,
+      ...(Object.fromEntries(USER_ROLES.map((r) => [r, users.filter((u) => u.role === r).length])) as Record<UserRole, number>),
       inactive: users.filter((u) => u.banned).length,
     }),
     [users]
@@ -225,10 +222,7 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
 
   const filters: { value: Filter; label: string }[] = [
     { value: "all", label: "Semua" },
-    { value: "admin", label: "Admin" },
-    { value: "direktur", label: "Direktur" },
-    { value: "peserta", label: "Peserta" },
-    { value: "user", label: "User" },
+    ...USER_ROLES.map((r) => ({ value: r, label: ROLE_LABEL[r] })),
     { value: "inactive", label: "Nonaktif" },
   ];
 
@@ -556,7 +550,7 @@ function RoleChoice({
   disabled?: boolean;
 }) {
   return (
-    <div role="radiogroup" aria-label="Peran" className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+    <div role="radiogroup" aria-label="Peran" className="grid grid-cols-2 gap-2 sm:grid-cols-3">
       {USER_ROLES.map((r) => (
         <button
           key={r}

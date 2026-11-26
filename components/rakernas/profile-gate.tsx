@@ -4,11 +4,11 @@ import { checkAdmin } from "@/lib/auth/admin";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isProfileComplete } from "@/lib/profile-contact";
-import { toUserRole } from "@/lib/user-schema";
+import { hasSiteWideAccess, toUserRole } from "@/lib/user-schema";
 import { CompleteProfileDialog } from "@/components/rakernas/complete-profile-dialog";
 
 /**
- * Batasi konten untuk admin, direktur, dan peserta yang profilnya sudah lengkap.
+ * Batasi konten untuk admin, direktur, pengurus, dan peserta yang profilnya sudah lengkap.
  * Belum login -> /login;
  * profil belum lengkap -> dialog lengkapi profil (children tidak dirender).
  */
@@ -27,8 +27,8 @@ export async function ProfileGate({ path, children }: { path: string; children?:
     .maybeSingle();
 
   // Role `user` (akun Google baru) belum peserta: arahkan untuk mengajukan diri di /profile.
-  // Direktur boleh melihat semua halaman situs tanpa syarat profil (dashboard admin tetap ditolak).
-  if (toUserRole(profile?.role) === "direktur") return <>{children}</>;
+  // Direktur & Pengurus boleh melihat semua halaman situs tanpa syarat profil (dashboard admin tetap ditolak).
+  if (hasSiteWideAccess(toUserRole(profile?.role))) return <>{children}</>;
   if (toUserRole(profile?.role) === "user") redirect("/khusus-peserta");
   if (!isProfileComplete(profile)) return <CompleteProfileDialog />;
   return <>{children}</>;
