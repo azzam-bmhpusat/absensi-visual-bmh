@@ -61,7 +61,7 @@ export default async function HomePage() {
           aria-label={HADROH_TEAM.title}
         >
           <Reveal>
-            <div className="mx-auto max-w-xl px-4 text-center">
+            <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-5 md:px-8 text-center">
               <h2 className="text-2xl md:text-4xl font-heading font-semibold text-primary">
                 {HADROH_TEAM.title}
               </h2>

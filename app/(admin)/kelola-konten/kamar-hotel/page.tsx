@@ -15,7 +15,7 @@ export default async function KelolaKamarHotelPage() {
     readAdminRows<ContentRowData>("hotel_info_items"),
     db.from("hotel_contact").select("nama, whatsapp").eq("id", 1).maybeSingle(),
     db.from("profiles").select("id, nama, perwakilan_daerah, hotel_room_occupants(room_id)")
-      .eq("role", "peserta").not("nama", "is", null).order("nama"),
+      .neq("role", "user").not("nama", "is", null).order("nama"),
   ]);
 
   const pesertaOptions: PesertaOption[] = (peserta.data ?? []).map((p) => {
@@ -28,7 +28,7 @@ export default async function KelolaKamarHotelPage() {
     <>
       <KontenHeader
         title="Informasi Kamar Hotel"
-        description="Kamar, penghuni (akun ber-role peserta), info & ketentuan, serta kontak akomodasi."
+        description="Kamar, penghuni (semua akun kecuali role user), info & ketentuan, serta kontak akomodasi."
         publicHref="/informasi-kamar-hotel"
       />
       <RoomManager

@@ -111,7 +111,7 @@ describe("konten dinamis: wiring", () => {
     const actions = read("app", "(admin)", "kelola-konten", "actions.ts");
     expect(actions.match(/if \(!\(await requireAdmin\(\)\)\) return DENIED;/g)?.length).toBe(4);
     expect(actions).toContain("updateTag(tag)");
-    expect(actions).toContain('.eq("role", "peserta")');
+    expect(actions).toContain('.neq("role", "user")');
   });
 
   it("migrasi: penghuni hanya peserta, unik per peserta, tulis hanya admin", () => {

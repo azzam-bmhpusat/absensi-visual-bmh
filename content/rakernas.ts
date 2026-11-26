@@ -139,15 +139,15 @@ export const NAV_MENU: NavMenuEntry[] = [
 // `section` = judul bagian (dikelompokkan di tampilan), `details` = sub-poin bernomor.
 export const RUNDOWN_DATA: Record<"hari1" | "hari2" | "hari3", RundownItem[]> = {
   hari1: [
-    { section: "A. Registrasi Peserta", time: "10.00 - 12.00", title: "Panitia stand by di lobby utama hotel menyambut dan mengarahkan peserta menuju tempat registrasi" },
-    { section: "A. Registrasi Peserta", time: "10.00 - 12.00", title: "Panitia stand by di meja registrasi membantu registrasi dan menyerahkan goodybag berisi Rakernas Kit" },
-    { section: "A. Registrasi Peserta", time: "10.00 - 12.00", title: "Peserta diarahkan ke ruang transit/restoran untuk makan siang dan istirahat" },
+    { section: "A. Registrasi Peserta", time: "10.00 - 12.00", title: "Kedatangan peserta di lobi utama hotel, dilanjutkan menuju area registrasi" },
+    { section: "A. Registrasi Peserta", time: "10.00 - 12.00", title: "A. Registrasi ulang dan pengambilan goodybag Rakernas Kit di meja registrasi" },
+    { section: "A. Registrasi Peserta", time: "10.00 - 12.00", title: "Makan siang dan istirahat di ruang transit/restoran" },
     { section: "A. Registrasi Peserta", time: "12.00 - 12.30", title: "Shalat berjamaah di musholla" },
     { section: "A. Registrasi Peserta", time: "12.30 - 12.45", title: "Peserta memasuki ruang acara paling lambat pukul 12.45 WIB" },
 
     { section: "B. Pembukaan", time: "12.30 - 12.45", title: "Ruang Zoom untuk peserta online dibuka" },
     { section: "B. Pembukaan", time: "12.45 - 13.00", title: "Penampilan Tim Hadroh dari Santri Binaan BMH" },
-    { section: "B. Pembukaan", time: "13.00 - 13.10", title: "Pembukaan oleh MC" },
+    { section: "B. Pembukaan", time: "13.00 - 13.10", title: "B. Pembukaan oleh MC" },
     { section: "B. Pembukaan", time: "13.10 - 13.20", title: "Tilawah" },
     { section: "B. Pembukaan", time: "13.20 - 13.30", title: "Menyanyikan Indonesia Raya & Mars BMH" },
     { section: "B. Pembukaan", time: "13.30 - 13.40", title: "Penampilan Tim Hadroh" },
@@ -159,18 +159,18 @@ export const RUNDOWN_DATA: Record<"hari1" | "hari2" | "hari3", RundownItem[]> = 
     { section: "B. Pembukaan", time: "14.45 - 14.55", title: "Pembacaan doa" },
     { section: "B. Pembukaan", time: "14.55 - 15.50", title: "Penutup acara oleh MC" },
 
-    { section: "C. Check-in Kamar Hotel", time: "15.00 - 16.00", title: "Check-in kamar hotel (kunci diambil di meja registrasi)" },
+    { section: "C. Check-in Kamar Hotel", time: "15.00 - 16.00", title: "C. Check-in kamar hotel (kunci diambil di meja registrasi)" },
 
-    { section: "D. Orientasi Kelembagaan", time: "16.00 - 16.40", title: "Orientasi Kelembagaan" },
+    { section: "D. Orientasi Kelembagaan", time: "16.00 - 16.40", title: "D. Orientasi Kelembagaan" },
     { section: "D. Orientasi Kelembagaan", time: "16.40 - 16.50", title: "Coffee Break" },
 
-    { section: "E. Laporan Kinerja BMH 2026", time: "16.50 - 17.45", title: "Laporan Kinerja BMH 2026" },
+    { section: "E. Laporan Kinerja BMH 2026", time: "16.50 - 17.45", title: "E. Laporan Kinerja BMH 2026" },
     { section: "E. Laporan Kinerja BMH 2026", time: "17.45 - 19.30", title: "Ishoma" },
 
-    { section: "F. Sosialisasi Kebijakan", time: "19.30 - 20.25", title: "Sosialisasi Kebijakan" },
+    { section: "F. Sosialisasi Kebijakan", time: "19.30 - 20.25", title: "F. Sosialisasi Kebijakan" },
     { section: "F. Sosialisasi Kebijakan", time: "20.25 - 20.30", title: "Coffee Break" },
 
-    { section: "G. Paparan Strategi 2027", time: "20.30 - 21.30", title: "Paparan Strategi 2027" },
+    { section: "G. Paparan Strategi 2027", time: "20.30 - 21.30", title: "G. Paparan Strategi 2027" },
   ],
   hari2: [
     { time: "03.00 - 04.00", title: "Sholat Lail" },
@@ -196,20 +196,7 @@ export const RUNDOWN_DATA: Record<"hari1" | "hari2" | "hari3", RundownItem[]> = 
     { time: "07.00 - 08.30", title: "P. Workshop Project Manajemen" },
     { time: "08.30 - 10.00", title: "W. Leadership Training" },
     { time: "10.00 - 10.30", title: "X. Pembacaan Rekomendasi" },
-    {
-      time: "10.30 - 12.00",
-      title: "Y. Penutupan",
-      details: [
-        "Pembukaan",
-        "Tilawah Al Qur’an",
-        "Sambutan Ketua Panitia",
-        "Sambutan Ketua Pengurus",
-        "Sambutan Pembina BMH",
-        "Pembacaan SK Penugasan",
-        "Doa",
-        "Penutup",
-      ],
-    },
+    { time: "10.30 - 12.00", title: "Y. Penutupan" },
   ],
 };
 

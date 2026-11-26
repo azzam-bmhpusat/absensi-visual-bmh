@@ -219,7 +219,7 @@ describe("Fase 3 — Hitung Mundur & Rundown (PRD Rakernas BMH)", () => {
     });
 
     it("mendukung judul bagian, waktu rentang, dan sub-poin bernomor", () => {
-      expect(rundownContent).toContain("item.section");
+      expect(rundownContent).not.toContain("item.section");
       expect(rundownContent).toContain("sm:w-28");
       expect(rundownContent).toContain("<ol");
       expect(rundownContent).toContain("item.details");

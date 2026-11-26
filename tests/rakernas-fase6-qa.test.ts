@@ -37,12 +37,12 @@ describe("Fase 6 — QA & Penyelesaian: Landing Page Rakernas BMH", () => {
       expect(h1[0]).toEqual({
         section: "A. Registrasi Peserta",
         time: "10.00 - 12.00",
-        title: "Panitia stand by di lobby utama hotel menyambut dan mengarahkan peserta menuju tempat registrasi",
+        title: "Kedatangan peserta di lobi utama hotel, dilanjutkan menuju area registrasi",
       });
       expect(h1[25]).toEqual({
         section: "G. Paparan Strategi 2027",
         time: "20.30 - 21.30",
-        title: "Paparan Strategi 2027",
+        title: "G. Paparan Strategi 2027",
       });
       const sections: string[] = [];
       for (const item of h1) if (item.section && sections.at(-1) !== item.section) sections.push(item.section);
@@ -70,8 +70,7 @@ describe("Fase 6 — QA & Penyelesaian: Landing Page Rakernas BMH", () => {
       const penutupan = hari3[7];
       expect(penutupan.title).toBe("Y. Penutupan");
       expect(penutupan.time).toBe("10.30 - 12.00");
-      expect(penutupan.details).toHaveLength(8);
-      expect(penutupan.details?.[1]).toBe("Tilawah Al Qur’an");
+      expect(penutupan.details).toBeUndefined();
       for (const item of [...hari2, ...hari3]) expect(item.title).not.toContain("segera diumumkan");
     });
 

@@ -17,7 +17,7 @@ import type { FieldErrors } from "@/lib/content/schema";
 export type PesertaOption = { id: string; nama: string; wilayah: string; roomId: number | null };
 export type RoomData = ContentRowData & { nomor: string; kapasitas: number; penghuni: string[] };
 
-/** Kelola kamar + penghuni (dipilih dari akun ber-role peserta). */
+/** Kelola kamar + penghuni (dipilih dari semua akun kecuali role user). */
 export function RoomManager({ rooms, peserta }: { rooms: RoomData[]; peserta: PesertaOption[] }) {
   const [editing, setEditing] = useState<RoomData | null>(null);
   return (
@@ -70,7 +70,7 @@ function OccupantsDialog({ room, peserta, onClose }: { room: RoomData; peserta: 
         <DialogHeader>
           <DialogTitle className="font-heading text-lg font-bold text-primary">Penghuni kamar {room.nomor}</DialogTitle>
           <DialogDescription className="text-xs text-ink-muted">
-            Pilih dari akun ber-role peserta yang belum punya kamar. Kapasitas {room.kapasitas} orang.
+            Pilih dari akun (semua role kecuali user) yang belum punya kamar. Kapasitas {room.kapasitas} orang.
           </DialogDescription>
         </DialogHeader>
 
@@ -97,13 +97,13 @@ function OccupantsDialog({ room, peserta, onClose }: { room: RoomData; peserta: 
           <Label htmlFor="cari-peserta">Tambah penghuni</Label>
           <div className="relative">
             <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-ink-muted" aria-hidden="true" />
-            <Input id="cari-peserta" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Cari nama atau wilayah peserta" className="h-11 rounded-xl pl-9" disabled={full} />
+            <Input id="cari-peserta" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Cari nama atau wilayah" className="h-11 rounded-xl pl-9" disabled={full} />
           </div>
           {full ? (
             <p className="text-xs text-ink-muted">Kamar sudah penuh. Lepas penghuni atau naikkan kapasitas kamar.</p>
           ) : (
             <ul className="max-h-56 space-y-1 overflow-y-auto">
-              {options.length === 0 && <li className="py-2 text-sm text-ink-muted">Tidak ada peserta yang tersedia.</li>}
+              {options.length === 0 && <li className="py-2 text-sm text-ink-muted">Tidak ada akun yang tersedia.</li>}
               {options.map((p) => (
                 <li key={p.id}>
                   <button

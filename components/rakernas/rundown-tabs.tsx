@@ -24,6 +24,14 @@ const DAY_INDEX: Record<DayKey, number> = {
   hari3: 2,
 };
 
+function timeBadgeColor(title: string) {
+  const t = title.toLowerCase();
+  if (t.includes("coffee break")) return "bg-amber-100 text-amber-800 border-amber-200";
+  if (t.includes("ishoma")) return "bg-sky-100 text-sky-800 border-sky-200";
+  if (t.includes("shalat")) return "bg-violet-100 text-violet-800 border-violet-200";
+  return "bg-green-100 text-primary border-line";
+}
+
 export function RundownSection({ startsAt = DEFAULT_EVENT_SETTINGS.startsAt }: { startsAt?: string } = {}) {
   const daysConfig: DayTabConfig[] = getEventDays(startsAt).map((date, index) => ({
     key: `hari${index + 1}` as DayKey,
@@ -188,24 +196,9 @@ export function RundownSection({ startsAt = DEFAULT_EVENT_SETTINGS.startsAt }: {
                           ? parseRundownTitle(item.title, item.note)
                           : { mainTitle: item.title, subtitle: undefined };
                         const itemKey = `${uniqueId}-${key}-${index}`;
-                        const startsSection =
-                          Boolean(item.section) && item.section !== items[index - 1]?.section;
 
                         return (
                           <div key={itemKey} className="space-y-4">
-                            {/* Judul bagian (mis. "A. Registrasi Peserta") */}
-                            {startsSection && (
-                              <div className="relative pt-1">
-                                <span
-                                  className="absolute -left-4 sm:-left-6 top-3 size-2.5 sm:size-3 rotate-45 rounded-[2px] bg-brand-gold ring-2 ring-background"
-                                  aria-hidden="true"
-                                />
-                                <h4 className="font-heading text-sm sm:text-base font-bold text-primary">
-                                  {item.section}
-                                </h4>
-                              </div>
-                            )}
-
                             <div className="relative flex flex-col items-start gap-1.5 sm:flex-row sm:gap-4 group">
                               {/* Titik Penanda Timeline */}
                               <span
@@ -216,14 +209,14 @@ export function RundownSection({ startsAt = DEFAULT_EVENT_SETTINGS.startsAt }: {
                               {/* Badge Waktu (rentang, mis. 10.00 - 12.00) */}
                               <Badge
                                 variant="secondary"
-                                className="w-fit shrink-0 justify-center font-mono text-xs sm:w-28 font-semibold tabular-nums bg-green-100 text-primary border border-line"
+                                className={`w-fit shrink-0 justify-center font-mono text-xs sm:w-28 font-semibold tabular-nums border ${timeBadgeColor(item.title)}`}
                               >
                                 {item.time}
                               </Badge>
 
                               {/* Judul & Keterangan Acara */}
                               <div className="flex-1 pt-0.5 min-w-0">
-                                <p className="text-sm sm:text-base font-medium text-ink leading-snug">
+                                <p className={`text-sm sm:text-base text-ink leading-snug ${/^[A-Z]\. /.test(mainTitle) ? "font-bold" : "font-medium"}`}>
                                   {mainTitle}
                                 </p>
                                 {subtitle && (

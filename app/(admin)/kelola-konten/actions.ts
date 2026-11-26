@@ -34,7 +34,7 @@ function refresh(tag: string, paths: string[]) {
 /** Pesan galat Postgres -> bahasa pengguna (trigger kamar memakai pesan sendiri). */
 function dbError(error: { code?: string; message: string }): string {
   if (error.code === "23505") return "Data dengan nilai tersebut sudah ada (misalnya nomor kamar duplikat).";
-  if (error.code === "23514" && /peserta|penuh|Kapasitas/i.test(error.message)) return error.message;
+  if (error.code === "23514" && /Penghuni|penuh|Kapasitas/i.test(error.message)) return error.message;
   if (error.code === "23514") return "Data tidak memenuhi aturan validasi.";
   return "Gagal menyimpan ke database. Coba lagi.";
 }
@@ -108,7 +108,7 @@ export async function deleteContent(kind: ContentKind, rawId: unknown): Promise<
   return { success: true };
 }
 
-/** Ganti seluruh penghuni satu kamar (hanya profiles ber-role peserta; dicek juga oleh trigger DB). */
+/** Ganti seluruh penghuni satu kamar (semua role kecuali user; dicek juga oleh trigger DB). */
 export async function setRoomOccupants(input: { roomId: number; profileIds: string[] }): Promise<ContentResult> {
   if (!(await requireAdmin())) return DENIED;
   const parsed = occupantsSchema.safeParse(input);
@@ -122,8 +122,8 @@ export async function setRoomOccupants(input: { roomId: number; profileIds: stri
   if (unique.length > room.kapasitas) return { success: false, error: `Kamar hanya muat ${room.kapasitas} penghuni.` };
 
   if (unique.length) {
-    const { data: ok } = await db.from("profiles").select("id").in("id", unique).eq("role", "peserta").not("nama", "is", null);
-    if ((ok ?? []).length !== unique.length) return { success: false, error: "Penghuni harus akun ber-role peserta yang sudah punya nama." };
+    const { data: ok } = await db.from("profiles").select("id").in("id", unique).neq("role", "user").not("nama", "is", null);
+    if ((ok ?? []).length !== unique.length) return { success: false, error: "Penghuni harus akun non-user yang sudah punya nama." };
     const { data: taken } = await db.from("hotel_room_occupants").select("profile_id").in("profile_id", unique).neq("room_id", roomId);
     if ((taken ?? []).length) return { success: false, error: "Ada peserta yang sudah menempati kamar lain. Lepaskan dulu dari kamar tersebut." };
   }
