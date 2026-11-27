@@ -204,19 +204,19 @@ export const RUNDOWN_DATA: Record<"hari1" | "hari2" | "hari3", RundownItem[]> = 
 
 export const DRESSCODE_DATA: DresscodeItem[] = [
   {
-    src: "/dresscode/hari-pertama.png",
+    src: "/dresscode/1.png",
     alt: "Dress code hari pertama: kemeja lengan panjang, jas, dan songkok nasional",
     day: "Hari Pertama",
     desc: "Kemeja lengan panjang + Jas + Songkok Nasional.",
   },
   {
-    src: "/dresscode/hari-kedua.png",
+    src: "/dresscode/2.png",
     alt: "Dress code hari kedua: baju koko dan songkok nasional",
     day: "Hari Kedua",
     desc: "Baju koko + Songkok Nasional.",
   },
   {
-    src: "/dresscode/hari-ketiga.png",
+    src: "/dresscode/3.png",
     alt: "Dress code hari ketiga: batik lengan panjang dan songkok nasional",
     day: "Hari Ketiga",
     desc: "Batik lengan panjang + Songkok Nasional.",

@@ -173,7 +173,13 @@ const LOCKED_HINT = "Dikunci. Hubungi panitia untuk mengubahnya.";
  * Field terkunci (email, jabatan, nama & perwakilan daerah di /form): read-only dan tanpa `name`, jadi tidak ikut terkirim.
  * Server (updateProfile, submitParticipantForm) juga tidak membaca field ini.
  */
-function LockedField({ id, label, icon: Icon, value }: { id: string; label: string; icon: LucideIcon; value: string }) {
+function LockedField({ id, label, icon: Icon, value, hint = LOCKED_HINT }: {
+  id: string;
+  label: string;
+  icon: LucideIcon;
+  value: string;
+  hint?: string;
+}) {
   return (
     <div className="space-y-1.5">
       <Label htmlFor={id} className={labelClass}>
@@ -195,7 +201,7 @@ function LockedField({ id, label, icon: Icon, value }: { id: string; label: stri
         </InputGroupAddon>
       </InputGroup>
       <p id={`${id}-locked`} className="text-xs text-ink-muted">
-        {LOCKED_HINT}
+        {hint}
       </p>
     </div>
   );
@@ -210,6 +216,7 @@ export function ProfileFields({
   firstStep,
   jabatanEditable = false,
   lockedEmail,
+  profileEmail,
   missing = new Set<string>(),
 }: {
   initial: Omit<ProfileInitial, "email">;
@@ -218,6 +225,8 @@ export function ProfileFields({
   jabatanEditable?: boolean;
   /** Dipakai /form: email, nama, dan perwakilan daerah ditampilkan terkunci (tidak terkirim). */
   lockedEmail?: string;
+  /** /profile: email terkunci, nama dan daerah tetap dapat diedit bila profil belum lengkap. */
+  profileEmail?: string;
   /** Nama field kosong saat dikirim (dari useMissingFields). */
   missing?: ReadonlySet<string>;
 }) {
@@ -225,14 +234,39 @@ export function ProfileFields({
   const preview = formatArrival(wibLocalToIso(arrival));
   // Ukuran baju hanya untuk peserta yang hadir offline (baju dibagikan di lokasi acara).
   const [mode, setMode] = useState(initial.keteranganKehadiran);
+  const shirtSize = mode === "offline" && (
+    <fieldset className="mt-5 space-y-2" disabled={isPending}>
+      <legend className={cn(labelClass, "mb-2")}>
+        Ukuran Baju
+        {missing.has("ukuran_baju") && <RequiredMark />}
+      </legend>
+      {missing.has("ukuran_baju") && <RequiredHint id="ukuran_baju" />}
+      <div className={cn("grid gap-2 sm:grid-cols-6", profileEmail === undefined ? "grid-cols-3" : "grid-cols-6 max-[359px]:grid-cols-3")}>
+        {UKURAN_BAJU.map((size) => (
+          <label key={size} className={cn(optionCard, "h-12 justify-center text-sm font-semibold text-ink has-[:checked]:text-primary")}>
+            <input
+              type="radio"
+              name="ukuran_baju"
+              value={size}
+              required
+              defaultChecked={initial.ukuranBaju === size}
+              className="sr-only"
+            />
+            {size}
+          </label>
+        ))}
+      </div>
+      {profileEmail !== undefined && <p className="text-xs text-ink-muted">Wajib dipilih untuk pembagian seragam.</p>}
+    </fieldset>
+  );
 
   return (
     <>
       <Section step={firstStep} title="Data Peserta" description="Ditampilkan pada daftar peserta Rakernas.">
         <div className="grid gap-4 md:grid-cols-2">
-          {lockedEmail !== undefined && (
+          {(profileEmail !== undefined || lockedEmail !== undefined) && (
             <div className="md:col-span-2">
-              <LockedField id="email" label="Email" icon={Mail} value={lockedEmail} />
+              <LockedField id="email" label="Email" icon={Mail} value={profileEmail ?? lockedEmail ?? ""} hint={profileEmail !== undefined ? "Email akun tidak dapat diubah." : undefined} />
             </div>
           )}
           <div className="md:col-span-2">
@@ -284,7 +318,7 @@ export function ProfileFields({
             <LockedField id="jabatan" label="Jabatan" icon={Briefcase} value={initial.jabatan || "Belum diatur panitia"} />
           )}
         </div>
-
+        {profileEmail !== undefined && shirtSize}
       </Section>
 
       <Section step={firstStep + 1} title="Kontak & Kedatangan" description="Dipakai panitia untuk koordinasi selama acara.">
@@ -362,30 +396,7 @@ export function ProfileFields({
           </div>
         </fieldset>
 
-        {mode === "offline" && (
-        <fieldset className="mt-5 space-y-2" disabled={isPending}>
-          <legend className={cn(labelClass, "mb-2")}>
-            Ukuran Baju
-            {missing.has("ukuran_baju") && <RequiredMark />}
-          </legend>
-          {missing.has("ukuran_baju") && <RequiredHint id="ukuran_baju" />}
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
-            {UKURAN_BAJU.map((size) => (
-              <label key={size} className={cn(optionCard, "h-12 justify-center text-sm font-semibold text-ink has-[:checked]:text-primary")}>
-                <input
-                  type="radio"
-                  name="ukuran_baju"
-                  value={size}
-                  required
-                  defaultChecked={initial.ukuranBaju === size}
-                  className="sr-only"
-                />
-                {size}
-              </label>
-            ))}
-          </div>
-        </fieldset>
-        )}
+        {profileEmail === undefined && shirtSize}
       </Section>
     </>
   );
@@ -399,6 +410,7 @@ export function SubmitBar({
   label,
   pendingLabel,
   icon: Icon,
+  inFlow = false,
 }: {
   error?: string;
   isPending: boolean;
@@ -406,9 +418,13 @@ export function SubmitBar({
   label: string;
   pendingLabel: string;
   icon: LucideIcon;
+  inFlow?: boolean;
 }) {
   return (
-    <div className="sticky bottom-(--bottom-nav-offset) z-10 rounded-b-3xl border-t border-line bg-white/90 px-5 py-4 backdrop-blur-md sm:px-7 md:static md:bg-surface md:backdrop-blur-none">
+    <div className={cn(
+      "rounded-b-3xl border-t border-line px-5 py-4 sm:px-7",
+      inFlow ? "bg-surface" : "sticky bottom-(--bottom-nav-offset) z-10 bg-white/90 backdrop-blur-md md:static md:bg-surface md:backdrop-blur-none",
+    )}>
       {error && (
         <div
           role="alert"
@@ -419,12 +435,12 @@ export function SubmitBar({
         </div>
       )}
       {/* pr-16 di HP: sisakan ruang untuk tombol WhatsApp melayang di kanan bawah */}
-      <div className="flex flex-col gap-2 pr-16 md:flex-row md:items-center md:justify-between md:pr-0">
-        <p className="hidden text-sm text-ink-muted md:block">{hint}</p>
+      <div className={cn("flex flex-col gap-2 md:flex-row md:items-center md:justify-between", !inFlow && "pr-16 md:pr-0")}>
+        <p className={cn("text-sm text-ink-muted", !inFlow && "hidden md:block")}>{hint}</p>
         <Button
           type="submit"
           disabled={isPending}
-          className="h-12 w-full rounded-xl bg-primary px-6 text-[15px] font-semibold text-white hover:bg-brand-green-deep md:w-auto"
+          className={cn("w-full rounded-xl bg-primary px-6 text-[15px] font-semibold text-white hover:bg-brand-green-deep md:w-auto", inFlow ? "h-11" : "h-12")}
         >
           {isPending ? (
             <>
@@ -457,13 +473,9 @@ export function ProfileForm({ initial, readOnly = false }: { initial: ProfileIni
 
   return (
     <form action={formAction} {...formProps}>
-      <Section step={1} title="Akun" description="Email yang dipakai untuk masuk.">
-        <LockedField id="email" label="Email" icon={Mail} value={initial.email} />
-      </Section>
-
       {/* Peserta dengan profil lengkap: semua field dikunci, tanpa tombol simpan. */}
       <fieldset disabled={readOnly} className="min-w-0">
-        <ProfileFields initial={initial} isPending={isPending} firstStep={2} missing={missing} />
+        <ProfileFields initial={initial} isPending={isPending} firstStep={1} profileEmail={initial.email} missing={missing} />
       </fieldset>
 
       {readOnly ? (
@@ -475,10 +487,11 @@ export function ProfileForm({ initial, readOnly = false }: { initial: ProfileIni
         <SubmitBar
           error={state?.error}
           isPending={isPending}
-          hint="Perubahan langsung disimpan ke profil Anda."
+          hint="Pastikan data sudah benar sebelum disimpan."
           label="Simpan Perubahan"
           pendingLabel="Menyimpan..."
           icon={Save}
+          inFlow
         />
       )}
     </form>

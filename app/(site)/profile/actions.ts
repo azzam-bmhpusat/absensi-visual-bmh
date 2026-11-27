@@ -1,10 +1,11 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { PROFILE_COMPLETE_COLUMNS, PROFILE_LOCKED_MESSAGE, isProfileComplete, selfProfileSchema } from "@/lib/profile-contact";
 import { AVATAR_BUCKET, avatarFileError, avatarObjectPath } from "@/lib/avatar";
+import { CONTENT_TAGS } from "@/lib/content/schema";
 import { toUserRole } from "@/lib/user-schema";
 
 export interface ProfileActionResult {
@@ -113,6 +114,7 @@ export async function uploadAvatar(formData: FormData): Promise<ProfileActionRes
     return { success: false, error: "Terjadi kesalahan saat mengunggah foto." };
   }
 
+  updateTag(CONTENT_TAGS.hotel);
   revalidatePath("/", "layout");
   return { success: true, message: "Foto profil diperbarui." };
 }
@@ -130,6 +132,7 @@ export async function removeAvatar(): Promise<ProfileActionResult> {
     return { success: false, error: "Terjadi kesalahan saat menghapus foto." };
   }
 
+  updateTag(CONTENT_TAGS.hotel);
   revalidatePath("/", "layout");
   return { success: true, message: "Foto profil dihapus." };
 }

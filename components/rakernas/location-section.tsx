@@ -23,12 +23,14 @@ export function LocationSection({ settings = DEFAULT_EVENT_SETTINGS }: { setting
       rel="noopener noreferrer"
       aria-label={`Buka ${settings.venueName} di Google Maps (tab baru)`}
       className={cn(
-        "inline-flex min-h-12 items-center justify-center gap-2 rounded-[14px] bg-primary px-[22px] text-[15px] font-semibold text-white transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "inline-flex min-h-[52px] items-center justify-between gap-3.5 rounded-full border border-[#ffffff2e] bg-[linear-gradient(180deg,#0b6355_0%,#04362f_100%)] py-2 pr-2 pl-6 text-base/[26px] font-semibold text-white no-underline shadow-[0_10px_24px_#09504640,inset_0_1px_0_#ffffff33] transition-[filter,transform] duration-200 ease-[ease] hover:brightness-[1.06] active:scale-[0.98] focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-primary motion-reduce:transition-none",
         className,
       )}
     >
       Buka di Google Maps
-      <ArrowUpRight aria-hidden="true" className="size-[18px]" />
+      <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-gold text-[#04362f]">
+        <ArrowUpRight className="size-[18px]" />
+      </span>
     </a>
   );
 
@@ -78,7 +80,8 @@ const GALLERY_VARIANTS = {
     item: "w-[150px] h-[200px] lg:w-auto lg:h-[300px]",
     aspect: "aspect-[3/4]",
     sizes: "(min-width: 1024px) 20vw, 150px",
-    dialog: "max-w-sm",
+    dialog: "w-[calc(100vw-2rem)] max-w-sm sm:max-w-sm",
+    dialogImage: "object-cover",
     dialogSizes: "(max-width: 640px) 90vw, 384px",
   },
   landscape: {
@@ -86,7 +89,8 @@ const GALLERY_VARIANTS = {
     item: "w-[260px] h-[195px] lg:w-[360px] lg:h-[260px]",
     aspect: "aspect-[4/3]",
     sizes: "(min-width: 1024px) 360px, 260px",
-    dialog: "max-w-3xl",
+    dialog: "w-[calc(100vw-2rem)] max-w-3xl sm:max-w-3xl",
+    dialogImage: "object-cover",
     dialogSizes: "(max-width: 768px) 90vw, 768px",
   },
 } as const;
@@ -172,7 +176,7 @@ function PhotoGallery({
                 alt={`${selectedPhoto.caption} — ${altSuffix}`}
                 fill
                 sizes={v.dialogSizes}
-                className="object-contain"
+                className={v.dialogImage}
                 priority
               />
             </div>

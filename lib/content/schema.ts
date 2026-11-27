@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { avatarPublicUrl } from "@/lib/avatar";
 
 /** Konten dinamis (migrasi 0022): tipe tampilan, skema input admin, dan mapper baris DB. */
 
@@ -14,7 +15,7 @@ export const CONTENT_IMAGE_MAX_BYTES = 2 * 1024 * 1024;
 export const CONTENT_IMAGE_MIME = ["image/jpeg", "image/png", "image/webp"] as const;
 
 // ---- Tipe tampilan (dipakai komponen halaman publik) ----
-export type Penghuni = { nama: string; wilayah: string };
+export type Penghuni = { id: string; nama: string; wilayah: string; avatarUrl: string | null };
 export type Kamar = { nomor: string; lantai: number; penghuni: Penghuni[] };
 export type InfoPenting = { judul: string; isi: string };
 export type KontakPanitia = { nama: string; whatsapp: string };
@@ -34,7 +35,10 @@ export type NotulaRapat = {
 // ---- Baris DB ----
 export type RoomRow = {
   id: number; nomor: string; lantai: number; kapasitas: number; urutan: number;
-  hotel_room_occupants: { profile_id: string; profiles: { nama: string | null; perwakilan_daerah: string | null } | null }[];
+  hotel_room_occupants: {
+    profile_id: string;
+    profiles: { nama: string | null; perwakilan_daerah: string | null; avatar_url: string | null } | null;
+  }[];
 };
 export type InfoRow = { id: number; judul: string; isi: string; urutan: number };
 export type AlbumRow = {
@@ -76,7 +80,12 @@ export const roomToKamar = (r: RoomRow): Kamar => ({
   nomor: r.nomor,
   lantai: r.lantai,
   penghuni: r.hotel_room_occupants
-    .map((o) => ({ nama: o.profiles?.nama?.trim() || "Peserta", wilayah: o.profiles?.perwakilan_daerah?.trim() || "-" }))
+    .map(({ profile_id, profiles }) => ({
+      id: profile_id,
+      nama: profiles?.nama?.trim() || "Peserta",
+      wilayah: profiles?.perwakilan_daerah?.trim() || "-",
+      avatarUrl: avatarPublicUrl(profiles?.avatar_url),
+    }))
     .sort((a, b) => a.nama.localeCompare(b.nama, "id")),
 });
 export const albumToView = (r: AlbumRow): AlbumKegiatan => ({

@@ -11,7 +11,7 @@ import {
  * Baca konten untuk halaman publik. Service role (dipanggil server-side, halaman
  * sudah dibatasi ProfileGate); di-cache per tag, dibersihkan oleh server action admin.
  */
-export const ROOM_SELECT = "id, nomor, lantai, kapasitas, urutan, hotel_room_occupants(profile_id, profiles(nama, perwakilan_daerah))";
+export const ROOM_SELECT = "id, nomor, lantai, kapasitas, urutan, hotel_room_occupants(profile_id, profiles(nama, perwakilan_daerah, avatar_url))";
 
 async function rows<T>(table: string, select = "*"): Promise<T[]> {
   const { data, error } = await createAdminClient().from(table).select(select)

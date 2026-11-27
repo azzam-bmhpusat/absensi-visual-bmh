@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import { CardLinkButton } from "@/components/rakernas/card-link-button";
 import {
@@ -10,6 +10,7 @@ import {
 import { CONTENT_KINDS, rowToFormValues, toSnake } from "@/lib/content/admin-config";
 
 const read = (...p: string[]) => fs.readFileSync(path.join(__dirname, "..", ...p), "utf-8");
+afterEach(() => vi.unstubAllEnvs());
 
 describe("konten dinamis: format & mapper", () => {
   it("format tanggal sama dengan teks dummy lama", () => {
@@ -17,17 +18,21 @@ describe("konten dinamis: format & mapper", () => {
     expect(formatTanggal("2027-02-17")).toBe("Rabu, 17 Februari 2027");
   });
 
-  it("penghuni kamar diambil dari profil peserta (nama + perwakilan daerah)", () => {
+  it("penghuni kamar diambil dari profil peserta beserta foto jika tersedia", () => {
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://test.supabase.co");
     const row: RoomRow = {
       id: 1, nomor: "301", lantai: 3, kapasitas: 2, urutan: 0,
       hotel_room_occupants: [
-        { profile_id: "b", profiles: { nama: "Zaid", perwakilan_daerah: "Banten" } },
-        { profile_id: "a", profiles: { nama: "Ahmad", perwakilan_daerah: "Jawa Barat" } },
+        { profile_id: "b", profiles: { nama: "Zaid", perwakilan_daerah: "Banten", avatar_url: null } },
+        { profile_id: "a", profiles: { nama: "Ahmad", perwakilan_daerah: "Jawa Barat", avatar_url: "a/avatar?v=42" } },
       ],
     };
     expect(roomToKamar(row)).toEqual({
       nomor: "301", lantai: 3,
-      penghuni: [{ nama: "Ahmad", wilayah: "Jawa Barat" }, { nama: "Zaid", wilayah: "Banten" }],
+      penghuni: [
+        { id: "a", nama: "Ahmad", wilayah: "Jawa Barat", avatarUrl: "https://test.supabase.co/storage/v1/object/public/avatars/a/avatar?v=42" },
+        { id: "b", nama: "Zaid", wilayah: "Banten", avatarUrl: null },
+      ],
     });
   });
 

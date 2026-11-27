@@ -25,6 +25,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+const PROFILE_CONTENT = "mx-auto w-full max-w-[1232px]";
+const LOCKED_PAGES = ["Informasi Kamar Hotel", "Foto Galeri Kegiatan", "Materi Presentasi"];
+
 function SummaryRow({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: string | null }) {
   return (
     <li className="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
@@ -58,10 +61,11 @@ async function ProfileContent() {
     .maybeSingle();
 
   // Role `user` (akun Google baru) belum peserta: tanpa form, hanya ajakan menghubungi panitia.
-  const isApplicant = toUserRole(profile?.role) === "user";
+  const role = toUserRole(profile?.role);
+  const isApplicant = role === "user";
   const complete = isProfileComplete(profile);
   // Peserta dengan profil lengkap: form hanya dibaca (updateProfile juga menolak).
-  const locked = toUserRole(profile?.role) === "peserta" && complete;
+  const locked = role === "peserta" && complete;
   const { filled, total } = profileStatus(profile);
   const percent = Math.round((filled / total) * 100);
   // Akun dari Google: nama Google (privat) hanya sebagai sapaan; tidak pernah menjadi `nama` publik.
@@ -71,112 +75,129 @@ async function ProfileContent() {
   const mode = profile?.keterangan_kehadiran as keyof typeof MODE_KEHADIRAN_LABEL | null | undefined;
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-6">
-      {/* Hero profil */}
-      <section className="relative overflow-hidden rounded-3xl bg-linear-to-br from-primary via-brand-green-deep to-brand-green-night px-5 py-8 text-white shadow-lg shadow-brand-green-deep/20 sm:px-8 md:py-10">
-        <span aria-hidden="true" className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-brand-green via-brand-gold to-brand-green" />
-        <span aria-hidden="true" className="pointer-events-none absolute -top-24 -right-16 size-72 rounded-full bg-brand-green/25 blur-3xl" />
-        <span aria-hidden="true" className="pointer-events-none absolute -bottom-28 -left-20 size-64 rounded-full bg-brand-gold/15 blur-3xl" />
+    <>
+      <section
+        aria-labelledby="profile-name"
+        className="relative [--profile-nav:calc(72px_+_env(safe-area-inset-top))] -mt-[var(--profile-nav)] rounded-b-[20px] bg-linear-to-br from-brand-green-deep to-brand-green-night pt-(--profile-nav) text-white"
+      >
+        <div className={cn(PROFILE_CONTENT, "grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4 px-5 pt-8 pb-[68px] text-left lg:flex lg:gap-7 lg:px-4 lg:pt-10 lg:pb-14")}>
+          <AvatarUpload src={avatarPublicUrl(profile?.avatar_url)} name={displayName} />
 
-        <div className="relative flex flex-col items-center gap-6 text-center md:flex-row md:items-center md:text-left">
-          <AvatarUpload src={avatarPublicUrl(profile?.avatar_url)} name={profile?.nama || user.email || ""} />
-
-          <div className="min-w-0 flex-1">
+          <div className="w-full min-w-0 lg:flex-1">
             <p className="text-xs font-semibold tracking-[0.16em] text-brand-gold-soft uppercase">Profil Saya</p>
-            <h1 className="mt-1 wrap-anywhere font-heading text-2xl font-bold text-balance sm:text-3xl">{displayName}</h1>
+            <h1 id="profile-name" className="mt-1.5 wrap-anywhere font-heading text-2xl/[1.2] font-bold lg:text-[40px]/[1.2] lg:text-balance">{displayName}</h1>
             {subtitle && <p className="mt-1 wrap-anywhere text-sm text-white/80 sm:text-base">{subtitle}</p>}
             {user.email && <p className="mt-1 wrap-anywhere text-sm text-white/60">{user.email}</p>}
           </div>
 
-          {isApplicant ? (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-gold px-3 py-1.5 text-xs font-semibold text-brand-green-night">
-              <CircleAlert className="size-3.5" aria-hidden="true" />
-              Belum terdaftar sebagai peserta
-            </span>
-          ) : (
-            <div className="w-full max-w-xs rounded-2xl bg-white/10 p-4 text-left ring-1 ring-white/15 backdrop-blur-sm md:w-64">
-              <span
-                className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold",
-                  complete ? "bg-brand-green text-brand-green-night" : "bg-brand-gold text-brand-green-night",
-                )}
-              >
-                {complete ? <BadgeCheck className="size-3.5" aria-hidden="true" /> : <CircleAlert className="size-3.5" aria-hidden="true" />}
-                {complete ? "Profil lengkap" : "Belum lengkap"}
+          <div className="col-span-full flex w-full flex-col items-stretch gap-4 lg:w-[280px] lg:shrink-0 lg:gap-3">
+            {isApplicant ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-gold px-3 py-1.5 text-xs font-semibold text-brand-green-night">
+                <CircleAlert className="size-3.5 shrink-0" aria-hidden="true" />
+                Belum terdaftar sebagai peserta
               </span>
-              <div
-                className="mt-3 h-2 overflow-hidden rounded-full bg-white/15"
-                role="progressbar"
-                aria-label="Kelengkapan profil"
-                aria-valuemin={0}
-                aria-valuemax={total}
-                aria-valuenow={filled}
-              >
+            ) : (
+              <div className="rounded-2xl border border-white/15 bg-white/8 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span
+                    className={cn(
+                      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold",
+                      complete ? "bg-brand-green text-brand-green-night" : "bg-brand-gold text-brand-green-night",
+                    )}
+                  >
+                    {complete ? <BadgeCheck className="size-3.5" aria-hidden="true" /> : <CircleAlert className="size-3.5" aria-hidden="true" />}
+                    {complete ? "Profil lengkap" : "Belum lengkap"}
+                  </span>
+                  <span className="font-heading text-xl leading-none font-bold tabular-nums">{percent}%</span>
+                </div>
                 <div
-                  className={cn("h-full rounded-full", complete ? "bg-brand-green" : "bg-brand-gold")}
-                  style={{ width: `${percent}%` }}
-                />
-              </div>
-              <p className="mt-2 text-xs text-white/75">
-                {filled} dari {total} data terisi
-              </p>
-            </div>
-          )}
-        </div>
-      </section>
-
-      <MyQrCard token={createUserQrToken(user.id)} name={displayName} />
-
-      {isApplicant ? (
-        <ApplyParticipantCard />
-      ) : (
-        <div className="grid gap-6 lg:grid-cols-12 lg:items-start">
-          {/* Ringkasan kehadiran */}
-          <aside className="space-y-4 lg:sticky lg:top-24 lg:col-span-4">
-            <div className="rounded-3xl border border-line bg-white p-5 shadow-sm sm:p-6">
-              <h2 className="font-heading text-base font-semibold text-primary">Ringkasan Kehadiran</h2>
-              <ul className="mt-4 divide-y divide-line">
-                <SummaryRow
-                  icon={mode === "online" ? Video : MapPin}
-                  label="Keterangan kehadiran"
-                  value={mode ? MODE_KEHADIRAN_LABEL[mode] ?? null : null}
-                />
-                <SummaryRow icon={CalendarClock} label="Rencana kedatangan" value={formatArrival(profile?.rencana_kedatangan)} />
-                <SummaryRow icon={Shirt} label="Ukuran baju" value={profile?.ukuran_baju ?? null} />
-                <SummaryRow icon={Phone} label="No WhatsApp" value={profile?.no_whatsapp ?? null} />
-              </ul>
-            </div>
-            {!complete && (
-              <div className="flex gap-3 rounded-2xl border border-brand-gold/50 bg-gold-50 p-4 text-sm text-ink">
-                <CircleAlert className="mt-0.5 size-5 shrink-0 text-brand-gold-text" aria-hidden="true" />
-                <p>
-                  <span className="font-semibold">Lengkapi profil Anda</span> untuk membuka halaman Informasi Kamar Hotel dan
-                  Publikasi.
+                  className="mt-3 h-2 overflow-hidden rounded-full bg-white/15"
+                  role="progressbar"
+                  aria-label="Kelengkapan profil"
+                  aria-valuemin={0}
+                  aria-valuemax={total}
+                  aria-valuenow={filled}
+                >
+                  <div
+                    className={cn("h-full rounded-full", complete ? "bg-brand-green" : "bg-brand-gold")}
+                    style={{ width: `${percent}%` }}
+                  />
+                </div>
+                <p className="mt-2 text-xs text-white/75">
+                  {filled} dari {total} data terisi{complete ? "" : ` · ${total - filled} perlu dilengkapi`}
                 </p>
               </div>
             )}
-          </aside>
-
-          {/* Form */}
-          <div className="rounded-3xl border border-line bg-white shadow-sm lg:col-span-8">
-            <ProfileForm
-              readOnly={locked}
-              key={`${user.email}-${profile?.nama}-${profile?.rencana_kedatangan}`}
-              initial={{
-                email: user.email ?? "",
-                nama: profile?.nama ?? "",
-                perwakilanDaerah: profile?.perwakilan_daerah ?? "",
-                jabatan: profile?.jabatan ?? "",
-                ukuranBaju: profile?.ukuran_baju ?? "",
-                noWhatsapp: profile?.no_whatsapp ?? "",
-                rencanaKedatangan: isoToWibLocal(profile?.rencana_kedatangan),
-                keteranganKehadiran: profile?.keterangan_kehadiran ?? "",
-              }}
-            />
+            <MyQrCard token={createUserQrToken(user.id)} />
           </div>
         </div>
-      )}
-    </div>
+      </section>
+
+      <div className={cn(PROFILE_CONTENT, "px-4 pt-5 pb-12 lg:pt-10 lg:pb-[104px]")}>
+        {isApplicant ? (
+          <ApplyParticipantCard />
+        ) : (
+          <div className="grid gap-5 lg:grid-cols-[minmax(0,380fr)_minmax(0,792fr)] lg:items-start lg:gap-7">
+            {/* Ringkasan kehadiran */}
+            <aside className="min-w-0 space-y-4">
+              <div className="rounded-3xl border border-line bg-white p-5 shadow-sm lg:p-6">
+                <h2 className="font-heading text-base font-semibold text-primary">Ringkasan Kehadiran</h2>
+                <ul className="mt-4 divide-y divide-line">
+                  <SummaryRow
+                    icon={mode === "online" ? Video : MapPin}
+                    label="Keterangan kehadiran"
+                    value={mode ? MODE_KEHADIRAN_LABEL[mode] ?? null : null}
+                  />
+                  <SummaryRow icon={CalendarClock} label="Rencana kedatangan" value={formatArrival(profile?.rencana_kedatangan)} />
+                  <SummaryRow icon={Shirt} label="Ukuran baju" value={profile?.ukuran_baju ?? null} />
+                  <SummaryRow icon={Phone} label="No WhatsApp" value={profile?.no_whatsapp ?? null} />
+                </ul>
+              </div>
+              {role === "peserta" && !complete && (
+                <>
+                  <div className="flex gap-3 rounded-2xl border border-brand-gold/50 bg-gold-50 p-4 text-sm text-ink">
+                    <CircleAlert className="mt-0.5 size-5 shrink-0 text-brand-gold-text" aria-hidden="true" />
+                    <p>
+                      <strong className="block">Lengkapi profil Anda</strong>
+                      Untuk membuka halaman Informasi Kamar Hotel dan Publikasi.
+                    </p>
+                  </div>
+                  <section aria-labelledby="profile-locked-pages" className="rounded-2xl border border-line bg-white p-5 text-ink lg:px-6">
+                    <h2 id="profile-locked-pages" className="mb-3 text-xs font-semibold tracking-wide text-ink-muted uppercase">Akses terkunci</h2>
+                    <ul className="space-y-2.5 text-sm">
+                      {LOCKED_PAGES.map((label) => (
+                        <li key={label} className="flex items-center gap-2">
+                          <Lock className="size-4 shrink-0 text-ink-muted" aria-hidden="true" />
+                          {label}
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                </>
+              )}
+            </aside>
+
+            {/* Form */}
+            <div className="min-w-0 rounded-3xl border border-line bg-white shadow-sm">
+              <ProfileForm
+                readOnly={locked}
+                key={`${user.email}-${profile?.nama}-${profile?.rencana_kedatangan}`}
+                initial={{
+                  email: user.email ?? "",
+                  nama: profile?.nama ?? "",
+                  perwakilanDaerah: profile?.perwakilan_daerah ?? "",
+                  jabatan: profile?.jabatan ?? "",
+                  ukuranBaju: profile?.ukuran_baju ?? "",
+                  noWhatsapp: profile?.no_whatsapp ?? "",
+                  rencanaKedatangan: isoToWibLocal(profile?.rencana_kedatangan),
+                  keteranganKehadiran: profile?.keterangan_kehadiran ?? "",
+                }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 
@@ -218,7 +239,7 @@ function ApplyParticipantCard() {
 export default function ProfilePage() {
   return (
     <>
-      <main className="page-bg flex-1 px-4 py-8 sm:px-6 md:py-12">
+      <main className="page-bg flex-1 pt-[calc(72px+env(safe-area-inset-top))]">
         <Suspense fallback={null}>
           <ProfileContent />
         </Suspense>

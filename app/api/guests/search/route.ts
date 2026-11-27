@@ -1,4 +1,6 @@
 import { INVITED_GUESTS_CONTENT } from "@/content/rakernas";
+import { avatarPublicUrl } from "@/lib/avatar";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createPublicServerClient } from "@/lib/supabase/server";
 import {
   buildGuestSearchFilter,
@@ -8,6 +10,29 @@ import {
 } from "@/lib/guest-search";
 
 const headers = { "Cache-Control": "no-store" };
+
+async function getGuestAvatars(ids: string[], signal: AbortSignal) {
+  const avatars = new Map<string, string | null>();
+  if (ids.length === 0) return avatars;
+
+  try {
+    const { data, error } = await createAdminClient()
+      .from("profiles")
+      .select("id, avatar_url")
+      .in("id", ids)
+      .not("nama", "is", null)
+      .abortSignal(AbortSignal.any([signal, AbortSignal.timeout(2_500)]));
+
+    if (!error) {
+      for (const profile of data ?? []) {
+        avatars.set(profile.id, avatarPublicUrl(profile.avatar_url));
+      }
+    }
+  } catch {
+    // A missing avatar should not prevent the search results from loading.
+  }
+  return avatars;
+}
 
 export async function GET(request: Request) {
   const params = parseGuestSearchParams(new URL(request.url).searchParams);
@@ -30,12 +55,15 @@ export async function GET(request: Request) {
 
     if (error) throw error;
 
+    const guests = data ?? [];
+    const avatars = await getGuestAvatars(guests.map((guest) => guest.id), request.signal);
     const response: GuestSearchResponse = {
-      guests: (data ?? []).map((guest) => ({
+      guests: guests.map((guest) => ({
         id: guest.id,
         nama: guest.nama,
         perwakilan_daerah: guest.perwakilan_daerah,
         jabatan: guest.jabatan ?? null,
+        avatarUrl: avatars.get(guest.id) ?? null,
       })),
       total: count ?? 0,
       page: params.page,

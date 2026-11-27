@@ -2,6 +2,7 @@
 
 import { useDeferredValue, useState } from "react";
 import { BedDouble, Search, User, X } from "lucide-react";
+import { UserAvatar } from "@/components/auth/user-avatar";
 import { Badge } from "@/components/ui/badge";
 import {
   InputGroup,
@@ -106,18 +107,18 @@ export function DaftarKamar({ kamar }: { kamar: Kamar[] }) {
                     const cocok = q !== "" && p.nama.toLowerCase().includes(q);
                     return (
                       <li
-                        key={p.nama}
+                        key={p.id}
                         className={
                           "flex items-center gap-3 rounded-xl p-1.5 -m-1.5 " +
                           (cocok ? "bg-brand-gold-soft/25" : "")
                         }
                       >
-                        <span
-                          aria-hidden
-                          className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-green/10 text-sm font-semibold text-brand-green-deep dark:text-brand-gold-soft"
-                        >
-                          {inisial(p.nama)}
-                        </span>
+                        <UserAvatar
+                          src={p.avatarUrl}
+                          name={p.nama}
+                          initials={inisial(p.nama)}
+                          className="size-10 bg-brand-green/10 text-sm font-semibold text-brand-green-deep dark:text-brand-gold-soft"
+                        />
                         <span className="min-w-0">
                           <span className="block truncate font-medium">{p.nama}</span>
                           <span className="block truncate text-sm text-muted-foreground">

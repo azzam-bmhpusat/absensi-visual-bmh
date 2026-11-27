@@ -22,7 +22,9 @@ import {
   GUEST_SEARCH_MAX_LENGTH,
   GUEST_SEARCH_MIN_LENGTH,
   type GuestSearchResponse,
+  type PublicGuest,
 } from "@/lib/guest-search";
+import { UserAvatar } from "@/components/auth/user-avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,13 +40,6 @@ type SearchResult =
       data: GuestSearchResponse;
     }
   | { key: string; status: "error" };
-
-type ResultCard = {
-  id: string;
-  nama: string;
-  perwakilan_daerah: string;
-  jabatan: string | null;
-};
 
 const SEARCH_ANCHOR = "#invited-guest-search";
 
@@ -84,7 +79,7 @@ const detailRows = [
 const resultCard =
   "relative min-w-0 gap-0 overflow-hidden rounded-2xl border-0 bg-white py-0 text-brand-green-night shadow-lg shadow-black/25 ring-1 ring-white/10";
 
-function ResultGroup({ title, cards, query }: { title: string; cards: ResultCard[]; query: string }) {
+function ResultGroup({ title, cards, query }: { title: string; cards: PublicGuest[]; query: string }) {
   return (
     <section aria-label={title}>
       <h3 className="sr-only">{title}</h3>
@@ -105,12 +100,12 @@ function ResultGroup({ title, cards, query }: { title: string; cards: ResultCard
             />
             <CardHeader className="gap-3 px-5 pt-6 pb-4">
               <div className="flex items-start gap-3.5">
-                <span
-                  aria-hidden="true"
-                  className="flex size-12 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-brand-green to-brand-green-deep text-base font-bold text-white shadow-sm"
-                >
-                  {initials(guest.nama)}
-                </span>
+                <UserAvatar
+                  src={guest.avatarUrl}
+                  name={guest.nama}
+                  initials={initials(guest.nama)}
+                  className="size-12 bg-linear-to-br from-brand-green to-brand-green-deep text-base font-bold text-white shadow-sm"
+                />
                 <div className="min-w-0 flex-1">
                   <CardTitle>
                     <h4
@@ -185,7 +180,7 @@ export function InvitedGuestsSection() {
   const guestPages = data ? Math.ceil(data.total / data.pageSize) : 0;
   const totalPages = Math.max(1, guestPages);
   const combinedTotal = data?.total ?? 0;
-  const acceptedCards: ResultCard[] = data?.guests ?? [];
+  const acceptedCards = data?.guests ?? [];
   const hasCards = acceptedCards.length > 0;
 
   // Tautan ke /#invited-guest-search: gulir & fokus ke kolom pencarian

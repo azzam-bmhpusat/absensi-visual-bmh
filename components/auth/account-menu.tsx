@@ -12,7 +12,7 @@ export function LoginLink() {
   return (
     <Link
       href="/login"
-      className="group/login relative isolate inline-flex h-11 items-center gap-2.5 overflow-hidden rounded-full bg-linear-to-b from-[#0B6355] to-[#04362F] py-[5px] pr-[5px] pl-4 text-sm font-semibold text-white shadow-[0_4px_16px_#09504640,inset_0_1px_0_#FFFFFF33] transition-[filter] hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 in-data-compact:text-[13px] sm:in-data-compact:text-sm lg:text-[15px] lg:in-data-compact:text-[15px]"
+      className="group/login relative isolate inline-flex h-9 items-center gap-2.5 overflow-hidden rounded-full bg-linear-to-b from-[#0B6355] to-[#04362F] py-[5px] pr-[5px] pl-4 text-[13px] font-semibold text-white shadow-[0_4px_16px_#09504640,inset_0_1px_0_#FFFFFF33] transition-[filter] hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:text-sm lg:h-11 lg:text-[15px]"
     >
       <span
         aria-hidden="true"

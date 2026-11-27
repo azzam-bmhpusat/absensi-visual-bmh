@@ -3,13 +3,12 @@
   isolation: isolate;
   display: flex;
   align-items: center;
-  /* Hero mulai dari tepi atas layar (di belakang navbar sticky 72px); isi tetap di tengah viewport. */
+  /* Header melayang (-mb di FloatingCapsuleNav): hero mulai dari tepi atas layar; isi tetap di tengah viewport. */
   --hero-nav: calc(72px + env(safe-area-inset-top));
   min-height: 100svh;
-  margin-top: calc(var(--hero-nav) * -1);
   overflow: hidden;
   padding: var(--hero-nav) 0;
-  background: linear-gradient(180deg, #ffffff 0%, #eef8f3 100%);
+  background: linear-gradient(180deg, #eef8f3 0%, #f8fcfa 30%, #eef8f3 100%);
   color: var(--primary);
   font-family: var(--font-sans), Arial, sans-serif;
   text-align: center;

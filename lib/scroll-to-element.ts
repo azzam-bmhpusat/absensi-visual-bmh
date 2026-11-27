@@ -5,6 +5,8 @@ interface ScrollToElementOptions {
   getElement: () => HTMLElement | null;
   /** Jarak elemen dari tepi atas viewport yang diharapkan (px), mis. tinggi navbar + margin. */
   offset: number;
+  /** Toleransi dari posisi tujuan sebelum scroll dianggap selesai (px). */
+  tolerance?: number;
   /** Dievaluasi di tiap percobaan; bila false untuk beberapa kali berturut-turut, berhenti. */
   enabled?: () => boolean;
   /** Dipanggil sekali saat elemen sudah berada di posisi tujuan. */
@@ -28,6 +30,7 @@ export function scrollToElementWhenReady({
   lenis,
   getElement,
   offset,
+  tolerance = TOLERANCE_PX,
   enabled,
   onReach,
 }: ScrollToElementOptions): () => void {
@@ -61,7 +64,7 @@ export function scrollToElementWhenReady({
     if (element) {
       const top = element.getBoundingClientRect().top;
       const reached =
-        Math.abs(top - offset) <= TOLERANCE_PX || (atPageEnd() && top < window.innerHeight);
+        Math.abs(top - offset) <= tolerance || (atPageEnd() && top < window.innerHeight);
       if (reached) {
         onReach?.(element);
         return cancel();

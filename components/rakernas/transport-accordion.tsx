@@ -75,74 +75,8 @@ export function TransportSection({
       </div>
 
       <div className="mt-6 grid gap-5 lg:mt-12 lg:grid-cols-[420px_minmax(0,1fr)] lg:items-start lg:gap-10">
-        {/* Kolom kiri: tujuan akhir + info transit */}
-        <Reveal className="flex flex-col gap-5 lg:sticky lg:top-28">
-          <div className="flex flex-col gap-4 rounded-3xl border border-white bg-white p-3.5 shadow-[0_12px_32px_-12px_#04362F33]">
-            <div className="relative h-[200px] overflow-hidden rounded-[18px] lg:h-[240px]">
-              <Image
-                src="/galeri-fasilitas-hotel/kamar.jpg"
-                alt={`Kamar ${venueName}`}
-                fill
-                sizes="(min-width: 1024px) 392px, 100vw"
-                className="object-cover"
-              />
-              <span className="absolute bottom-3 left-3 inline-flex items-center gap-2 rounded-full bg-white/85 py-1.5 pr-3.5 pl-1.5 text-[13px] font-semibold text-[#04362F] shadow-md backdrop-blur-md">
-                <span className="flex size-7 items-center justify-center rounded-full bg-brand-gold">
-                  <MapPin aria-hidden="true" className="size-3.5" />
-                </span>
-                {venueName}
-              </span>
-            </div>
-            <div className="flex flex-col gap-1 px-1">
-              <p className="text-[11px] font-bold tracking-[1.4px] text-[#1E7F62] uppercase">Tujuan Akhir</p>
-              <p className="text-sm/[22px] text-[#073B33]">{venueAddress}</p>
-            </div>
-            <a
-              href={mapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Buka ${venueName} di Google Maps (tab baru)`}
-              className="flex min-h-12 items-center justify-between rounded-full bg-linear-to-b from-[#0B6355] to-[#04362F] py-1.5 pr-1.5 pl-5 text-sm font-semibold text-white shadow-[0_6px_16px_#09504640] transition-[filter] hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              Buka di Google Maps
-              <span className="flex size-9 items-center justify-center rounded-full bg-brand-gold text-[#04362F]">
-                <Navigation aria-hidden="true" className="size-4" />
-              </span>
-            </a>
-          </div>
-
-          <div role="note" className="flex flex-col gap-4 rounded-3xl border border-brand-gold/30 bg-[#FFFBF2] p-5">
-            <div className="flex gap-3">
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#FFF1D6] text-[#9A6A12]">
-                <Home aria-hidden="true" className="size-4" />
-              </span>
-              <div className="flex flex-col gap-1">
-                <p className="text-sm/[22px] text-[#073B33]">{announcement.text.replace(/:\s*/, " ")}{announcement.linkLabel}.</p>
-                <a
-                  href={footerUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-fit rounded-sm text-[13px] font-semibold text-[#1E7F62] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  Hubungi panitia via WhatsApp
-                </a>
-              </div>
-            </div>
-            <a
-              href={announcement.mapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Buka lokasi transit Guest House YPPH Depok di Google Maps"
-              className="flex min-h-11 items-center justify-center gap-2 rounded-full bg-linear-to-b from-[#0B6355] to-[#04362F] text-sm font-semibold text-white transition-[filter] hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <MapPin aria-hidden="true" className="size-4" />
-              Lihat lokasi transit
-            </a>
-          </div>
-        </Reveal>
-
         {/* Kolom kanan: timeline titik kedatangan */}
-        <div>
+        <div className="min-w-0 lg:col-start-2 lg:row-start-1">
           <RevealStagger key={filter} stagger={0.06}>
             <Accordion value={open} onValueChange={(v) => setOpen(v as string[])} className="relative flex flex-col gap-3">
               <span aria-hidden="true" className="absolute top-6 bottom-6 left-[21px] hidden w-px bg-[#DCE8E5] sm:block" />
@@ -225,6 +159,72 @@ export function TransportSection({
             Waktu perjalanan dan harga merupakan perkiraan dan dapat berubah.
           </p>
         </div>
+
+        {/* Kolom kiri: tujuan akhir + info transit */}
+        <Reveal className="flex flex-col gap-5 lg:sticky lg:top-28 lg:col-start-1 lg:row-start-1">
+          <div className="flex flex-col gap-4 rounded-3xl border border-white bg-white p-3.5 shadow-[0_12px_32px_-12px_#04362F33]">
+            <div className="relative h-[200px] overflow-hidden rounded-[18px] lg:h-[240px]">
+              <Image
+                src="/galeri-fasilitas-hotel/kamar.jpg"
+                alt={`Kamar ${venueName}`}
+                fill
+                sizes="(min-width: 1024px) 392px, 100vw"
+                className="object-cover"
+              />
+              <span className="absolute bottom-3 left-3 inline-flex items-center gap-2 rounded-full bg-white/85 py-1.5 pr-3.5 pl-1.5 text-[13px] font-semibold text-[#04362F] shadow-md backdrop-blur-md">
+                <span className="flex size-7 items-center justify-center rounded-full bg-brand-gold">
+                  <MapPin aria-hidden="true" className="size-3.5" />
+                </span>
+                {venueName}
+              </span>
+            </div>
+            <div className="flex flex-col gap-1 px-1">
+              <p className="text-[11px] font-bold tracking-[1.4px] text-[#1E7F62] uppercase">Tujuan Akhir</p>
+              <p className="text-sm/[22px] text-[#073B33]">{venueAddress}</p>
+            </div>
+            <a
+              href={mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Buka ${venueName} di Google Maps (tab baru)`}
+              className="flex min-h-12 items-center justify-between rounded-full bg-linear-to-b from-[#0B6355] to-[#04362F] py-1.5 pr-1.5 pl-5 text-sm font-semibold text-white shadow-[0_6px_16px_#09504640] transition-[filter] hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              Buka di Google Maps
+              <span className="flex size-9 items-center justify-center rounded-full bg-brand-gold text-[#04362F]">
+                <Navigation aria-hidden="true" className="size-4" />
+              </span>
+            </a>
+          </div>
+
+          <div role="note" className="flex flex-col gap-4 rounded-3xl border border-brand-gold/30 bg-[#FFFBF2] p-5">
+            <div className="flex gap-3">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#FFF1D6] text-[#9A6A12]">
+                <Home aria-hidden="true" className="size-4" />
+              </span>
+              <div className="flex flex-col gap-1">
+                <p className="text-sm/[22px] text-[#073B33]">{announcement.text.replace(/:\s*/, " ")}{announcement.linkLabel}.</p>
+                <a
+                  href={footerUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-fit rounded-sm text-[13px] font-semibold text-[#1E7F62] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  Hubungi panitia via WhatsApp
+                </a>
+              </div>
+            </div>
+            <a
+              href={announcement.mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Buka lokasi transit Guest House YPPH Depok di Google Maps"
+              className="flex min-h-11 items-center justify-center gap-2 rounded-full bg-linear-to-b from-[#0B6355] to-[#04362F] text-sm font-semibold text-white transition-[filter] hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <MapPin aria-hidden="true" className="size-4" />
+              Lihat lokasi transit
+            </a>
+          </div>
+        </Reveal>
       </div>
     </div>
   );

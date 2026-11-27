@@ -3,7 +3,10 @@ import type { LucideIcon } from "lucide-react";
 
 type Stat = { icon: LucideIcon; value: number; label: string };
 
-/** Header halaman bergambar: foto latar, badge, judul, deskripsi, dan statistik opsional. */
+/**
+ * Header halaman bergambar: foto latar, badge, judul, deskripsi, dan statistik opsional.
+ * Setinggi layar di bawah navbar (dikurangi padding PublicPage), isi rata tengah.
+ */
 export function PageHero({
   title,
   badge,
@@ -19,7 +22,7 @@ export function PageHero({
 }) {
   const BadgeIcon = badge.icon;
   return (
-    <header className="relative isolate overflow-hidden rounded-3xl bg-brand-green-deep text-white shadow-lg">
+    <header className="relative isolate flex min-h-[calc(100svh-72px-env(safe-area-inset-top)-5rem)] overflow-hidden rounded-3xl bg-brand-green-deep text-white shadow-lg md:min-h-[calc(100svh-72px-env(safe-area-inset-top)-8rem)]">
       <Image
         src={image}
         alt=""
@@ -30,10 +33,10 @@ export function PageHero({
       />
       <div
         aria-hidden
-        className="absolute inset-0 -z-10 bg-gradient-to-r from-brand-green-night/95 via-brand-green-deep/85 to-brand-green-deep/40"
+        className="absolute inset-0 -z-10 bg-gradient-to-b from-brand-green-night/90 via-brand-green-deep/80 to-brand-green-night/90"
       />
-      <div className="flex flex-col gap-8 p-6 md:flex-row md:items-end md:justify-between md:p-10">
-        <div className="max-w-xl">
+      <div className="flex w-full flex-col items-center justify-center gap-8 p-6 text-center md:p-10">
+        <div className="flex max-w-2xl flex-col items-center">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-gold-soft/90 px-3 py-1 text-xs font-semibold text-brand-green-deep">
             <BadgeIcon className="size-3.5" aria-hidden />
             {badge.label}

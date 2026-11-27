@@ -101,7 +101,7 @@ async function LoginCard({ searchParams }: { searchParams: SearchParams }) {
 export default function LoginPage({ searchParams }: { searchParams: SearchParams }) {
   return (
     <>
-      <main className="page-bg flex flex-1 items-center justify-center px-4 py-12">
+      <main className="page-bg flex flex-1 items-center justify-center px-4 pt-[calc(72px+env(safe-area-inset-top)+3rem)] pb-12">
         <div className="w-full max-w-sm space-y-4">
           <Suspense
             fallback={

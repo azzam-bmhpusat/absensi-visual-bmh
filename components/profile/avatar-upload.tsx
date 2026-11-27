@@ -97,25 +97,30 @@ export function AvatarUpload({ src, name }: { src: string | null; name: string }
         aria-label="Kelola foto profil"
         aria-disabled={isPending}
         aria-busy={isPending}
-        className="relative shrink-0 cursor-pointer rounded-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-gold-soft focus-visible:ring-offset-4 focus-visible:ring-offset-primary aria-disabled:cursor-wait"
+        className="flex shrink-0 cursor-pointer flex-col items-center gap-3 rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-gold-soft aria-disabled:cursor-wait lg:gap-4 lg:rounded-full"
       >
-        <UserAvatar
-          src={src}
-          name={name}
-          className="size-24 text-3xl ring-4 ring-white/90 shadow-lg shadow-black/20 md:size-28 md:text-4xl"
-        />
-        <span aria-hidden="true" className="pointer-events-none absolute -inset-1.5 rounded-full ring-2 ring-brand-gold/60" />
-        {isPending && (
-          <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/45">
-            <Loader2 className="size-7 animate-spin text-white" aria-hidden="true" />
-            <span className="sr-only">Memproses foto…</span>
+        <span className="relative block">
+          <UserAvatar
+            src={src}
+            name={name}
+            className="size-[72px] text-2xl ring-2 ring-brand-gold shadow-lg shadow-black/20 lg:size-[120px] lg:text-4xl"
+          />
+          {isPending && (
+            <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/45">
+              <Loader2 className="size-7 animate-spin text-white" aria-hidden="true" />
+              <span className="sr-only">Memproses foto…</span>
+            </span>
+          )}
+          <span
+            aria-hidden="true"
+            className="absolute right-0.5 bottom-0.5 hidden size-[34px] items-center justify-center rounded-full bg-brand-gold text-brand-green-night shadow-md lg:flex"
+          >
+            <Camera className="size-4" aria-hidden="true" />
           </span>
-        )}
-        <span
-          aria-hidden="true"
-          className="absolute -right-1 -bottom-1 flex size-10 items-center justify-center rounded-full bg-brand-gold text-brand-green-night shadow-md ring-3 ring-white"
-        >
-          <Camera className="size-5" aria-hidden="true" />
+        </span>
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-2.5 py-1.5 text-xs font-semibold whitespace-nowrap text-white lg:hidden">
+          <Camera className="size-3.5" aria-hidden="true" />
+          Ubah foto
         </span>
       </DialogTrigger>
       <input ref={inputRef} type="file" accept={AVATAR_MIME.join(",")} className="sr-only" onChange={onPick} tabIndex={-1} aria-hidden="true" />

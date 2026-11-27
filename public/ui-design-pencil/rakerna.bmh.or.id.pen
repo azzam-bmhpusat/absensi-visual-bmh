@@ -1,5 +1,5 @@
 {
-  "version": "2.22",
+  "version": "2.25",
   "children": [
     {
       "type": "frame",
@@ -13400,7 +13400,7 @@
     {
       "type": "frame",
       "id": "qdKB6",
-      "x": 2421,
+      "x": 2412,
       "y": -560,
       "name": "Navbar / Top (mobile)",
       "reusable": true,
@@ -13838,6 +13838,7 @@
       "name": "Tab Bar bawah saat scroll (mobile)",
       "reusable": true,
       "width": 340,
+      "height": 60,
       "fill": [
         "#FFFFFFCC",
         {
@@ -13907,42 +13908,33 @@
           }
         }
       ],
-      "padding": 8,
-      "justifyContent": "space_around",
+      "padding": [
+        8,
+        14
+      ],
+      "justifyContent": "space_between",
       "alignItems": "center",
       "children": [
         {
           "type": "frame",
           "id": "nB5cY",
           "name": "Tab Beranda",
+          "width": 44,
+          "height": 44,
           "cornerRadius": 14,
           "layout": "vertical",
-          "gap": 4,
-          "padding": [
-            6,
-            8
-          ],
+          "justifyContent": "center",
           "alignItems": "center",
           "children": [
             {
               "type": "icon",
               "id": "XSsOq",
               "name": "Icon",
-              "width": 20,
-              "height": 20,
+              "width": 22,
+              "height": 22,
               "icon": "house",
               "library": "lucide",
               "fill": "$ink-muted"
-            },
-            {
-              "type": "text",
-              "id": "kL5KV",
-              "name": "Label",
-              "fill": "$ink-muted",
-              "content": "Beranda",
-              "fontFamily": "$font-body",
-              "fontSize": 11,
-              "fontWeight": "500"
             }
           ]
         },
@@ -13950,6 +13942,8 @@
           "type": "frame",
           "id": "AtAUU",
           "name": "Tab Rundown",
+          "width": 44,
+          "height": 44,
           "fill": {
             "type": "gradient",
             "gradientType": "linear",
@@ -13992,67 +13986,95 @@
             }
           ],
           "layout": "vertical",
-          "gap": 4,
-          "padding": [
-            6,
-            8
-          ],
+          "justifyContent": "center",
           "alignItems": "center",
           "children": [
             {
               "type": "icon",
               "id": "RZqnw",
               "name": "Icon",
-              "width": 20,
-              "height": 20,
+              "width": 22,
+              "height": 22,
               "icon": "calendar-clock",
               "library": "lucide",
               "fill": "$white"
-            },
-            {
-              "type": "text",
-              "id": "BtUvf",
-              "name": "Label",
-              "fill": "$white",
-              "content": "Rundown",
-              "fontFamily": "$font-body",
-              "fontSize": 11,
-              "fontWeight": "600"
             }
           ]
         },
         {
           "type": "frame",
-          "id": "dzSUv",
-          "name": "Tab Dress Code",
-          "cornerRadius": 14,
-          "layout": "vertical",
-          "gap": 4,
-          "padding": [
-            6,
-            8
-          ],
-          "alignItems": "center",
+          "id": "fFXDd",
+          "name": "Slot Lainnya",
+          "width": 64,
+          "height": 44,
+          "layout": "none",
           "children": [
             {
-              "type": "icon",
-              "id": "odsVU",
-              "name": "Icon",
-              "width": 20,
-              "height": 20,
-              "icon": "shirt",
-              "library": "lucide",
-              "fill": "$ink-muted"
-            },
-            {
-              "type": "text",
-              "id": "cjOvu",
-              "name": "Label",
-              "fill": "$ink-muted",
-              "content": "Dress Code",
-              "fontFamily": "$font-body",
-              "fontSize": 11,
-              "fontWeight": "500"
+              "type": "frame",
+              "id": "ZghWo",
+              "x": 0,
+              "y": -26,
+              "name": "Tab Lainnya (tengah)",
+              "width": 64,
+              "height": 64,
+              "fill": {
+                "type": "gradient",
+                "gradientType": "linear",
+                "enabled": true,
+                "rotation": 180,
+                "size": {
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#0B6355",
+                    "position": 0
+                  },
+                  {
+                    "color": "#04362F",
+                    "position": 1
+                  }
+                ]
+              },
+              "cornerRadius": 999,
+              "stroke": "#FFFFFF",
+              "strokeWidth": 4,
+              "strokeAlignment": "outer",
+              "effect": [
+                {
+                  "type": "shadow",
+                  "shadowType": "outer",
+                  "color": "#09504659",
+                  "offset": {
+                    "x": 0,
+                    "y": 8
+                  },
+                  "blur": 20
+                },
+                {
+                  "type": "shadow",
+                  "shadowType": "inner",
+                  "color": "#FFFFFF40",
+                  "offset": {
+                    "x": 0,
+                    "y": 1
+                  }
+                }
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "A17StQ",
+                  "name": "Icon",
+                  "width": 26,
+                  "height": 26,
+                  "icon": "layout-grid",
+                  "library": "lucide",
+                  "fill": "#FFFFFF"
+                }
+              ]
             }
           ]
         },
@@ -14060,69 +14082,44 @@
           "type": "frame",
           "id": "RBEOA",
           "name": "Tab Hotel",
+          "width": 44,
+          "height": 44,
           "cornerRadius": 14,
           "layout": "vertical",
-          "gap": 4,
-          "padding": [
-            6,
-            8
-          ],
+          "justifyContent": "center",
           "alignItems": "center",
           "children": [
             {
               "type": "icon",
               "id": "XMNSW",
               "name": "Icon",
-              "width": 20,
-              "height": 20,
+              "width": 22,
+              "height": 22,
               "icon": "bed-double",
               "library": "lucide",
               "fill": "$ink-muted"
-            },
-            {
-              "type": "text",
-              "id": "o7jUUz",
-              "name": "Label",
-              "fill": "$ink-muted",
-              "content": "Hotel",
-              "fontFamily": "$font-body",
-              "fontSize": 11,
-              "fontWeight": "500"
             }
           ]
         },
         {
           "type": "frame",
-          "id": "KYGXa",
-          "name": "Tab Lainnya",
+          "id": "K6goQ",
+          "name": "Tab Profil",
+          "width": 44,
+          "height": 44,
           "cornerRadius": 14,
-          "layout": "vertical",
-          "gap": 4,
-          "padding": [
-            6,
-            8
-          ],
+          "justifyContent": "center",
           "alignItems": "center",
           "children": [
             {
               "type": "icon",
-              "id": "qPfm8",
+              "id": "hrNwy",
               "name": "Icon",
-              "width": 20,
-              "height": 20,
-              "icon": "layout-grid",
+              "width": 22,
+              "height": 22,
+              "icon": "user-round",
               "library": "lucide",
-              "fill": "$ink-muted"
-            },
-            {
-              "type": "text",
-              "id": "Gts42",
-              "name": "Label",
-              "fill": "$ink-muted",
-              "content": "Lainnya",
-              "fontFamily": "$font-body",
-              "fontSize": 11,
-              "fontWeight": "500"
+              "fill": "#4F7A72"
             }
           ]
         }
@@ -52797,102 +52794,122 @@
                 },
                 {
                   "type": "frame",
-                  "id": "WDrXg",
-                  "name": "Kelengkapan",
+                  "id": "N0TFQo",
+                  "name": "Kelengkapan dan QR Absensi",
                   "width": 280,
-                  "fill": "#FFFFFF14",
-                  "cornerRadius": 16,
-                  "stroke": "#FFFFFF26",
-                  "strokeWidth": 1,
-                  "strokeAlignment": "inner",
                   "layout": "vertical",
-                  "gap": 10,
-                  "padding": 16,
+                  "gap": 12,
                   "children": [
                     {
                       "type": "frame",
-                      "id": "k6uioL",
-                      "name": "Atas",
+                      "id": "WDrXg",
+                      "name": "Kelengkapan",
                       "width": "fill_container",
-                      "justifyContent": "space_between",
-                      "alignItems": "center",
+                      "fill": "#FFFFFF14",
+                      "cornerRadius": 16,
+                      "stroke": "#FFFFFF26",
+                      "strokeWidth": 1,
+                      "strokeAlignment": "inner",
+                      "layout": "vertical",
+                      "gap": 10,
+                      "padding": 16,
                       "children": [
                         {
                           "type": "frame",
-                          "id": "AE9XH",
-                          "name": "Status",
-                          "fill": "$gold",
-                          "cornerRadius": 999,
-                          "gap": 6,
-                          "padding": [
-                            4,
-                            10
-                          ],
+                          "id": "k6uioL",
+                          "name": "Atas",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
                           "alignItems": "center",
                           "children": [
                             {
-                              "type": "icon",
-                              "id": "LLKKE",
-                              "name": "Icon",
-                              "width": 13,
-                              "height": 13,
-                              "icon": "circle-alert",
-                              "library": "lucide",
-                              "fill": "$green-night"
+                              "type": "frame",
+                              "id": "AE9XH",
+                              "name": "Status",
+                              "fill": "$gold",
+                              "cornerRadius": 999,
+                              "gap": 6,
+                              "padding": [
+                                4,
+                                10
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "LLKKE",
+                                  "name": "Icon",
+                                  "width": 13,
+                                  "height": 13,
+                                  "icon": "circle-alert",
+                                  "library": "lucide",
+                                  "fill": "$green-night"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "eMm4I",
+                                  "name": "Text",
+                                  "fill": "$green-night",
+                                  "content": "Belum lengkap",
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 11,
+                                  "fontWeight": "700"
+                                }
+                              ]
                             },
                             {
                               "type": "text",
-                              "id": "eMm4I",
+                              "id": "q2RQoA",
                               "name": "Text",
-                              "fill": "$green-night",
-                              "content": "Belum lengkap",
-                              "fontFamily": "$font-body",
-                              "fontSize": 11,
+                              "fill": "$white",
+                              "content": "75%",
+                              "fontFamily": "$font-heading",
+                              "fontSize": 18,
                               "fontWeight": "700"
                             }
                           ]
                         },
                         {
-                          "type": "text",
-                          "id": "q2RQoA",
-                          "name": "Text",
-                          "fill": "$white",
-                          "content": "75%",
-                          "fontFamily": "$font-heading",
-                          "fontSize": 18,
-                          "fontWeight": "700"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "IfIiy",
-                      "name": "Bar",
-                      "width": "fill_container",
-                      "height": 8,
-                      "fill": "#FFFFFF26",
-                      "cornerRadius": 999,
-                      "children": [
-                        {
                           "type": "frame",
-                          "id": "kLcTx",
-                          "name": "Isi",
-                          "width": 186,
+                          "id": "IfIiy",
+                          "name": "Bar",
+                          "width": "fill_container",
                           "height": 8,
-                          "fill": "$gold",
-                          "cornerRadius": 999
+                          "fill": "#FFFFFF26",
+                          "cornerRadius": 999,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "kLcTx",
+                              "name": "Isi",
+                              "width": 186,
+                              "height": 8,
+                              "fill": "$gold",
+                              "cornerRadius": 999
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "EudnH",
+                          "name": "Text",
+                          "fill": "#FFFFFFB3",
+                          "content": "6 dari 8 data terisi · 2 perlu dilengkapi",
+                          "fontFamily": "$font-body",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
                     {
-                      "type": "text",
-                      "id": "EudnH",
-                      "name": "Text",
-                      "fill": "#FFFFFFB3",
-                      "content": "6 dari 8 data terisi · 2 perlu dilengkapi",
-                      "fontFamily": "$font-body",
-                      "fontSize": 12,
-                      "fontWeight": "normal"
+                      "id": "fd391",
+                      "type": "ref",
+                      "ref": "c6Y3y",
+                      "name": "Accordion QR Code Absensi",
+                      "variant": {
+                        "state": "Tertutup"
+                      },
+                      "width": "fill_container"
                     }
                   ]
                 }
@@ -55454,6 +55471,16 @@
                       "fontWeight": "normal"
                     }
                   ]
+                },
+                {
+                  "id": "hYujp",
+                  "type": "ref",
+                  "ref": "c6Y3y",
+                  "name": "Accordion QR Code Absensi",
+                  "variant": {
+                    "state": "Tertutup"
+                  },
+                  "width": "fill_container"
                 }
               ]
             }
@@ -70787,6 +70814,236 @@
                   ]
                 }
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "variants",
+      "id": "c6Y3y",
+      "x": 13393,
+      "y": 3475.16,
+      "name": "Accordion QR Code Absensi",
+      "reusable": {
+        "state": [
+          "Tertutup",
+          "Terbuka"
+        ]
+      },
+      "fill": "#073B33",
+      "cornerRadius": 20,
+      "gap": 20,
+      "padding": 20,
+      "children": [
+        {
+          "type": "frame",
+          "id": "Hqmkh",
+          "name": "QR Code Absensi — Tertutup",
+          "reusable": {
+            "state": "Tertutup"
+          },
+          "width": 280,
+          "fill": "#FFFFFF14",
+          "cornerRadius": 16,
+          "stroke": "#FFFFFF26",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 14,
+          "padding": [
+            12,
+            16
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "zeWoR",
+              "name": "Header QR Code Absensi",
+              "width": "fill_container",
+              "height": 24,
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "cNGNN",
+                  "name": "Label QR Code Absensi",
+                  "gap": 10,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "path",
+                      "id": "gEqrX",
+                      "name": "Ikon QR",
+                      "geometry": "M1 1h7v7h-7z m2 2v3h3v-3z m9-2h7v7h-7z m2 2v3h3v-3z m-13 9h7v7h-7z m2 2v3h3v-3z m7-4h3v3h-3z m5 0h4v2h-4z m-5 5h2v4h-2z m4-1h3v3h-3z m3 3h2v2h-2z",
+                      "fillRule": "evenodd",
+                      "viewBox": [
+                        0,
+                        0,
+                        20,
+                        20
+                      ],
+                      "fill": "#FFBD49",
+                      "width": 18,
+                      "height": 18
+                    },
+                    {
+                      "type": "text",
+                      "id": "K6F50",
+                      "name": "Judul QR Code Absensi",
+                      "fill": "#FFFFFF",
+                      "content": "QR Code Absensi",
+                      "fontFamily": "$font-body",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "path",
+                  "id": "E4bpj",
+                  "name": "Chevron",
+                  "geometry": "M3 6l1.4-1.4 3.6 3.6 3.6-3.6 1.4 1.4-5 5z",
+                  "viewBox": [
+                    0,
+                    0,
+                    16,
+                    16
+                  ],
+                  "fill": "#FFFFFFCC",
+                  "width": 16,
+                  "height": 16
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "W5aqm",
+          "name": "QR Code Absensi — Terbuka",
+          "reusable": {
+            "state": "Terbuka"
+          },
+          "width": 280,
+          "fill": "#FFFFFF14",
+          "cornerRadius": 16,
+          "stroke": "#FFFFFF26",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 14,
+          "padding": [
+            12,
+            16
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "WOLPH",
+              "name": "Header QR Code Absensi",
+              "width": "fill_container",
+              "height": 24,
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "X4pJc",
+                  "name": "Label QR Code Absensi",
+                  "gap": 10,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "path",
+                      "id": "BpEkJ",
+                      "name": "Ikon QR",
+                      "geometry": "M1 1h7v7h-7z m2 2v3h3v-3z m9-2h7v7h-7z m2 2v3h3v-3z m-13 9h7v7h-7z m2 2v3h3v-3z m7-4h3v3h-3z m5 0h4v2h-4z m-5 5h2v4h-2z m4-1h3v3h-3z m3 3h2v2h-2z",
+                      "fillRule": "evenodd",
+                      "viewBox": [
+                        0,
+                        0,
+                        20,
+                        20
+                      ],
+                      "fill": "#FFBD49",
+                      "width": 18,
+                      "height": 18
+                    },
+                    {
+                      "type": "text",
+                      "id": "f60q2g",
+                      "name": "Judul QR Code Absensi",
+                      "fill": "#FFFFFF",
+                      "content": "QR Code Absensi",
+                      "fontFamily": "$font-body",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "path",
+                  "id": "e6FYs",
+                  "name": "Chevron",
+                  "geometry": "M3 11l5-5 5 5-1.4 1.4-3.6-3.6-3.6 3.6z",
+                  "viewBox": [
+                    0,
+                    0,
+                    16,
+                    16
+                  ],
+                  "fill": "#FFFFFFCC",
+                  "width": 16,
+                  "height": 16
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "zjzEW",
+              "name": "Latar QR contoh",
+              "width": 132,
+              "height": 132,
+              "fill": "#FFFFFF",
+              "cornerRadius": 12,
+              "layout": "vertical",
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "path",
+                  "id": "DB0VH",
+                  "name": "QR Absensi contoh",
+                  "geometry": "M0 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m5 0h1v1h-1z m2 0h1v1h-1z m5 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m-24 1h1v1h-1z m6 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m3 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m6 0h1v1h-1z m-24 1h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m5 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m-24 1h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m4 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m-24 1h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m-24 1h1v1h-1z m6 0h1v1h-1z m4 0h1v1h-1z m2 0h1v1h-1z m6 0h1v1h-1z m6 0h1v1h-1z m-24 1h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m-15 1h1v1h-1z m3 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m-16 1h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m4 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m3 0h1v1h-1z m4 0h1v1h-1z m3 0h1v1h-1z m-21 1h1v1h-1z m1 0h1v1h-1z m4 0h1v1h-1z m1 0h1v1h-1z m3 0h1v1h-1z m6 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m-21 1h1v1h-1z m3 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m5 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m3 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m-24 1h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m4 0h1v1h-1z m3 0h1v1h-1z m3 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m-23 1h1v1h-1z m1 0h1v1h-1z m4 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m-20 1h1v1h-1z m3 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m3 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m-23 1h1v1h-1z m3 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m3 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m3 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m3 0h1v1h-1z m1 0h1v1h-1z m-23 1h1v1h-1z m6 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m5 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m4 0h1v1h-1z m-24 1h1v1h-1z m2 0h1v1h-1z m3 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m3 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m3 0h1v1h-1z m-16 1h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m5 0h1v1h-1z m4 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m-24 1h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m3 0h1v1h-1z m4 0h1v1h-1z m3 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m3 0h1v1h-1z m-24 1h1v1h-1z m6 0h1v1h-1z m4 0h1v1h-1z m1 0h1v1h-1z m4 0h1v1h-1z m1 0h1v1h-1z m4 0h1v1h-1z m4 0h1v1h-1z m-24 1h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m3 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m-23 1h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m3 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m4 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m3 0h1v1h-1z m-23 1h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m3 0h1v1h-1z m3 0h1v1h-1z m2 0h1v1h-1z m2 0h1v1h-1z m-24 1h1v1h-1z m6 0h1v1h-1z m3 0h1v1h-1z m3 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m4 0h1v1h-1z m2 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m-24 1h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m1 0h1v1h-1z m2 0h1v1h-1z m3 0h1v1h-1z m3 0h1v1h-1z m1 0h1v1h-1z m3 0h1v1h-1z m2 0h1v1h-1z m4 0h1v1h-1z",
+                  "viewBox": [
+                    0,
+                    0,
+                    25,
+                    25
+                  ],
+                  "fill": "#073B33",
+                  "width": 100,
+                  "height": 100
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "iDfIw",
+              "name": "Petunjuk absensi",
+              "fill": "#FFFFFFCC",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Tunjukkan QR ini kepada panitia untuk absen.",
+              "lineHeight": 1.4,
+              "textAlign": "center",
+              "fontFamily": "$font-body",
+              "fontSize": 12,
+              "fontWeight": "normal"
             }
           ]
         }

@@ -9,6 +9,7 @@ export interface PublicGuest {
   nama: string;
   perwakilan_daerah: string;
   jabatan: string | null;
+  avatarUrl: string | null;
 }
 
 export interface GuestSearchResponse {

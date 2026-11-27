@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   remove: vi.fn(),
   from: vi.fn(),
   revalidatePath: vi.fn(),
+  updateTag: vi.fn(),
 }));
 
 vi.mock("@/lib/supabase/server", () => ({
@@ -24,7 +25,7 @@ vi.mock("@/lib/supabase/admin", () => ({
     },
   }),
 }));
-vi.mock("next/cache", () => ({ revalidatePath: mocks.revalidatePath }));
+vi.mock("next/cache", () => ({ revalidatePath: mocks.revalidatePath, updateTag: mocks.updateTag }));
 
 import { removeAvatar, uploadAvatar } from "@/app/(site)/profile/actions";
 
@@ -79,6 +80,7 @@ describe("uploadAvatar / removeAvatar", () => {
     expect(mocks.from).toHaveBeenCalledWith("avatars");
     expect(mocks.upload).toHaveBeenCalledWith(`${USER_ID}/avatar`, expect.any(File), expect.objectContaining({ upsert: true, contentType: "image/webp" }));
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/", "layout");
+    expect(mocks.updateTag).toHaveBeenCalledWith("content-hotel");
   });
 
   it("menolak tanpa sesi dan file tidak valid tanpa menyentuh storage", async () => {
@@ -92,6 +94,7 @@ describe("uploadAvatar / removeAvatar", () => {
     const res = await removeAvatar();
     expect(res.success).toBe(true);
     expect(mocks.remove).toHaveBeenCalledWith([`${USER_ID}/avatar`]);
+    expect(mocks.updateTag).toHaveBeenCalledWith("content-hotel");
   });
 
   it("meneruskan galat storage", async () => {
