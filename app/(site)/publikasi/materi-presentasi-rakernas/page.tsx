@@ -22,6 +22,7 @@ export default function MateriPresentasiRakernasPage() {
       title={TITLE}
       hero={
         <PageHero
+          fullHeight={false}
           title={TITLE}
           badge={{ icon: Presentation, label: "Materi Sesi" }}
           description="Unduh materi presentasi para pemateri dari setiap sesi Rakernas BMH."

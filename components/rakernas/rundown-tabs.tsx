@@ -78,7 +78,7 @@ export function RundownSection({ startsAt = DEFAULT_EVENT_SETTINGS.startsAt }: {
   };
 
   return (
-    <div className="mx-auto w-full max-w-[1280px] px-5 md:px-8">
+    <div className="site-container">
       <div className="mx-auto flex max-w-3xl flex-col items-center gap-2 text-center md:gap-3">
         <p className="text-[11px] font-semibold tracking-[2px] text-[#1E7F62] uppercase md:text-xs md:tracking-[2.4px]">
           Jadwal Kegiatan

@@ -28,6 +28,7 @@ export async function HotelHero({ title }: { title: string }) {
       description="Temukan kamar dan teman sekamar Anda selama Rakernas BMH. Gunakan pencarian untuk mencari nama peserta."
       image="/galeri-fasilitas-hotel/kamar.jpg"
       stats={stats}
+      fullHeight={false}
     />
   );
 }

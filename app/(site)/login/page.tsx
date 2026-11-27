@@ -101,22 +101,24 @@ async function LoginCard({ searchParams }: { searchParams: SearchParams }) {
 export default function LoginPage({ searchParams }: { searchParams: SearchParams }) {
   return (
     <>
-      <main className="page-bg flex flex-1 items-center justify-center px-4 pt-[calc(72px+env(safe-area-inset-top)+3rem)] pb-12">
-        <div className="w-full max-w-sm space-y-4">
-          <Suspense
-            fallback={
-              <LoginCardShell
-                header={
-                  <>
-                    <TitleText text="Masuk" />
-                    <p className="text-sm text-ink-muted">{DEFAULT_SUBTITLE}</p>
-                  </>
-                }
-              />
-            }
-          >
-            <LoginCard searchParams={searchParams} />
-          </Suspense>
+      <main className="page-bg flex flex-1 items-center justify-center pt-[calc(72px+env(safe-area-inset-top)+3rem)] pb-12">
+        <div className="site-container">
+          <div className="mx-auto w-full max-w-sm space-y-4">
+            <Suspense
+              fallback={
+                <LoginCardShell
+                  header={
+                    <>
+                      <TitleText text="Masuk" />
+                      <p className="text-sm text-ink-muted">{DEFAULT_SUBTITLE}</p>
+                    </>
+                  }
+                />
+              }
+            >
+              <LoginCard searchParams={searchParams} />
+            </Suspense>
+          </div>
         </div>
       </main>
       <Suspense fallback={null}>

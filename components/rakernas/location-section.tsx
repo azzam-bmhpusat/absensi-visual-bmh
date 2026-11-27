@@ -35,7 +35,7 @@ export function LocationSection({ settings = DEFAULT_EVENT_SETTINGS }: { setting
   );
 
   return (
-    <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-5 px-5 md:px-8 lg:gap-12">
+    <div className="site-container flex flex-col gap-5 lg:gap-12">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:gap-12">
         <div className="flex flex-col gap-3 lg:w-[460px] lg:shrink-0 lg:gap-5">
           <p className="text-[11px] font-semibold tracking-[2px] text-[#1E7F62] uppercase lg:text-xs lg:tracking-[2.4px]">

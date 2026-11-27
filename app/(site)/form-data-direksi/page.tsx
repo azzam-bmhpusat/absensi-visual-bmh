@@ -37,18 +37,20 @@ async function FormContent() {
 export default function FormDataDireksiPage() {
   return (
     <>
-      <main className="page-bg flex-1 px-4 py-8 sm:px-6 md:py-12">
-        <div className="mx-auto w-full max-w-3xl space-y-6">
-          <header className="text-center">
-            <p className="text-xs font-semibold tracking-[0.16em] text-brand-gold-text uppercase">Rakernas BMH</p>
-            <h1 className="mt-1 font-heading text-2xl font-bold text-primary sm:text-3xl">Formulir Data Direksi</h1>
-            <p className="mt-2 text-sm text-ink-muted sm:text-base">
-              Pilih nama Anda, lengkapi seluruh data, lalu kirim.
-            </p>
-          </header>
-          <Suspense fallback={null}>
-            <FormContent />
-          </Suspense>
+      <main className="page-bg flex-1 py-8 md:py-12">
+        <div className="site-container">
+          <div className="mx-auto w-full max-w-3xl space-y-6">
+            <header className="text-center">
+              <p className="text-xs font-semibold tracking-[0.16em] text-brand-gold-text uppercase">Rakernas BMH</p>
+              <h1 className="mt-1 font-heading text-2xl font-bold text-primary sm:text-3xl">Formulir Data Direksi</h1>
+              <p className="mt-2 text-sm text-ink-muted sm:text-base">
+                Pilih nama Anda, lengkapi seluruh data, lalu kirim.
+              </p>
+            </header>
+            <Suspense fallback={null}>
+              <FormContent />
+            </Suspense>
+          </div>
         </div>
       </main>
       <Suspense fallback={null}>

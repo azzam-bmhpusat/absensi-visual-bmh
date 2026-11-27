@@ -10,7 +10,7 @@ export function HeroSection({ settings = DEFAULT_EVENT_SETTINGS }: { settings?: 
 
   return (
     <section className={styles.hero} aria-labelledby="hero-title">
-      <RevealStagger immediate stagger={0.07} className={styles.wrap}>
+      <RevealStagger immediate stagger={0.07} className="site-container">
         <RevealItem>
           <p className={styles.eyebrow}>{EVENT_INFO.name} {titleParts?.year}</p>
         </RevealItem>

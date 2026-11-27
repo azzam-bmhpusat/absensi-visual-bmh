@@ -530,7 +530,7 @@ function MobileTabBar({
     <nav
       data-bottom-nav
       aria-label="Navigasi seluler"
-      className="pointer-events-none fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 px-4 sm:bottom-4 min-[760px]:px-6 lg:hidden"
+      className="site-container pointer-events-none fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 sm:bottom-4 lg:hidden"
     >
       <Sheet open={moreOpen} onOpenChange={onMoreOpenChange}>
         <ul

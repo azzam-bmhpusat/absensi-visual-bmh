@@ -37,7 +37,7 @@ export function TransportSection({
   const visible = ITEMS.filter(({ item }) => filter === "all" || item.icon === filter);
 
   return (
-    <div className="relative mx-auto w-full max-w-[1280px] px-5 md:px-8">
+    <div className="site-container relative">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
         <Reveal className="flex max-w-[560px] flex-col gap-2 lg:gap-3">
           <p className="text-[11px] font-semibold tracking-[2px] text-[#1E7F62] uppercase lg:text-xs lg:tracking-[2.4px]">
@@ -49,7 +49,7 @@ export function TransportSection({
         <div
           role="group"
           aria-label="Saring jenis transportasi"
-          className="-mx-5 flex gap-1.5 overflow-x-auto px-5 [scrollbar-width:none] md:mx-0 md:w-fit md:rounded-full md:border md:border-white/80 md:bg-white/80 md:p-1.5 md:shadow-[0_8px_24px_#04362F14] md:backdrop-blur-md [&::-webkit-scrollbar]:hidden"
+          className="grid min-w-0 grid-cols-2 gap-2 md:flex md:w-fit md:shrink-0 md:gap-1.5 md:rounded-full md:border md:border-white/80 md:bg-white/80 md:p-1.5 md:shadow-[0_8px_24px_#04362F14] md:backdrop-blur-md"
         >
           {FILTERS.map(({ value, label, icon: Icon }) => {
             const active = filter === value;
@@ -60,13 +60,13 @@ export function TransportSection({
                 aria-pressed={active}
                 onClick={() => setFilter(value)}
                 className={cn(
-                  "inline-flex min-h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-3.5 text-[13px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                  "inline-flex min-h-11 min-w-0 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full px-3.5 text-[13px] font-semibold whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:min-h-9 md:justify-start",
                   active
                     ? "bg-linear-to-b from-[#0B6355] to-[#04362F] text-white shadow-[0_4px_12px_#09504640]"
                     : "bg-white text-[#073B33] ring-1 ring-[#DCE8E5] hover:text-primary md:bg-transparent md:ring-0",
                 )}
               >
-                {Icon && <Icon aria-hidden="true" className="size-3.5" />}
+                {Icon && <Icon aria-hidden="true" className="size-3.5 shrink-0" />}
                 {label}
               </button>
             );

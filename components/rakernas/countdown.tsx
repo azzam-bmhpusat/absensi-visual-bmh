@@ -75,7 +75,7 @@ export function CountdownSection({
   const timeLeft = isMounted ? getTimeLeft(target, now) : INITIAL_TIME_LEFT;
 
   return (
-    <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-[22px] px-5 md:px-8 lg:flex-row lg:items-center lg:justify-between lg:gap-20">
+    <div className="site-container flex flex-col gap-[22px] lg:flex-row lg:items-center lg:justify-between lg:gap-20">
       <div className="flex flex-col gap-2.5 lg:max-w-[520px] lg:gap-3.5">
         <p className="text-[11px] font-bold tracking-[1.4px] text-brand-gold-text uppercase lg:text-xs lg:tracking-[1.6px]">
           Menuju Pembukaan

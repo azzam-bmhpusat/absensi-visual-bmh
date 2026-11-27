@@ -92,7 +92,7 @@ export function AccountDropdown({
         <DropdownMenuItem
           disabled={isPending}
           onClick={() => startTransition(() => logoutUser())}
-          className={cn(itemClass, "text-[#C2410C] focus:bg-orange-50 focus:text-[#C2410C] data-highlighted:bg-orange-50 data-highlighted:text-[#C2410C]")}
+          className={cn(itemClass, "rounded-b-[calc(var(--radius)*1.8_-_6px)] text-[#C2410C] focus:bg-orange-50 focus:text-[#C2410C] data-highlighted:bg-orange-50 data-highlighted:text-[#C2410C]")}
         >
           <LogOut className="size-4 text-[#C2410C]!" />
           {isPending ? "Keluar..." : "Logout"}

@@ -71310,6 +71310,28 @@
           ]
         }
       ]
+    },
+    {
+      "type": "browser",
+      "id": "oROBr",
+      "x": 23287,
+      "y": 0,
+      "name": "Kebijakan Privasi · Implementasi Desktop",
+      "width": 1440,
+      "height": 2000,
+      "url": "http://localhost:3000/kebijakan-privasi"
+    },
+    {
+      "type": "browser",
+      "id": "CQcYV",
+      "x": 24807,
+      "y": 0,
+      "name": "Kebijakan Privasi · Implementasi Mobile",
+      "width": 390,
+      "height": 1600,
+      "url": "http://localhost:3000/kebijakan-privasi",
+      "deviceId": "phone",
+      "scrollY": 1600
     }
   ],
   "variables": {

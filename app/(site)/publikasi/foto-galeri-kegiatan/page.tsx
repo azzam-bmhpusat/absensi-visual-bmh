@@ -22,6 +22,7 @@ export default function FotoGaleriKegiatanPage() {
       title={TITLE}
       hero={
         <PageHero
+          fullHeight={false}
           title={TITLE}
           badge={{ icon: Images, label: "Dokumentasi" }}
           description="Kumpulan foto dokumentasi kegiatan Rakernas BMH dari setiap sesi dan agenda."

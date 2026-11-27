@@ -22,6 +22,7 @@ export default function NotulaRapatPage() {
       title={TITLE}
       hero={
         <PageHero
+          fullHeight={false}
           title={TITLE}
           badge={{ icon: NotebookPen, label: "Hasil Rapat" }}
           description="Notula dan ringkasan keputusan rapat Rakernas BMH sebagai acuan tindak lanjut."

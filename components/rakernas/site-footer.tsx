@@ -54,7 +54,7 @@ export function SiteFooter({
         className="pointer-events-none absolute -bottom-40 -left-32 -z-10 size-80 rounded-full bg-brand-gold/10 blur-3xl"
       />
 
-      <div className={cn("mx-auto w-full max-w-screen-xl px-5 pt-14 pb-[calc(112px+env(safe-area-inset-bottom))] md:px-8 md:pt-16 lg:pb-10", contentClassName)}>
+      <div className={cn("site-container pt-14 pb-[calc(112px+env(safe-area-inset-bottom))] md:pt-16 lg:pb-10", contentClassName)}>
         <div className="grid gap-10 md:grid-cols-2 md:gap-x-10 md:gap-y-12 lg:grid-cols-12 lg:gap-8">
           {/* Brand */}
           <div className="md:col-span-2 lg:col-span-5">

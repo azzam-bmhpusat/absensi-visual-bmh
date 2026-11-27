@@ -62,7 +62,7 @@ export default async function HomePage() {
           aria-label={HADROH_TEAM.title}
         >
           <Reveal>
-            <div className="mx-auto flex w-full max-w-[1080px] flex-col gap-5 px-5 md:flex-row md:items-center md:gap-10 md:px-8 lg:gap-14">
+            <div className="site-container flex flex-col gap-5 md:flex-row md:items-center md:gap-10 lg:gap-14">
               <div className="relative h-[220px] w-full shrink-0 overflow-hidden rounded-[20px] md:h-[260px] md:w-[46%] lg:h-[300px] lg:w-[440px] lg:rounded-3xl">
                 <Image
                   src="/galeri-fasilitas-hotel/ruang-acara.jpg"
@@ -123,7 +123,7 @@ export default async function HomePage() {
 
       {/* S8 — Footer */}
       <SiteFooter
-        contentClassName="max-w-[1280px] px-5 pt-14 md:px-8 lg:pt-20 lg:pb-9"
+        contentClassName="pt-14 lg:pt-20 lg:pb-9"
         settings={settings}
       />
     </>

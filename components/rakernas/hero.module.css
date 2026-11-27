@@ -39,13 +39,6 @@
   border: 60px solid #ffeed4;
 }
 
-.wrap {
-  width: 100%;
-  max-width: 945px;
-  margin: 0 auto;
-  padding-inline: 16px;
-}
-
 .eyebrow {
   display: inline-flex;
   align-items: center;
@@ -241,18 +234,6 @@
   height: 18px;
 }
 
-@media (min-width: 640px) {
-  .wrap {
-    padding-inline: 20px;
-  }
-}
-
-@media (min-width: 768px) {
-  .wrap {
-    padding-inline: 32px;
-  }
-}
-
 @media (max-width: 800px) {
   .detail {
     gap: 12px;
@@ -273,10 +254,6 @@
   .theme {
     margin-top: 24px;
     font-size: 16px;
-  }
-
-  .wrap {
-    padding-inline: 16px;
   }
 
   .details {

@@ -1,11 +1,12 @@
 import Image from "next/image";
 import type { LucideIcon } from "lucide-react";
+import { cn } from "cn";
 
 type Stat = { icon: LucideIcon; value: number; label: string };
 
 /**
  * Header halaman bergambar: foto latar, badge, judul, deskripsi, dan statistik opsional.
- * Setinggi layar di bawah navbar (dikurangi padding PublicPage), isi rata tengah.
+ * Secara default setinggi layar di bawah navbar; fullHeight=false mengikuti konten.
  */
 export function PageHero({
   title,
@@ -13,16 +14,21 @@ export function PageHero({
   description,
   image,
   stats,
+  fullHeight = true,
 }: {
   title: string;
   badge: { icon: LucideIcon; label: string };
   description: string;
   image: string;
   stats?: Stat[];
+  fullHeight?: boolean;
 }) {
   const BadgeIcon = badge.icon;
   return (
-    <header className="relative isolate flex min-h-[calc(100svh-72px-env(safe-area-inset-top)-5rem)] overflow-hidden rounded-3xl bg-brand-green-deep text-white shadow-lg md:min-h-[calc(100svh-72px-env(safe-area-inset-top)-8rem)]">
+    <header className={cn(
+      "relative isolate flex overflow-hidden rounded-3xl bg-brand-green-deep text-white shadow-lg",
+      fullHeight && "min-h-[calc(100svh-72px-env(safe-area-inset-top)-5rem)] md:min-h-[calc(100svh-72px-env(safe-area-inset-top)-8rem)]",
+    )}>
       <Image
         src={image}
         alt=""

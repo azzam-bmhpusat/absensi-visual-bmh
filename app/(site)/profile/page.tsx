@@ -25,7 +25,6 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const PROFILE_CONTENT = "mx-auto w-full max-w-[1232px]";
 const LOCKED_PAGES = ["Informasi Kamar Hotel", "Foto Galeri Kegiatan", "Materi Presentasi"];
 
 function SummaryRow({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: string | null }) {
@@ -80,7 +79,7 @@ async function ProfileContent() {
         aria-labelledby="profile-name"
         className="relative [--profile-nav:calc(72px_+_env(safe-area-inset-top))] -mt-[var(--profile-nav)] rounded-b-[20px] bg-linear-to-br from-brand-green-deep to-brand-green-night pt-(--profile-nav) text-white"
       >
-        <div className={cn(PROFILE_CONTENT, "grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4 px-5 pt-8 pb-8 text-left lg:flex lg:gap-7 lg:px-4 lg:pt-10 lg:pb-10")}>
+        <div className="site-container grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4 pt-8 pb-8 text-left lg:flex lg:gap-7 lg:pt-10 lg:pb-10">
           <AvatarUpload src={avatarPublicUrl(profile?.avatar_url)} name={displayName} />
 
           <div className="w-full min-w-0 lg:flex-1">
@@ -145,7 +144,7 @@ async function ProfileContent() {
         </div>
       </section>
 
-      <div className={cn(PROFILE_CONTENT, "px-4 pt-5 pb-12 lg:pt-10 lg:pb-[104px]")}>
+      <div className="site-container pt-5 pb-12 lg:pt-10 lg:pb-[104px]">
         {isApplicant ? (
           <ApplyParticipantCard />
         ) : (

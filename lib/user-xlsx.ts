@@ -1,62 +1,13 @@
 import "server-only";
 import ExcelJS from "exceljs";
-import { addTableSheet, type Column } from "./attendance-xlsx";
-import { safeSheetName, toWibExcelDate, wibDateStamp } from "./attendance-export";
-import { ROLE_LABEL } from "./user-schema";
-import { ALL_JABATAN, NO_JABATAN, type KehadiranFilter, type UserFilter, type UserRow } from "./user-row";
+import { addTableSheet } from "./attendance-xlsx";
+import { safeSheetName, toWibExcelDate } from "./attendance-export";
+import { USER_EXPORT_COLUMNS, userExportRows, userExportScopeInfo, type UserExportScope } from "./user-export";
+import type { UserRow } from "./user-row";
+
+export { buildUserExportFilename, type UserExportScope } from "./user-export";
 
 const DATE_FORMAT = "dd/mm/yyyy hh:mm";
-
-export type UserExportScope = { kind: "all" } | { kind: "filter"; filter: UserFilter };
-
-const STATUS_FILTER_LABEL: Record<UserFilter["status"], string> = {
-  all: "Semua",
-  ...ROLE_LABEL,
-  inactive: "Nonaktif",
-};
-
-const columns: Column[] = [
-  { header: "No.", key: "no", width: 6 },
-  { header: "Nama", key: "nama", width: 30 },
-  { header: "Perwakilan daerah", key: "perwakilan_daerah", width: 26 },
-  { header: "Keterangan kehadiran", key: "keterangan_kehadiran", width: 20 },
-  { header: "Ukuran baju", key: "ukuran_baju", width: 12 },
-];
-
-const MODE_LABEL: Record<string, string> = { offline: "Offline", online: "Online" };
-
-const KEHADIRAN_FILTER_LABEL: Record<KehadiranFilter, string> = {
-  all: "Semua",
-  offline: "Offline",
-  online: "Online",
-  none: "Belum diisi",
-};
-
-const dash = (v: string | null) => v || "-";
-
-function userRows(users: UserRow[]) {
-  return users.map((u, i) => {
-    const p = u.profile;
-    const mode = p.keterangan_kehadiran;
-    return {
-      no: i + 1,
-      nama: dash(p.nama),
-      perwakilan_daerah: dash(p.perwakilan_daerah),
-      keterangan_kehadiran: mode ? (MODE_LABEL[mode] ?? mode) : "-",
-      ukuran_baju: dash(p.ukuran_baju),
-    };
-  });
-}
-
-function jabatanLabel(jabatan: string): string {
-  if (jabatan === ALL_JABATAN) return "Semua Jabatan";
-  if (jabatan === NO_JABATAN) return "Tanpa jabatan";
-  return jabatan;
-}
-
-export function buildUserExportFilename(scope: UserExportScope, now: Date = new Date()): string {
-  return `manajemen-user-bmh-${scope.kind === "all" ? "semua" : "sesuai-filter"}-${wibDateStamp(now)}.xlsx`;
-}
 
 /** `users` harus sudah difilter sesuai scope. */
 export async function buildUserWorkbook(
@@ -69,7 +20,7 @@ export async function buildUserWorkbook(
   wb.created = generatedAt;
   const used = new Set<string>();
 
-  addTableSheet(wb, safeSheetName("User", used), columns, userRows(users));
+  addTableSheet(wb, safeSheetName("User", used), [...USER_EXPORT_COLUMNS], userExportRows(users));
 
   const info = addTableSheet(
     wb,
@@ -79,15 +30,7 @@ export async function buildUserWorkbook(
       { header: "Nilai", key: "v", width: 48 },
     ],
     [
-      { k: "Cakupan", v: scope.kind === "all" ? "Semua user" : "Sesuai filter" },
-      ...(scope.kind === "filter"
-        ? [
-            { k: "Status", v: STATUS_FILTER_LABEL[scope.filter.status] },
-            { k: "Jabatan", v: jabatanLabel(scope.filter.jabatan) },
-            { k: "Keterangan kehadiran", v: KEHADIRAN_FILTER_LABEL[scope.filter.kehadiran ?? "all"] },
-            { k: "Pencarian", v: scope.filter.q.trim() || "-" },
-          ]
-        : []),
+      ...userExportScopeInfo(scope),
       { k: "Jumlah User", v: users.length },
       { k: "Diekspor", v: toWibExcelDate(generatedAt.toISOString()) },
     ]

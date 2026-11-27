@@ -5,7 +5,7 @@ import { RevealItem, RevealStagger } from "@/components/motion/reveal";
 /** Dress code per hari: kartu foto berjajar (desktop) / bertumpuk (HP). */
 export function DresscodeSection() {
   return (
-    <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-7 px-5 md:px-8 lg:gap-10">
+    <div className="site-container flex flex-col gap-7 lg:gap-10">
       <div className="flex flex-col items-start gap-2 lg:flex-row lg:items-end lg:justify-between lg:gap-12">
         <div className="flex flex-col gap-2 lg:gap-3">
           <p className="text-[11px] font-bold tracking-[1.4px] text-[#1E7F62] uppercase lg:text-xs lg:tracking-[1.6px]">

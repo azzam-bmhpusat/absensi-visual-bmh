@@ -11,6 +11,7 @@ import {
   Eye,
   EyeOff,
   FileSpreadsheet,
+  FileText,
   Filter as FilterIcon,
   Layers,
   Loader2,
@@ -70,6 +71,7 @@ import {
   type UserRow,
   type UserStatusFilter,
 } from "@/lib/user-row";
+import type { UserExportFormat } from "@/lib/user-export";
 import { downloadFromEndpoint } from "@/lib/download-file";
 import { avatarPublicUrl } from "@/lib/avatar";
 import { UserAvatar } from "@/components/auth/user-avatar";
@@ -93,8 +95,8 @@ type Filter = UserStatusFilter;
 const EXPORT_ENDPOINT = "/api/admin/manajemen-user/export";
 const IMPORT_TEMPLATE_ENDPOINT = "/api/admin/manajemen-user/import-template";
 
-function buildUserExportUrl(mode: "all" | "filter", filter: UserFilter): string {
-  const params = new URLSearchParams({ mode });
+function buildUserExportUrl(mode: "all" | "filter", filter: UserFilter, format: UserExportFormat): string {
+  const params = new URLSearchParams({ mode, format });
   if (mode === "filter") {
     params.set("status", filter.status);
     params.set("jabatan", filter.jabatan);
@@ -173,18 +175,19 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
     return c;
   }, [users]);
 
-  const [exporting, setExporting] = useState<"all" | "filter" | null>(null);
-  const runExport = async (mode: "all" | "filter") => {
+  const [exporting, setExporting] = useState<UserExportFormat | null>(null);
+  const runExport = async (format: UserExportFormat, mode: "all" | "filter") => {
     if (exporting) return;
-    setExporting(mode);
+    setExporting(format);
+    const label = format === "pdf" ? "PDF" : "Excel";
     try {
       await downloadFromEndpoint(
-        buildUserExportUrl(mode, { status: filter, jabatan: ALL_JABATAN, q: search, kehadiran }),
-        "manajemen-user-bmh.xlsx"
+        buildUserExportUrl(mode, { status: filter, jabatan: ALL_JABATAN, q: search, kehadiran }, format),
+        `manajemen-user-bmh.${format}`
       );
-      toast.success(`Excel ${mode === "all" ? "semua user" : "sesuai filter"} berhasil diunduh.`);
+      toast.success(`${label} ${mode === "all" ? "semua user" : "sesuai filter"} berhasil diunduh.`);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Gagal mengekspor Excel.");
+      toast.error(err instanceof Error ? err.message : `Gagal mengekspor ${label}.`);
     } finally {
       setExporting(null);
     }
@@ -235,7 +238,7 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-center">
+      <div className="flex flex-col items-stretch justify-between gap-3 lg:flex-row lg:items-center">
         <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
           <div className="relative max-w-sm flex-1">
             <Search className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-ink-muted" aria-hidden="true" />
@@ -249,46 +252,50 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              disabled={exporting !== null}
-              render={
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="h-11 gap-2 rounded-xl border-line bg-white px-4 text-sm font-semibold text-primary hover:bg-secondary data-popup-open:bg-secondary"
-                />
-              }
-            >
-              {exporting ? (
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-              ) : (
-                <FileSpreadsheet className="h-4 w-4" aria-hidden="true" />
-              )}
-              Export Excel
-              <ChevronDown className="h-4 w-4" aria-hidden="true" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              sideOffset={4}
-              className="w-64 rounded-xl border border-line bg-popover p-1.5 shadow-lg"
-            >
-              <DropdownMenuItem className={menuItemClassName} onClick={() => runExport("all")}>
-                <Layers className="size-4" aria-hidden="true" />
-                Semua user
-                <span className="ml-auto tabular-nums text-ink-muted">{users.length}</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className={menuItemClassName}
-                disabled={visible.length === 0}
-                onClick={() => runExport("filter")}
+          {(["xlsx", "pdf"] as const).map((format) => (
+            <DropdownMenu key={format}>
+              <DropdownMenuTrigger
+                disabled={exporting !== null}
+                render={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="h-11 gap-2 rounded-xl border-line bg-white px-4 text-sm font-semibold text-primary hover:bg-secondary data-popup-open:bg-secondary"
+                  />
+                }
               >
-                <FilterIcon className="size-4" aria-hidden="true" />
-                Sesuai filter
-                <span className="ml-auto tabular-nums text-ink-muted">{visible.length}</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                {exporting === format ? (
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                ) : format === "pdf" ? (
+                  <FileText className="h-4 w-4" aria-hidden="true" />
+                ) : (
+                  <FileSpreadsheet className="h-4 w-4" aria-hidden="true" />
+                )}
+                Export {format === "pdf" ? "PDF" : "Excel"}
+                <ChevronDown className="h-4 w-4" aria-hidden="true" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                sideOffset={4}
+                className="w-64 rounded-xl border border-line bg-popover p-1.5 shadow-lg"
+              >
+                <DropdownMenuItem className={menuItemClassName} onClick={() => runExport(format, "all")}>
+                  <Layers className="size-4" aria-hidden="true" />
+                  Semua user
+                  <span className="ml-auto tabular-nums text-ink-muted">{users.length}</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className={menuItemClassName}
+                  disabled={visible.length === 0}
+                  onClick={() => runExport(format, "filter")}
+                >
+                  <FilterIcon className="size-4" aria-hidden="true" />
+                  Sesuai filter
+                  <span className="ml-auto tabular-nums text-ink-muted">{visible.length}</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ))}
           <Button
             type="button"
             variant="outline"
@@ -361,7 +368,7 @@ export function UserManagement({ users, currentUserId }: UserManagementProps) {
         })}
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-line">
+      <div className="overflow-x-auto rounded-lg border border-line">
         <Table>
           <TableHeader>
             <TableRow className="bg-surface hover:bg-surface">

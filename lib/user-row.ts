@@ -106,7 +106,7 @@ function matchesSearch(u: SearchableUser, needle: string): boolean {
   return digits.length >= 3 && /^[\d\s+().-]+$/.test(needle) && (u.profile.no_whatsapp ?? "").replace(/\D/g, "").includes(digits);
 }
 
-/** Filter yang sama dipakai tabel (client) dan ekspor Excel (server). */
+/** Filter yang sama dipakai tabel (client) dan ekspor Excel/PDF (server). */
 export function filterUsers<T extends SearchableUser>(
   users: T[],
   { status, jabatan, q, kehadiran = "all" }: UserFilter

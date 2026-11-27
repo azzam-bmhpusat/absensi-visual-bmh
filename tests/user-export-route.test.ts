@@ -11,6 +11,7 @@ vi.mock("@/lib/supabase/server", () => ({
 }));
 vi.mock("@/lib/user-list", () => ({ loadUsers: mocks.loadUsers }));
 
+import * as userPdf from "@/lib/user-pdf";
 import { GET } from "@/app/api/admin/manajemen-user/export/route";
 
 const user = (id: string, over: Partial<UserRow> = {}, jabatan: string | null = null): UserRow => ({
@@ -59,25 +60,28 @@ describe("filterUsers", () => {
 
 describe("GET /api/admin/manajemen-user/export", () => {
   beforeEach(() => {
+    vi.restoreAllMocks();
     vi.clearAllMocks();
     mocks.getUser.mockResolvedValue({ data: { user: { id: "admin" } }, error: null });
     mocks.rpc.mockResolvedValue({ data: true, error: null });
     mocks.loadUsers.mockResolvedValue(users);
   });
 
-  it("401 tanpa login dan tidak membaca data", async () => {
+  it.each(["xlsx", "pdf"])("401 tanpa login dan tidak membaca data (%s)", async (format) => {
     mocks.getUser.mockResolvedValue({ data: { user: null }, error: null });
-    expect((await GET(req("mode=all"))).status).toBe(401);
+    expect((await GET(req(`mode=all&format=${format}`))).status).toBe(401);
     expect(mocks.loadUsers).not.toHaveBeenCalled();
   });
 
-  it("403 untuk non-admin dan tidak membaca data", async () => {
+  it.each(["xlsx", "pdf"])("403 untuk non-admin dan tidak membaca data (%s)", async (format) => {
     mocks.rpc.mockResolvedValue({ data: false, error: null });
-    expect((await GET(req("mode=all"))).status).toBe(403);
+    expect((await GET(req(`mode=all&format=${format}`))).status).toBe(403);
     expect(mocks.loadUsers).not.toHaveBeenCalled();
   });
 
   it("400 untuk parameter tidak valid", async () => {
+    expect((await GET(req("mode=all&format=csv"))).status).toBe(400);
+    expect((await GET(req("mode=filter&format=html"))).status).toBe(400);
     expect((await GET(req("mode=x"))).status).toBe(400);
     expect((await GET(req("mode=filter&status=superadmin"))).status).toBe(400);
   });
@@ -120,8 +124,70 @@ describe("GET /api/admin/manajemen-user/export", () => {
     expect((await GET(req("mode=filter&kehadiran=hybrid"))).status).toBe(400);
   });
 
-  it("500 bila daftar user gagal dimuat", async () => {
+  it.each(["xlsx", "pdf"])("500 bila daftar user gagal dimuat (%s)", async (format) => {
     mocks.loadUsers.mockResolvedValue(null);
-    expect((await GET(req("mode=all"))).status).toBe(500);
+    expect((await GET(req(`mode=all&format=${format}`))).status).toBe(500);
+  });
+
+  it("format=pdf mengunduh PDF berisi semua user dalam urutan Excel", async () => {
+    const res = await GET(req("mode=all&format=pdf"));
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Content-Type")).toBe("application/pdf");
+    expect(res.headers.get("Cache-Control")).toBe("no-store");
+    expect(res.headers.get("Content-Disposition")).toMatch(/manajemen-user-bmh-semua-\d{4}-\d{2}-\d{2}\.pdf/);
+    const data = Buffer.from(await res.arrayBuffer());
+    expect(res.headers.get("Content-Length")).toBe(String(data.length));
+    const pdf = data.toString("latin1");
+    expect(pdf.startsWith("%PDF-")).toBe(true);
+    expect(pdf).toContain("(ANDI)");
+    expect(pdf).toContain("(BUDI)");
+    expect(pdf).toContain("(CICI)");
+    expect(pdf.indexOf("(ANDI)")).toBeLessThan(pdf.indexOf("(BUDI)"));
+    expect(pdf.indexOf("(BUDI)")).toBeLessThan(pdf.indexOf("(CICI)"));
+  });
+
+  it("PDF mengikuti kombinasi filter status, jabatan, kehadiran, dan pencarian", async () => {
+    mocks.loadUsers.mockResolvedValue(users.map((u) => ({
+      ...u, profile: { ...u.profile, keterangan_kehadiran: "offline" },
+    })));
+    const res = await GET(req("mode=filter&format=pdf&status=inactive&jabatan=Ketua&kehadiran=offline&q=cici"));
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Content-Disposition")).toContain("sesuai-filter");
+    const pdf = Buffer.from(await res.arrayBuffer()).toString("latin1");
+    expect(pdf).toContain("(CICI)");
+    expect(pdf).not.toContain("(ANDI)");
+    expect(pdf).not.toContain("(BUDI)");
+    expect(pdf).toContain("Status: Nonaktif");
+    expect(pdf).toContain("Keterangan kehadiran: Offline");
+    expect(pdf).toContain("Pencarian: cici");
+  });
+
+  it("menghasilkan PDF valid bila hasil filter kosong", async () => {
+    const res = await GET(req("mode=filter&format=pdf&q=tidak-ada"));
+    expect(res.status).toBe(200);
+    const pdf = Buffer.from(await res.arrayBuffer()).toString("latin1");
+    expect(pdf).toContain("Tidak ada pengguna");
+    expect(pdf).toContain("Jumlah User: 0");
+  });
+
+  it("PDF banyak halaman mengulang header dan menjaga seluruh baris serta tanggal WIB", () => {
+    const manyUsers = Array.from({ length: 100 }, (_, i) => user(`PESERTA-${String(i).padStart(3, "0")}`));
+    const pdf = userPdf.buildUserPdf({ kind: "all" }, manyUsers, new Date("2026-11-26T18:30:00Z")).toString("latin1");
+    const pages = [...pdf.matchAll(/\/Type \/Page\b/g)].length;
+    expect(pages).toBeGreaterThan(1);
+    expect([...pdf.matchAll(/\(No\.\) Tj/g)]).toHaveLength(pages);
+    for (let i = 0; i < 100; i++) expect(pdf).toContain(`(PESERTA-${String(i).padStart(3, "0")})`);
+    expect(pdf).toContain("27/11/2026, 01.30 WIB");
+    for (let i = 1; i <= pages; i++) expect(pdf).toContain(`Halaman ${i} dari ${pages}`);
+  });
+
+  it("500 dengan pesan PDF bila generator gagal", async () => {
+    vi.spyOn(userPdf, "buildUserPdf").mockImplementationOnce(() => { throw new Error("generator failed"); });
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    const res = await GET(req("mode=all&format=pdf"));
+    expect(res.status).toBe(500);
+    expect(res.headers.get("Cache-Control")).toBe("no-store");
+    expect(await res.json()).toEqual({ error: "Gagal membuat file PDF. Silakan coba lagi." });
+    log.mockRestore();
   });
 });

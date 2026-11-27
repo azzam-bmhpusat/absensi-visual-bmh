@@ -5,14 +5,17 @@ import { checkAdmin } from "@/lib/auth/admin";
 import { loadUsers } from "@/lib/user-list";
 import { ALL_JABATAN, KEHADIRAN_FILTERS, filterUsers } from "@/lib/user-row";
 import { USER_ROLES } from "@/lib/user-schema";
-import { buildUserExportFilename, buildUserWorkbook, type UserExportScope } from "@/lib/user-xlsx";
+import { buildUserWorkbook } from "@/lib/user-xlsx";
+import { buildUserPdf } from "@/lib/user-pdf";
+import { buildUserExportFilename, type UserExportScope } from "@/lib/user-export";
 
 const XLSX_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
 const querySchema = z.discriminatedUnion("mode", [
-  z.object({ mode: z.literal("all") }),
+  z.object({ mode: z.literal("all"), format: z.enum(["xlsx", "pdf"]).default("xlsx") }),
   z.object({
     mode: z.literal("filter"),
+    format: z.enum(["xlsx", "pdf"]).default("xlsx"),
     status: z.enum(["all", "inactive", ...USER_ROLES]).default("all"),
     jabatan: z.string().trim().max(200).default(ALL_JABATAN),
     kehadiran: z.enum(KEHADIRAN_FILTERS).default("all"),
@@ -43,19 +46,22 @@ export async function GET(request: NextRequest) {
         ? { kind: "all" }
         : { kind: "filter", filter: { status: query.status, jabatan: query.jabatan || ALL_JABATAN, q: query.q, kehadiran: query.kehadiran } };
     const rows = scope.kind === "all" ? users : filterUsers(users, scope.filter);
-    const buffer = await buildUserWorkbook(scope, rows);
+    const generatedAt = new Date();
+    const buffer = query.format === "pdf"
+      ? buildUserPdf(scope, rows, generatedAt)
+      : await buildUserWorkbook(scope, rows, generatedAt);
 
     return new Response(new Uint8Array(buffer), {
       status: 200,
       headers: {
-        "Content-Type": XLSX_TYPE,
-        "Content-Disposition": `attachment; filename="${buildUserExportFilename(scope)}"`,
+        "Content-Type": query.format === "pdf" ? "application/pdf" : XLSX_TYPE,
+        "Content-Disposition": `attachment; filename="${buildUserExportFilename(scope, generatedAt, query.format)}"`,
         "Content-Length": String(buffer.byteLength),
         "Cache-Control": "no-store",
       },
     });
   } catch (err) {
     console.error("Error ekspor manajemen user:", err);
-    return jsonError(500, "Gagal membuat file Excel. Silakan coba lagi.");
+    return jsonError(500, `Gagal membuat file ${query.format === "pdf" ? "PDF" : "Excel"}. Silakan coba lagi.`);
   }
 }
