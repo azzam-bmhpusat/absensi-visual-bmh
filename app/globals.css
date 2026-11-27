@@ -228,7 +228,8 @@
   }
 
   /* Tinggi tab bar bawah navbar HP/tablet (site-header.tsx); 0 di desktop dan halaman tanpa tab bar.
-     Dipakai elemen yang menempel di bawah layar (tombol WhatsApp, bar simpan profil). */
+     Dipakai elemen yang menempel di bawah layar (tombol WhatsApp, bar simpan profil);
+     ruang di bawah halaman disediakan oleh padding bawah footer. */
   :root {
     --bottom-nav-offset: 0px;
   }
@@ -242,10 +243,6 @@
       --bottom-nav-offset: 5.5rem;
     }
   }
-  body:has([data-bottom-nav]) {
-    padding-bottom: var(--bottom-nav-offset);
-  }
-
   html {
     @apply font-sans;
   }

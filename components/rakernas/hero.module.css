@@ -7,7 +7,8 @@
   --hero-nav: calc(72px + env(safe-area-inset-top));
   min-height: 100svh;
   overflow: hidden;
-  padding: var(--hero-nav) 0;
+  /* Ruang napas di bawah navbar kapsul; isi tetap di tengah viewport. */
+  padding: calc(var(--hero-nav) + 40px) 0 40px;
   background: linear-gradient(180deg, #eef8f3 0%, #f8fcfa 30%, #eef8f3 100%);
   color: var(--primary);
   font-family: var(--font-sans), Arial, sans-serif;
@@ -253,10 +254,6 @@
 }
 
 @media (max-width: 800px) {
-  .hero {
-    padding: var(--hero-nav) 0;
-  }
-
   .detail {
     gap: 12px;
     padding: 4px 16px;
@@ -265,7 +262,7 @@
 
 @media (max-width: 600px) {
   .hero {
-    padding: var(--hero-nav) 0;
+    padding: calc(var(--hero-nav) + 24px) 0 calc(96px + env(safe-area-inset-bottom));
   }
 
   .title {
@@ -312,13 +309,5 @@
 @media (prefers-reduced-motion: reduce) {
   .button {
     transition: none;
-  }
-}
-
-/* Desktop: hero mulai dari tepi atas layar (di belakang navbar kapsul), tanpa celah. */
-@media (min-width: 1024px) {
-  .hero {
-    margin-top: calc(-72px - env(safe-area-inset-top));
-    min-height: 100svh;
   }
 }

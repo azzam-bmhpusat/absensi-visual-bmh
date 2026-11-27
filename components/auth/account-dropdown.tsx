@@ -42,12 +42,12 @@ export function AccountDropdown({
           <button
             type="button"
             aria-label={`Menu profil ${name || email}`}
-            className="relative inline-flex size-11 cursor-pointer items-center justify-center rounded-full ring-2 ring-[#D9F0E4] transition-shadow hover:ring-[#B9E3CD] focus-visible:outline-none focus-visible:ring-ring"
+            className="relative inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full shadow-[0_4px_12px_#04362F26] ring-2 ring-white transition-shadow hover:ring-[#D9F0E4] focus-visible:outline-none focus-visible:ring-ring lg:size-11"
           />
         }
       >
-        <UserAvatar src={avatarUrl} name={name || email} className="size-10 text-sm" />
-        <span aria-hidden="true" className="absolute right-0 bottom-0 size-3 rounded-full border-2 border-white bg-[#39BA87]" />
+        <UserAvatar src={avatarUrl} name={name || email} className="size-full text-sm" />
+        <span aria-hidden="true" className="absolute -right-0.5 -bottom-0.5 size-2.5 rounded-full border-2 border-white bg-[#39BA87] lg:size-3" />
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"

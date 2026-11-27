@@ -5,6 +5,8 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   createElement,
+  Suspense,
+  use,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -22,7 +24,10 @@ import {
   Images,
   LayoutGrid,
   Link2,
+  MessageCircle,
   Presentation,
+  QrCode,
+  ExternalLink,
   Shirt,
   UserRound,
   X,
@@ -54,6 +59,7 @@ import {
   type NavMenuGroup,
 } from "@/content/rakernas";
 import { scrollToElementWhenReady } from "@/lib/scroll-to-element";
+import { QrAbsenDialog } from "@/components/profile/qr-absen-dialog";
 import {
   keyForHref,
   resolveSpyKey,
@@ -96,9 +102,15 @@ const HIDDEN_ON = new Set(["/form", "/form-data-direksi"]);
 export function SiteHeader({
   account,
   sheetFooter,
+  panitiaUrl,
+  qrToken,
 }: {
   account?: React.ReactNode;
   sheetFooter?: React.ReactNode;
+  /** footer_url event settings (WhatsApp panitia), dimuat di server tanpa menahan navbar. */
+  panitiaUrl?: Promise<string>;
+  /** Token QR absensi pengguna (null bila tanpa sesi), dimuat di server. */
+  qrToken?: Promise<string | null>;
 }) {
   const [moreOpen, setMoreOpen] = useState(false);
   const hoverPill = useRef<HTMLSpanElement>(null);
@@ -222,6 +234,8 @@ export function SiteHeader({
         moreOpen={moreOpen}
         onMoreOpenChange={setMoreOpen}
         sheetFooter={sheetFooter}
+        panitiaUrl={panitiaUrl}
+        qrToken={qrToken}
       />
     </>
   );
@@ -429,6 +443,14 @@ const TABS_RIGHT = [tabItem("/informasi-kamar-hotel"), tabItem("/profile", "Prof
 const MORE_GROUPS = NAV_MENU.filter(
   (entry): entry is NavMenuGroup => !!entry.children,
 );
+/** Grup pintasan peserta di sheet "Lainnya"; baris QR Absen dan Layanan Panitia ditambahkan saat render. */
+const PESERTA_GROUP: NavMenuGroup = {
+  label: "Menu Peserta",
+  children: [
+    { label: "Dress Code", href: "#dresscode" },
+  ],
+};
+const SHEET_GROUPS = [PESERTA_GROUP, ...MORE_GROUPS];
 
 const tabBase =
   "group/tab relative isolate flex size-11 cursor-pointer items-center justify-center rounded-[14px] text-[#4F7A72] transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
@@ -470,6 +492,8 @@ function MobileTabBar({
   moreOpen,
   onMoreOpenChange,
   sheetFooter,
+  panitiaUrl,
+  qrToken,
 }: {
   activeKey: NavKey | null;
   pathname: string;
@@ -477,6 +501,8 @@ function MobileTabBar({
   moreOpen: boolean;
   onMoreOpenChange: (open: boolean) => void;
   sheetFooter?: React.ReactNode;
+  panitiaUrl?: Promise<string>;
+  qrToken?: Promise<string | null>;
 }) {
   const reduceMotion = useReducedMotion() ?? false;
   const { containerRef: tabsRef, indicatorRef: tabsPillRef } =
@@ -509,7 +535,7 @@ function MobileTabBar({
       <Sheet open={moreOpen} onOpenChange={onMoreOpenChange}>
         <ul
           ref={tabsRef}
-          className="pointer-events-auto relative mx-auto flex h-[60px] items-center justify-between rounded-[28px] bg-white/80 bg-linear-to-b from-white/50 via-white/0 via-60% to-white/0 p-2 shadow-[0_8px_24px_#04362F14,inset_0_1px_0_#FFFFFFE6] backdrop-blur-[24px] backdrop-saturate-150 px-3.5"
+          className="pointer-events-auto relative mx-auto flex h-[60px] items-center justify-between rounded-[28px] bg-white/80 bg-linear-to-b from-white/50 via-white/0 via-60% to-white/0 p-2 shadow-[0_10px_30px_#04362F24,0_2px_6px_#04362F12,inset_0_1px_0_#FFFFFFE6] backdrop-blur-[24px] backdrop-saturate-150 px-3.5"
         >
           <span
             aria-hidden="true"
@@ -564,60 +590,52 @@ function MobileTabBar({
             </SheetClose>
           </SheetHeader>
 
-          <div className="flex-1 overflow-y-auto px-4 pt-2 pb-4" data-lenis-prevent>
-            {MORE_GROUPS.map((group) => (
+          <div className="flex-1 space-y-3 overflow-y-auto px-4 pt-1 pb-4" data-lenis-prevent>
+            {SHEET_GROUPS.map((group) => (
               <section key={group.label} aria-label={group.label}>
-                <p className="px-2 pt-1 pb-2 text-xs font-bold tracking-[2px] text-[#4F7A72] uppercase">
+                <p className="px-2 pt-1 pb-1.5 text-[11px] font-bold tracking-[2px] text-[#4F7A72] uppercase">
                   {group.label}
                 </p>
                 <motion.ul
-                  className="flex flex-col gap-1"
+                  className="flex flex-col gap-1.5"
                   variants={sheetListVariants}
                   initial={reduceMotion ? false : "hidden"}
                   animate="show"
                 >
+                  {group.label === PESERTA_GROUP.label && qrToken ? (
+                    <motion.li variants={reduceMotion ? undefined : sheetItemVariants}>
+                      <Suspense fallback={null}>
+                        <QrRow token={qrToken} onNavigate={() => onMoreOpenChange(false)} />
+                      </Suspense>
+                    </motion.li>
+                  ) : null}
                   {group.children.map((child) => {
-                    const active = pathname === child.href;
                     const key = keyForHref(child.href);
                     return (
                       <motion.li
                         key={child.href}
                         variants={reduceMotion ? undefined : sheetItemVariants}
                       >
-                        <Link
+                        <SheetRow
                           href={navHref(child.href)}
-                          aria-current={active ? "page" : undefined}
+                          label={child.label}
+                          icon={iconFor(child.href)}
+                          active={pathname === child.href}
                           onNavigate={() => {
                             if (key) onSelect(key);
                             onMoreOpenChange(false);
                           }}
-                          className={cn(
-                            "group/row flex items-center gap-4 rounded-2xl border border-white/90 bg-white/55 px-2 py-2.5 text-[17px] font-medium text-[#073B33] shadow-[0_2px_8px_#04362F0D] transition-colors hover:bg-white/85 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                            active && "bg-white/90 font-semibold text-primary ring-1 ring-primary/25",
-                          )}
-                        >
-                          <span
-                            className={cn(
-                              "flex size-12 shrink-0 items-center justify-center rounded-full bg-[#EEF8F3E6] text-primary",
-                              active && "bg-primary text-primary-foreground",
-                            )}
-                          >
-                            {createElement(iconFor(child.href), {
-                              "aria-hidden": true,
-                              className: "size-5",
-                            })}
-                          </span>
-                          <span className="min-w-0 flex-1 leading-snug">
-                            {child.label}
-                          </span>
-                          <ChevronRight
-                            aria-hidden="true"
-                            className="size-[18px] shrink-0 text-[#4F7A72] transition-transform group-hover/row:translate-x-0.5"
-                          />
-                        </Link>
+                        />
                       </motion.li>
                     );
                   })}
+                  {group.label === PESERTA_GROUP.label && panitiaUrl ? (
+                    <motion.li variants={reduceMotion ? undefined : sheetItemVariants}>
+                      <Suspense fallback={null}>
+                        <PanitiaRow url={panitiaUrl} />
+                      </Suspense>
+                    </motion.li>
+                  ) : null}
                 </motion.ul>
               </section>
             ))}
@@ -631,6 +649,127 @@ function MobileTabBar({
         </SheetContent>
       </Sheet>
     </nav>
+  );
+}
+
+const sheetRowClass =
+  "group/row flex w-full cursor-pointer items-center gap-3 rounded-[14px] border border-white/90 bg-white/55 px-2 py-1.5 text-left text-[15px] font-medium text-[#073B33] shadow-[0_2px_8px_#04362F0D] transition-colors hover:bg-white/85 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+const sheetRowActiveClass = "bg-white/90 font-semibold text-primary ring-1 ring-primary/25";
+
+/** Isi baris sheet: ikon bulat, label, dan panah. */
+function SheetRowContent({
+  label,
+  icon,
+  active = false,
+  external = false,
+  iconClassName,
+}: {
+  label: string;
+  icon: LucideIcon;
+  active?: boolean;
+  external?: boolean;
+  iconClassName?: string;
+}) {
+  return (
+    <>
+      <span
+        className={cn(
+          "flex size-9 shrink-0 items-center justify-center rounded-full bg-[#EEF8F3E6] text-primary",
+          active && "bg-primary text-primary-foreground",
+          iconClassName,
+        )}
+      >
+        {createElement(icon, { "aria-hidden": true, className: "size-[18px]" })}
+      </span>
+      <span className="min-w-0 flex-1 leading-snug">{label}</span>
+      {createElement(external ? ExternalLink : ChevronRight, {
+        "aria-hidden": true,
+        className:
+          "size-4 shrink-0 text-[#4F7A72] transition-transform group-hover/row:translate-x-0.5",
+      })}
+    </>
+  );
+}
+
+/** Baris menu sheet "Lainnya" (tautan internal atau eksternal). */
+function SheetRow({
+  href,
+  label,
+  icon,
+  active = false,
+  external = false,
+  iconClassName,
+  onNavigate,
+}: {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  active?: boolean;
+  external?: boolean;
+  iconClassName?: string;
+  onNavigate?: () => void;
+}) {
+  const className = cn(sheetRowClass, active && sheetRowActiveClass);
+  const content = (
+    <SheetRowContent
+      label={label}
+      icon={icon}
+      active={active}
+      external={external}
+      iconClassName={iconClassName}
+    />
+  );
+  return external ? (
+    <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
+      {content}
+    </a>
+  ) : (
+    <Link
+      href={href}
+      aria-current={active ? "page" : undefined}
+      onNavigate={onNavigate}
+      className={className}
+    >
+      {content}
+    </Link>
+  );
+}
+
+/** QR Absen Saya: dialog QR besar bila sudah punya akun aktif, selain itu ke /profile (mengarahkan ke autentikasi). */
+function QrRow({ token, onNavigate }: { token: Promise<string | null>; onNavigate: () => void }) {
+  const value = use(token);
+  if (!value) {
+    return (
+      <SheetRow
+        href="/profile"
+        label="QR Absen Saya"
+        icon={QrCode}
+        onNavigate={onNavigate}
+      />
+    );
+  }
+  return (
+    <QrAbsenDialog
+      token={value}
+      trigger={
+        <button type="button" className={sheetRowClass}>
+          <SheetRowContent label="QR Absen Saya" icon={QrCode} />
+        </button>
+      }
+    />
+  );
+}
+
+/** Layanan panitia via WhatsApp: tautan footer_url dari event settings (dimuat di server). */
+function PanitiaRow({ url }: { url: Promise<string> }) {
+  return (
+    <SheetRow
+      href={use(url)}
+      label="Layanan Panitia (WhatsApp)"
+      icon={MessageCircle}
+      external
+      iconClassName="bg-[#25D366] text-white"
+    />
   );
 }
 

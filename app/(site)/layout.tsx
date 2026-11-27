@@ -2,8 +2,11 @@ import { Suspense } from "react";
 import { SiteHeader } from "@/components/rakernas/site-header";
 import { DrawerEventCard } from "@/components/rakernas/drawer-event-card";
 import { WhatsAppFloatSlot } from "@/components/rakernas/whatsapp-float-slot";
+import { ScrollToTop } from "@/components/rakernas/scroll-to-top";
 import { AccountMenu, LoginLink } from "@/components/auth/account-menu";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
+import { getEventSettings } from "@/lib/event-settings-server";
+import { getMyQrToken } from "@/lib/my-qr-token";
 
 /**
  * Shared layout untuk situs publik (Beranda "/").
@@ -21,6 +24,8 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
               <AccountMenu />
             </Suspense>
           }
+          qrToken={getMyQrToken()}
+          panitiaUrl={getEventSettings().then((settings) => settings.footerUrl)}
           sheetFooter={
             <Suspense fallback={null}>
               <DrawerEventCard />
@@ -28,6 +33,8 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
           }
         />
         {children}
+        {/* Tombol kembali ke atas, muncul saat mendekati dasar halaman (di atas popup WhatsApp) */}
+        <ScrollToTop />
         {/* Popup WhatsApp ter-pin kanan bawah; tautan mengikuti footer_url event settings */}
         <Suspense fallback={null}>
           <WhatsAppFloatSlot />

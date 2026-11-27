@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
-import { BadgeCheck, CalendarClock, CircleAlert, MapPin, Phone, Lock, Shirt, Video, type LucideIcon } from "lucide-react";
+import { BadgeCheck, CalendarClock, ChevronRight, QrCode, CircleAlert, MapPin, Phone, Lock, Shirt, Video, type LucideIcon } from "lucide-react";
 import { cn } from "cn";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -11,7 +11,7 @@ import { ProfileForm } from "@/components/profile/profile-form";
 import { formatArrival, isoToWibLocal, isProfileComplete, profileStatus } from "@/lib/profile-contact";
 import { MODE_KEHADIRAN_LABEL } from "@/lib/participant-options";
 import { AvatarUpload } from "@/components/profile/avatar-upload";
-import { MyQrCard } from "@/components/profile/my-qr-card";
+import { QrAbsenDialog } from "@/components/profile/qr-absen-dialog";
 import { createUserQrToken } from "@/lib/absen-token";
 import { avatarPublicUrl } from "@/lib/avatar";
 import { toUserRole } from "@/lib/user-schema";
@@ -80,7 +80,7 @@ async function ProfileContent() {
         aria-labelledby="profile-name"
         className="relative [--profile-nav:calc(72px_+_env(safe-area-inset-top))] -mt-[var(--profile-nav)] rounded-b-[20px] bg-linear-to-br from-brand-green-deep to-brand-green-night pt-(--profile-nav) text-white"
       >
-        <div className={cn(PROFILE_CONTENT, "grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4 px-5 pt-8 pb-[68px] text-left lg:flex lg:gap-7 lg:px-4 lg:pt-10 lg:pb-14")}>
+        <div className={cn(PROFILE_CONTENT, "grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4 px-5 pt-8 pb-8 text-left lg:flex lg:gap-7 lg:px-4 lg:pt-10 lg:pb-10")}>
           <AvatarUpload src={avatarPublicUrl(profile?.avatar_url)} name={displayName} />
 
           <div className="w-full min-w-0 lg:flex-1">
@@ -128,7 +128,19 @@ async function ProfileContent() {
                 </p>
               </div>
             )}
-            <MyQrCard token={createUserQrToken(user.id)} />
+            <QrAbsenDialog
+              token={createUserQrToken(user.id)}
+              trigger={
+                <button
+                  type="button"
+                  className="flex min-h-[46px] w-full cursor-pointer items-center gap-2.5 rounded-2xl border border-white/15 bg-white/8 px-4 text-sm font-semibold text-white transition-colors hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold"
+                >
+                  <QrCode className="size-[18px] text-brand-gold" aria-hidden="true" />
+                  QR Code Absensi
+                  <ChevronRight className="ml-auto size-4 text-white/80" aria-hidden="true" />
+                </button>
+              }
+            />
           </div>
         </div>
       </section>

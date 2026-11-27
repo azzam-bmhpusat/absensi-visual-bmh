@@ -15722,9 +15722,9 @@
           "name": "Header",
           "width": "fill_container",
           "padding": [
-            16,
+            12,
             24,
-            8,
+            4,
             24
           ],
           "justifyContent": "space_between",
@@ -15770,37 +15770,37 @@
         },
         {
           "type": "frame",
-          "id": "l4mn8p",
-          "name": "Publikasi",
+          "id": "H5d4p",
+          "name": "Menu Peserta",
           "width": "fill_container",
           "layout": "vertical",
-          "gap": 2,
+          "gap": 6,
           "padding": [
+            4,
+            16,
             8,
-            16,
-            16,
             16
           ],
           "children": [
             {
               "type": "frame",
-              "id": "cLxy5",
+              "id": "ehQgl",
               "name": "Group Label",
               "padding": [
+                8,
+                8,
                 4,
-                8,
-                8,
                 8
               ],
               "children": [
                 {
                   "type": "text",
-                  "id": "X83eA",
+                  "id": "KrgHD",
                   "name": "Label",
                   "fill": "$ink-muted",
-                  "content": "PUBLIKASI",
+                  "content": "MENU PESERTA",
                   "fontFamily": "$font-body",
-                  "fontSize": 12,
+                  "fontSize": 11,
                   "fontWeight": "700",
                   "letterSpacing": 2
                 }
@@ -15808,11 +15808,11 @@
             },
             {
               "type": "frame",
-              "id": "x6ZIHO",
-              "name": "Item Foto Galeri Kegiatan",
+              "id": "n8OaR",
+              "name": "Item QR Absen Saya",
               "width": "fill_container",
               "fill": "#FFFFFF8C",
-              "cornerRadius": 16,
+              "cornerRadius": 14,
               "stroke": "#FFFFFFE6",
               "strokeWidth": 1,
               "strokeAlignment": "inner",
@@ -15826,9 +15826,271 @@
                 },
                 "blur": 8
               },
-              "gap": 16,
+              "gap": 12,
               "padding": [
-                10,
+                6,
+                8
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Le6V1",
+                  "name": "Icon Circle",
+                  "width": 36,
+                  "height": 36,
+                  "fill": "#EEF8F3E6",
+                  "cornerRadius": 999,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "GcCfC",
+                      "name": "Icon",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "qr-code",
+                      "library": "lucide",
+                      "fill": "$green-deep"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "pmgEB",
+                  "name": "Label",
+                  "fill": "$ink",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "QR Absen Saya",
+                  "fontFamily": "$font-body",
+                  "fontSize": 15,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "icon",
+                  "id": "XVw3n",
+                  "name": "Chevron",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "chevron-right",
+                  "library": "lucide",
+                  "fill": "$ink-muted"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "D7EGb",
+              "name": "Item Dress Code",
+              "width": "fill_container",
+              "fill": "#FFFFFF8C",
+              "cornerRadius": 14,
+              "stroke": "#FFFFFFE6",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#04362F0D",
+                "offset": {
+                  "x": 0,
+                  "y": 2
+                },
+                "blur": 8
+              },
+              "gap": 12,
+              "padding": [
+                6,
+                8
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "EJqao",
+                  "name": "Icon Circle",
+                  "width": 36,
+                  "height": 36,
+                  "fill": "#EEF8F3E6",
+                  "cornerRadius": 999,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "Z3qlK5",
+                      "name": "Icon",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "shirt",
+                      "library": "lucide",
+                      "fill": "$green-deep"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "c3Kxg",
+                  "name": "Label",
+                  "fill": "$ink",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Dress Code",
+                  "fontFamily": "$font-body",
+                  "fontSize": 15,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "icon",
+                  "id": "JrEno",
+                  "name": "Chevron",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "chevron-right",
+                  "library": "lucide",
+                  "fill": "$ink-muted"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "N4XYx3",
+              "name": "Item Layanan Panitia (WhatsApp)",
+              "width": "fill_container",
+              "fill": "#FFFFFF8C",
+              "cornerRadius": 14,
+              "stroke": "#FFFFFFE6",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#04362F0D",
+                "offset": {
+                  "x": 0,
+                  "y": 2
+                },
+                "blur": 8
+              },
+              "gap": 12,
+              "padding": [
+                6,
+                8
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "L20z8",
+                  "name": "Icon Circle",
+                  "width": 36,
+                  "height": 36,
+                  "fill": "#25D366",
+                  "cornerRadius": 999,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "kzrPv",
+                      "name": "Icon",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "message-circle",
+                      "library": "lucide",
+                      "fill": "#FFFFFF"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "iP07h",
+                  "name": "Label",
+                  "fill": "$ink",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Layanan Panitia (WhatsApp)",
+                  "fontFamily": "$font-body",
+                  "fontSize": 15,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "icon",
+                  "id": "RPrsn",
+                  "name": "Chevron",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "external-link",
+                  "library": "lucide",
+                  "fill": "$ink-muted"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "l4mn8p",
+          "name": "Publikasi",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 6,
+          "padding": [
+            4,
+            16,
+            8,
+            16
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "cLxy5",
+              "name": "Group Label",
+              "padding": [
+                8,
+                8,
+                4,
+                8
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "X83eA",
+                  "name": "Label",
+                  "fill": "$ink-muted",
+                  "content": "PUBLIKASI",
+                  "fontFamily": "$font-body",
+                  "fontSize": 11,
+                  "fontWeight": "700",
+                  "letterSpacing": 2
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "x6ZIHO",
+              "name": "Item Foto Galeri Kegiatan",
+              "width": "fill_container",
+              "fill": "#FFFFFF8C",
+              "cornerRadius": 14,
+              "stroke": "#FFFFFFE6",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#04362F0D",
+                "offset": {
+                  "x": 0,
+                  "y": 2
+                },
+                "blur": 8
+              },
+              "gap": 12,
+              "padding": [
+                6,
                 8
               ],
               "alignItems": "center",
@@ -15837,8 +16099,8 @@
                   "type": "frame",
                   "id": "m9eE8",
                   "name": "Icon Circle",
-                  "width": 48,
-                  "height": 48,
+                  "width": 36,
+                  "height": 36,
                   "fill": "#EEF8F3E6",
                   "cornerRadius": 999,
                   "justifyContent": "center",
@@ -15848,8 +16110,8 @@
                       "type": "icon",
                       "id": "cOxjk",
                       "name": "Icon",
-                      "width": 20,
-                      "height": 20,
+                      "width": 18,
+                      "height": 18,
                       "icon": "images",
                       "library": "lucide",
                       "fill": "$green-deep"
@@ -15865,15 +16127,15 @@
                   "width": "fill_container",
                   "content": "Foto Galeri Kegiatan",
                   "fontFamily": "$font-body",
-                  "fontSize": 17,
+                  "fontSize": 15,
                   "fontWeight": "500"
                 },
                 {
                   "type": "icon",
                   "id": "atQWB",
                   "name": "Chevron",
-                  "width": 18,
-                  "height": 18,
+                  "width": 16,
+                  "height": 16,
                   "icon": "chevron-right",
                   "library": "lucide",
                   "fill": "$ink-muted"
@@ -15886,7 +16148,7 @@
               "name": "Item Materi Presentasi Rakernas",
               "width": "fill_container",
               "fill": "#FFFFFF8C",
-              "cornerRadius": 16,
+              "cornerRadius": 14,
               "stroke": "#FFFFFFE6",
               "strokeWidth": 1,
               "strokeAlignment": "inner",
@@ -15900,9 +16162,9 @@
                 },
                 "blur": 8
               },
-              "gap": 16,
+              "gap": 12,
               "padding": [
-                10,
+                6,
                 8
               ],
               "alignItems": "center",
@@ -15911,8 +16173,8 @@
                   "type": "frame",
                   "id": "n3P2Nx",
                   "name": "Icon Circle",
-                  "width": 48,
-                  "height": 48,
+                  "width": 36,
+                  "height": 36,
                   "fill": "#EEF8F3E6",
                   "cornerRadius": 999,
                   "justifyContent": "center",
@@ -15922,8 +16184,8 @@
                       "type": "icon",
                       "id": "s13eK8",
                       "name": "Icon",
-                      "width": 20,
-                      "height": 20,
+                      "width": 18,
+                      "height": 18,
                       "icon": "presentation",
                       "library": "lucide",
                       "fill": "$green-deep"
@@ -15939,15 +16201,15 @@
                   "width": "fill_container",
                   "content": "Materi Presentasi Rakernas",
                   "fontFamily": "$font-body",
-                  "fontSize": 17,
+                  "fontSize": 15,
                   "fontWeight": "500"
                 },
                 {
                   "type": "icon",
                   "id": "SYxiH",
                   "name": "Chevron",
-                  "width": 18,
-                  "height": 18,
+                  "width": 16,
+                  "height": 16,
                   "icon": "chevron-right",
                   "library": "lucide",
                   "fill": "$ink-muted"
@@ -15960,7 +16222,7 @@
               "name": "Item Notula Rapat",
               "width": "fill_container",
               "fill": "#FFFFFF8C",
-              "cornerRadius": 16,
+              "cornerRadius": 14,
               "stroke": "#FFFFFFE6",
               "strokeWidth": 1,
               "strokeAlignment": "inner",
@@ -15974,9 +16236,9 @@
                 },
                 "blur": 8
               },
-              "gap": 16,
+              "gap": 12,
               "padding": [
-                10,
+                6,
                 8
               ],
               "alignItems": "center",
@@ -15985,8 +16247,8 @@
                   "type": "frame",
                   "id": "MxKVL",
                   "name": "Icon Circle",
-                  "width": 48,
-                  "height": 48,
+                  "width": 36,
+                  "height": 36,
                   "fill": "#EEF8F3E6",
                   "cornerRadius": 999,
                   "justifyContent": "center",
@@ -15996,8 +16258,8 @@
                       "type": "icon",
                       "id": "KEVWY",
                       "name": "Icon",
-                      "width": 20,
-                      "height": 20,
+                      "width": 18,
+                      "height": 18,
                       "icon": "file-text",
                       "library": "lucide",
                       "fill": "$green-deep"
@@ -16013,15 +16275,15 @@
                   "width": "fill_container",
                   "content": "Notula Rapat",
                   "fontFamily": "$font-body",
-                  "fontSize": 17,
+                  "fontSize": 15,
                   "fontWeight": "500"
                 },
                 {
                   "type": "icon",
                   "id": "u31REH",
                   "name": "Chevron",
-                  "width": 18,
-                  "height": 18,
+                  "width": 16,
+                  "height": 16,
                   "icon": "chevron-right",
                   "library": "lucide",
                   "fill": "$ink-muted"
