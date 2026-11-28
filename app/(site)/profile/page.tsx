@@ -127,19 +127,21 @@ async function ProfileContent() {
                 </p>
               </div>
             )}
-            <QrAbsenDialog
-              token={createUserQrToken(user.id)}
-              trigger={
-                <button
-                  type="button"
-                  className="flex min-h-[46px] w-full cursor-pointer items-center gap-2.5 rounded-2xl border border-white/15 bg-white/8 px-4 text-sm font-semibold text-white transition-colors hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold"
-                >
-                  <QrCode className="size-[18px] text-brand-gold" aria-hidden="true" />
-                  QR Code Absensi
-                  <ChevronRight className="ml-auto size-4 text-white/80" aria-hidden="true" />
-                </button>
-              }
-            />
+            {mode === "offline" && (
+              <QrAbsenDialog
+                token={createUserQrToken(user.id)}
+                trigger={
+                  <button
+                    type="button"
+                    className="flex min-h-[46px] w-full cursor-pointer items-center gap-2.5 rounded-2xl border border-white/15 bg-white/8 px-4 text-sm font-semibold text-white transition-colors hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold"
+                  >
+                    <QrCode className="size-[18px] text-brand-gold" aria-hidden="true" />
+                    QR Code Absensi
+                    <ChevronRight className="ml-auto size-4 text-white/80" aria-hidden="true" />
+                  </button>
+                }
+              />
+            )}
           </div>
         </div>
       </section>

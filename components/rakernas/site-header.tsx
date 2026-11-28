@@ -109,7 +109,7 @@ export function SiteHeader({
   sheetFooter?: React.ReactNode;
   /** footer_url event settings (WhatsApp panitia), dimuat di server tanpa menahan navbar. */
   panitiaUrl?: Promise<string>;
-  /** Token QR absensi pengguna (null bila tanpa sesi), dimuat di server. */
+  /** Token QR absensi akun offline (null untuk kondisi lainnya), dimuat di server. */
   qrToken?: Promise<string | null>;
 }) {
   const [moreOpen, setMoreOpen] = useState(false);
@@ -603,11 +603,9 @@ function MobileTabBar({
                   animate="show"
                 >
                   {group.label === PESERTA_GROUP.label && qrToken ? (
-                    <motion.li variants={reduceMotion ? undefined : sheetItemVariants}>
-                      <Suspense fallback={null}>
-                        <QrRow token={qrToken} onNavigate={() => onMoreOpenChange(false)} />
-                      </Suspense>
-                    </motion.li>
+                    <Suspense fallback={null}>
+                      <QrRow token={qrToken} reduceMotion={reduceMotion} />
+                    </Suspense>
                   ) : null}
                   {group.children.map((child) => {
                     const key = keyForHref(child.href);
@@ -735,28 +733,21 @@ function SheetRow({
   );
 }
 
-/** QR Absen Saya: dialog QR besar bila sudah punya akun aktif, selain itu ke /profile (mengarahkan ke autentikasi). */
-function QrRow({ token, onNavigate }: { token: Promise<string | null>; onNavigate: () => void }) {
+/** QR Absen Saya hanya ditampilkan bila server memberikan token untuk akun offline. */
+function QrRow({ token, reduceMotion }: { token: Promise<string | null>; reduceMotion: boolean }) {
   const value = use(token);
-  if (!value) {
-    return (
-      <SheetRow
-        href="/profile"
-        label="QR Absen Saya"
-        icon={QrCode}
-        onNavigate={onNavigate}
-      />
-    );
-  }
+  if (!value) return null;
   return (
-    <QrAbsenDialog
-      token={value}
-      trigger={
-        <button type="button" className={sheetRowClass}>
-          <SheetRowContent label="QR Absen Saya" icon={QrCode} />
-        </button>
-      }
-    />
+    <motion.li variants={reduceMotion ? undefined : sheetItemVariants}>
+      <QrAbsenDialog
+        token={value}
+        trigger={
+          <button type="button" className={sheetRowClass}>
+            <SheetRowContent label="QR Absen Saya" icon={QrCode} />
+          </button>
+        }
+      />
+    </motion.li>
   );
 }
 

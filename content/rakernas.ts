@@ -228,7 +228,7 @@ export const LOCATION_DATA = {
   map: {
     // [longitude, latitude], dari tautan Maps pada situs resmi Hotel Luminor Kota.
     coordinates: [106.823191, -6.148531] as [number, number],
-    zoom: 15,
+    zoom: 6,
     styleUrl: "https://tiles.openfreemap.org/styles/positron",
   },
   banner: {

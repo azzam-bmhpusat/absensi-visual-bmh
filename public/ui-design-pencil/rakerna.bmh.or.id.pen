@@ -26712,8 +26712,8 @@
                       "stroke": "$line",
                       "strokeWidth": 1,
                       "layout": "vertical",
-                      "gap": 16,
-                      "padding": 22,
+                      "gap": 14,
+                      "padding": 20,
                       "children": [
                         {
                           "type": "frame",
@@ -26800,6 +26800,7 @@
                           "type": "frame",
                           "id": "b2dCe",
                           "name": "Hasan Basri",
+                          "width": "fill_container",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
@@ -26818,7 +26819,10 @@
                               "id": "F3HA4",
                               "name": "N",
                               "fill": "$ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Hasan Basri",
+                              "lineHeight": 1.4,
                               "fontFamily": "$font-body",
                               "fontSize": 14,
                               "fontWeight": "normal"
@@ -26829,6 +26833,7 @@
                           "type": "frame",
                           "id": "JEZih",
                           "name": "Umar Syarif",
+                          "width": "fill_container",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
@@ -26847,7 +26852,10 @@
                               "id": "s8fAH",
                               "name": "N",
                               "fill": "$ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Umar Syarif",
+                              "lineHeight": 1.4,
                               "fontFamily": "$font-body",
                               "fontSize": 14,
                               "fontWeight": "normal"
@@ -26866,8 +26874,8 @@
                       "stroke": "$line",
                       "strokeWidth": 1,
                       "layout": "vertical",
-                      "gap": 16,
-                      "padding": 22,
+                      "gap": 14,
+                      "padding": 20,
                       "children": [
                         {
                           "type": "frame",
@@ -26954,6 +26962,7 @@
                           "type": "frame",
                           "id": "HpNng",
                           "name": "Siti Aminah",
+                          "width": "fill_container",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
@@ -26972,7 +26981,10 @@
                               "id": "qyrxR",
                               "name": "N",
                               "fill": "$ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Siti Aminah",
+                              "lineHeight": 1.4,
                               "fontFamily": "$font-body",
                               "fontSize": 14,
                               "fontWeight": "normal"
@@ -26983,6 +26995,7 @@
                           "type": "frame",
                           "id": "A5GuLq",
                           "name": "Nur Laila",
+                          "width": "fill_container",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
@@ -27001,7 +27014,10 @@
                               "id": "bg2kz",
                               "name": "N",
                               "fill": "$ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Nur Laila",
+                              "lineHeight": 1.4,
                               "fontFamily": "$font-body",
                               "fontSize": 14,
                               "fontWeight": "normal"
@@ -27020,8 +27036,8 @@
                       "stroke": "$line",
                       "strokeWidth": 1,
                       "layout": "vertical",
-                      "gap": 16,
-                      "padding": 22,
+                      "gap": 14,
+                      "padding": 20,
                       "children": [
                         {
                           "type": "frame",
@@ -27108,6 +27124,7 @@
                           "type": "frame",
                           "id": "soJLY",
                           "name": "Fajar Nugroho",
+                          "width": "fill_container",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
@@ -27126,7 +27143,10 @@
                               "id": "lzzAN",
                               "name": "N",
                               "fill": "$ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Fajar Nugroho",
+                              "lineHeight": 1.4,
                               "fontFamily": "$font-body",
                               "fontSize": 14,
                               "fontWeight": "normal"
@@ -27137,6 +27157,7 @@
                           "type": "frame",
                           "id": "D1xg7O",
                           "name": "Dedi Kurnia",
+                          "width": "fill_container",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
@@ -27155,7 +27176,10 @@
                               "id": "t5gqRZ",
                               "name": "N",
                               "fill": "$ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Dedi Kurnia",
+                              "lineHeight": 1.4,
                               "fontFamily": "$font-body",
                               "fontSize": 14,
                               "fontWeight": "normal"
@@ -27174,8 +27198,8 @@
                       "stroke": "$line",
                       "strokeWidth": 1,
                       "layout": "vertical",
-                      "gap": 16,
-                      "padding": 22,
+                      "gap": 14,
+                      "padding": 20,
                       "children": [
                         {
                           "type": "frame",
@@ -27262,6 +27286,7 @@
                           "type": "frame",
                           "id": "ecQuA",
                           "name": "Aisyah Putri",
+                          "width": "fill_container",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
@@ -27280,7 +27305,10 @@
                               "id": "vgPXn",
                               "name": "N",
                               "fill": "$ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Aisyah Putri",
+                              "lineHeight": 1.4,
                               "fontFamily": "$font-body",
                               "fontSize": 14,
                               "fontWeight": "normal"
@@ -27291,6 +27319,7 @@
                           "type": "frame",
                           "id": "mJTMn",
                           "name": "Rahma Dewi",
+                          "width": "fill_container",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
@@ -27309,7 +27338,10 @@
                               "id": "dCcx6",
                               "name": "N",
                               "fill": "$ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Rahma Dewi",
+                              "lineHeight": 1.4,
                               "fontFamily": "$font-body",
                               "fontSize": 14,
                               "fontWeight": "normal"
@@ -27337,8 +27369,8 @@
                       "stroke": "$line",
                       "strokeWidth": 1,
                       "layout": "vertical",
-                      "gap": 16,
-                      "padding": 22,
+                      "gap": 14,
+                      "padding": 20,
                       "children": [
                         {
                           "type": "frame",
@@ -27425,6 +27457,7 @@
                           "type": "frame",
                           "id": "v20qMk",
                           "name": "Yusuf Hamdani",
+                          "width": "fill_container",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
@@ -27443,7 +27476,10 @@
                               "id": "ZjSuc",
                               "name": "N",
                               "fill": "$ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Yusuf Hamdani",
+                              "lineHeight": 1.4,
                               "fontFamily": "$font-body",
                               "fontSize": 14,
                               "fontWeight": "normal"
@@ -27454,6 +27490,7 @@
                           "type": "frame",
                           "id": "PzOIj",
                           "name": "Bayu Saputra",
+                          "width": "fill_container",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
@@ -27472,7 +27509,10 @@
                               "id": "DNmRD",
                               "name": "N",
                               "fill": "$ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Bayu Saputra",
+                              "lineHeight": 1.4,
                               "fontFamily": "$font-body",
                               "fontSize": 14,
                               "fontWeight": "normal"
@@ -27491,8 +27531,8 @@
                       "stroke": "$line",
                       "strokeWidth": 1,
                       "layout": "vertical",
-                      "gap": 16,
-                      "padding": 22,
+                      "gap": 14,
+                      "padding": 20,
                       "children": [
                         {
                           "type": "frame",
@@ -27579,6 +27619,7 @@
                           "type": "frame",
                           "id": "Pg8HC",
                           "name": "Fitri Handayani",
+                          "width": "fill_container",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
@@ -27597,7 +27638,10 @@
                               "id": "maLDT",
                               "name": "N",
                               "fill": "$ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Fitri Handayani",
+                              "lineHeight": 1.4,
                               "fontFamily": "$font-body",
                               "fontSize": 14,
                               "fontWeight": "normal"
@@ -27608,6 +27652,7 @@
                           "type": "frame",
                           "id": "OA86n",
                           "name": "Maryam Azzahra",
+                          "width": "fill_container",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
@@ -27626,7 +27671,10 @@
                               "id": "Gfltc",
                               "name": "N",
                               "fill": "$ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Maryam Azzahra",
+                              "lineHeight": 1.4,
                               "fontFamily": "$font-body",
                               "fontSize": 14,
                               "fontWeight": "normal"
@@ -27645,8 +27693,8 @@
                       "stroke": "$gold",
                       "strokeWidth": 2,
                       "layout": "vertical",
-                      "gap": 16,
-                      "padding": 22,
+                      "gap": 14,
+                      "padding": 20,
                       "children": [
                         {
                           "type": "frame",
@@ -27733,6 +27781,7 @@
                           "type": "frame",
                           "id": "h2WG31",
                           "name": "Ahmad Fauzi",
+                          "width": "fill_container",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
@@ -27751,7 +27800,10 @@
                               "id": "hLunR",
                               "name": "N",
                               "fill": "$ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Ahmad Fauzi",
+                              "lineHeight": 1.4,
                               "fontFamily": "$font-body",
                               "fontSize": 14,
                               "fontWeight": "normal"
@@ -27762,6 +27814,7 @@
                           "type": "frame",
                           "id": "a4kJy",
                           "name": "Rizki Ramadhan",
+                          "width": "fill_container",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
@@ -27780,7 +27833,10 @@
                               "id": "u1HK5",
                               "name": "N",
                               "fill": "$ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Rizki Ramadhan",
+                              "lineHeight": 1.4,
                               "fontFamily": "$font-body",
                               "fontSize": 14,
                               "fontWeight": "normal"
@@ -27799,8 +27855,8 @@
                       "stroke": "$line",
                       "strokeWidth": 1,
                       "layout": "vertical",
-                      "gap": 16,
-                      "padding": 22,
+                      "gap": 14,
+                      "padding": 20,
                       "children": [
                         {
                           "type": "frame",
@@ -27887,6 +27943,7 @@
                           "type": "frame",
                           "id": "EYesG",
                           "name": "Irfan Hakim",
+                          "width": "fill_container",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
@@ -27905,7 +27962,10 @@
                               "id": "CNAVq",
                               "name": "N",
                               "fill": "$ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Irfan Hakim",
+                              "lineHeight": 1.4,
                               "fontFamily": "$font-body",
                               "fontSize": 14,
                               "fontWeight": "normal"
@@ -27916,6 +27976,7 @@
                           "type": "frame",
                           "id": "sOoKp",
                           "name": "Zainal Abidin",
+                          "width": "fill_container",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
@@ -27934,7 +27995,10 @@
                               "id": "a2Pr5",
                               "name": "N",
                               "fill": "$ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Zainal Abidin",
+                              "lineHeight": 1.4,
                               "fontFamily": "$font-body",
                               "fontSize": 14,
                               "fontWeight": "normal"
@@ -30240,66 +30304,350 @@
                 },
                 {
                   "type": "frame",
-                  "id": "vjcRX",
-                  "name": "Kamar 501",
+                  "id": "oE1D5",
+                  "name": "Grid kamar — Baris 1",
                   "width": "fill_container",
-                  "fill": "$white",
-                  "cornerRadius": 16,
-                  "stroke": "$line",
-                  "strokeWidth": 1,
-                  "gap": 14,
-                  "padding": [
-                    14,
-                    16
-                  ],
-                  "alignItems": "center",
+                  "gap": 12,
                   "children": [
                     {
-                      "type": "rectangle",
-                      "cornerRadius": 2,
-                      "id": "pLUDv",
-                      "name": "Bar",
-                      "fill": "$green",
-                      "width": 4,
-                      "height": 40
-                    },
-                    {
-                      "type": "text",
-                      "id": "k9R2Hc",
-                      "name": "N",
-                      "fill": "$green-deep",
-                      "content": "501",
-                      "fontFamily": "$font-heading",
-                      "fontSize": 22,
-                      "fontWeight": "700"
+                      "type": "frame",
+                      "id": "vjcRX",
+                      "name": "Kamar 501",
+                      "width": "fill_container",
+                      "height": 132,
+                      "fill": "$white",
+                      "cornerRadius": 16,
+                      "stroke": "$line",
+                      "strokeWidth": 1,
+                      "layout": "vertical",
+                      "gap": 10,
+                      "padding": 12,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "siRFV",
+                          "name": "Header nomor dan badge",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "cpWrl",
+                              "name": "Nomor kamar dengan aksen",
+                              "gap": 6,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "rectangle",
+                                  "cornerRadius": 2,
+                                  "id": "pLUDv",
+                                  "name": "Bar",
+                                  "fill": "$green",
+                                  "width": 3,
+                                  "height": 22
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "k9R2Hc",
+                                  "name": "N",
+                                  "fill": "$green-deep",
+                                  "content": "501",
+                                  "fontFamily": "$font-heading",
+                                  "fontSize": 20,
+                                  "fontWeight": "700"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "NEpbT",
+                              "name": "Badge Twin",
+                              "fill": "$green-50",
+                              "cornerRadius": 999,
+                              "gap": 3,
+                              "padding": [
+                                4,
+                                5
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "Uj2Mh",
+                                  "name": "Ikon tempat tidur",
+                                  "width": 10,
+                                  "height": 10,
+                                  "icon": "bed-double",
+                                  "library": "lucide",
+                                  "fill": "$green-text"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "DC30M",
+                                  "name": "Label badge",
+                                  "fill": "$green-text",
+                                  "content": "Twin",
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 9,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "rectangle",
+                          "id": "t0rcIK",
+                          "name": "Garis pemisah",
+                          "fill": "$line",
+                          "width": "fill_container",
+                          "height": 1
+                        },
+                        {
+                          "type": "frame",
+                          "id": "l06ILz",
+                          "name": "Penghuni",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "lfPSE",
+                              "name": "Penghuni — Hasan Basri",
+                              "width": "fill_container",
+                              "gap": 6,
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "KIi49",
+                                  "name": "Ikon penghuni",
+                                  "width": 12,
+                                  "height": 16,
+                                  "icon": "user-round",
+                                  "library": "lucide",
+                                  "fill": "$ink-muted"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "J2EfZu",
+                                  "name": "Hasan Basri",
+                                  "fill": "$ink",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Hasan Basri",
+                                  "lineHeight": 1.4,
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "Cd5cz",
+                              "name": "Penghuni — Umar Syarif",
+                              "width": "fill_container",
+                              "gap": 6,
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "PwKrm",
+                                  "name": "Ikon penghuni",
+                                  "width": 12,
+                                  "height": 16,
+                                  "icon": "user-round",
+                                  "library": "lucide",
+                                  "fill": "$ink-muted"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "VznqJ",
+                                  "name": "Umar Syarif",
+                                  "fill": "$ink",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Umar Syarif",
+                                  "lineHeight": 1.4,
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
                     },
                     {
                       "type": "frame",
-                      "id": "l06ILz",
-                      "name": "Penghuni",
+                      "id": "tG5PS",
+                      "name": "Kamar 502",
                       "width": "fill_container",
+                      "height": 132,
+                      "fill": "$white",
+                      "cornerRadius": 16,
+                      "stroke": "$line",
+                      "strokeWidth": 1,
                       "layout": "vertical",
-                      "gap": 4,
+                      "gap": 10,
+                      "padding": 12,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "J2EfZu",
-                          "name": "Hasan Basri",
-                          "fill": "$ink",
-                          "content": "Hasan Basri",
-                          "fontFamily": "$font-body",
-                          "fontSize": 13,
-                          "fontWeight": "normal"
+                          "type": "frame",
+                          "id": "DM90u",
+                          "name": "Header nomor dan badge",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "rE58T",
+                              "name": "Nomor kamar dengan aksen",
+                              "gap": 6,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "rectangle",
+                                  "cornerRadius": 2,
+                                  "id": "s7epSq",
+                                  "name": "Bar",
+                                  "fill": "$gold",
+                                  "width": 3,
+                                  "height": 22
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "b9TK9",
+                                  "name": "N",
+                                  "fill": "$green-deep",
+                                  "content": "502",
+                                  "fontFamily": "$font-heading",
+                                  "fontSize": 20,
+                                  "fontWeight": "700"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "Jix19",
+                              "name": "Badge Twin",
+                              "fill": "$green-50",
+                              "cornerRadius": 999,
+                              "gap": 3,
+                              "padding": [
+                                4,
+                                5
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "XqEMW",
+                                  "name": "Ikon tempat tidur",
+                                  "width": 10,
+                                  "height": 10,
+                                  "icon": "bed-double",
+                                  "library": "lucide",
+                                  "fill": "$green-text"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "PmhAT",
+                                  "name": "Label badge",
+                                  "fill": "$green-text",
+                                  "content": "Twin",
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 9,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
-                          "type": "text",
-                          "id": "VznqJ",
-                          "name": "Umar Syarif",
-                          "fill": "$ink",
-                          "content": "Umar Syarif",
-                          "fontFamily": "$font-body",
-                          "fontSize": 13,
-                          "fontWeight": "normal"
+                          "type": "rectangle",
+                          "id": "Kw7zz",
+                          "name": "Garis pemisah",
+                          "fill": "$line",
+                          "width": "fill_container",
+                          "height": 1
+                        },
+                        {
+                          "type": "frame",
+                          "id": "H1HXTT",
+                          "name": "Penghuni",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "UJlLO",
+                              "name": "Penghuni — Siti Aminah",
+                              "width": "fill_container",
+                              "gap": 6,
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "rLlNt",
+                                  "name": "Ikon penghuni",
+                                  "width": 12,
+                                  "height": 16,
+                                  "icon": "user-round",
+                                  "library": "lucide",
+                                  "fill": "$ink-muted"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "flUPH",
+                                  "name": "Siti Aminah",
+                                  "fill": "$ink",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Siti Aminah",
+                                  "lineHeight": 1.4,
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "Dpty3",
+                              "name": "Penghuni — Nur Laila",
+                              "width": "fill_container",
+                              "gap": 6,
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "ge7yP",
+                                  "name": "Ikon penghuni",
+                                  "width": 12,
+                                  "height": 16,
+                                  "icon": "user-round",
+                                  "library": "lucide",
+                                  "fill": "$ink-muted"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "RgPT3",
+                                  "name": "Nur Laila",
+                                  "fill": "$ink",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Nur Laila",
+                                  "lineHeight": 1.4,
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
                         }
                       ]
                     }
@@ -30307,66 +30655,350 @@
                 },
                 {
                   "type": "frame",
-                  "id": "tG5PS",
-                  "name": "Kamar 502",
+                  "id": "TdM7A",
+                  "name": "Grid kamar — Baris 2",
                   "width": "fill_container",
-                  "fill": "$white",
-                  "cornerRadius": 16,
-                  "stroke": "$line",
-                  "strokeWidth": 1,
-                  "gap": 14,
-                  "padding": [
-                    14,
-                    16
-                  ],
-                  "alignItems": "center",
+                  "gap": 12,
                   "children": [
                     {
-                      "type": "rectangle",
-                      "cornerRadius": 2,
-                      "id": "s7epSq",
-                      "name": "Bar",
-                      "fill": "$gold",
-                      "width": 4,
-                      "height": 40
-                    },
-                    {
-                      "type": "text",
-                      "id": "b9TK9",
-                      "name": "N",
-                      "fill": "$green-deep",
-                      "content": "502",
-                      "fontFamily": "$font-heading",
-                      "fontSize": 22,
-                      "fontWeight": "700"
+                      "type": "frame",
+                      "id": "Bu5f3",
+                      "name": "Kamar 503",
+                      "width": "fill_container",
+                      "height": 132,
+                      "fill": "$white",
+                      "cornerRadius": 16,
+                      "stroke": "$line",
+                      "strokeWidth": 1,
+                      "layout": "vertical",
+                      "gap": 10,
+                      "padding": 12,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "Vkw6R",
+                          "name": "Header nomor dan badge",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "y3GTER",
+                              "name": "Nomor kamar dengan aksen",
+                              "gap": 6,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "rectangle",
+                                  "cornerRadius": 2,
+                                  "id": "H03py",
+                                  "name": "Bar",
+                                  "fill": "$green",
+                                  "width": 3,
+                                  "height": 22
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "uu42n",
+                                  "name": "N",
+                                  "fill": "$green-deep",
+                                  "content": "503",
+                                  "fontFamily": "$font-heading",
+                                  "fontSize": 20,
+                                  "fontWeight": "700"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "XKqp9",
+                              "name": "Badge Twin",
+                              "fill": "$green-50",
+                              "cornerRadius": 999,
+                              "gap": 3,
+                              "padding": [
+                                4,
+                                5
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "vr8wh",
+                                  "name": "Ikon tempat tidur",
+                                  "width": 10,
+                                  "height": 10,
+                                  "icon": "bed-double",
+                                  "library": "lucide",
+                                  "fill": "$green-text"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "oNZjv",
+                                  "name": "Label badge",
+                                  "fill": "$green-text",
+                                  "content": "Twin",
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 9,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "rectangle",
+                          "id": "TDqXQ",
+                          "name": "Garis pemisah",
+                          "fill": "$line",
+                          "width": "fill_container",
+                          "height": 1
+                        },
+                        {
+                          "type": "frame",
+                          "id": "aftZ4",
+                          "name": "Penghuni",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "OgcC0",
+                              "name": "Penghuni — Fajar Nugroho",
+                              "width": "fill_container",
+                              "gap": 6,
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "fgIqJ",
+                                  "name": "Ikon penghuni",
+                                  "width": 12,
+                                  "height": 16,
+                                  "icon": "user-round",
+                                  "library": "lucide",
+                                  "fill": "$ink-muted"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "kUFt5",
+                                  "name": "Fajar Nugroho",
+                                  "fill": "$ink",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Fajar Nugroho",
+                                  "lineHeight": 1.4,
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "kKZMF",
+                              "name": "Penghuni — Dedi Kurnia",
+                              "width": "fill_container",
+                              "gap": 6,
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "sfgjd",
+                                  "name": "Ikon penghuni",
+                                  "width": 12,
+                                  "height": 16,
+                                  "icon": "user-round",
+                                  "library": "lucide",
+                                  "fill": "$ink-muted"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "Cip4E",
+                                  "name": "Dedi Kurnia",
+                                  "fill": "$ink",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Dedi Kurnia",
+                                  "lineHeight": 1.4,
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
                     },
                     {
                       "type": "frame",
-                      "id": "H1HXTT",
-                      "name": "Penghuni",
+                      "id": "VgvSa",
+                      "name": "Kamar 504",
                       "width": "fill_container",
+                      "height": 132,
+                      "fill": "$white",
+                      "cornerRadius": 16,
+                      "stroke": "$line",
+                      "strokeWidth": 1,
                       "layout": "vertical",
-                      "gap": 4,
+                      "gap": 10,
+                      "padding": 12,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "flUPH",
-                          "name": "Siti Aminah",
-                          "fill": "$ink",
-                          "content": "Siti Aminah",
-                          "fontFamily": "$font-body",
-                          "fontSize": 13,
-                          "fontWeight": "normal"
+                          "type": "frame",
+                          "id": "EZRWm",
+                          "name": "Header nomor dan badge",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "E1lgwY",
+                              "name": "Nomor kamar dengan aksen",
+                              "gap": 6,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "rectangle",
+                                  "cornerRadius": 2,
+                                  "id": "BjCuX",
+                                  "name": "Bar",
+                                  "fill": "$gold",
+                                  "width": 3,
+                                  "height": 22
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "m47Yyn",
+                                  "name": "N",
+                                  "fill": "$green-deep",
+                                  "content": "504",
+                                  "fontFamily": "$font-heading",
+                                  "fontSize": 20,
+                                  "fontWeight": "700"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "gPqap",
+                              "name": "Badge Twin",
+                              "fill": "$green-50",
+                              "cornerRadius": 999,
+                              "gap": 3,
+                              "padding": [
+                                4,
+                                5
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "Aknkx",
+                                  "name": "Ikon tempat tidur",
+                                  "width": 10,
+                                  "height": 10,
+                                  "icon": "bed-double",
+                                  "library": "lucide",
+                                  "fill": "$green-text"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "gcL9f",
+                                  "name": "Label badge",
+                                  "fill": "$green-text",
+                                  "content": "Twin",
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 9,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
-                          "type": "text",
-                          "id": "RgPT3",
-                          "name": "Nur Laila",
-                          "fill": "$ink",
-                          "content": "Nur Laila",
-                          "fontFamily": "$font-body",
-                          "fontSize": 13,
-                          "fontWeight": "normal"
+                          "type": "rectangle",
+                          "id": "f3AXj",
+                          "name": "Garis pemisah",
+                          "fill": "$line",
+                          "width": "fill_container",
+                          "height": 1
+                        },
+                        {
+                          "type": "frame",
+                          "id": "dMU8k",
+                          "name": "Penghuni",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "esD9F",
+                              "name": "Penghuni — Aisyah Putri",
+                              "width": "fill_container",
+                              "gap": 6,
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "o5M9Q",
+                                  "name": "Ikon penghuni",
+                                  "width": 12,
+                                  "height": 16,
+                                  "icon": "user-round",
+                                  "library": "lucide",
+                                  "fill": "$ink-muted"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "Otkb9",
+                                  "name": "Aisyah Putri",
+                                  "fill": "$ink",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Aisyah Putri",
+                                  "lineHeight": 1.4,
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "wCKZk",
+                              "name": "Penghuni — Rahma Dewi",
+                              "width": "fill_container",
+                              "gap": 6,
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "ARGKU",
+                                  "name": "Ikon penghuni",
+                                  "width": 12,
+                                  "height": 16,
+                                  "icon": "user-round",
+                                  "library": "lucide",
+                                  "fill": "$ink-muted"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "vPYWE",
+                                  "name": "Rahma Dewi",
+                                  "fill": "$ink",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Rahma Dewi",
+                                  "lineHeight": 1.4,
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
                         }
                       ]
                     }
@@ -30374,225 +31006,188 @@
                 },
                 {
                   "type": "frame",
-                  "id": "Bu5f3",
-                  "name": "Kamar 503",
+                  "id": "fWRvp",
+                  "name": "Grid kamar — Baris 3",
                   "width": "fill_container",
-                  "fill": "$white",
-                  "cornerRadius": 16,
-                  "stroke": "$line",
-                  "strokeWidth": 1,
-                  "gap": 14,
-                  "padding": [
-                    14,
-                    16
-                  ],
-                  "alignItems": "center",
+                  "gap": 12,
                   "children": [
                     {
-                      "type": "rectangle",
-                      "cornerRadius": 2,
-                      "id": "H03py",
-                      "name": "Bar",
-                      "fill": "$green",
-                      "width": 4,
-                      "height": 40
-                    },
-                    {
-                      "type": "text",
-                      "id": "uu42n",
-                      "name": "N",
-                      "fill": "$green-deep",
-                      "content": "503",
-                      "fontFamily": "$font-heading",
-                      "fontSize": 22,
-                      "fontWeight": "700"
-                    },
-                    {
                       "type": "frame",
-                      "id": "aftZ4",
-                      "name": "Penghuni",
+                      "id": "vsg3s",
+                      "name": "Kamar 512",
                       "width": "fill_container",
+                      "height": 132,
+                      "fill": "$white",
+                      "cornerRadius": 16,
+                      "stroke": "$gold",
+                      "strokeWidth": 2,
                       "layout": "vertical",
-                      "gap": 4,
+                      "gap": 10,
+                      "padding": 12,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "kUFt5",
-                          "name": "Fajar Nugroho",
-                          "fill": "$ink",
-                          "content": "Fajar Nugroho",
-                          "fontFamily": "$font-body",
-                          "fontSize": 13,
-                          "fontWeight": "normal"
+                          "type": "frame",
+                          "id": "l9sGF1",
+                          "name": "Header nomor dan badge",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "YY5Lp",
+                              "name": "Nomor kamar dengan aksen",
+                              "gap": 6,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "rectangle",
+                                  "cornerRadius": 2,
+                                  "id": "MNbzt",
+                                  "name": "Bar",
+                                  "fill": "$green",
+                                  "width": 3,
+                                  "height": 22
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "stLlQ",
+                                  "name": "N",
+                                  "fill": "$green-deep",
+                                  "content": "512",
+                                  "fontFamily": "$font-heading",
+                                  "fontSize": 20,
+                                  "fontWeight": "700"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "w5OvSv",
+                              "name": "Badge Kamar Anda",
+                              "fill": "$gold-50",
+                              "cornerRadius": 999,
+                              "gap": 3,
+                              "padding": [
+                                4,
+                                5
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "zzNN9",
+                                  "name": "Ikon bintang",
+                                  "width": 10,
+                                  "height": 10,
+                                  "icon": "star",
+                                  "library": "lucide",
+                                  "fill": "$gold-text"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "B2ipf",
+                                  "name": "Label badge",
+                                  "fill": "$gold-text",
+                                  "content": "Kamar Anda",
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 9,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
-                          "type": "text",
-                          "id": "Cip4E",
-                          "name": "Dedi Kurnia",
-                          "fill": "$ink",
-                          "content": "Dedi Kurnia",
-                          "fontFamily": "$font-body",
-                          "fontSize": 13,
-                          "fontWeight": "normal"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "VgvSa",
-                  "name": "Kamar 504",
-                  "width": "fill_container",
-                  "fill": "$white",
-                  "cornerRadius": 16,
-                  "stroke": "$line",
-                  "strokeWidth": 1,
-                  "gap": 14,
-                  "padding": [
-                    14,
-                    16
-                  ],
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "rectangle",
-                      "cornerRadius": 2,
-                      "id": "BjCuX",
-                      "name": "Bar",
-                      "fill": "$gold",
-                      "width": 4,
-                      "height": 40
-                    },
-                    {
-                      "type": "text",
-                      "id": "m47Yyn",
-                      "name": "N",
-                      "fill": "$green-deep",
-                      "content": "504",
-                      "fontFamily": "$font-heading",
-                      "fontSize": 22,
-                      "fontWeight": "700"
-                    },
-                    {
-                      "type": "frame",
-                      "id": "dMU8k",
-                      "name": "Penghuni",
-                      "width": "fill_container",
-                      "layout": "vertical",
-                      "gap": 4,
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "Otkb9",
-                          "name": "Aisyah Putri",
-                          "fill": "$ink",
-                          "content": "Aisyah Putri",
-                          "fontFamily": "$font-body",
-                          "fontSize": 13,
-                          "fontWeight": "normal"
+                          "type": "rectangle",
+                          "id": "mlhKS",
+                          "name": "Garis pemisah",
+                          "fill": "$line",
+                          "width": "fill_container",
+                          "height": 1
                         },
                         {
-                          "type": "text",
-                          "id": "vPYWE",
-                          "name": "Rahma Dewi",
-                          "fill": "$ink",
-                          "content": "Rahma Dewi",
-                          "fontFamily": "$font-body",
-                          "fontSize": 13,
-                          "fontWeight": "normal"
+                          "type": "frame",
+                          "id": "nAJfI",
+                          "name": "Penghuni",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "r1D8Ah",
+                              "name": "Penghuni — Ahmad Fauzi",
+                              "width": "fill_container",
+                              "gap": 6,
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "wEnIp",
+                                  "name": "Ikon penghuni",
+                                  "width": 12,
+                                  "height": 16,
+                                  "icon": "user-round",
+                                  "library": "lucide",
+                                  "fill": "$ink-muted"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "aai7L",
+                                  "name": "Ahmad Fauzi",
+                                  "fill": "$ink",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Ahmad Fauzi",
+                                  "lineHeight": 1.4,
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "AXcnh",
+                              "name": "Penghuni — Rizki Ramadhan",
+                              "width": "fill_container",
+                              "gap": 6,
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "lsMTf",
+                                  "name": "Ikon penghuni",
+                                  "width": 12,
+                                  "height": 16,
+                                  "icon": "user-round",
+                                  "library": "lucide",
+                                  "fill": "$ink-muted"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "PEOfI",
+                                  "name": "Rizki Ramadhan",
+                                  "fill": "$ink",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Rizki Ramadhan",
+                                  "lineHeight": 1.4,
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
                         }
                       ]
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "vsg3s",
-                  "name": "Kamar 512",
-                  "width": "fill_container",
-                  "fill": "$white",
-                  "cornerRadius": 16,
-                  "stroke": "$gold",
-                  "strokeWidth": 2,
-                  "gap": 14,
-                  "padding": [
-                    14,
-                    16
-                  ],
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "rectangle",
-                      "cornerRadius": 2,
-                      "id": "MNbzt",
-                      "name": "Bar",
-                      "fill": "$green",
-                      "width": 4,
-                      "height": 40
-                    },
-                    {
-                      "type": "text",
-                      "id": "stLlQ",
-                      "name": "N",
-                      "fill": "$green-deep",
-                      "content": "512",
-                      "fontFamily": "$font-heading",
-                      "fontSize": 22,
-                      "fontWeight": "700"
                     },
                     {
                       "type": "frame",
-                      "id": "nAJfI",
-                      "name": "Penghuni",
+                      "id": "x6Oy6K",
+                      "name": "Kolom kosong grid kamar",
                       "width": "fill_container",
-                      "layout": "vertical",
-                      "gap": 4,
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "aai7L",
-                          "name": "Ahmad Fauzi",
-                          "fill": "$ink",
-                          "content": "Ahmad Fauzi",
-                          "fontFamily": "$font-body",
-                          "fontSize": 13,
-                          "fontWeight": "normal"
-                        },
-                        {
-                          "type": "text",
-                          "id": "PEOfI",
-                          "name": "Rizki Ramadhan",
-                          "fill": "$ink",
-                          "content": "Rizki Ramadhan",
-                          "fontFamily": "$font-body",
-                          "fontSize": 13,
-                          "fontWeight": "normal"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "v1N4rG",
-                      "name": "Badge",
-                      "fill": "$gold-50",
-                      "cornerRadius": 999,
-                      "padding": [
-                        4,
-                        8
-                      ],
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "iNpnH",
-                          "name": "L",
-                          "fill": "$gold-text",
-                          "content": "Anda",
-                          "fontFamily": "$font-body",
-                          "fontSize": 11,
-                          "fontWeight": "600"
-                        }
-                      ]
+                      "height": 1
                     }
                   ]
                 },
@@ -71324,14 +71919,35 @@
     {
       "type": "browser",
       "id": "CQcYV",
-      "x": 24807,
+      "x": 24761,
       "y": 0,
       "name": "Kebijakan Privasi · Implementasi Mobile",
       "width": 390,
       "height": 1600,
       "url": "http://localhost:3000/kebijakan-privasi",
       "deviceId": "phone",
-      "scrollY": 1600
+      "scrollY": 1852
+    },
+    {
+      "type": "browser",
+      "id": "qBfmq",
+      "x": 25251,
+      "y": 0,
+      "name": "Khusus Peserta · Implementasi Desktop",
+      "width": 1440,
+      "height": 1460,
+      "url": "http://localhost:3000/khusus-peserta"
+    },
+    {
+      "type": "browser",
+      "id": "xHQRR",
+      "x": 26771,
+      "y": 0,
+      "name": "Khusus Peserta · Implementasi Mobile",
+      "width": 390,
+      "height": 1600,
+      "url": "http://localhost:3000/khusus-peserta",
+      "deviceId": "phone"
     }
   ],
   "variables": {

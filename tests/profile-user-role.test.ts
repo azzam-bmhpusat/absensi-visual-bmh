@@ -108,10 +108,10 @@ describe("tampilan untuk role user", () => {
     expect(gate).toContain('=== "user") redirect("/khusus-peserta");');
     const page = read("app/(site)/khusus-peserta/page.tsx");
     expect(page).toContain("Khusus Peserta Rakernas 2027");
-    expect(page).toContain("Masuk dengan akun BMH untuk akses halaman.");
+    const card = read("components/auth/participant-access-card.tsx");
+    expect(card).toContain("Masuk dengan akun BMH (@bmh.or.id)");
     expect(page).not.toContain("Silakan ajukan diri Anda");
-    expect(page).toContain("action={logoutUser}");
-    expect(page).toContain("flex min-h-svh items-center justify-center");
+    expect(card).toContain("action={logoutUser}");
     const dialog = read("components/rakernas/complete-profile-dialog.tsx");
     expect(dialog).not.toContain("Khusus Peserta");
     // Dialog tetap untuk peserta yang profilnya belum lengkap.

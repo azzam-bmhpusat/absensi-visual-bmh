@@ -1,39 +1,61 @@
 import type { Metadata } from "next";
-import { Lock } from "lucide-react";
-import { logoutUser } from "@/app/(site)/login/actions";
+import Image from "next/image";
+import { Suspense } from "react";
+import { connection } from "next/server";
 import { PublicFooter } from "@/components/rakernas/public-page";
-import { buttonVariants } from "@/components/ui/button";
+import { ParticipantAccessCard } from "@/components/auth/participant-access-card";
+import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { getEventSettings } from "@/lib/event-settings-server";
 
-const TITLE = "Khusus Peserta Rakernas 2027";
+export const instant = false;
 
 export const metadata: Metadata = {
-  title: TITLE,
+  title: "Khusus Peserta Rakernas 2027",
   robots: { index: false },
 };
 
-/** Tujuan redirect ProfileGate untuk role `user` (akun Google yang belum peserta). */
-export default function KhususPesertaPage() {
+async function AccessContent({ contactUrl }: { contactUrl: string }) {
+  await connection();
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return <ParticipantAccessCard account={null} contactUrl={contactUrl} />;
+
+  // Baca identitas hanya untuk sesi sendiri, tanpa menampilkan foto Google.
+  const { data: profile } = await createAdminClient()
+    .from("profiles")
+    .select("role, nama, nama_google")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  return (
+    <ParticipantAccessCard
+      contactUrl={contactUrl}
+      account={{
+        email: user.email ?? "",
+        name: profile?.nama?.trim() || profile?.nama_google?.trim() || "",
+        isNonParticipant: profile?.role === "user",
+        isGoogle: user.app_metadata.provider === "google",
+      }}
+    />
+  );
+}
+
+/** Halaman tujuan ProfileGate untuk akun yang belum terdaftar sebagai peserta. */
+export default async function KhususPesertaPage() {
+  const settings = await getEventSettings();
   return (
     <>
-      <main className="flex min-h-svh items-center justify-center bg-background pt-[calc(72px+env(safe-area-inset-top)+2.5rem)] pb-10">
-        <div className="site-container">
-          <div className="mx-auto w-full max-w-md overflow-hidden rounded-2xl border border-brand-gold/40 border-t-4 border-t-brand-gold bg-card p-6 text-center md:p-8">
-            <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-gold-100 ring-4 ring-gold-50">
-              <Lock className="size-7 text-brand-gold-text" aria-hidden="true" />
-            </span>
-            <h1 className="mt-4 font-heading text-2xl font-semibold tracking-tight text-primary md:text-3xl">
-              {TITLE}
-            </h1>
-            <p className="mt-3 text-ink-muted">Masuk dengan akun BMH untuk akses halaman.</p>
-            <form action={logoutUser}>
-              <button type="submit" className={buttonVariants({ className: "mt-5" })}>
-                Masuk dengan Akun BMH
-              </button>
-            </form>
-          </div>
-        </div>
+      <main id="participant-access" className="relative isolate min-w-0 flex-1 overflow-hidden bg-brand-green-night px-5 pt-[calc(112px+env(safe-area-inset-top))] pb-20 lg:pt-[calc(206px+env(safe-area-inset-top))] lg:pb-[120px]">
+        <Image src="/galeri-fasilitas-hotel/kamar.jpg" alt="" fill preload sizes="100vw" className="-z-20 object-cover" />
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-linear-to-b from-brand-green-night/95 to-brand-green-deep/80 lg:bg-linear-to-l" />
+        <Suspense fallback={<ParticipantAccessCard account={null} contactUrl={settings.footerUrl} />}>
+          <AccessContent contactUrl={settings.footerUrl} />
+        </Suspense>
       </main>
-      <PublicFooter />
+      <Suspense fallback={null}>
+        <PublicFooter />
+      </Suspense>
     </>
   );
 }

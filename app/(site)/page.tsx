@@ -65,8 +65,8 @@ export default async function HomePage() {
             <div className="site-container flex flex-col gap-5 md:flex-row md:items-center md:gap-10 lg:gap-14">
               <div className="relative h-[220px] w-full shrink-0 overflow-hidden rounded-[20px] md:h-[260px] md:w-[46%] lg:h-[300px] lg:w-[440px] lg:rounded-3xl">
                 <Image
-                  src="/galeri-fasilitas-hotel/ruang-acara.jpg"
-                  alt="Ruang acara Rakernas BMH"
+                  src="/rakernas/tim-hadroh-shoutul-hidayah.webp"
+                  alt="Ilustrasi tim hadroh santri sedang tampil dengan rebana"
                   fill
                   sizes="(min-width: 1024px) 440px, (min-width: 768px) 46vw, 100vw"
                   className="object-cover"
