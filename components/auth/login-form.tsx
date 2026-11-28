@@ -8,7 +8,6 @@ import { AlertCircle, Info, Loader2, LogIn } from "lucide-react";
 import { loginUser, type LoginResult } from "@/app/(site)/login/actions";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { GoogleLoginButton } from "@/components/auth/google-login-button";
 
@@ -132,23 +131,16 @@ export function LoginForm({
           />
         </div>
 
-        <Button
+        <button
           type="submit"
           disabled={isPending}
-          className="h-11 w-full rounded-xl bg-primary font-medium text-white shadow-sm hover:bg-brand-green-deep"
+          className="flex min-h-[50px] w-full cursor-pointer items-center justify-between gap-3 rounded-full border border-white/35 bg-linear-to-b from-brand-green-deep to-brand-green-night py-1.5 pr-1.5 pl-6 text-left text-[15px] font-semibold text-white shadow-[0_6px_16px_color-mix(in_srgb,var(--brand-green-deep)_25%,transparent),inset_0_1px_0_#fff3] transition-[filter] hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-gold disabled:pointer-events-none disabled:opacity-50"
         >
-          {isPending ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Memverifikasi...
-            </>
-          ) : (
-            <>
-              <LogIn className="mr-2 h-4 w-4 text-brand-gold-soft" />
-              Masuk
-            </>
-          )}
-        </Button>
+          <span>{isPending ? "Memverifikasi..." : "Masuk"}</span>
+          <span aria-hidden="true" className="flex size-[38px] shrink-0 items-center justify-center rounded-full bg-brand-gold text-brand-green-night">
+            {isPending ? <Loader2 className="size-[18px] animate-spin" /> : <LogIn className="size-[18px]" />}
+          </span>
+        </button>
       </form>
 
       <p className="text-center text-xs leading-relaxed text-ink-muted">
